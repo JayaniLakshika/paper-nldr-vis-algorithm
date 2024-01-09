@@ -346,19 +346,6 @@ In the Grand Tour, new orthonormal bases are randomly chosen to explore the $d$-
 
 While both tours can be used to visualize data, examples often focus on using the Grand Tour to observe global structures. However, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives.
 
-
-### Non-parametric models
-
-#### Hexagonal binning
-
-Hexagonal binning is a data visualization technique that aggregates high-dimensional data into a two-dimensional representation using hexagonal regions called bins [@article66]. The hexagonal shape is preferred due to its circular-like appearance, providing smoother transitions between neighboring bins and efficient data aggregation. This technique is especially useful for handling large data sets as it reduces visual clutter while capturing the underlying data distribution effectively. By considering the data distribution, important features are captured, and gaps between bins are minimized, leading to a more accurate representation of the data. In our algorithm, hexagonal binning is utilized to create a low-dimensional manifold and facilitate data visualization in the original high-dimensional space.
-
-#### Triangulation
-
-Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30] finding applications in mesh generation and representing complex geometric structures efficiently and discretely. One common algorithm used for triangulation is Delaunay triangulation [@article26], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation.
-
-In our algorithm, we are interested in triangulation as it plays a key role in providing a clear and concise representation of the data. By converting the data points into interconnected triangles, we can visualize and analyze the data in a more structured and organized manner. Triangulation helps us identify geometric relationships and patterns in the data, enabling us to make informed decisions and gain valuable insights from the information presented in the triangular form.
-
 ## Methodology {#sec-methods}
 
 <!--In this paper, we introduce a novel approach, which is designed to determine which method, and which parameter choice provide the most useful representation of high dimensional data. Our approach involves dividing the data set into two subsets: a training set, which serves to construct the low-dimensional manifold, and a test set, utilized to generate predictive values and residuals.
@@ -378,6 +365,8 @@ To tackle the complexities and noise in high-dimensional data, we apply PCA as a
 ### Constructing the 2D model
 
 **Step 1: Computing the hexagonal grid configuration**
+
+Hexagonal binning is a data visualization technique that aggregates high-dimensional data into a two-dimensional representation using hexagonal regions called bins [@article66]. The hexagonal shape is preferred due to its circular-like appearance, providing smoother transitions between neighboring bins and efficient data aggregation. This technique is especially useful for handling large data sets as it reduces visual clutter while capturing the underlying data distribution effectively. By considering the data distribution, important features are captured, and gaps between bins are minimized, leading to a more accurate representation of the data. In our algorithm, hexagonal binning is utilized to create a low-dimensional manifold.
 
 **(a) Determine the number of bins along the x-axis** ($b_1$)
 
@@ -684,8 +673,9 @@ After computing hexagonal grid configurations, the 2D emdeddings are binned into
 
 **Step 3: Triangulate bin centroids**
 
-In this step, the algorithm proceeds to triangulate the centroids (see @fig-meth (Step 3)) of the hex bins using the `tripack` package in R [@article54]. Since we are working with the centroids of regular hexagonal bins, the resulting mesh will predominantly comprise equal-sized regular triangles. However, the triangulation also helps span any gaps that may exist between clusters of points, allowing for a more complete and interconnected representation of the data.
+In this step, the algorithm proceeds to triangulate the centroids (see @fig-meth (Step 3)) of the hex bins. Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30]. One common algorithm used for triangulation is Delaunay triangulation [@article26], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation. In our algorithm, triangulation helps us identify geometric relationships and patterns in the data.
 
+Since we are working with the centroids of regular hexagonal bins, the resulting mesh will predominantly comprise equal-sized regular triangles. However, the triangulation also helps span any gaps that may exist between clusters of points, allowing for a more complete and interconnected representation of the data.
 
 ### Lifting the model into high dimensions
 
@@ -963,22 +953,36 @@ a1 + a2 +
   plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+
 ### Tunning the model
 
-### Summaries of the model {#sec-diagnostics}
+### Summaries of the model {#sec-summary}
 
 #### Predicted values and residuals
 
-In our prediction process, we employ the K-nearest neighbors (KNN) algorithm to predict the hex bin IDs. Specifically, for each new high-dimensional data point, the algorithm assigns the first neighboring hex bin ID as the predicted hex bin ID.
+In this context, the term "prediction values" refers to the 2D coordinates predicted for the NLDR technique. The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as t-SNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
 
-<!-- move to goodness of fit stat-->
+The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data (\(x_{ij}\)) and the predicted bin centroid data in high-dimensional space (\(C_{x_ij}\)) across all bins and dimensions. Mathematically, this error is expressed as:
+
+$$
+\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
+$$ {#eq-equation11}
+
+
+Here, \(n\) represents the number of bins, \(p\) represents the dimensions, \(x_{ij}\) is the actual high-dimensional data, and \(C_{x_ij}\) is the predicted bin centroid data in high dimensions.
+
+The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
+
+
+#### Goodness of fit statistics
+
 Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
 
 $$
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{\text{total number of bins}}
 $$ {#eq-equation9}
 
-Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional (high-D) data, and $n$ represents the number of observations.
+Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
 
 Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
 
@@ -1174,9 +1178,7 @@ aic_plot + mse_plot +
 ```
 
 
-#### Goodness of fit statistics
-
-In this analysis, we're looking at how well our model is doing in two aspects. First, we're checking the distances in our lower-dimensional space (see @fig-diag (a)). We want to see if the distances between different types of edges are similar. If they are, it means our model is doing a good job of keeping the relationships consistent. If there are big differences, it could mean our model is struggling with certain types of edges.
+<!--In this analysis, we're looking at how well our model is doing in two aspects. First, we're checking the distances in our lower-dimensional space (see @fig-diag (a)). We want to see if the distances between different types of edges are similar. If they are, it means our model is doing a good job of keeping the relationships consistent. If there are big differences, it could mean our model is struggling with certain types of edges.
 
 Next, we're examining how our model handles the relationship between high-dimensional and low-dimensional distances for each type of edge (see @fig-diag (b)). If our data points nicely line up around the expected line, it tells us that our model is preserving the original structure well. If they're scattered, it could mean our model is having trouble with specific data points. This two-part analysis helps us really understand how our model fits the data.
 
@@ -1267,7 +1269,7 @@ diagnostic_plot1 + diagnostic_plot2 +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-<!--### Software
+### Software
 
 Our algorithm for high-dimensional (high-D) representation is available as an open-source R package named quollr. This package provides analysts with the capability to construct a low-dimensional manifold and seamlessly visualize it in the high-D space alongside the original data.-->
 
@@ -1907,9 +1909,11 @@ plot_pbmc + trimesh_pbmc + trimesh_gr_pbmc + #A = 1, b = (19, 27), s = 1.255103
 Screen shots of the **langevitour** with the low-dimensional view applied to pbmc data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/1F7Xb2EIpfUruCxYihPw2rKro4FB5Y2uL/view}). Combination of the **langevitour** and low-dimensional representation of the pbmc data provides the effectiveness of our approach.
 :::
 
-### MNIST
+### Single-Cell Tagged Reverse Transcription sequencing data of mouse
 
-The MNIST dataset is a widely recognized benchmark in the realm of computer vision and machine learning, which is a collection of 28x28 pixel grayscale images of handwritten digits (0 through 9), serving as a foundational resource for developing and evaluating various image classification algorithms. With its simplicity and clarity, MNIST provides an ideal platform for researchers and practitioners to experiment with and benchmark their models. 
+The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics (STRT-Seq). Within this dataset, information is collected from a substantial 2,816 individual mouse brain cells. Each of these cells acts as a molecular snapshot, capturing the distinctive genetic activity within various cell types. This diversity spans neurons, glial cells, and other essential components of the brain, offering a comprehensive view of the cellular tapestry.
+
+What makes this dataset particularly valuable is its ability to shed light on the spatial distribution of cells. Researchers can explore how gene expression patterns vary across different regions of the mouse brain, unlocking insights into the functional specialization of these regions and the intricate networks that underpin neural processes.
 
 ## Discussion {#sec-discussion}
 
