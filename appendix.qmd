@@ -1,0 +1,785 @@
+---
+title: "Appendix: Visualising How Non-linear Dimension Reduction Warps Your Data"
+author:
+  - name: Jayani P.G. Lakshika
+    affiliations:
+      - name: Monash University
+        department: Econometrics & Business Statistics
+        address: Clayton
+        city: VIC 
+        country: Austria
+        postal-code: 3800
+    orcid: 0000-0002-6265-6481
+    email: jayani.piyadigamage@monash.edu
+    url: https://jayanilakshika.netlify.app/
+  - name: Dianne Cook
+    affiliations:
+      - name: Monash University
+        department: Econometrics & Business Statistics
+        address: Clayton
+        city: VIC 
+        country: Austria
+        postal-code: 3800
+    orcid: 0000-0002-3813-7155
+    email: dicook@monash.edu 
+    url: http://www.dicook.org/
+  - name: Paul Harrison
+    affiliations:
+      - name: Monash University
+        department: MGBP, BDInstitute
+        address: Clayton
+        city: VIC 
+        country: Austria
+        postal-code: 3800
+    orcid: 0000-0002-3980-268X
+    email: 	paul.harrison@monash.edu
+    url: 
+  - name: Michael Lydeamore
+    affiliations:
+      - name: Monash University
+        department: Econometrics & Business Statistics
+        address: Clayton
+        city: VIC 
+        country: Austria
+        postal-code: 3800
+    orcid: 0000-0001-6515-827X
+    email: michael.lydeamore@monash.edu
+    url: 
+  - name: Thiyanga S. Talagala
+    affiliations:
+      - name: University of Sri Jayewardenepura
+        department: Statistics
+        address: Gangodawila
+        city: Nugegoda 
+        country: Sri Lanka
+        postal-code: 10100
+    orcid: 0000-0002-0656-9789
+    email: ttalagala@sjp.ac.lk 
+    url: https://thiyanga.netlify.app/
+tbl-cap-location: bottom
+---
+
+```{r}
+#| warning: false
+#| echo: false
+library(dplyr)
+# remotes::install_github("jlmelville/snedata")
+library(snedata)
+library(ggflowchart)
+library(purrr) ## map function
+library(gridExtra) ## for grid.arrange
+library(rsample)
+library(DT)
+library(ggbeeswarm)
+library(ggplot2)
+library(readr)
+
+library(Rtsne)
+library(umap)
+library(phateR)
+library(reticulate)
+library(patchwork)
+
+library(grid)
+
+
+# install.packages("Seurat")
+# remotes::install_github("satijalab/seurat-data")
+#library(SeuratData) ## For the application
+
+# use_python("~/miniforge3/envs/pcamp_env/bin/python")
+# use_condaenv("pcamp_env")
+# 
+# reticulate::source_python(paste0(here::here(), "/examples_for_the_paper/function_scripts/Fit_PacMAP_code.py"))
+# reticulate::source_python(paste0(here::here(), "/examples_for_the_paper/function_scripts/Fit_TriMAP_code.py"))
+
+set.seed(20230531)
+
+source("quollr_code.R", local = TRUE)
+source("nldr_code.R", local = TRUE)
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+data <- read_csv(paste0(here::here(), "/data/s_curve.csv"))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+data <- data |>
+  mutate(ID = row_number())
+
+data_split <- initial_split(data)
+training_data <- training(data_split)
+test_data <- testing(data_split)
+```
+
+```{r}
+#| echo: false
+
+UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
+
+UMAP_data <- UMAP_fit$layout |>
+  as.data.frame()
+names(UMAP_data)[1:(ncol(UMAP_data))] <- paste0(rep("UMAP",(ncol(UMAP_data))), 1:(ncol(UMAP_data)))
+
+UMAP_data <- UMAP_data |>
+  mutate(ID = training_data$ID)
+
+num_bins_x <- calculate_effective_x_bins(.data = UMAP_data, x = UMAP1,
+                           cell_area = 1)
+
+shape_value <- calculate_effective_shape_value(.data = UMAP_data, 
+                                             x = UMAP1, y = UMAP2)
+
+## To extract bin centroids
+hexbin_data_object <-extract_hexbin_centroids(nldr_df = UMAP_data, num_bins = num_bins_x, shape_val = shape_value)
+    
+df_bin_centroids <- hexbin_data_object$hexdf_data
+
+##########
+
+## Data set with all possible centroids in the hexagonal grid
+
+full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
+
+## To map hexID to hexbin centroids in the full grid
+
+vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
+
+full_grid_with_hexbin_id <- dplyr::bind_rows(vec1)[0, ]
+full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for(i in 1:length(sort(unique(full_centroid_df$y)))){
+  
+  ## Filter the data set with specific y value
+  specific_y_val_df <- full_centroid_df |>
+    dplyr::filter(y == sort(unique(full_centroid_df$y))[i])
+  
+  ordered_x_df <- specific_y_val_df |>
+    dplyr::arrange(x) 
+  
+  full_grid_with_hexbin_id <- dplyr::bind_rows(full_grid_with_hexbin_id, ordered_x_df)
+  
+}
+
+
+full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
+  dplyr::mutate(hexID = row_number())
+
+full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
+  dplyr::rename("c_x" = "x",
+         "c_y" = "y") 
+
+full_grid_with_hexbin_id <- dplyr::full_join(full_grid_with_hexbin_id, df_bin_centroids, by = c("hexID" = "hexID")) |>
+  dplyr::select(-c(x, y)) #|> 
+  #dplyr::mutate(counts = tidyr::replace_na(counts, 0))
+
+full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
+    dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
+
+## Generate all coordinates of hexagons
+hex_grid <- full_hex_grid(full_centroid_df)
+
+full_grid_with_polygon_id_df <- map_polygon_id(full_grid_with_hexbin_id, hex_grid)
+
+full_grid_with_hexbin_id_rep <- full_grid_with_polygon_id_df |>
+  dplyr::slice(rep(1:n(), each = 6)) |>
+  dplyr::arrange(polygon_id)
+
+hex_full_count_df <- dplyr::bind_cols(hex_grid, full_grid_with_hexbin_id_rep)
+
+##########
+
+min_std_cell_threshold <- 0.05
+
+df_bin_centroids_all <- hexbin_data_object$hexdf_data ## All the centroids without removing low-density hexagons
+
+
+df_bin_centroids <- df_bin_centroids |>
+  dplyr::mutate(stand_cell_count = counts/max(counts)) |>
+  dplyr::filter(stand_cell_count > min_std_cell_threshold)
+        
+UMAP_data_with_hb_id <- UMAP_data |> 
+  dplyr::mutate(hb_id = hexbin_data_object$hb_data@cID)
+        
+## To generate a data set with high-D and 2D training data
+df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
+        
+## Averaged on high-D
+df_bin <- avg_highD_data(.data = df_all)
+
+## Triangulate bin centroids
+tr1_object <- triangulate_bin_centroids(df_bin_centroids, x, y)
+tr_from_to_df <- generate_edge_info(triangular_object = tr1_object)
+
+## Compute 2D distances
+distance <- cal_2D_dist(.data = tr_from_to_df)
+
+## To find the benchmark value
+benchmark <- find_benchmark_value(.data = distance, distance_col = distance)
+
+
+trimesh <- ggplot(df_bin_centroids, aes(x = x, y = y)) + 
+    geom_segment(data = tr_from_to_df, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+    geom_point(size = 2, colour = "#33a02c") +
+    coord_equal()
+  
+  # ggplot(df_bin_centroids, aes(x = x, y = y)) + 
+  # geom_point(size = 1, colour = "#33a02c") + 
+  # geom_trimesh() + 
+  # coord_equal() 
+
+trimesh <- trimesh +
+  #ggtitle("(a)") + 
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7))
+
+trimesh_gr <- colour_long_edges(.data = distance, benchmark_value = benchmark, 
+                                triangular_object = tr1_object, distance_col = distance) 
+
+trimesh_gr <- trimesh_gr + 
+    geom_point(size = 2, colour = "#33a02c") + 
+  #ggtitle("(b)") + 
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+    #coord_equal() +
+    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+
+trimesh_removed <- remove_long_edges(.data = distance, benchmark_value = benchmark, 
+                                triangular_object = tr1_object, distance_col = distance)
+
+trimesh_removed <- trimesh_removed + 
+       geom_point(size = 2, colour = "#33a02c") + 
+  #ggtitle("(b)") + 
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+    #coord_equal() +
+    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+
+
+
+tour1 <- show_langevitour(df_all, df_bin, df_bin_centroids, benchmark_value = benchmark, distance = distance, distance_col = distance)
+```
+
+```{r}
+#| echo: false
+
+
+## To plot the distribution of distance
+plot_dist <- function(distance_df){
+  distance_df$group <- "1"
+  dist_plot <- ggplot(distance_df, aes(x = group, y = distance)) +
+    geom_quasirandom()+
+    ylim(0, max(unlist(distance_df$distance))+ 0.5) + coord_flip()
+  return(dist_plot)
+}
+```
+
+```{r}
+#| echo: false
+
+distance_plot <- plot_dist(distance) +
+  #ggtitle("(b)" ) + 
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
+```
+
+
+## Paramter tunning
+
+### Total number of bins
+
+The total number of bins represents the overall count of hexagonal bins within the hexagonal grid. This count is determined by multiplying the number of bins along the x-axis ($b_1$) with the number of bins along the y-axis ($b_2$), according to the formula:
+
+$$
+ b = b_1 \times b_2
+$$ {#eq-equationp1}
+
+Here, $b$ denotes the total number of bins. By adjusting the parameter $b_1$, we have control over the total number of bins ($b$). Hence, fine-tuning $b_1$ enables us to customize and optimize the total bin count based on the desired configuration along the x-axis.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+hexgrid_with_points_hex <- ggplot(data = hex_full_count_df |> dplyr::filter(!is.na(std_counts)), aes(x = c_x, y = c_y, fill = std_counts, hexID = hexID)) + 
+    geom_hex(stat = "identity", color = "#969696") +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  theme_light() +
+    #coord_equal() +
+    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+hexgrid_with_points_m <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) + 
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  theme_light() +
+    #coord_equal() +
+    theme(plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+
+hexgrid_with_points <- hexgrid_with_points_m + theme(legend.position = "none")
+```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| out-width: 100%
+
+hexgrid_with_points_hex + hexgrid_with_points +
+  plot_layout(ncol = 3)
+
+```
+<!--
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ # Loop over loop.vector
+  #i <- 1
+  num_bins <- 3
+  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+
+  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
+
+  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
+
+  ## Data set with all possible centroids in the hexagonal grid
+
+  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
+
+  ## To map hexID to hexbin centroids in the full grid
+
+  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
+
+  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate_if(is.character, as.numeric)
+
+  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
+
+    ## Filter the data set with specific y value
+    specific_y_val_df_loop <- full_centroid_df_loop |>
+      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
+
+    ordered_x_df_loop <- specific_y_val_df_loop |>
+      dplyr::arrange(x)
+
+    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
+
+  }
+
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate(hexID = row_number())
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::rename("c_x" = "x",
+           "c_y" = "y")
+
+  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
+    dplyr::select(-c(x, y))
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
+
+  ## Generate all coordinates of hexagons
+  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
+
+  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
+
+  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
+  dplyr::slice(rep(1:n(), each = 6)) |>
+  dplyr::arrange(polygon_id)
+
+  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
+
+
+
+  p1 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+        geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+    theme_void() +
+    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+          legend.title = element_text(size=8), #change legend title font size
+          legend.text = element_text(size=6)) +
+    guides(fill = guide_colourbar(title = "Standardized count")) +
+    annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ # Loop over loop.vector
+  #i <- 1
+  num_bins <- 8
+  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+
+  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
+
+  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
+
+  ## Data set with all possible centroids in the hexagonal grid
+
+  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
+
+  ## To map hexID to hexbin centroids in the full grid
+
+  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
+
+  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate_if(is.character, as.numeric)
+
+  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
+
+    ## Filter the data set with specific y value
+    specific_y_val_df_loop <- full_centroid_df_loop |>
+      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
+
+    ordered_x_df_loop <- specific_y_val_df_loop |>
+      dplyr::arrange(x)
+
+    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
+
+  }
+
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate(hexID = row_number())
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::rename("c_x" = "x",
+           "c_y" = "y")
+
+  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
+    dplyr::select(-c(x, y))
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
+
+  ## Generate all coordinates of hexagons
+  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
+
+  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
+
+  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
+  dplyr::slice(rep(1:n(), each = 6)) |>
+  dplyr::arrange(polygon_id)
+
+  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
+
+
+
+  p2 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+    geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+        theme_void() +
+    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+          legend.title = element_text(size=8), #change legend title font size
+          legend.text = element_text(size=6)) +
+    guides(fill = guide_colourbar(title = "Standardized count")) +
+    annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ # Loop over loop.vector
+  #i <- 1
+  num_bins <- 15
+  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+
+  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
+
+  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
+
+  ## Data set with all possible centroids in the hexagonal grid
+
+  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
+
+  ## To map hexID to hexbin centroids in the full grid
+
+  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
+
+  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate_if(is.character, as.numeric)
+
+  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
+
+    ## Filter the data set with specific y value
+    specific_y_val_df_loop <- full_centroid_df_loop |>
+      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
+
+    ordered_x_df_loop <- specific_y_val_df_loop |>
+      dplyr::arrange(x)
+
+    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
+
+  }
+
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::mutate(hexID = row_number())
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+    dplyr::rename("c_x" = "x",
+           "c_y" = "y")
+
+  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
+    dplyr::select(-c(x, y))
+
+  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
+      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
+
+  ## Generate all coordinates of hexagons
+  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
+
+  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
+
+  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
+  dplyr::slice(rep(1:n(), each = 6)) |>
+  dplyr::arrange(polygon_id)
+
+  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
+
+
+
+  p3 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+        geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+        theme_void() +
+    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+          legend.title = element_text(size=8), #change legend title font size
+          legend.text = element_text(size=6)) +
+    guides(fill = guide_colourbar(title = "Standardized count")) +
+    annotate(geom = 'text', label = "c", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-binsize
+#| fig-pos: H
+#| fig-cap: "Hexbin plots from different number of bins for the same **s_curve_noise_umap** data: (a) b = (4, 8), s = 2.031, (b) b = (9, 20), s = 2.031, and (c) b = (16, 36), s = 2.031. The hexbins are colored based on the density of points, with yellow indicating higher point density and darker colors representing lower point density within each bin. Does  a value of number of bins exist to effectively represent the low-dimensional data?"
+
+p1 + p2 + p3
+```
+-->
+
+### Benchmark value to remove low-density hexagons
+
+In the step of addressing low-density hexagons, which can arise from sparsely represented data in certain regions, we employ a systematic strategy. The goal is to ensure a more comprehensive coverage of the data by removing hexagons with low data density. To achieve this, we initiate the process by identifying, for each hex bin, the six nearest hex bins based on an equal 2D distance metric. Following this, we calculate the mean density (see @eq-equationp3), as outlined in the equation:
+
+$$
+ \text{standard count} = \frac{\text{count}}{\text{max count}}
+$$ {#eq-equationp2}
+
+$$
+ \text{mean density} = \frac{\text{standard count}}{6}
+$$ {#eq-equationp3}
+
+
+The standard count is derived from the number of observations in the hex bins (see @eq-equationp2). Next, we examine the distribution of mean densities across all hex bins and designate the first quartile as the benchmark value for removing low-density hexagons. Finally, hex bins with mean densities below this benchmark value are removed from consideration. This meticulous procedure ensures the elimination of regions with inadequate data density, allowing the focus to shift to areas with more significant data representation. The result is the preservation of the overall structure of the data in the low-dimensional space, as illustrated in @fig-bintorm (c).
+
+
+
+```{r}
+#| echo: false
+
+df_bin_centroids <- df_bin_centroids |>
+  dplyr::mutate(ID = row_number())
+
+# To store mean densities of hexagons
+mean_density_vec <- c()
+
+for (i in 1:length(df_bin_centroids$hexID)) {
+
+  df_bin_centroids_coordinates_spec_bin <- df_bin_centroids |>
+    filter(hexID == df_bin_centroids$hexID[i])
+
+  available_near_check <- df_bin_centroids |>
+    dplyr::filter((hexID == (df_bin_centroids$hexID[i] + 1)) | (hexID == (df_bin_centroids$hexID[i] - 1))) |>
+    head(1)
+
+  if (NROW(available_near_check) == 0) {
+
+    df_bin_centroids_coordinates_spec_bin_near1 <- df_bin_centroids |>
+      filter((hexID == (df_bin_centroids$hexID[i] + (num_bins_x + 1))) | (hexID == (df_bin_centroids$hexID[i] + num_bins_x)) | (hexID == (df_bin_centroids$hexID[i] - (num_bins_x + 1))) | (hexID == (df_bin_centroids$hexID[i] - num_bins_x))) |>
+      head(1)
+
+  } else {
+
+    df_bin_centroids_coordinates_spec_bin_near1 <- df_bin_centroids |>
+      filter((hexID == (df_bin_centroids$hexID[i] + 1)) | (hexID == (df_bin_centroids$hexID[i] - 1))) |>
+      head(1)
+
+  }
+
+  near_df_1 <- dplyr::bind_rows(df_bin_centroids_coordinates_spec_bin, df_bin_centroids_coordinates_spec_bin_near1)
+
+  start <- unlist(near_df_1[1, c("x","y")])
+  end <- unlist(near_df_1[2, c("x","y")])
+  nearest_dist <- sqrt(sum((start - end)^2)) # Distance to nearest centroid
+
+  df_bin_centroids$distance <- lapply(seq(nrow(df_bin_centroids)), function(x) {
+    start <- unlist(df_bin_centroids[(df_bin_centroids_coordinates_spec_bin |> pull(ID)), c("x","y")])
+    end <- unlist(df_bin_centroids[x, c("x","y")])
+    sqrt(sum((start - end)^2))})
+
+  df_bin_centroids <- df_bin_centroids %>%
+    dplyr::select(names(df_bin_centroids), "distance")
+
+  df_bin_centroids$distance <- round(unlist(df_bin_centroids$distance), 7)
+
+  neighbor_df <- df_bin_centroids |>
+    filter(distance == round(nearest_dist, 7))
+
+  mean_density <- neighbor_df |>
+    pull(std_counts) |>
+    sum()/6 ## The reason to take the mean is to check the density in a considerable amount
+
+  mean_density_vec <- append(mean_density_vec, mean_density)
+
+}
+
+df_bin_centroids <- df_bin_centroids |>
+  dplyr::mutate(mean_density = mean_density_vec)
+
+cell_count_plot <- ggplot(df_bin_centroids, aes(x = reorder(as.factor(hexID), -mean_density), y = mean_density)) +
+  geom_quasirandom() + xlab("hexagonal id") + ylab("Standardized cell count") +
+  geom_hline(yintercept = 0.255, colour = "#de2d26") +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7),
+        axis.text.x = element_text(angle = 90))
+
+cell_count_plot
+```
+
+```{r}
+#| echo: false
+
+hexgrid_with_points <- hexgrid_with_points +
+  coord_equal()
+
+hex_full_count_df <- full_join(hex_full_count_df, df_bin_centroids |> dplyr::select(hexID, mean_density))
+
+
+hex_full_count_df <- hex_full_count_df |>
+  dplyr::mutate(type = if_else(mean_density < 0.255, "low", "high"))
+
+hex_full_count_df_filtered <- hex_full_count_df |>
+  dplyr::filter(type == "low")
+
+hex_grid_centers_rm_l_n <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts))   +
+  # geom_polygon(data = hex_full_count_df_filtered, color = "black", aes(group = polygon_id), fill = "red") +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  theme_light() +
+    #coord_equal() +
+    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+          axis.title.x = element_blank(), axis.title.y = element_blank(),
+          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+    ) 
+
+hex_grid_centers_rm_l_n <- hex_grid_centers_rm_l_n +
+  geom_text(data = hex_full_count_df_filtered, color = "black", aes(x = c_x, y = c_y, group = polygon_id, label = "X", size = 0.5)) +
+  coord_equal() 
+
+hexgrid_with_points + hex_grid_centers_rm_l_n +
+  plot_layout(ncol = 2)
+
+```
+
+### Benchmark value to remove long edges
+
+In this step, we aim to create a smoother surface in the low-dimensional space by removing long edges from the triangular mesh. This process helps eliminate outliers and noise while preserving important local relationships and intricate structures within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. A data frame is created to calculate the differences between consecutive distance values, and the largest difference serves as a threshold to identify long edges. By removing edges that exceed this threshold, the algorithm refines the triangular mesh (see @fig-traingularmeshgr).
+
+![A flow diagram detailing the steps taken to find the benchmark value to remove long edges.](figures/remove_long_edges_workflow.png){#fig-rmlgmeth fig-align="center" width="100%" height="100%"}
+
+```{r}
+#| echo: false
+
+dist_p <- plot_dist(distance)  +
+  geom_hline(yintercept = benchmark, colour = "red") + 
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12)) 
+
+dist_p
+```
+
+```{r}
+#| echo: false
+
+trimesh + trimesh_gr +
+  plot_layout(ncol = 2)
+
+```
+
