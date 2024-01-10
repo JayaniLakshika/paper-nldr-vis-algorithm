@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, breakable, interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -611,7 +611,11 @@ representation of the hex bin centroids in the high-D space.
 
 }
 
-\caption{\label{fig-wkhighD}Visualization.}
+\caption{\label{fig-wkhighD}How the 2D model lift into high dimensions?
+(a) visualize the points and the hexagonal bin centroids related 31th
+and 239th hexagons, (b) visualization of the edge connected the 31th and
+239th hexagons (colored in red) in the triangular mesh. A video of tour
+animation is available at (need to add the link of lg\_high).}
 
 \end{figure}
 
@@ -755,11 +759,13 @@ complexity in the predictions.
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticplt-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
 
 }
 
-\caption{\label{fig-diagnosticplt}The .}
+\caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
+different NLDR techniques applied to training S-curve dataset. What is
+the best NLDR technique to represent the original data in 2D?}
 
 \end{figure}
 
@@ -769,7 +775,10 @@ complexity in the predictions.
 
 }
 
-\caption{\label{fig-diagnosticpltDiffParam}The .}
+\caption{\label{fig-diagnosticpltDiffParam}Goodness of fit statistics
+from different n\_neighbors parameter of UMAP applied to training
+S-curve dataset. What is the best parameter choice in UMAP to represent
+the original data in 2D?}
 
 \end{figure}
 
@@ -803,7 +812,18 @@ information?}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-43-1.pdf}
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltGau-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltGau}Goodness of fit statistics from
+different NLDR techniques applied to training five spherical Gaussian
+cluster dataset. What is the best NLDR technique to represent the
+original data in 2D?}
+
+\end{figure}
 
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
@@ -844,7 +864,7 @@ construct the smooth low-dimensional manifold are presented in
 \textbf{?@tbl-table02}. The linked video, demonstrating the tour with
 the model, showcases the generation of a smooth surface for this
 application, enabling a comprehensive exploration of the data's
-structure and relationships (see Figure~\ref{fig-pbmc_sc}).
+structure and relationships (see \textbf{?@fig-pbmc\_sc}).
 
 \begin{figure}[H]
 
@@ -866,68 +886,13 @@ data.}
 
 \begin{figure}
 
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_a.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_b.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_c.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc_sc}Screen shots of the \textbf{langevitour}
-with the low-dimensional view applied to pbmc data set, a video of the
-tour animation is available at
-(\url{https://drive.google.com/file/d/1F7Xb2EIpfUruCxYihPw2rKro4FB5Y2uL/view}).
-Combination of the \textbf{langevitour} and low-dimensional
-representation of the pbmc data provides the effectiveness of our
-approach.}
-
-\end{figure}
-
-\begin{figure}
-
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
 
 }
 
-\caption{\label{fig-diagnosticpltPBMC}The .}
+\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
+different NLDR techniques applied to training PBMC dataset. What is the
+best NLDR technique to represent the original data in 2D?}
 
 \end{figure}
 
@@ -955,7 +920,10 @@ regions and the intricate networks that underpin neural processes.
 
 }
 
-\caption{\label{fig-diagnosticpltZEI}The .}
+\caption{\label{fig-diagnosticpltZEI}Goodness of fit statistics from
+different NLDR techniques applied to training Zeisel mouse brain
+dataset. What is the best NLDR technique to represent the original data
+in 2D?}
 
 \end{figure}
 

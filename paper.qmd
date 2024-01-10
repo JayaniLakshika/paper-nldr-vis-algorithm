@@ -400,6 +400,8 @@ p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
       geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
             geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
       scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  xlim(-5, 7) +
+  ylim(-10, 10) +
         theme_void() +
         theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
               axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -424,6 +426,8 @@ p2 <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
     geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+    xlim(-5, 8) +
+  ylim(-10, 10) +
         theme_void() +
     theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
           axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -750,11 +754,11 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| warning: false
 #| echo: false
 #| label: fig-wkhighD
-#| fig-cap: Visualization.
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 31th and 239th hexagons, (b) visualization of the edge connected the 31th and 239th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at (need to add the link of lg_high).
 
-a1 + a2 +
+a2 + a1 +
   plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 3) &
+  plot_layout(ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
@@ -1061,7 +1065,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training"), aes(x = num
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_color_discrete_qualitative() +
@@ -1076,7 +1080,7 @@ mse_plot <- ggplot(MSE_df, aes(x = number_of_bins,
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1089,8 +1093,8 @@ mse_plot <- ggplot(MSE_df, aes(x = number_of_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: The .
-#| label: fig-diagnosticplt
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset. What is the best NLDR technique to represent the original data in 2D?
+#| label: fig-diagnosticpltScurve
 #| out-width: 100%
 
 aic_plot + mse_plot +
@@ -1371,7 +1375,7 @@ mse_plot_param_training <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "tra
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1387,7 +1391,7 @@ mse_plot_param_test <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "test"),
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1400,7 +1404,7 @@ mse_plot_param_test <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "test"),
 
 ```{r}
 #| echo: false
-#| fig-cap: The .
+#| fig-cap: Goodness of fit statistics from different n_neighbors parameter of UMAP applied to training S-curve dataset. What is the best parameter choice in UMAP to represent the original data in 2D?
 #| label: fig-diagnosticpltDiffParam
 #| out-width: 100%
 
@@ -1410,103 +1414,6 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-
-
-
-<!--In this analysis, we're looking at how well our model is doing in two aspects. First, we're checking the distances in our lower-dimensional space (see @fig-diag (a)). We want to see if the distances between different types of edges are similar. If they are, it means our model is doing a good job of keeping the relationships consistent. If there are big differences, it could mean our model is struggling with certain types of edges.
-
-Next, we're examining how our model handles the relationship between high-dimensional and low-dimensional distances for each type of edge (see @fig-diag (b)). If our data points nicely line up around the expected line, it tells us that our model is preserving the original structure well. If they're scattered, it could mean our model is having trouble with specific data points. This two-part analysis helps us really understand how our model fits the data.
-
-```{r}
-#| echo: false
-
-sorted_distance_df <- distance[order(distance$distance),] ## Sort the distances
-
-sorted_distance_df <- cbind(sorted_distance_df, rbind(NA, apply(sorted_distance_df, 2, diff))) ## Calculate differences between unique distance
-sorted_distance_df <- sorted_distance_df[, c(3,6)]
-sorted_distance_df[is.na(sorted_distance_df)] <- 0.0000 ## To replace missing values with zero
-names(sorted_distance_df)[2] <- "difference"
-
-sorted_distance_df <- sorted_distance_df %>% 
-  mutate(Edge_type = ifelse(distance >= benchmark, "Long edge", "Short edge"))
-
-diagnostic_plot1 <- ggplot(sorted_distance_df, aes(x = distance, y = difference, color = Edge_type)) +
-  geom_point(alpha = 0.5) +
-  geom_rug(col="#e31a1c",alpha=0.1, linewidth=1.5) +
-  #ggtitle("Visualization of difference between \n 2D distances by edge type.") +
-  scale_color_manual(values=c("#33a02c", "#000000")) + 
-  theme(legend.position = "bottom", legend.title=element_blank(), plot.title=element_text(size=8), axis.text = element_text(size = 5),
-          axis.title = element_text(size = 7),
-        legend.text = element_text(size=7)) + 
-  xlab(expression(d^{(2)})) 
-```
-
-```{r}
-#| echo: false
-
-distance <- distance %>% 
-  rename(distance_2D = distance)
-
-#num_pca <- 4
-
-high_d <- df_bin[, 1:7]
-
-data_matrix <- data.matrix(high_d, rownames.force = NA)
-
-# calculate Euclidean distance between each row in matrix
-d <- dist(data_matrix)
-
-
-df <- reshape2::melt(as.matrix(d), varnames = c("Start_point", "End_point"))
-
-
-df <- df[df$Start_point > df$End_point,]
-
-rownames(df) <- 1:nrow(df)
-
-df <- df %>% 
-  rename(distance_high_D = value)
-
-high_low_dist <- left_join(distance, df, by = c("from" = "End_point", "to" = "Start_point"))
-high_low_dist <- high_low_dist %>% distinct()
-high_low_dist <- high_low_dist[complete.cases(high_low_dist),]
-
-lm_fit <- lm(distance_high_D ~ distance_2D, data = high_low_dist)
-
-high_low_dist <- high_low_dist %>% 
-  mutate(Edge_type = ifelse(distance_2D >= benchmark, "Long edge", "Short edge"))
-
-diagnostic_plot2 <- ggplot(high_low_dist, aes(x = distance_2D, y = distance_high_D, color = Edge_type)) +
-  geom_point(alpha = 0.5) +
-  geom_line(data = broom::augment(lm_fit),
-            aes(x = distance_2D, y = .fitted),
-            color="blue",
-            linewidth=1) +
-  geom_rug(col="#e31a1c",alpha=0.1, linewidth=1.5) +
-  #ggtitle("Visualization of 2D and high-D distances \n by edge type.") +
-  scale_color_manual(values=c("#33a02c","#000000")) + 
-  theme(legend.position = "bottom", legend.title=element_blank(), plot.title=element_text(size=8), axis.text = element_text(size = 5),
-          axis.title = element_text(size = 7),
-        legend.text = element_text(size=7)) + 
-  xlab(expression(d^{(2)})) + 
-  ylab(expression(d^{(p)}))
-```
-
-```{r}
-#| echo: false
-#| fig-cap: The two diagnostic plot assess the effectiveness of the high-D representation algorithm  performed for the **s_curve_noise_umap** data set$\colon$ (a) visualizing the differences between low-D distances and (b) visualizing the relationship between high-D ($d^{(p)}$) and low-D distances ($d^{(2)}$). 
-#| label: fig-diag
-#| out-width: 100%
-
-diagnostic_plot1 + diagnostic_plot2 +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect') &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
-
-### Software
-
-Our algorithm for high-dimensional (high-D) representation is available as an open-source R package named quollr. This package provides analysts with the capability to construct a low-dimensional manifold and seamlessly visualize it in the high-D space alongside the original data.-->
 
 ### Simulated data example {#sec-simpleex}
 
@@ -1821,7 +1728,7 @@ aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_color_discrete_qualitative() +
@@ -1836,7 +1743,7 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1848,8 +1755,10 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 ```
 
 ```{r}
-#| warning: false
 #| echo: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?
+#| label: fig-diagnosticpltGau
+#| out-width: 100%
 
 aic_gau_plot + mse_gau_plot +
   plot_annotation(tag_levels = 'a') +
@@ -2486,7 +2395,7 @@ plot_pbmc + trimesh_pbmc + trimesh_gr_pbmc + #A = 1, b = (19, 27), s = 1.255103
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-
+<!--
 ::: {#fig-pbmc_sc layout-ncol="3"}
 ![](figures/pbmc_a.png){#fig-pbmc_sc1}
 
@@ -2495,7 +2404,8 @@ plot_pbmc + trimesh_pbmc + trimesh_gr_pbmc + #A = 1, b = (19, 27), s = 1.255103
 ![](figures/pbmc_c.png){#fig-pbmc_sc3}
 
 Screen shots of the **langevitour** with the low-dimensional view applied to pbmc data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/1F7Xb2EIpfUruCxYihPw2rKro4FB5Y2uL/view}). Combination of the **langevitour** and low-dimensional representation of the pbmc data provides the effectiveness of our approach.
-:::
+:::-->
+
 
 ```{r}
 #| warning: false
@@ -2513,7 +2423,7 @@ aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training"), a
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_color_discrete_qualitative() +
@@ -2528,7 +2438,7 @@ mse_plot_pbmc <- ggplot(MSE_df_pbmc, aes(x = number_of_bins,
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -2541,7 +2451,7 @@ mse_plot_pbmc <- ggplot(MSE_df_pbmc, aes(x = number_of_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: The .
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training PBMC dataset. What is the best NLDR technique to represent the original data in 2D?
 #| label: fig-diagnosticpltPBMC
 #| out-width: 100%
 
@@ -2574,7 +2484,7 @@ aic_plot_zei <- ggplot(MSE_df_zei |> dplyr::filter(data_type == "training"), aes
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_color_discrete_qualitative() +
@@ -2589,7 +2499,7 @@ mse_plot_zei <- ggplot(MSE_df_zei, aes(x = number_of_bins,
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -2602,7 +2512,7 @@ mse_plot_zei <- ggplot(MSE_df_zei, aes(x = number_of_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: The .
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training Zeisel mouse brain dataset. What is the best NLDR technique to represent the original data in 2D?
 #| label: fig-diagnosticpltZEI
 #| out-width: 100%
 
