@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, frame hidden, boxrule=0pt, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -717,225 +717,6 @@ complexity in the predictions.
 \hypertarget{sec-simpleex}{%
 \subsection{Simulated data examples}\label{sec-simpleex}}
 
-In this section, we demonstrate the effectiveness of our approach
-through the use of simulation data. These simulations are designed to
-have known cluster structures and underlying data geometries. We begin
-with a straightforward example where we generate spherical clusters with
-a doublet structure. This allows us to assess how well our algorithm can
-identify and represent these known structures in the low-dimensional
-space.
-
-We then proceed to a more complex example where the data exhibits a more
-intricate geometry. This simulation provides a challenging test for our
-approach to capture and preserve the underlying data structure
-accurately.
-
-We \emph{strongly} recommend viewing the linked videos for each study
-while reading. Links to the videos are available in the figures for each
-example. The videos show the visual appearance of the
-\textbf{langevitour} interface with low-dimensional view and how we can
-interact with the tour via the controls.
-
-\textbf{Example 1: Exploring spherical Gaussian clusters with doublet
-structure}
-
-The next data set consists of two distinct types of clusters embedded in
-a 10-\(d\) space. The first set of clusters includes three Gaussian
-clusters with equal variance. Each of these Gaussian clusters is
-equidistant from the others, forming a well-separated and symmetrical
-arrangement. The second set of clusters consists of three clusters with
-a doublet structure. These clusters are also embedded in the 10-\(d\)
-space, but each is positioned in the middle of its parent Gaussian
-clusters. Moreover, each doublet cluster contains an average number of
-points from its corresponding parent Gaussian clusters.
-
-For analysis, we run tSNE on the training data with a perplexity setting
-18. Figure~\ref{fig-example3} (a) displays the tSNE results, indicating
-that the sub-clusters have been correctly identified. However, the
-relative locations of certain clusters to each other appear distorted in
-the low-dimensional view, such as the red and pink clusters being far
-apart.
-
-Nonetheless, we find no apparent impact on the perception of the data
-structure when we examine the tour view and the model (see
-Figure~\ref{fig-example3}) through the linked video (see
-Figure~\ref{fig-exp1_sc}). The model demonstrates accurate
-identification of clusters and captures the internal variations within
-each cluster, reflecting the inherent variance present in the data. The
-configurations used for the analysis are detailed in
-\textbf{?@tbl-table02}. Additionally, the representation of the parent
-clusters in the low-dimensional space appears stretched, aligning with
-the variance of these clusters. On the other hand, the doublet clusters
-are squeezed, reflecting their specific characteristics and relationship
-to their parent Gaussian clusters.
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-example3-1.pdf}
-
-}
-
-\caption{\label{fig-example3}Visualization and refinement of
-low-dimensional representation for sub-clustered data\(\colon\) (a) 2D
-layout of tSNE (perplexity = 18), (b) triangular mesh, and (c)
-triangular mesh colored by edge type. Edges with lengths less than the
-benchmark value of \(2\) are classifiedas small, while edges with
-lengths greater than or equal to this value are labeled as long. The
-combination of tSNE, hexagonal binning, and triangulation provides the
-effectiveness of our approach in visualizing and refining the
-low-dimensional representation of the sub-clustered data.}
-
-\end{figure}
-
-\begin{figure}
-
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_1a.png}
-
-}
-
-}
-
-\subcaption{\label{fig-exp1_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_1b.png}
-
-}
-
-}
-
-\subcaption{\label{fig-exp1_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_1c.png}
-
-}
-
-}
-
-\subcaption{\label{fig-exp1_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-exp1_sc}Screen shots of the \textbf{langevitour}
-with the low-dimensional view applied to sub-clustered data set, a video
-of the tour animation is available at
-(\url{https://drive.google.com/file/d/15nAbmc4UoVlUyFcGtnlnmyxrJEbK39nx/view}).
-Combination of the \textbf{langevitour} and low-dimensional
-representation of the sub-clustered data provides the effectiveness of
-our approach.}
-
-\end{figure}
-
-\textbf{Example 2: Exploring data with piecewise linear structure}
-
-In our next exploration, we delve into simulated noisy tree-structured
-data designed to mimic branching trajectories of cell differentiation.
-The simulation is crafted to resemble the hierarchical clustering
-pattern observed in cell differentiation trajectories, where mature
-cells are akin to the tips of branches.
-
-To begin our analysis, we apply principal components to the data and
-focus on the first ten principal components, collectively accounting for
-approximately 68\% of the variance explained in the data set. Then, we
-run TriMAP with the default parameters on the training data (n\_inliers:
-5, n\_outliers: 4, and n\_random: 3). Through this process, we create a
-low-dimensional manifold using the configurations detailed in
-\textbf{?@tbl-table02}. Finally, we present the model along with the
-data using the tour view (Figure Figure~\ref{fig-exp2_sc}), allowing us
-to visualize and explore the intricate relationships and structures
-present in the data's low-dimensional representation.
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-example2-1.pdf}
-
-}
-
-\caption{\label{fig-example2}Visualization and refinement of
-low-dimensional representation for tree structured data\(\colon\) (a) 2D
-layout of TriMAP (n-inliers = 5, n-outliers = 4, n-random = 3), (b)
-triangular mesh, and (c) triangular mesh colored by edge type. Edges
-with lengths less than the benchmark value of \(2\) are classified as
-small, while edges with lengths greater than or equal to this value are
-labeled as long. The combination of TriMAP, hexagonal binning, and
-triangulation provides the effectiveness of our approach in visualizing
-and refining the low-dimensional representation of the tree structured
-data.}
-
-\end{figure}
-
-\begin{figure}
-
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_2a.png}
-
-}
-
-}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_2b.png}
-
-}
-
-}
-
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/example_2c.png}
-
-}
-
-}
-
-\end{minipage}%
-
-\caption{\label{fig-exp2_sc}Screen shots of the \textbf{langevitour}
-with the low-dimensional view applied to tree structured data set, a
-video of the tour animation is available at
-(\url{https://drive.google.com/file/d/1YQx4UGlzDify1mGqeDtlqTHncgqidDhq/view}).
-Combination of the \textbf{langevitour} and low-dimensional
-representation of the tree structured data provides the effectiveness of
-our approach.}
-
-\end{figure}
-
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
 
@@ -1052,9 +833,9 @@ approach.}
 
 \end{figure}
 
-\hypertarget{zeisel-mouse-brain-strt-seq}{%
-\subsection{Zeisel mouse brain
-(STRT-Seq)}\label{zeisel-mouse-brain-strt-seq}}
+\hypertarget{single-cell-tagged-reverse-transcription-sequencing-data-of-mouse}{%
+\subsection{Single-Cell Tagged Reverse Transcription sequencing data of
+mouse}\label{single-cell-tagged-reverse-transcription-sequencing-data-of-mouse}}
 
 The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics
 (STRT-Seq). Within this dataset, information is collected from a

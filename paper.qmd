@@ -90,6 +90,7 @@ library(umap)
 library(phateR)
 library(reticulate)
 library(patchwork)
+library(langevitour)
 
 library(grid)
 
@@ -104,7 +105,7 @@ library(grid)
 # reticulate::source_python(paste0(here::here(), "/examples_for_the_paper/function_scripts/Fit_PacMAP_code.py"))
 # reticulate::source_python(paste0(here::here(), "/examples_for_the_paper/function_scripts/Fit_TriMAP_code.py"))
 
-set.seed(20230531)
+set.seed(20240110)
 
 source("quollr_code.R", local = TRUE)
 source("nldr_code.R", local = TRUE)
@@ -204,7 +205,7 @@ test_data <- testing(data_split) |>
 
 #plot_list <- list()
 
-tSNE_data <- Fit_tSNE(training_data, opt_perplexity = calculate_effective_perplexity(training_data), with_seed = 20230531)
+tSNE_data <- Fit_tSNE(training_data, opt_perplexity = calculate_effective_perplexity(training_data), with_seed = 20240110)
 #(perplexity: ", calculate_effective_perplexity(data), ")
 plot_list1 <- plot_tSNE_2D(tSNE_data) + #ggtitle("(a)") + 
   theme_linedraw() +
@@ -221,14 +222,7 @@ plot_list1 <- plot_tSNE_2D(tSNE_data) + #ggtitle("(a)") +
 #| warning: false
 #| echo: false
 
-UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
-
-UMAP_data <- UMAP_fit$layout |>
-  as.data.frame()
-names(UMAP_data)[1:(ncol(UMAP_data))] <- paste0(rep("UMAP",(ncol(UMAP_data))), 1:(ncol(UMAP_data)))
-
-UMAP_data <- UMAP_data |>
-  mutate(ID = training_data$ID)
+UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 
 #(n-neighbors: 50)
 plot_list2 <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") + 
@@ -248,7 +242,7 @@ plot_list2 <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
 #| echo: false
 
 #(knn: 5)
-# PHATE_data <- Fit_PHATE(training_data, knn = 5, with_seed = 20230531)
+# PHATE_data <- Fit_PHATE(training_data, knn = 5, with_seed = 20240110)
 # write_csv(PHATE_data, paste0(here::here(), "/data/phate_data_s_curve.csv"))
 
 PHATE_data <- read_csv(paste0(here::here(), "/data/phate_data_s_curve.csv"))
@@ -415,81 +409,22 @@ $$ {#eq-equation2}
 #| echo: false
 #| message: false
 #| warning: false
- # Loop over loop.vector
-  #i <- 1
-  num_bins <- 3
-  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+hex_full_count_df_loop1 <- read_rds("data/s_curve/s_curve_hex_3.rds") 
 
-  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
-
-  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
-
-  ## Data set with all possible centroids in the hexagonal grid
-
-  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
-
-  ## To map hexID to hexbin centroids in the full grid
-
-  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
-
-  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate_if(is.character, as.numeric)
-
-  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
-
-    ## Filter the data set with specific y value
-    specific_y_val_df_loop <- full_centroid_df_loop |>
-      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
-
-    ordered_x_df_loop <- specific_y_val_df_loop |>
-      dplyr::arrange(x)
-
-    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
-
-  }
-
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate(hexID = row_number())
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::rename("c_x" = "x",
-           "c_y" = "y")
-
-  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
-    dplyr::select(-c(x, y))
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
-
-  ## Generate all coordinates of hexagons
-  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
-
-  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
-
-  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
-  dplyr::slice(rep(1:n(), each = 6)) |>
-  dplyr::arrange(polygon_id)
-
-  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
-
-
-
-  p1 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-        geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-    theme_void() +
-    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-          legend.title = element_text(size=8), #change legend title font size
-          legend.text = element_text(size=6)) +
-    guides(fill = guide_colourbar(title = "Standardized count")) +
-    annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
+      geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+            geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+      scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+        theme_void() +
+        theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+              legend.title = element_text(size=8), #change legend title font size
+              legend.text = element_text(size=6)) +
+        guides(fill = guide_colourbar(title = "Standardized count")) +
+        annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ```
 
@@ -498,68 +433,9 @@ $$ {#eq-equation2}
 #| echo: false
 #| message: false
 #| warning: false
- # Loop over loop.vector
-  #i <- 1
-  num_bins <- 8
-  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+hex_full_count_df_loop2 <- read_rds("data/s_curve/s_curve_hex_8.rds") 
 
-  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
-
-  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
-
-  ## Data set with all possible centroids in the hexagonal grid
-
-  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
-
-  ## To map hexID to hexbin centroids in the full grid
-
-  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
-
-  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate_if(is.character, as.numeric)
-
-  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
-
-    ## Filter the data set with specific y value
-    specific_y_val_df_loop <- full_centroid_df_loop |>
-      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
-
-    ordered_x_df_loop <- specific_y_val_df_loop |>
-      dplyr::arrange(x)
-
-    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
-
-  }
-
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate(hexID = row_number())
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::rename("c_x" = "x",
-           "c_y" = "y")
-
-  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
-    dplyr::select(-c(x, y))
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
-
-  ## Generate all coordinates of hexagons
-  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
-
-  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
-
-  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
-  dplyr::slice(rep(1:n(), each = 6)) |>
-  dplyr::arrange(polygon_id)
-
-  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
-
-
-
-  p2 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
+p2 <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
     geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
@@ -580,68 +456,9 @@ $$ {#eq-equation2}
 #| echo: false
 #| message: false
 #| warning: false
- # Loop over loop.vector
-  #i <- 1
-  num_bins <- 15
-  shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
+hex_full_count_df_loop3 <- read_rds("data/s_curve/s_curve_hex_15.rds") 
 
-  hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
-
-  df_bin_centroids_loop <- hexbin_data_object_loop$hexdf_data
-
-  ## Data set with all possible centroids in the hexagonal grid
-
-  full_centroid_df_loop <- generate_full_grid_centroids(df_bin_centroids_loop)
-
-  ## To map hexID to hexbin centroids in the full grid
-
-  vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
-
-  full_grid_with_hexbin_id_loop <- dplyr::bind_rows(vec1)[0, ]
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate_if(is.character, as.numeric)
-
-  for(i in 1:length(sort(unique(full_centroid_df_loop$y)))){
-
-    ## Filter the data set with specific y value
-    specific_y_val_df_loop <- full_centroid_df_loop |>
-      dplyr::filter(y == sort(unique(full_centroid_df_loop$y))[i])
-
-    ordered_x_df_loop <- specific_y_val_df_loop |>
-      dplyr::arrange(x)
-
-    full_grid_with_hexbin_id_loop <- dplyr::bind_rows(full_grid_with_hexbin_id_loop, ordered_x_df_loop)
-
-  }
-
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::mutate(hexID = row_number())
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-    dplyr::rename("c_x" = "x",
-           "c_y" = "y")
-
-  full_grid_with_hexbin_id_loop <- dplyr::full_join(full_grid_with_hexbin_id_loop, df_bin_centroids_loop, by = c("hexID" = "hexID")) |>
-    dplyr::select(-c(x, y))
-
-  full_grid_with_hexbin_id_loop <- full_grid_with_hexbin_id_loop |>
-      dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
-
-  ## Generate all coordinates of hexagons
-  hex_grid_loop <- full_hex_grid(full_centroid_df_loop)
-
-  full_grid_with_polygon_id_df_loop <- map_polygon_id(full_grid_with_hexbin_id_loop, hex_grid_loop)
-
-  full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
-  dplyr::slice(rep(1:n(), each = 6)) |>
-  dplyr::arrange(polygon_id)
-
-  hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
-
-
-
-  p3 <-  ggplot(data = hex_full_count_df_loop, aes(x = x, y = y)) +
+p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
         geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
@@ -684,14 +501,14 @@ Creating the model in the high-D space involves a two-step process. Initially, w
 ```{r}
 #| echo: false
 
-UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
-
-UMAP_data <- UMAP_fit$layout |>
-  as.data.frame()
-names(UMAP_data)[1:(ncol(UMAP_data))] <- paste0(rep("UMAP",(ncol(UMAP_data))), 1:(ncol(UMAP_data)))
-
-UMAP_data <- UMAP_data |>
-  mutate(ID = training_data$ID)
+# UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
+# 
+# UMAP_data <- UMAP_fit$layout |>
+#   as.data.frame()
+# names(UMAP_data)[1:(ncol(UMAP_data))] <- paste0(rep("UMAP",(ncol(UMAP_data))), 1:(ncol(UMAP_data)))
+# 
+# UMAP_data <- UMAP_data |>
+#   mutate(ID = training_data$ID)
 
 num_bins_x <- calculate_effective_x_bins(.data = UMAP_data, x = UMAP1,
                            cell_area = 1)
@@ -876,8 +693,10 @@ distance_plot <- plot_dist(distance) +
 
 ```{r}
 #| echo: false
+# distance |> dplyr::filter(distance == max(distance))
+# df_bin_centroids |> dplyr::filter(row_number() %in% c(10, 65))
 
-a1 <- colour_long_edges(.data = distance, benchmark_value = 13, 
+a1 <- colour_long_edges(.data = distance, benchmark_value = 15, 
                   triangular_object = tr1_object, distance_col = distance) + 
     geom_point(size = 2, colour = "#33a02c") + 
     #ggtitle("(b)") + 
@@ -891,14 +710,14 @@ a1 <- colour_long_edges(.data = distance, benchmark_value = 13,
           panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
     ) 
 
-UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(14, 177)) |>
-  dplyr::mutate(select_point = if_else(hb_id == 14, "data1", "data2"))
+UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(31, 239)) |>
+  dplyr::mutate(select_point = if_else(hb_id == 31, "data1", "data2"))
 
 a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
   geom_polygon(color = "black", aes(group = polygon_id), fill = "#ffffff") +
   geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5) +
   scale_color_manual(values=c("#e6550d", "#000000")) +
-  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(14, 177)), aes(x = x, y = y), colour = "#33a02c") +
+  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(31, 239)), aes(x = x, y = y), colour = "#33a02c") +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   theme_light() +
   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
@@ -912,17 +731,17 @@ a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
 ## Script to make coloring data points with a line
 
 df1 <- df_all |> 
-  dplyr::filter(hb_id == "14") |>
+  dplyr::filter(hb_id == "31") |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data1") ## original dataset
 
 df2 <- df_all |> 
-  dplyr::filter(hb_id == "177") |>
+  dplyr::filter(hb_id == "239") |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data2") ## original dataset
 
 df3 <- df_all |> 
-  dplyr::filter(!(hb_id %in% c("14", "177"))) |>
+  dplyr::filter(!(hb_id %in% c("31", "239"))) |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data") ## original dataset
 
@@ -934,8 +753,8 @@ df_b <- df_bin |>
 df_exe <- dplyr::bind_rows(df_b, df1, df2, df3)
 
 distance_df_small_edges <- distance |> 
-  dplyr::filter(from == 3) |>
-  dplyr::filter(to == 49) |>
+  dplyr::filter(from == 10) |>
+  dplyr::filter(to == 65) |>
   head(1)
 
 lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#e6550d", "#000000", "#33a02c"), lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, lineColors = "#e31a1c")
@@ -994,13 +813,7 @@ These metrics, MSE and AIC, collectively offer valuable insights into the model'
 
 ```{r}
 #| echo: false
-predict_UMAP_df <- predict(UMAP_fit, test_data |> dplyr::select(-ID)) |>
-  as.data.frame()
-
-names(predict_UMAP_df)[1:(ncol(predict_UMAP_df))] <- paste0(rep("UMAP",(ncol(predict_UMAP_df))), 1:(ncol(predict_UMAP_df)))
-
-predict_UMAP_df <- predict_UMAP_df |>
-  mutate(ID = test_data$ID)
+predict_UMAP_df <- read_rds("data/s_curve/s_curve_umap_predict.rds")
 ```
 
 ```{r}
@@ -1275,7 +1088,11 @@ Our algorithm for high-dimensional (high-D) representation is available as an op
 
 ### Simulated data examples {#sec-simpleex}
 
-In this section, we demonstrate the effectiveness of our approach through the use of simulation data. These simulations are designed to have known cluster structures and underlying data geometries. We begin with a straightforward example where we generate spherical clusters with a doublet structure. This allows us to assess how well our algorithm can identify and represent these known structures in the low-dimensional space.
+<!--six different clusters-->
+
+<!--Gaussian globe or sphere-->
+
+<!--In this section, we demonstrate the effectiveness of our approach through the use of simulation data. These simulations are designed to have known cluster structures and underlying data geometries. We begin with a straightforward example where we generate spherical clusters with a doublet structure. This allows us to assess how well our algorithm can identify and represent these known structures in the low-dimensional space.
 
 We then proceed to a more complex example where the data exhibits a more intricate geometry. This simulation provides a challenging test for our approach to capture and preserve the underlying data structure accurately.
 
@@ -1385,7 +1202,7 @@ clusters <- training_data_5$cluster
 ```{r}
 #| warning: false
 #| echo: false 
-tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID, -cluster), with_seed = 20230531)
+tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID, -cluster), with_seed = 20240110)
 ```
 
 ```{r}
@@ -1696,7 +1513,7 @@ TriMAP_tree + trimesh_tree + trimesh_gr_tree +
 
 Screen shots of the **langevitour** with the low-dimensional view applied to tree structured data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/1YQx4UGlzDify1mGqeDtlqTHncgqidDhq/view}). Combination of the **langevitour** and low-dimensional representation of the tree structured data provides the effectiveness of our approach.
 :::
-
+-->
 
 ## Applications {#sec-applications}
 
