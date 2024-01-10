@@ -73,9 +73,9 @@ hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_
 ## Run only once
 write_rds(hex_full_count_df_loop, file = "data/s_curve/s_curve_hex_3.rds")
 
-####num_bins_x = 8####################
+####num_bins_x = 11####################
 
-num_bins <- 8
+num_bins <- 11
 shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
 
 hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
@@ -133,12 +133,12 @@ full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
 hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
 
 ## Run only once
-write_rds(hex_full_count_df_loop, file = "data/s_curve/s_curve_hex_8.rds")
+write_rds(hex_full_count_df_loop, file = "data/s_curve/s_curve_hex_11.rds")
 
 
-####num_bins_x = 15####################
+####num_bins_x = 20####################
 
-num_bins <- 15
+num_bins <- 20
 shape_val <- calculate_effective_shape_value(.data = UMAP_data, x = UMAP1, y = UMAP2)
 
 hexbin_data_object_loop <- extract_hexbin_centroids(UMAP_data, num_bins, shape_val)
@@ -196,5 +196,5 @@ full_grid_with_hexbin_id_rep_loop <- full_grid_with_polygon_id_df_loop |>
 hex_full_count_df_loop <- dplyr::bind_cols(hex_grid_loop, full_grid_with_hexbin_id_rep_loop)
 
 ## Run only once
-write_rds(hex_full_count_df_loop, file = "data/s_curve/s_curve_hex_15.rds")
+write_rds(hex_full_count_df_loop, file = "data/s_curve/s_curve_hex_20.rds")
 

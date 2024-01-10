@@ -64,7 +64,7 @@ tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID), opt_perplexity 
 
 plot_tSNE_2D(tSNE_data_gau)
 
-write_rds(tSNE_data_gau, file = "data/five_gau_clusters/tsne_data_five_gau.rds")
+write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_", calculate_effective_perplexity(training_data_5),".rds"))
 
 
 ### UMAP
@@ -107,7 +107,9 @@ path2 <- file.path(tem_dir, "dataset_3_TriMAP_values.csv")
 Fit_TriMAP(as.integer(2), as.integer(5), as.integer(4), as.integer(3), path, path2)
 
 TriMAP_data <- read_csv(path2)
-write_rds(TriMAP_data, file = "data/five_gau_clusters/trimap_data_five_gau.csv")
+TriMAP_data <- TriMAP_data |>
+  mutate(ID = training_data_5$ID)
+write_rds(TriMAP_data, file = "data/five_gau_clusters/trimap_data_five_gau.rds")
 
 
 ### PaCMAP
@@ -122,12 +124,20 @@ path2 <- file.path(tem_dir, "dataset_3_PaCMAP_values.csv")
 Fit_PaCMAP(as.integer(2), as.integer(10), "random", 0.9, as.integer(2), path, path2)
 
 PacMAP_data <- read_csv(path2)
-write_rds(PacMAP_data, file = "data/five_gau_clusters/pacmap_data_five_gau.csv")
+PacMAP_data <- PacMAP_data |>
+  mutate(ID = training_data_5$ID)
+
+write_rds(PacMAP_data, file = "data/five_gau_clusters/pacmap_data_five_gau.rds")
 
 
 
 ### Phate
 
 PHATE_data <- Fit_PHATE(training_data_5 |> dplyr::select(-ID), knn = 5, with_seed = 20240110)
-write_rds(PHATE_data, file = "data/five_gau_clusters/phate_data_five_gau.csv")
+PHATE_data <- PHATE_data |>
+  select(PHATE1, PHATE2)
+PHATE_data <- PHATE_data |>
+  mutate(ID = training_data_5$ID)
+
+write_rds(PHATE_data, file = "data/five_gau_clusters/phate_data_five_gau.rds")
 
