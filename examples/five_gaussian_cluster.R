@@ -19,6 +19,12 @@ library(grid)
 
 set.seed(20240110)
 
+use_python("~/miniforge3/envs/pcamp_env/bin/python")
+use_condaenv("pcamp_env")
+
+reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_PacMAP_code.py"))
+reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_TriMAP_code.py"))
+
 source("quollr_code.R", local = TRUE)
 source("nldr_code.R", local = TRUE)
 
@@ -41,22 +47,25 @@ df_2 <- df_2 |>
 df_2 <- df_2 |>
   mutate(ID = row_number())
 
+write_rds(df_2, file = "data/five_gau_clusters/data_five_gau.rds")
+
+
 data_split_sp <- initial_split(df_2)
 training_data_5 <- training(data_split_sp) |>
   arrange(ID)
 test_data_5 <- testing(data_split_sp) |>
   arrange(ID)
 
+write_rds(training_data_5, file = "data/five_gau_clusters/data_five_gau_training.rds")
+write_rds(test_data_5, file = "data/five_gau_clusters/data_five_gau_test.rds")
+
 ### tSNE
 tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID), opt_perplexity = calculate_effective_perplexity(training_data_5), with_seed = 20240110)
 
-plot_gau <- plot_tSNE_2D(tSNE_data_gau) + #ggtitle("(a)") +
-  theme_linedraw() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+plot_tSNE_2D(tSNE_data_gau)
+
+write_rds(tSNE_data_gau, file = "data/five_gau_clusters/tsne_data_five_gau.rds")
+
 
 ### UMAP
 
@@ -69,6 +78,8 @@ names(UMAP_data_gau)[1:(ncol(UMAP_data_gau))] <- paste0(rep("UMAP",(ncol(UMAP_da
 UMAP_data_gau <- UMAP_data_gau |>
   mutate(ID = training_data_5$ID)
 
+write_rds(UMAP_data_gau, file = "data/five_gau_clusters/umap_data_five_gau.rds")
+
 ## predict umap embeddings
 
 predict_UMAP_df <- predict(UMAP_fit, test_data_5 |> dplyr::select(-ID)) |>
@@ -79,17 +90,44 @@ names(predict_UMAP_df)[1:(ncol(predict_UMAP_df))] <- paste0(rep("UMAP",(ncol(pre
 predict_UMAP_df <- predict_UMAP_df |>
   mutate(ID = test_data_5$ID)
 
-plot_UMAP_2D(UMAP_data_gau) +
-  geom_point(data = predict_UMAP_df, aes(x = UMAP1, y = UMAP2), color = "red")
+plot_UMAP_2D(UMAP_data_gau)
+
+write_rds(predict_UMAP_df, file = "data/five_gau_clusters/umap_data_five_gau_predict.rds")
 
 
 ### TriMAP
 
+tem_dir <- tempdir()
+
+Fit_TriMAP_data(training_data_5 |> dplyr::select(-ID), tem_dir)
+
+path <- file.path(tem_dir, "df_2_without_class.csv")
+path2 <- file.path(tem_dir, "dataset_3_TriMAP_values.csv")
+
+Fit_TriMAP(as.integer(2), as.integer(5), as.integer(4), as.integer(3), path, path2)
+
+TriMAP_data <- read_csv(path2)
+write_rds(TriMAP_data, file = "data/five_gau_clusters/trimap_data_five_gau.csv")
+
 
 ### PaCMAP
+
+tem_dir <- tempdir()
+
+Fit_PacMAP_data(training_data_5 |> dplyr::select(-ID), tem_dir)
+
+path <- file.path(tem_dir, "df_2_without_class.csv")
+path2 <- file.path(tem_dir, "dataset_3_PaCMAP_values.csv")
+
+Fit_PaCMAP(as.integer(2), as.integer(10), "random", 0.9, as.integer(2), path, path2)
+
+PacMAP_data <- read_csv(path2)
+write_rds(PacMAP_data, file = "data/five_gau_clusters/pacmap_data_five_gau.csv")
+
 
 
 ### Phate
 
-PHATE_data <- Fit_PHATE(training_data_5, knn = 5, with_seed = 20240110)
-write_csv(PHATE_data, paste0(here::here(), "/data/phate_data_s_curve.csv"))
+PHATE_data <- Fit_PHATE(training_data_5 |> dplyr::select(-ID), knn = 5, with_seed = 20240110)
+write_rds(PHATE_data, file = "data/five_gau_clusters/phate_data_five_gau.csv")
+
