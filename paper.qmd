@@ -2497,11 +2497,120 @@ plot_pbmc + trimesh_pbmc + trimesh_gr_pbmc + #A = 1, b = (19, 27), s = 1.255103
 Screen shots of the **langevitour** with the low-dimensional view applied to pbmc data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/1F7Xb2EIpfUruCxYihPw2rKro4FB5Y2uL/view}). Combination of the **langevitour** and low-dimensional representation of the pbmc data provides the effectiveness of our approach.
 :::
 
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_pbmc <- read_rds("data/pbmc/summary_pbmc.rds")
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_color_discrete_qualitative() +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc, aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_color_discrete_qualitative() +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: The .
+#| label: fig-diagnosticpltPBMC
+#| out-width: 100%
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
+
 ### Single-Cell Tagged Reverse Transcription sequencing data of mouse
 
 The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics (STRT-Seq). Within this dataset, information is collected from a substantial 2,816 individual mouse brain cells. Each of these cells acts as a molecular snapshot, capturing the distinctive genetic activity within various cell types. This diversity spans neurons, glial cells, and other essential components of the brain, offering a comprehensive view of the cellular tapestry.
 
 What makes this dataset particularly valuable is its ability to shed light on the spatial distribution of cells. Researchers can explore how gene expression patterns vary across different regions of the mouse brain, unlocking insights into the functional specialization of these regions and the intricate networks that underpin neural processes.
+
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_zei <- read_rds("data/zeisel/summary_zei.rds")
+
+## To draw with AIC
+aic_plot_zei <- ggplot(MSE_df_zei |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_color_discrete_qualitative() +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_zei <- ggplot(MSE_df_zei, aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_color_discrete_qualitative() +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: The .
+#| label: fig-diagnosticpltZEI
+#| out-width: 100%
+
+aic_plot_zei + mse_plot_zei +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
 
 ## Discussion {#sec-discussion}
 
