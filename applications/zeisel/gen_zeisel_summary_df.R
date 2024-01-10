@@ -1,19 +1,20 @@
 library(readr)
 library(dplyr)
 
+
 set.seed(20240110)
 
 source("quollr_code.R", local = TRUE)
 
-data <- read_rds("data/pbmc/pbmc.rds")
-training_data <- read_rds("data/pbmc/pbmc_training.rds")
-test_data <- read_rds("data/pbmc/pbmc_test.rds")
+data <- read_rds("data/zeisel/zeisel.rds")
+training_data <- read_rds("data/zeisel/zeisel_training.rds")
+test_data <- read_rds("data/zeisel/zeisel_test.rds")
 
-tSNE_data <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_data <- read_rds("data/pbmc/pbmc_umap.rds")
-PHATE_data <- read_rds("data/pbmc/pbmc_phate.rds")
-TriMAP_data <- read_rds("data/pbmc/pbmc_trimap.rds")
-PaCMAP_data <- read_rds("data/pbmc/pbmc_pacmap.rds")
+tSNE_data <- read_rds("data/zeisel/zeisel_tsne_30.rds")
+UMAP_data <- read_rds("data/zeisel/zeisel_umap.rds")
+PHATE_data <- read_rds("data/zeisel/zeisel_phate.rds")
+TriMAP_data <- read_rds("data/zeisel/zeisel_trimap.rds")
+PaCMAP_data <- read_rds("data/zeisel/zeisel_pacmap.rds")
 
 
 ## tSNE
@@ -31,12 +32,12 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(num_bins_vec)) {
 
-  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = tSNE_data, nldr_df_test = tSNE_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "tSNE1", y = "tSNE2", col_start = "PC_")
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = tSNE_data, nldr_df_test = tSNE_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "tSNE1", y = "tSNE2", col_start = "PC")
   pred_df_training <- pred_df_training_object$pred_data
   centroid_df_training <- pred_df_training_object$df_bin_centroids
   avg_df_training <- pred_df_training_object$df_bin
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC_")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC")
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
 
@@ -66,12 +67,12 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(num_bins_vec)) {
 
-  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_data, nldr_df_test = UMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "PC_")
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_data, nldr_df_test = UMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "PC")
   pred_df_training <- pred_df_training_object$pred_data
   centroid_df_training <- pred_df_training_object$df_bin_centroids
   avg_df_training <- pred_df_training_object$df_bin
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC_")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC")
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
 
@@ -102,12 +103,12 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(num_bins_vec)) {
 
-  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = PHATE_data, nldr_df_test = PHATE_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "PHATE1", y = "PHATE2", col_start = "PC_")
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = PHATE_data, nldr_df_test = PHATE_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "PHATE1", y = "PHATE2", col_start = "PC")
   pred_df_training <- pred_df_training_object$pred_data
   centroid_df_training <- pred_df_training_object$df_bin_centroids
   avg_df_training <- pred_df_training_object$df_bin
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC_")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC")
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
 
@@ -141,12 +142,12 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(num_bins_vec)) {
 
-  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = TriMAP_data, nldr_df_test = TriMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "TriMAP1", y = "TriMAP2", col_start = "PC_")
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = TriMAP_data, nldr_df_test = TriMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "TriMAP1", y = "TriMAP2", col_start = "PC")
   pred_df_training <- pred_df_training_object$pred_data
   centroid_df_training <- pred_df_training_object$df_bin_centroids
   avg_df_training <- pred_df_training_object$df_bin
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC_")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC")
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
 
@@ -177,12 +178,12 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(num_bins_vec)) {
 
-  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = PaCMAP_data, nldr_df_test = PaCMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "PaCMAP1", y = "PaCMAP2", col_start = "PC_")
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = PaCMAP_data, nldr_df_test = PaCMAP_data, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "PaCMAP1", y = "PaCMAP2", col_start = "PC")
   pred_df_training <- pred_df_training_object$pred_data
   centroid_df_training <- pred_df_training_object$df_bin_centroids
   avg_df_training <- pred_df_training_object$df_bin
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC_")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "PC")
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
 
@@ -201,4 +202,4 @@ MSE_df_5 <- eval_data_training |>
 
 MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
 
-write_rds(MSE_df, "data/pbmc/summary_pbmc.rds")
+write_rds(MSE_df, "data/zeisel/summary_zei.rds")

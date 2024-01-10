@@ -35,6 +35,8 @@ zeiselPC <- zeiselPC[, 2:8]
 zeiselPC <- zeiselPC |>
   mutate(ID = row_number())
 
+write_rds(zeiselPC, "data/zeisel/zeisel.rds")
+
 data_split <- initial_split(zeiselPC)
 training_data <- training(data_split) |>
   arrange(ID)
