@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -347,57 +347,52 @@ visualization and exploration over reconstruction. Their focus is on
 capturing complex structures that may not be easily represented in the
 original space, making a straightforward reverse mapping challenging.
 
-\hypertarget{introduction-to-umap}{%
-\subsubsection{Introduction to UMAP}\label{introduction-to-umap}}
+\hypertarget{non-linear-dimension-reduction-techniques}{%
+\subsubsection{Non-linear dimension reduction
+techniques}\label{non-linear-dimension-reduction-techniques}}
 
-The UMAP algorithm constructs a fuzzy topological representation of the
-high-dimensional data and then optimizes the low-dimensional embedding
-to be as similar to this representation as possible \citep{Leland2018}.
+Non-linear dimension reduction techniques play a crucial role in the
+analysis and visualization of high-dimensional data, where the
+complexities of relationships among variables may not be adequately
+captured by linear methods. Among these techniques, tSNE stands out for
+its emphasis on preserving pairwise distances. By minimizing the
+divergence between probability distributions in both the high and
+low-dimensional spaces, t-SNE effectively reveals intricate structures
+and patterns within the data. Its application is widespread in tasks
+requiring the visualization of clusters and local relationships, though
+it does require careful consideration of the perplexity parameter for
+optimal results.
 
-The UMAP algorithm constructs a weighted k-nearest neighbors graph based
-on the local similarity of data points in the original high-dimensional
-space. The weighted graph is defined by a conditional probability
-distribution \(P_{ij}\), which represents the probability of observing
-data point \(x_i\) given data point \(x_j\) as a neighbor:
+UMAP is another powerful non-linear technique that strikes a balance
+between preserving local and global structures. Constructing a fuzzy
+topological representation using a weighted k-nearest neighbors graph,
+UMAP optimizes the low-dimensional embedding to resemble this
+representation. Known for its efficiency and scalability, UMAP is
+versatile across various scales of relationships in the data, although
+parameter sensitivity, particularly concerning the choice of neighbors,
+must be taken into account.
 
-\[
-P_{ij} = \frac{\exp(-\lVert x_i - x_j \rVert^2)}{\sum_{k \neq i} \exp(-\lVert x_i - x_k \rVert^2)}
-\]
+For trajectory data, PHATE provides specialized capabilities. It models
+the affinity between data points, simulating a heat diffusion process to
+capture developmental processes, particularly in single-cell genomics.
+While PHATE excels in revealing trajectory structures and offering
+insights into cellular development, it necessitates careful parameter
+tuning due to its specialized nature.
 
-Similarly, a fuzzy topological representation of the data is constructed
-in the low-dimensional space with conditional probability distribution
-\(Q_{ij}\):
+TriMAP adopts a unique approach by approximating the data manifold
+through the construction of a triangulated graph representation. This
+technique efficiently captures both global and local structures by
+representing the data as a network of triangles. TriMAP's strength lies
+in its ability to efficiently capture complex structures, albeit with
+sensitivity to parameter choices, including the number of neighbors.
 
-\[
-Q_{ij} = \frac{\exp(-\lVert y_i - y_j \rVert^2)}{\sum_{k \neq i} \exp(-\lVert y_i - y_k \rVert^2)}
-\]
-
-where \(y_i\) and \(y_j\) are the corresponding low-dimensional
-representations of data points \(x_i\) and \(x_j\).
-
-UMAP minimizes the cross-entropy between the high-dimensional fuzzy
-topological representation \(P_{ij}\) and the low-dimensional
-representation \(Q_{ij}\) to find an optimal low-dimensional embedding.
-The loss function for UMAP is defined as:
-
-\[
-L = \sum_{i} \sum_{j} P_{ij} \log \frac{P_{ij}}{Q_{ij}}
-\]
-
-The algorithm uses stochastic gradient descent to optimize the positions
-of the data points in the low-dimensional space to minimize this loss
-function.
-
-In R, the \texttt{umap} package is often used to implement UMAP and
-generate results.
-
-The ``n\_neighbors'' parameter in UMAP determines the number of nearest
-neighbors to consider for each data point during the construction of the
-fuzzy topological representation. Higher values of ``n\_neighbors''
-capture more global structure, while lower values emphasize local
-structure. Choosing an appropriate value for ``n\_neighbors'' is
-crucial, as it affects the balance between local and global structure in
-the resulting low-dimensional representation.
+In contrast, PaCMAP introduces supervised learning to create a
+low-dimensional representation while preserving pair-wise relationships.
+Constructing a graph based on pair-wise distances, PaCMAP optimizes an
+embedding using a customizable loss function. Particularly notable is
+PaCMAP's flexibility in incorporating class labels or additional
+information to guide the embedding process, offering users a means to
+customize its behavior and performance.
 
 \begin{figure}
 
@@ -406,7 +401,7 @@ the resulting low-dimensional representation.
 }
 
 \caption{\label{fig-nldervis}2D layouts from different NLDR techniques
-applied the same data: (a) tSNE (perplexity = 32), (b) UMAP
+applied the same data: (a) tSNE (perplexity = 27), (b) UMAP
 (n\_neighbors = 50), (c) PHATE (knn = 5), (d) TriMAP (n\_inliers = 5,
 n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
 = random, MN\_ratio = 0.9, FP\_ratio = 2). Is there a best
@@ -564,11 +559,11 @@ s = \frac{r_2}{r_1}
 
 \caption{\label{fig-binsize}Hexbin plots from different number of bins
 for the same \textbf{s\_curve\_noise\_umap} data: (a) b = (4, 8), s =
-2.031, (b) b = (9, 20), s = 2.031, and (c) b = (16, 36), s = 2.031. The
-hexbins are colored based on the density of points, with yellow
-indicating higher point density and darker colors representing lower
-point density within each bin. Does a value of number of bins exist to
-effectively represent the low-dimensional data?}
+1.643542, (b) b = (12, 22), s = 1.643542, and (c) b = (21, 40), s =
+1.643542. The hexbins are colored based on the density of points, with
+yellow indicating higher point density and darker colors representing
+lower point density within each bin. Does a value of number of bins
+exist to effectively represent the low-dimensional data?}
 
 \end{figure}
 
@@ -616,12 +611,80 @@ representation of the hex bin centroids in the high-D space.
 
 }
 
-\caption{\label{fig-wkhighD}Visualization.}
+\caption{\label{fig-wkhighD}How the 2D model lift into high dimensions?
+(a) visualize the points and the hexagonal bin centroids related 31th
+and 239th hexagons, (b) visualization of the edge connected the 31th and
+239th hexagons (colored in red) in the triangular mesh. A video of tour
+animation is available at (need to add the link of lg\_high).}
 
 \end{figure}
 
 \hypertarget{tunning-the-model}{%
 \subsection{Tunning the model}\label{tunning-the-model}}
+
+In our model tuning process, we strategically adjust three key
+parameters to optimize the performance and accuracy of our approach.
+They are (i) the total number of bins (\(b\)), (ii) a benchmark value to
+remove low-density hexagons, and (iii) a benchmark value to remove long
+edges.
+
+\hypertarget{total-number-of-bins}{%
+\subsection{Total number of bins}\label{total-number-of-bins}}
+
+The total number of bins is a crucial parameter that defines the
+granularity of our hexagonal grid. This parameter particularly
+influential in capturing the intricacies of the data structure. It is
+determined by multiplying the number of bins along the x-axis ((b\_1))
+with the number of bins along the y-axis ((b\_2)), as per the formula:
+
+\begin{equation}\protect\hypertarget{eq-equationp1}{}{
+b = b_1 \times b_2
+}\label{eq-equationp1}\end{equation}
+
+Here, (b) represents the total number of bins. Adjusting the parameter
+(b\_1) provides control over the total bin count ((b)), allowing us to
+fine-tune the grid's configuration along the x-axis based on specific
+requirements.
+
+\hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
+\subsection{Benchmark value to remove low-density
+hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
+
+Addressing low-density hexagons is a systematic process to handle
+sparsely represented data in certain regions. For each hex bin, we
+identify the six nearest hex bins using an equal 2D distance metric.
+Then, we calculate the mean density, as outlined in the equations:
+
+\begin{equation}\protect\hypertarget{eq-equationp2}{}{
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+}\label{eq-equationp2}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equationp3}{}{
+\text{mean density} = \frac{\text{standard count}}{6} 
+}\label{eq-equationp3}\end{equation}
+
+The standard count is derived from the number of observations in the hex
+bins. By examining the distribution of mean densities and designating
+the first quartile as the benchmark value, hex bins with mean densities
+below this benchmark are removed. This process ensures the elimination
+of regions with insufficient data density, focusing on areas with more
+significant data representation and preserving the overall structure in
+the low-dimensional space.
+
+\hypertarget{benchmark-value-to-remove-long-edges}{%
+\subsection{Benchmark value to remove long
+edges}\label{benchmark-value-to-remove-long-edges}}
+
+The removal of long edges is a critical step to create a smoother
+representation by iteratively eliminating hexagons with excessive
+distances between centroids. This process eliminates outliers and noise
+while preserving essential local relationships within the data. To
+achieve this, distances between vertices are sorted, and unique distance
+values are extracted. By setting a threshold based on the largest
+difference between consecutive distance values, long edges are
+identified and removed. This refinement step contributes to enhancing
+the quality of the triangular mesh, ensuring a more accurate
+representation of the data structure.
 
 \hypertarget{sec-summary}{%
 \subsection{Summaries of the model}\label{sec-summary}}
@@ -696,26 +759,71 @@ complexity in the predictions.
 
 \begin{figure}
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-predict-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
 
 }
 
-\caption{\label{fig-predict}The .}
+\caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
+different NLDR techniques applied to training S-curve dataset. What is
+the best NLDR technique to represent the original data in 2D?}
 
 \end{figure}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticplt-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltDiffParam-1.pdf}
 
 }
 
-\caption{\label{fig-diagnosticplt}The .}
+\caption{\label{fig-diagnosticpltDiffParam}Goodness of fit statistics
+from different n\_neighbors parameter of UMAP applied to training
+S-curve dataset. What is the best parameter choice in UMAP to represent
+the original data in 2D?}
 
 \end{figure}
 
 \hypertarget{sec-simpleex}{%
-\subsection{Simulated data examples}\label{sec-simpleex}}
+\subsection{Simulated data example}\label{sec-simpleex}}
+
+In this section, we showcase the effectiveness of our methodology using
+simulated data. The dataset comprises five spherical Gaussian clusters
+in 4-\(d\), with each cluster containing an equal number of points and
+consistent within variation.
+
+We \emph{strongly} recommend viewing the linked videos for each study
+while reading. Links to the videos are available in the figures for each
+example. The videos show the visual appearance of the
+\textbf{langevitour} interface with low-dimensional view and how we can
+interact with the tour via the controls.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5Gau-1.pdf}
+
+}
+
+\caption{\label{fig-nldervis5Gau}2D layouts from different NLDR
+techniques applied the same data: (a) tSNE (perplexity = 61), (b) UMAP
+(n\_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n\_inliers = 5,
+n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
+= random, MN\_ratio = 0.9, FP\_ratio = 2). Is there a best
+representation of the original data or are they all providing equivalent
+information?}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltGau-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltGau}Goodness of fit statistics from
+different NLDR techniques applied to training five spherical Gaussian
+cluster dataset. What is the best NLDR technique to represent the
+original data in 2D?}
+
+\end{figure}
 
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
@@ -748,7 +856,7 @@ seven PCs, representing approximately 50\% of the variance in gene
 expression, for further analysis.
 
 Next, we employed the UMAP technique with default parameter settings. As
-illustrated in Figure~\ref{fig-pbmc}, the cell types B and Platelet are
+illustrated in \textbf{?@fig-pbmc}, the cell types B and Platelet are
 well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono,
 and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and
 CD8 T are grouped together in another cluster. The values utilized to
@@ -756,80 +864,33 @@ construct the smooth low-dimensional manifold are presented in
 \textbf{?@tbl-table02}. The linked video, demonstrating the tour with
 the model, showcases the generation of a smooth surface for this
 application, enabling a comprehensive exploration of the data's
-structure and relationships (see Figure~\ref{fig-pbmc_sc}).
+structure and relationships (see \textbf{?@fig-pbmc\_sc}).
 
-\begin{figure}[H]
+\begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5PBMC-1.pdf}
 
 }
 
-\caption{\label{fig-pbmc}Visualization and refinement of low-dimensional
-representation for pbmc data\(\colon\) (a) 2D layout of UMAP (n-neigbors
-= 15), (b) triangular mesh, and (c) triangular mesh colored by edge
-type. Edges with lengths less than the benchmark value of \(2\) are
-classified as small, while edges with lengths greater than or equal to
-this value are labeled as long. The combination of UMAP, hexagonal
-binning, and triangulation provides the effectiveness of our approach in
-visualizing and refining the low-dimensional representation of the pbmc
-data.}
+\caption{\label{fig-nldervis5PBMC}2D layouts from different NLDR
+techniques applied for the training PBMC dataset: (a) tSNE (perplexity =
+30), (b) UMAP (n\_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP
+(n\_inliers = 5, n\_outliers = 4, n\_random = 3), and (e) PaCMAP
+(n\_neighbors = 10, init = random, MN\_ratio = 0.9, FP\_ratio = 2). Is
+there a best representation of the original data or are they all
+providing equivalent information?}
 
 \end{figure}
 
 \begin{figure}
 
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_a.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
 
 }
 
-}
-
-\subcaption{\label{fig-pbmc_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_b.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc_c.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc_sc}Screen shots of the \textbf{langevitour}
-with the low-dimensional view applied to pbmc data set, a video of the
-tour animation is available at
-(\url{https://drive.google.com/file/d/1F7Xb2EIpfUruCxYihPw2rKro4FB5Y2uL/view}).
-Combination of the \textbf{langevitour} and low-dimensional
-representation of the pbmc data provides the effectiveness of our
-approach.}
+\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
+different NLDR techniques applied to training PBMC dataset. What is the
+best NLDR technique to represent the original data in 2D?}
 
 \end{figure}
 
@@ -850,6 +911,35 @@ light on the spatial distribution of cells. Researchers can explore how
 gene expression patterns vary across different regions of the mouse
 brain, unlocking insights into the functional specialization of these
 regions and the intricate networks that underpin neural processes.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5Mouse-1.pdf}
+
+}
+
+\caption{\label{fig-nldervis5Mouse}2D layouts from different NLDR
+techniques applied for the training Zeisel mouse brain dataset: (a) tSNE
+(perplexity = 30), (b) UMAP (n\_neighbors = 15), (c) PHATE (knn = 5),
+(d) TriMAP (n\_inliers = 5, n\_outliers = 4, n\_random = 3), and (e)
+PaCMAP (n\_neighbors = 10, init = random, MN\_ratio = 0.9, FP\_ratio =
+2). Is there a best representation of the original data or are they all
+providing equivalent information?}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltZEI-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltZEI}Goodness of fit statistics from
+different NLDR techniques applied to training Zeisel mouse brain
+dataset. What is the best NLDR technique to represent the original data
+in 2D?}
+
+\end{figure}
 
 \hypertarget{sec-discussion}{%
 \section{Discussion}\label{sec-discussion}}

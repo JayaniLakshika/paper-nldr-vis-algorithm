@@ -1,10 +1,10 @@
 calculate_effective_x_bins <- function(.data, x = UMAP1, cell_area = 1){
 
-  if (any(is.na(.data$x))) {
+  if (any(is.na(.data |> dplyr::pull({{ x }})))) {
     stop("NAs present")
   }
 
-  if (any(is.infinite(.data$x))) {
+  if (any(is.infinite(.data |> dplyr::pull({{ x }})))) {
     stop("Inf present")
   }
 
@@ -13,8 +13,10 @@ calculate_effective_x_bins <- function(.data, x = UMAP1, cell_area = 1){
 
   }
 
+  ## To compute the diameter of the hexagon
   cell_diameter <- sqrt(2 * cell_area / sqrt(3))
 
+  ## To compute the range along x-axis
   xwidth <- diff(range(.data |>
                          dplyr::pull({{ x }})))
 
@@ -25,24 +27,26 @@ calculate_effective_x_bins <- function(.data, x = UMAP1, cell_area = 1){
 
 calculate_effective_shape_value <- function(.data, x = UMAP1, y = UMAP2){
 
-  if (any(is.na(.data$x)) || any(is.na(.data$y))) {
+  if (any(is.na(.data |> dplyr::pull({{ x }}))) || any(is.na(.data |> dplyr::pull({{ y }})))) {
     stop("NAs present")
   }
 
-  if (any(is.infinite(.data$x)) || any(is.infinite(.data$y))) {
+  if (any(is.infinite(.data |> dplyr::pull({{ x }}))) || any(is.infinite(.data |> dplyr::pull({{ y }})))) {
     stop("Inf present")
   }
 
-  if ((length(.data$x) == 1) || (length(.data$y) == 1)) {
+  if ((length(.data |> dplyr::pull({{ x }})) == 1) || (length(.data |> dplyr::pull({{ y }})) == 1)) {
     stop("Presence one observation only")
 
   }
 
+  ## To compute the range along x-axis
   xwidth <- diff(range(.data |> dplyr::pull({{ x }})))
+  ## To compute the range along y-axis
   yheight <- diff(range(.data |> dplyr::pull({{ y }})))
 
 
-  shape <- yheight/xwidth  # Here, yheight is the range of y and xwidth is the range of x
+  shape <- yheight/xwidth
   shape
 }
 
@@ -508,10 +512,10 @@ show_langevitour <- function(df, df_b, df_b_with_center_data, benchmark_value = 
 
 }
 
-predict_hex_id <- function(training_data, nldr_df, nldr_df_test, num_bins, shape_val) {
+predict_hex_id <- function(training_data, nldr_df, nldr_df_test, num_bins, shape_val, x = "UMAP1", y = "UMAP2", col_start = "x") {
 
   ## To extract bin centroids
-  hexbin_data_object <-extract_hexbin_centroids(nldr_df, num_bins, shape_val)
+  hexbin_data_object <- extract_hexbin_centroids(nldr_df, num_bins, shape_val, x = x, y = y)
 
   df_bin_centroids <- hexbin_data_object$hexdf_data
 
@@ -522,12 +526,12 @@ predict_hex_id <- function(training_data, nldr_df, nldr_df_test, num_bins, shape
   df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
 
   ## Averaged on high-D
-  df_bin <- avg_highD_data(.data = df_all)
+  df_bin <- avg_highD_data(.data = df_all, column_start_text = col_start)
 
   train_hb_df <- df_bin_centroids |>
     dplyr::select(x, y, hexID)
 
-  pred_hb_id <- class::knn(train_hb_df |> dplyr::select(-hexID), nldr_df_test |> dplyr::select(UMAP1, UMAP2), cl = train_hb_df$hexID)
+  pred_hb_id <- class::knn(train_hb_df |> dplyr::select(-hexID), nldr_df_test |> dplyr::select(!!! syms(c(x, y))), cl = train_hb_df$hexID)
 
   pred_data <- nldr_df_test |>
     dplyr::mutate(pred_hb_id = as.numeric(as.character(pred_hb_id)))
@@ -542,8 +546,7 @@ compute_aic <- function(p, total, num_bins, num_obs) {
   return(aic)
 }
 
-generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_bins) {
-
+generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_bins, col_start = "x") {
 
   ## Generate all possible bin centroids in the full grid
   full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
@@ -565,12 +568,12 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_
 
   for (i in 1:(NCOL(df_bin_train) - 1)) {
 
-    prediction_df[ , paste0("error_square_x", i)] <- (prediction_df[ , paste0("x", i)] - prediction_df[ , paste0("avg_x", i)])^2
+    prediction_df[ , paste0("error_square_", col_start, i)] <- (prediction_df[ , paste0(col_start, i)] - prediction_df[ , paste0("avg_", col_start, i)])^2
 
   }
 
   prediction_df <- prediction_df |>
-    dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with("error_square_x"))))
+    dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("error_square_", col_start)))))
 
   # prediction_df <- prediction_df |>
   #   dplyr::mutate(
