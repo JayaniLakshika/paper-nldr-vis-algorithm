@@ -592,7 +592,11 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_
   # total_mse <- sum(prediction_df$mse)
 
   #number_of_bins: Total number of bins with empty bins
-  eval_df <- tibble::tibble(number_of_bins = NROW(full_centroid_df), number_of_observations = NROW(prediction_df), total_error = compute_aic((NCOL(df_bin) - 1), prediction_df$total, NROW(full_centroid_df), NROW(prediction_df)), totol_error_method_2 = prediction_df$total * NROW(full_centroid_df)/NROW(prediction_df), totol_error_method_3 = prediction_df$total /NROW(full_centroid_df), total_mse = mean(prediction_df$total)/(NCOL(df_bin) - 1))
+  eval_df <- tibble::tibble(number_of_bins = NROW(full_centroid_df), number_of_observations = NROW(prediction_df),
+                            total_error = compute_aic((NCOL(df_bin) - 1), prediction_df$total, NROW(full_centroid_df), NROW(prediction_df)),
+                            #totol_error_method_2 = prediction_df$total * NROW(full_centroid_df)/NROW(prediction_df),
+                            #totol_error_method_3 = prediction_df$total /NROW(full_centroid_df),
+                            total_mse = mean(prediction_df$total)/(NCOL(df_bin) - 1))
 
   return(eval_df)
 

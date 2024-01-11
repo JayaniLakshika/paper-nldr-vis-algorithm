@@ -23,7 +23,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = tSNE_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "totol_error_method_2", "totol_error_method_3", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -58,7 +58,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = UMAP_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "totol_error_method_2", "totol_error_method_3", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -94,7 +94,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = PHATE_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "totol_error_method_2", "totol_error_method_3", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -133,7 +133,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = TriMAP_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "totol_error_method_2", "totol_error_method_3", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -169,7 +169,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = PaCMAP_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "totol_error_method_2", "totol_error_method_3", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
