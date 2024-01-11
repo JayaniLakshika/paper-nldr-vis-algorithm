@@ -536,7 +536,7 @@ predict_hex_id <- function(training_data, nldr_df, nldr_df_test, num_bins, shape
   pred_data <- nldr_df_test |>
     dplyr::mutate(pred_hb_id = as.numeric(as.character(pred_hb_id)))
 
-  return(list(pred_data = pred_data, df_bin_centroids = df_bin_centroids, df_bin = df_bin))
+  return(list(pred_data = pred_data, df_bin_centroids = df_bin_centroids, df_bin = df_bin, hexbin_data_object = hexbin_data_object))
 
 }
 
@@ -546,6 +546,8 @@ compute_aic <- function(p, total, num_bins, num_obs) {
   return(aic)
 }
 
+## df_bin_centroids_all: all bin centroids without removing any
+## df_bin_centroids: bin centroids after removing removing any
 generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_bins, col_start = "x") {
 
   ## Generate all possible bin centroids in the full grid
