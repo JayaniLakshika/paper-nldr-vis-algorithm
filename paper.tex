@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -505,7 +505,7 @@ Equation~\ref{eq-equation4}, we then calculate \(h\) of a regular
 hexagon.
 
 \begin{equation}\protect\hypertarget{eq-equation4}{}{
- \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
+  \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
 }\label{eq-equation4}\end{equation}
 
 Next, we refer the \texttt{hexbin} function in R, which provides a
@@ -513,7 +513,7 @@ relationship between the diameter of the hexagon (\(h\)) and the number
 of bins along the x-axis (\(b_1\)) (Equation~\ref{eq-equation6}).
 
 \begin{equation}\protect\hypertarget{eq-equation6}{}{
- h = \frac{r_1}{b_1}
+h = \frac{r_1}{b_1}
 }\label{eq-equation6}\end{equation}
 
 By utilizing the calculated \(h\) and the range of the non-linear
@@ -523,7 +523,7 @@ whole number to ensure an appropriate number of bins that capture the
 variability of the data along the x-axis.
 
 \begin{equation}\protect\hypertarget{eq-equation5}{}{
- b_1 = \frac{r_1}{h}
+b_1 = \frac{r_1}{h}
 }\label{eq-equation5}\end{equation}
 
 \textbf{(b) Determine the effective shape parameter} (\(s\))
@@ -538,7 +538,7 @@ determines the shape of the plotting regions and plays a vital role in
 generating an appropriate hexagonal grid for the data visualization.
 
 \begin{equation}\protect\hypertarget{eq-equation1}{}{
-  s = \frac{y}{x}
+s = \frac{y}{x}
 }\label{eq-equation1}\end{equation}
 
 To calculate the effective shape parameter (\(s\)) for our algorithm, we
@@ -629,7 +629,7 @@ remove low-density hexagons, and (iii) a benchmark value to remove long
 edges.
 
 \hypertarget{total-number-of-bins}{%
-\subsection{Total number of bins}\label{total-number-of-bins}}
+\subsubsection{Total number of bins}\label{total-number-of-bins}}
 
 The total number of bins is a crucial parameter that defines the
 granularity of our hexagonal grid. This parameter particularly
@@ -647,7 +647,7 @@ fine-tune the grid's configuration along the x-axis based on specific
 requirements.
 
 \hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
-\subsection{Benchmark value to remove low-density
+\subsubsection{Benchmark value to remove low-density
 hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
 
 Addressing low-density hexagons is a systematic process to handle
@@ -672,7 +672,7 @@ significant data representation and preserving the overall structure in
 the low-dimensional space.
 
 \hypertarget{benchmark-value-to-remove-long-edges}{%
-\subsection{Benchmark value to remove long
+\subsubsection{Benchmark value to remove long
 edges}\label{benchmark-value-to-remove-long-edges}}
 
 The removal of long edges is a critical step to create a smoother
@@ -687,7 +687,7 @@ the quality of the triangular mesh, ensuring a more accurate
 representation of the data structure.
 
 \hypertarget{sec-summary}{%
-\subsection{Summaries of the model}\label{sec-summary}}
+\subsection{Model summaries}\label{sec-summary}}
 
 \hypertarget{predicted-values-and-residuals}{%
 \subsubsection{Predicted values and
@@ -706,18 +706,18 @@ in the absence of such functionalities.
 The concept of ``residuals'' is pivotal in evaluating the accuracy of
 representing bin centroids in high dimensions. To quantify this
 accuracy, we introduce an error metric, which measures the sum of
-squared differences between the high-dimensional data ((x\_\{ij\})) and
-the predicted bin centroid data in high-dimensional space
-((C\_\{x\_ij\})) across all bins and dimensions. Mathematically, this
-error is expressed as:
+squared differences between the high-dimensional data (\(x_{ij}\)) and
+the predicted bin centroid data in high-dimensional space (\(C_{x_ij}\))
+across all bins and dimensions. Mathematically, this error is expressed
+as:
 
 \begin{equation}\protect\hypertarget{eq-equation11}{}{
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
 }\label{eq-equation11}\end{equation}
 
-Here, (n) represents the number of bins, (p) represents the dimensions,
-(x\_\{ij\}) is the actual high-dimensional data, and (C\_\{x\_ij\}) is
-the predicted bin centroid data in high dimensions.
+Here, \(n\) represents the number of bins, \(p\) represents the
+dimensions, \(x_{ij}\) is the actual high-dimensional data, and
+\(C_{x_ij}\) is the predicted bin centroid data in high dimensions.
 
 The error metric outlined above provides valuable insights into the
 overall accuracy of our predictive model. By quantifying the squared
@@ -766,6 +766,20 @@ complexity in the predictions.
 \caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
 different NLDR techniques applied to training S-curve dataset. What is
 the best NLDR technique to represent the original data in 2D?}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisUMAP-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisUMAP}2D layouts from UMAP applied for the
+S-curve data: (a) UMAP (n\_neighbors = 7), (b) UMAP (n\_neighbors = 15),
+(c) UMAP (n\_neighbors = 32), (d) UMAP (n\_neighbors = 50). Is there a
+best parameter choice in representing UMAP or are they all providing
+equivalent information?}
 
 \end{figure}
 

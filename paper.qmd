@@ -69,7 +69,7 @@ keywords-formatted: [high-dimensional data, dimension reduction, triangulation, 
 
 bibliography: bibliography.bib  
 ---
-
+  
 ```{r}
 #| warning: false
 #| echo: false
@@ -113,10 +113,10 @@ source("nldr_code.R", local = TRUE)
 
 ```{=html}
 <!-- 
-Notes
+  Notes
 * Use American spelling
 -->
-```
+  ```
 
 ## Introduction {#sec-intro}
 
@@ -165,7 +165,7 @@ In contrast, PaCMAP introduces supervised learning to create a low-dimensional r
 #| warning: false
 #| echo: false
 
-data <- read_csv(paste0(here::here(), "/data/s_curve.csv"))
+data <- read_rds("data/s_curve/s_curve.rds")
 ```
 
 ```{r}
@@ -194,11 +194,11 @@ tSNE_data <- read_rds("data/s_curve/s_curve_tsne_27.rds")
 #(perplexity: ", calculate_effective_perplexity(data), ")
 plot_list1 <- plot_tSNE_2D(tSNE_data) + #ggtitle("(a)") + 
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 ```
@@ -212,11 +212,11 @@ UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 #(n-neighbors: 50)
 plot_list2 <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") + 
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 ```
@@ -234,11 +234,11 @@ PHATE_data <- read_rds(file = "data/s_curve/s_curve_phate.rds")
 
 plot_list3 <- plot_PHATE_2D(PHATE_data) + #ggtitle("(c)") + 
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 ```
@@ -264,11 +264,11 @@ TriMAP_data <- read_rds(file = "data/s_curve/s_curve_trimap.rds")
 #(n-inliers: 5, \n n-outliers: 4, n-random: 3)
 plot_list4 <- plot_TriMAP_2D(TriMAP_data) + #ggtitle("(d)") + 
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 ```
@@ -295,11 +295,11 @@ PaCMAP_data <- read_rds(file = "data/s_curve/s_curve_pacmap.rds")
 #(knn: 10, init: random, \n MN-ratio: 0.9, FP-ratio: 2)
 plot_list5 <- plot_PaCMAP_2D(PaCMAP_data) + #ggtitle("(e)") + 
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 ```
@@ -311,7 +311,7 @@ plot_list5 <- plot_PaCMAP_2D(PaCMAP_data) + #ggtitle("(e)") +
 #| out-width: 100%
 
 plot_list1 + plot_list2 + plot_list3 + plot_list4 + plot_list5 +
-  plot_layout(ncol=5, widths=c(0.35, 0.15, 0.30, 0.12, 0.11))
+  plot_layout(ncol=5)
 ```
 
 
@@ -358,38 +358,42 @@ $$ {#eq-equation3}
 To capture the data's structure effectively, we consider the optimal $A = 1$ (see @fig-binsize). Using @eq-equation4, we then calculate $h$ of a regular hexagon.
 
 $$
- \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
+  \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
 $$ {#eq-equation4}
-
-Next, we refer the `hexbin` function in R, which provides a relationship between the diameter of the hexagon ($h$) and the number of bins along the x-axis ($b_1$) (@eq-equation6).
-
+  
+  Next, we refer the `hexbin` function in R, which provides a relationship between the diameter of the hexagon ($h$) and the number of bins along the x-axis ($b_1$) (@eq-equation6).
+  
 $$
- h = \frac{r_1}{b_1}
+h = \frac{r_1}{b_1}
 $$ {#eq-equation6}
+      
+
 
 By utilizing the calculated $h$ and the range of the non-linear projection component 1 ($r_1$), we determine the $b_1$ (@eq-equation5). The result is rounded up to the nearest whole number to ensure an appropriate number of bins that capture the variability of the data along the x-axis.
+      
 
 $$
- b_1 = \frac{r_1}{h}
+b_1 = \frac{r_1}{h}
 $$ {#eq-equation5}
+          
 
 **(b) Determine the effective shape parameter** ($s$)
-
+          
 In this step, we determine the optimal shape parameter ($s$) for the hexagonal bins, which significantly influences their shape and arrangement within the grid. The shape parameter ($s$) in the hexagonal binning algorithm is defined as the ratio of the height ($y$) to the width ($x$) of the plotting region, referring to the `hexbin` function in R (see @eq-equation1). It determines the shape of the plotting regions and plays a vital role in generating an appropriate hexagonal grid for the data visualization.
-
+          
 $$
-  s = \frac{y}{x}
+s = \frac{y}{x}
 $$ {#eq-equation1}
-
+            
 To calculate the effective shape parameter ($s$) for our algorithm, we consider the ranges of the non-linear projection components. Denoting the range of the non-linear projection component 1 as $r_1$ and the range of the non-linear projection component 2 as $r_2$, we find the shape parameter using @eq-equation2.
-
+            
 $$
 s = \frac{r_2}{r_1}
 $$ {#eq-equation2}
-
-
+                
+                
 <!--first value-->
-
+                  
 ```{r}
 #| echo: false
 #| message: false
@@ -397,25 +401,25 @@ $$ {#eq-equation2}
 hex_full_count_df_loop1 <- read_rds("data/s_curve/s_curve_hex_3.rds") 
 
 p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
-      geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-            geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-      scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+  geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   xlim(-5, 7) +
   ylim(-10, 10) +
-        theme_void() +
-        theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-              legend.title = element_text(size=8), #change legend title font size
-              legend.text = element_text(size=6)) +
-        guides(fill = guide_colourbar(title = "Standardized count")) +
-        annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ```
-
-
+                
+                
 ```{r}
 #| echo: false
 #| message: false
@@ -424,20 +428,20 @@ hex_full_count_df_loop2 <- read_rds("data/s_curve/s_curve_hex_11.rds")
 
 p2 <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-    geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-    xlim(-5, 8) +
+  xlim(-5, 8) +
   ylim(-10, 10) +
-        theme_void() +
-    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-          legend.title = element_text(size=8), #change legend title font size
-          legend.text = element_text(size=6)) +
-    guides(fill = guide_colourbar(title = "Standardized count")) +
-    annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ```
 
@@ -449,18 +453,18 @@ hex_full_count_df_loop3 <- read_rds("data/s_curve/s_curve_hex_20.rds")
 
 p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-        geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-        theme_void() +
-    theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-          legend.title = element_text(size=8), #change legend title font size
-          legend.text = element_text(size=6)) +
-    guides(fill = guide_colourbar(title = "Standardized count")) +
-    annotate(geom = 'text', label = "c", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "c", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ```
 
@@ -472,14 +476,14 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
 
 p1 + p2 + p3
 ```
-
+                
 **Step 2: Obtain bin centroids**
-
-After computing hexagonal grid configurations, the 2D emdeddings are binned into hexagon cells. As a result of hexagonal binning , the bin centroids ($C_k^{(2)} \equiv (C_{kx}, C_{ky}$)) (see @fig-meth (Step 2)) are obtained.
+  
+  After computing hexagonal grid configurations, the 2D emdeddings are binned into hexagon cells. As a result of hexagonal binning , the bin centroids ($C_k^{(2)} \equiv (C_{kx}, C_{ky}$)) (see @fig-meth (Step 2)) are obtained.
 
 **Step 3: Triangulate bin centroids**
-
-In this step, the algorithm proceeds to triangulate the centroids (see @fig-meth (Step 3)) of the hex bins. Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30]. One common algorithm used for triangulation is Delaunay triangulation [@article26], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation. In our algorithm, triangulation helps us identify geometric relationships and patterns in the data.
+  
+  In this step, the algorithm proceeds to triangulate the centroids (see @fig-meth (Step 3)) of the hex bins. Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30]. One common algorithm used for triangulation is Delaunay triangulation [@article26], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation. In our algorithm, triangulation helps us identify geometric relationships and patterns in the data.
 
 Since we are working with the centroids of regular hexagonal bins, the resulting mesh will predominantly comprise equal-sized regular triangles. However, the triangulation also helps span any gaps that may exist between clusters of points, allowing for a more complete and interconnected representation of the data.
 
@@ -500,14 +504,14 @@ Creating the model in the high-D space involves a two-step process. Initially, w
 #   mutate(ID = training_data$ID)
 
 num_bins_x <- calculate_effective_x_bins(.data = UMAP_data, x = UMAP1,
-                           cell_area = 1)
+                                         cell_area = 1)
 
 shape_value <- calculate_effective_shape_value(.data = UMAP_data, 
-                                             x = UMAP1, y = UMAP2)
+                                               x = UMAP1, y = UMAP2)
 
 ## To extract bin centroids
 hexbin_data_object <-extract_hexbin_centroids(nldr_df = UMAP_data, num_bins = num_bins_x, shape_val = shape_value)
-    
+
 df_bin_centroids <- hexbin_data_object$hexdf_data
 
 # ##########
@@ -573,13 +577,13 @@ df_bin_centroids_all <- hexbin_data_object$hexdf_data ## All the centroids witho
 df_bin_centroids <- df_bin_centroids |>
   dplyr::mutate(stand_cell_count = counts/max(counts)) |>
   dplyr::filter(stand_cell_count > min_std_cell_threshold)
-        
+
 UMAP_data_with_hb_id <- UMAP_data |> 
   dplyr::mutate(hb_id = hexbin_data_object$hb_data@cID)
-        
+
 ## To generate a data set with high-D and 2D training data
 df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
-        
+
 ## Averaged on high-D
 df_bin <- avg_highD_data(.data = df_all)
 
@@ -595,59 +599,59 @@ benchmark <- find_benchmark_value(.data = distance, distance_col = distance)
 
 
 trimesh <- ggplot(df_bin_centroids, aes(x = x, y = y)) + 
-    geom_segment(data = tr_from_to_df, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-    geom_point(size = 2, colour = "#33a02c") +
-    coord_equal()
-  
-  # ggplot(df_bin_centroids, aes(x = x, y = y)) + 
-  # geom_point(size = 1, colour = "#33a02c") + 
-  # geom_trimesh() + 
-  # coord_equal() 
+  geom_segment(data = tr_from_to_df, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+  geom_point(size = 2, colour = "#33a02c") +
+  coord_equal()
+
+# ggplot(df_bin_centroids, aes(x = x, y = y)) + 
+# geom_point(size = 1, colour = "#33a02c") + 
+# geom_trimesh() + 
+# coord_equal() 
 
 trimesh <- trimesh +
   #ggtitle("(a)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
   theme_light() +
-    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-    ) 
-  # theme(axis.text = element_text(size = 5),
-  #       axis.title = element_text(size = 7))
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
+# theme(axis.text = element_text(size = 5),
+#       axis.title = element_text(size = 7))
 
 trimesh_gr <- colour_long_edges(.data = distance, benchmark_value = benchmark, 
                                 triangular_object = tr1_object, distance_col = distance) 
 
 trimesh_gr <- trimesh_gr + 
-    geom_point(size = 2, colour = "#33a02c") + 
+  geom_point(size = 2, colour = "#33a02c") + 
   #ggtitle("(b)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
   theme_light() +
-    #coord_equal() +
-    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-    ) 
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
 
 trimesh_removed <- remove_long_edges(.data = distance, benchmark_value = benchmark, 
-                                triangular_object = tr1_object, distance_col = distance)
+                                     triangular_object = tr1_object, distance_col = distance)
 
 trimesh_removed <- trimesh_removed + 
-       geom_point(size = 2, colour = "#33a02c") + 
+  geom_point(size = 2, colour = "#33a02c") + 
   #ggtitle("(b)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
   theme_light() +
-    #coord_equal() +
-    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-    ) 
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
 
 
 
@@ -686,18 +690,18 @@ distance_plot <- plot_dist(distance) +
 # df_bin_centroids |> dplyr::filter(row_number() %in% c(10, 65))
 
 a1 <- colour_long_edges(.data = distance, benchmark_value = 15, 
-                  triangular_object = tr1_object, distance_col = distance) + 
-    geom_point(size = 2, colour = "#33a02c") + 
-    #ggtitle("(b)") + 
-    xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-    theme_light() +
-    #coord_equal() +
-    theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-    ) 
+                        triangular_object = tr1_object, distance_col = distance) + 
+  geom_point(size = 2, colour = "#33a02c") + 
+  #ggtitle("(b)") + 
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
 
 UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(31, 239)) |>
   dplyr::mutate(select_point = if_else(hb_id == 31, "data1", "data2"))
@@ -710,11 +714,11 @@ a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   theme_light() +
   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-          axis.title.x = element_blank(), axis.title.y = element_blank(),
-          axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-    ) 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
 
 
 ## Script to make coloring data points with a line
@@ -766,17 +770,17 @@ a2 + a1 +
 
 In our model tuning process, we strategically adjust three key parameters to optimize the performance and accuracy of our approach. They are (i) the total number of bins ($b$), (ii) a benchmark value to remove low-density hexagons, and (iii) a benchmark value to remove long edges.
 
-### Total number of bins
+#### Total number of bins
 
 The total number of bins is a crucial parameter that defines the granularity of our hexagonal grid. This parameter particularly influential in capturing the intricacies of the data structure. It is determined by multiplying the number of bins along the x-axis (\(b_1\)) with the number of bins along the y-axis (\(b_2\)), as per the formula:
-
+  
 $$
 b = b_1 \times b_2
 $${#eq-equationp1}
+  
+  Here, \(b\) represents the total number of bins. Adjusting the parameter \(b_1\) provides control over the total bin count (\(b\)), allowing us to fine-tune the grid's configuration along the x-axis based on specific requirements.
 
-Here, \(b\) represents the total number of bins. Adjusting the parameter \(b_1\) provides control over the total bin count (\(b\)), allowing us to fine-tune the grid's configuration along the x-axis based on specific requirements.
-
-### Benchmark value to remove low-density hexagons
+#### Benchmark value to remove low-density hexagons
 
 Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
 
@@ -790,24 +794,24 @@ $${#eq-equationp3}
 
 The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
 
-### Benchmark value to remove long edges
+#### Benchmark value to remove long edges
 
 The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
 
-### Summaries of the model {#sec-summary}
+### Model summaries {#sec-summary}
 
 #### Predicted values and residuals
 
 In this context, the term "prediction values" refers to the 2D coordinates predicted for the NLDR technique. The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as t-SNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
 
-The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data (\(x_{ij}\)) and the predicted bin centroid data in high-dimensional space (\(C_{x_ij}\)) across all bins and dimensions. Mathematically, this error is expressed as:
+The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
 
 $$
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
 $$ {#eq-equation11}
 
 
-Here, \(n\) represents the number of bins, \(p\) represents the dimensions, \(x_{ij}\) is the actual high-dimensional data, and \(C_{x_ij}\) is the predicted bin centroid data in high dimensions.
+Here, $n$ represents the number of bins, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
 
 The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
 
@@ -823,21 +827,19 @@ $$ {#eq-equation9}
 Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
 
 Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
-
+                    
 $$
 \text{AIC} = 2bp + np * log(\text{MSE})
 $$ {#eq-equation10}
-
-These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
+  
+  These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
 
 ```{r}
 #| warning: false
 #| echo: false
 
-data <- read_csv("data/s_curve.csv")
-data <- data |>
-  mutate(ID = row_number())
+data <- read_rds("data/s_curve/s_curve.rds")
 
 ## tSNE
 
@@ -1055,6 +1057,8 @@ MSE_df_5 <- eval_data_training |>
 
 MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
 
+MSE_df$method <- factor(MSE_df$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
 ## To draw with AIC
 aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
                                                                                  y = total_error,
@@ -1068,7 +1072,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training"), aes(x = num
   theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -1085,7 +1089,7 @@ mse_plot <- ggplot(MSE_df, aes(x = number_of_bins,
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -1102,6 +1106,97 @@ aic_plot + mse_plot +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+
+
+<!--UMAP with different param choices-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_7 <- read_rds(file = "data/s_curve/s_curve_umap_7.rds")
+
+#(n-neighbors: 50)
+plot_list1_umap <- plot_UMAP_2D(UMAP_data_7) + #ggtitle("(b)") +
+  geom_point(color = "#8dd3c7") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_15 <- read_rds(file = "data/s_curve/s_curve_umap_15.rds")
+
+#(n-neighbors: 50)
+plot_list2_umap <- plot_UMAP_2D(UMAP_data_15) + #ggtitle("(b)") + 
+  geom_point(color = "#a65628") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_32 <- read_rds(file = "data/s_curve/s_curve_umap_32.rds")
+
+#(n-neighbors: 50)
+plot_list3_umap <- plot_UMAP_2D(UMAP_data_32) + #ggtitle("(b)") +
+  geom_point(color = "#f781bf") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+
+#(n-neighbors: 50)
+plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
+  geom_point(color = "#999999") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'd', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+
+```{r}
+#| echo: false
+#| fig-cap: "2D layouts from UMAP applied for the S-curve data: (a) UMAP (n_neighbors = 7), (b) UMAP (n_neighbors = 15), (c) UMAP (n_neighbors = 32), (d) UMAP (n_neighbors = 50). Is there a best parameter choice in representing UMAP or are they all providing  equivalent information?"
+#| label: fig-nldervisUMAP
+#| out-width: 100%
+
+plot_list1_umap + plot_list2_umap + plot_list3_umap + plot_list4_umap +
+  plot_layout(ncol=4)
+```
+
 
 ```{r}
 #| warning: false
@@ -1349,6 +1444,7 @@ MSE_df_umap_4 <- bind_rows(eval_data_training, eval_data_test) |>
 #| echo: false
 
 MSE_df_umap <- dplyr::bind_rows(MSE_df_umap_1, MSE_df_umap_2, MSE_df_umap_3, MSE_df_umap_4)
+MSE_df_umap$param <- factor(MSE_df_umap$param, levels = c("n_neighbors: 7", "n_neighbors: 15", "n_neighbors: 32", "n_neighbors: 50"))
 
 ## To draw with AIC
 aic_plot_param <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
@@ -1363,7 +1459,7 @@ aic_plot_param <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "training"), 
   theme(legend.title = element_blank(), legend.text = element_text(size=7), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_color_discrete_qualitative() +
+  scale_color_manual(values = c("#8dd3c7", "#a65628", "#f781bf", "#999999")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -1380,7 +1476,7 @@ mse_plot_param_training <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "tra
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_color_manual(values = c("#8dd3c7", "#a65628", "#f781bf", "#999999")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -1396,7 +1492,7 @@ mse_plot_param_test <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "test"),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_color_manual(values = c("#8dd3c7", "#a65628", "#f781bf", "#999999")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -1718,6 +1814,9 @@ MSE_df_5_gau <- eval_data_training |>
 
 MSE_df_gau <- dplyr::bind_rows(MSE_df_1_gau, MSE_df_2_gau, MSE_df_3_gau, MSE_df_4_gau, MSE_df_5_gau)
 
+MSE_df_gau$method <- factor(MSE_df_gau$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+
 ## To draw with AIC
 aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
                                                              y = total_error,
@@ -1731,7 +1830,7 @@ aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes
   theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -1748,7 +1847,7 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -1768,442 +1867,16 @@ aic_gau_plot + mse_gau_plot +
 
 
 
-<!--six different clusters-->
-
-<!--Gaussian globe or sphere-->
-
-<!--In this section, we demonstrate the effectiveness of our approach through the use of simulation data. These simulations are designed to have known cluster structures and underlying data geometries. We begin with a straightforward example where we generate spherical clusters with a doublet structure. This allows us to assess how well our algorithm can identify and represent these known structures in the low-dimensional space.
-
-We then proceed to a more complex example where the data exhibits a more intricate geometry. This simulation provides a challenging test for our approach to capture and preserve the underlying data structure accurately.
-
-We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.
-
-**Example 1: Exploring spherical Gaussian clusters with doublet structure**
-
-The next data set consists of two distinct types of clusters embedded in a 10-$d$ space. The first set of clusters includes three Gaussian clusters with equal variance. Each of these Gaussian clusters is equidistant from the others, forming a well-separated and symmetrical arrangement. The second set of clusters consists of three clusters with a doublet structure. These clusters are also embedded in the 10-$d$ space, but each is positioned in the middle of its parent Gaussian clusters. Moreover, each doublet cluster contains an average number of points from its corresponding parent Gaussian clusters.
-
-For analysis, we run tSNE on the training data with a perplexity setting 18. @fig-example3 (a) displays the tSNE results, indicating that the sub-clusters have been correctly identified. However, the relative locations of certain clusters to each other appear distorted in the low-dimensional view, such as the red and pink clusters being far apart.
-
-Nonetheless, we find no apparent impact on the perception of the data structure when we examine the tour view and the model (see @fig-example3) through the linked video (see @fig-exp1_sc). The model demonstrates accurate identification of clusters and captures the internal variations within each cluster, reflecting the inherent variance present in the data. The configurations used for the analysis are detailed in @tbl-table02. Additionally, the representation of the parent clusters in the low-dimensional space appears stretched, aligning with the variance of these clusters. On the other hand, the doublet clusters are squeezed, reflecting their specific characteristics and relationship to their parent Gaussian clusters.
-
-```{r}
-#| warning: false
-#| echo: false
-sample_size <- 450
-cluster_size <- sample_size/4.5
-
-df1 <- tibble::tibble(x1=rnorm(cluster_size, mean = 3, sd = 0.05), x2 = rnorm(cluster_size, mean = 1, sd = 0.05), x3=rnorm(cluster_size, mean = 1, sd = 0.05), x4=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x5=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x6=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x7=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x8=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x9=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x10=rnorm(cluster_size, mean = 1, sd = 0.05))
-
-df1 <- df1 %>%
-  mutate(cluster = 1)
-
-df2 <- tibble::tibble(x1=rnorm(cluster_size, mean = 1, sd = 0.05), x2=rnorm(cluster_size, mean = 1, sd = 0.05), x3=rnorm(cluster_size, mean = 1, sd = 0.05), x4=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x5=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x6=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x7=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x8=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x9=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x10=rnorm(cluster_size, mean = 1, sd = 0.05))
-
-df2 <- df2 %>%
-  mutate(cluster = 2)
-
-df3_new <- (df1 + df2) / 2
-
-samp <- sample(nrow(df3_new), cluster_size * 0.50) ## 50% from the original dataset
-
-# data in the sample
-df3 <- df3_new[samp,]
-
-df3 <- df3 %>%
-  mutate(cluster = 3)
-
-df4 <- tibble::tibble(x1=rnorm(cluster_size, mean = 1, sd = 0.05), x2=rnorm(cluster_size, mean = 1, sd = 0.05), x3=rnorm(cluster_size, mean = 1, sd = 0.05), x4=rnorm(cluster_size, mean = 3, sd = 0.05),
-                      x5=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x6=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x7=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x8=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x9=rnorm(cluster_size, mean = 1, sd = 0.05),
-                      x10=rnorm(cluster_size, mean = 1, sd = 0.05))
-
-df4 <- df4 %>%
-  mutate(cluster = 4)
-
-df5_new <- (df2 + df4) / 2
-
-samp1 <- sample(nrow(df5_new), cluster_size * 0.50) ## 50% from the original dataset
-
-df5 <- df5_new[samp1,]
-
-df5 <- df5 %>%
-  mutate(cluster = 5)
-
-df6_new <- (df1 + df4) / 2
-
-samp2 <- sample(nrow(df6_new), cluster_size * 0.50) ## 50% from the original dataset
-
-df6 <- df6_new[samp2,]
-
-df6 <- df6 %>%
-  mutate(cluster = 6)
-
-df_3 <- bind_rows(df1, df2, df3, df4, df5, df6)
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-# langevitour::langevitour(df_3[, 1:10], group = df_3$cluster, levelColors = c("#b15928", "#1f78b4", "#bc80bd", "#33a02c", "#fb9a99", "#e31a1c"))
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-df_3 <- df_3 |>
-  mutate(ID = row_number())
-
-data_split_sp <- initial_split(df_3)
-training_data_5 <- training(data_split_sp) |>
-  arrange(ID)
-test_data_5 <- testing(data_split_sp) |>
-  arrange(ID)
-
-clusters <- training_data_5$cluster
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID, -cluster), with_seed = 20240110)
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-
-
-tSNE_cluster <- tSNE_data_gau %>%
-  ggplot(aes(x = tSNE1,
-             y = tSNE2, color = as.character(clusters))) +
-  geom_point(alpha=0.5) +
-  coord_equal() +
-  theme_linedraw() +
-  theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          axis.text = element_text(size = 5),
-          axis.title = element_text(size = 7), #change legend key width
-        legend.title = element_text(size=7), #change legend title font size
-        legend.text = element_text(size=7)) +
-  scale_color_manual(values=c("#b15928", "#1f78b4", "#bc80bd", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
-  guides(color = guide_legend(title = "Cluster"))
-
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-
-cell_area <- 1
-
-num_bins_tsne_gau <- calculate_effective_x_bins(.data = tSNE_data_gau, x = tSNE1,
-                                                cell_area = 1)
-shape_val_tsne_gau <- calculate_effective_shape_value(.data = tSNE_data_gau,
-                                                      x = tSNE1, y = tSNE2)
-
-## To extract bin centroids
-hexbin_data_object_tsne_gau <- extract_hexbin_centroids(nldr_df = tSNE_data_gau, num_bins = num_bins_tsne_gau, shape_val = shape_val_tsne_gau, x = tSNE1, y = tSNE2)
-
-df_bin_centroids_tsne_gau <- hexbin_data_object_tsne_gau$hexdf_data
-
-# min_std_cell_threshold3 <- 0.01
-# 
-# df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-#   dplyr::mutate(stand_cell_count = counts/max(counts)) |>
-#   dplyr::filter(stand_cell_count > min_std_cell_threshold3) 
-
-tSNE_data_with_hb_id_gau <- tSNE_data_gau |> 
-  dplyr::mutate(hb_id = hexbin_data_object_tsne_gau$hb_data@cID)
-
-## To generate a data set with high-D and 2D training data
-df_all_tsne_gau <- dplyr::bind_cols(training_data_5 |> dplyr::select(-ID), tSNE_data_with_hb_id_gau)
-
-## Averaged on high-D
-df_bin_tsne_gau <- avg_highD_data(.data = df_all_tsne_gau)
-
-## Triangulate bin centroids
-tr1_object_tsne_gau <- triangulate_bin_centroids(df_bin_centroids_tsne_gau, x, y)
-tr_from_to_df_tsne_gau <- generate_edge_info(triangular_object = tr1_object_tsne_gau)
-
-## Compute 2D distances
-distance_tsne_gau <- cal_2D_dist(.data = tr_from_to_df_tsne_gau)
-
-## To find the benchmark value
-benchmark_tsne_gau <- find_benchmark_value(.data = distance_tsne_gau, distance_col = distance)
-#benchmark_tsne <- 5
-
-tour_tsne_gau <- show_langevitour(df_all_tsne_gau, df_bin_tsne_gau, df_bin_centroids_tsne_gau, benchmark_value = benchmark_tsne_gau, distance = distance_tsne_gau, distance_col = distance)
-
-trimesh_cluster <- ggplot(df_bin_centroids_tsne_gau, aes(x = x, y = y)) +
-  geom_trimesh() +
-  coord_equal() 
-
-trimesh_cluster <- trimesh_cluster +
-  #ggtitle("(b)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 7))
-
-trimesh_gr_cluster <- colour_long_edges(.data = distance_tsne_gau, benchmark_value = benchmark_tsne_gau,
-                                     triangular_object = tr1_object_tsne_gau, distance_col = distance)
-
-trimesh_gr_cluster <- trimesh_gr_cluster +
-  #ggtitle("(c)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 7), #change legend key width
-        legend.title = element_text(size=7), #change legend title font size
-        legend.text = element_text(size=5))
-
-tour_cluster <- show_langevitour(df_all_tsne_gau, df_bin_tsne_gau, df_bin_centroids_tsne_gau, benchmark_value = benchmark_tsne_gau, distance = distance_tsne_gau, distance_col = distance)
-```
-
-
-```{r}
-#| warning: false
-#| echo: false
-#| out-width: 100%
-#| label: fig-example3
-#| fig-cap: Visualization and refinement of low-dimensional representation for sub-clustered data$\colon$ (a) 2D layout of tSNE (perplexity = 18), (b) triangular mesh, and (c) triangular mesh colored by edge type. Edges with lengths less than the benchmark value of $2$ are classifiedas small, while edges with lengths greater than or equal to this value are labeled as long. The combination of tSNE, hexagonal binning, and triangulation provides the effectiveness of our approach in visualizing and refining the low-dimensional representation of the sub-clustered data.
-
-tSNE_cluster + trimesh_cluster + trimesh_gr_cluster +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect') &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
-
-::: {#fig-exp1_sc layout-ncol="3"}
-![](figures/example_1a.png){#fig-exp1_sc1}
-
-![](figures/example_1b.png){#fig-exp1_sc2}
-
-![](figures/example_1c.png){#fig-exp1_sc3}
-
-Screen shots of the **langevitour** with the low-dimensional view applied to sub-clustered data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/15nAbmc4UoVlUyFcGtnlnmyxrJEbK39nx/view}). Combination of the **langevitour** and low-dimensional representation of the sub-clustered data provides the effectiveness of our approach.
-:::
-
-**Example 2: Exploring data with piecewise linear structure**
-
-In our next exploration, we delve into simulated noisy tree-structured data designed to mimic branching trajectories of cell differentiation. The simulation is crafted to resemble the hierarchical clustering pattern observed in cell differentiation trajectories, where mature cells are akin to the tips of branches.
-
-To begin our analysis, we apply principal components to the data and focus on the first ten principal components, collectively accounting for approximately 68% of the variance explained in the data set. Then, we run TriMAP with the default parameters on the training data (n_inliers: 5, n_outliers: 4, and n_random: 3).  Through this process, we create a low-dimensional manifold using the configurations detailed in @tbl-table02. Finally, we present the model along with the data using the tour view (Figure @fig-exp2_sc), allowing us to visualize and explore the intricate relationships and structures present in the data's low-dimensional representation.
-
-```{r}
-#| warning: false
-#| echo: false 
-
-data_phate <- read_csv(paste0(here::here(), "/data/data_phate.csv"))
-
-data_phate <- data_phate |>
-  dplyr::mutate(ID = row_number())
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-data_split <- initial_split(data_phate)
-training_data <- training(data_split) |>
-  arrange(ID)
-test_data <- testing(data_split) |>
-  arrange(ID)
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-## num_pcs: selected number of PCs to get results (deafukt is all) 
-
-calculate_pca <- function(data, num_pcs = NCOL(data), center = TRUE, scale = FALSE){
-  pcaY_cal <- prcomp(data, center = TRUE, scale = FALSE)
-  
-  PCAresults <- tibble::as_tibble(pcaY_cal$x[, 1:num_pcs])
-  names(PCAresults) <- paste0(rep("PC", num_pcs), 1:num_pcs)
-  
-  summary_pca <- summary(pcaY_cal)
-  
-  var_explained_df <- tibble::tibble(PC = paste0("PC",1:NCOL(data)),
-                               var_explained = (pcaY_cal$sdev[1:NCOL(data)])^2/sum((pcaY_cal$sdev[1:NCOL(data)])^2))
-  
-  ## Scree plot
-  plot <- var_explained_df %>%
-    ggplot(aes(x = PC,y = var_explained, group = 1))+
-    geom_point(size=1)+
-    geom_line() +
-    theme_minimal() +
-    scale_x_discrete(limits = paste0(rep("PC", 20), 1:20)) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-          axis.text = element_text(size = 5),
-          axis.title = element_text(size = 7)) +
-    xlab("Principal Components (PC)") +
-    ylab("Variance explained")
-    
-  return(list(prcomp_out = pcaY_cal, pca_components = PCAresults, summary = summary_pca, var_explained_pca  = var_explained_df, plot = plot))
-}
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-pca_out <- calculate_pca(training_data, 10)
-data_pca <- pca_out$pca_components
-data_pca <- data_pca %>% 
-  distinct()
-
-var_explain_example2 <- pca_out$plot
-```
-
-
-```{r}
-#| warning: false
-#| echo: false 
-TriMAP_data_tree <- read_csv(paste0(here::here(), "/data/trimap_data_linear_structure_pca.csv")) %>%
-    mutate(ID = row_number())
-
-```
-
-```{r}
-#| warning: false
-#| echo: false 
-TriMAP_tree <- plot_TriMAP_2D(TriMAP_data_tree) +
-  theme_linedraw() +
-  theme(axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-```
-
-
-```{r}
-#| warning: false
-#| echo: false
-
-cell_area <- 1
-
-num_bins_tree <- calculate_effective_x_bins(.data = TriMAP_data_tree, x = TriMAP1,
-                                            cell_area = 1)
-shape_val_tree <- calculate_effective_shape_value(.data = TriMAP_data_tree,
-                                                  x = TriMAP1, y = TriMAP2)
-
-## To extract bin centroids
-hexbin_data_object_tree <- extract_hexbin_centroids(nldr_df = TriMAP_data_tree, num_bins = num_bins_tree, shape_val = shape_val_tree, x = TriMAP1, y = TriMAP2)
-
-df_bin_centroids_tree <- hexbin_data_object_tree$hexdf_data
-
-# min_std_cell_threshold3 <- 0.01
-# 
-# df_bin_centroids_tree <- df_bin_centroids_tree |>
-#   dplyr::mutate(stand_cell_count = counts/max(counts)) |>
-#   dplyr::filter(stand_cell_count > min_std_cell_threshold3) 
-
-TriMAP_data_with_hb_id_tree <- TriMAP_data_tree |> 
-  dplyr::mutate(hb_id = hexbin_data_object_tree$hb_data@cID)
-
-## To generate a data set with high-D and 2D training data
-data_pca_n <- data_pca
-names(data_pca_n) <- paste0(rep("x", 7), 1:7)
-df_all_tree <- dplyr::bind_cols(data_pca_n, TriMAP_data_with_hb_id_tree)
-
-## Averaged on high-D
-df_bin_tree <- avg_highD_data(.data = df_all_tree)
-
-## Triangulate bin centroids
-tr1_object_tree <- triangulate_bin_centroids(df_bin_centroids_tree, x, y)
-tr_from_to_df_tree <- generate_edge_info(triangular_object = tr1_object_tree)
-
-## Compute 2D distances
-distance_tree <- cal_2D_dist(.data = tr_from_to_df_tree)
-
-## To find the benchmark value
-benchmark_tree <- find_benchmark_value(.data = distance_tree, distance_col = distance)
-
-benchmark_tree <- 2
-
-names(df_all_tree)[1:7] <- paste0(rep("PC_", 7), 1:7)
-names(df_bin_tree) <- c("hb_id", paste0(rep("PC_", 7), 1:7))
-
-# tour_tree <- show_langevitour(df_all_tree, df_bin_tree, df_bin_centroids_tree, benchmark_value = benchmark_tree, distance = distance_tree, distance_col = distance, col_start = "PC")
-
-
-trimesh_tree <- ggplot(df_bin_centroids_tree, aes(x = x, y = y)) +
-  geom_trimesh() +
-  coord_equal() 
-
-trimesh_tree <- trimesh_tree +
-  #ggtitle("(b)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 7))
-
-trimesh_gr_tree <- colour_long_edges(.data = distance_tree, benchmark_value = benchmark_tree,
-                                     triangular_object = tr1_object_tree, distance_col = distance)
-
-trimesh_gr_tree <- trimesh_gr_tree +
-  #ggtitle("(c)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 7), #change legend key width
-        legend.title = element_text(size=7), #change legend title font size
-        legend.text = element_text(size=5))
-
-tour_tree <- show_langevitour(df_all_tree, df_bin_tree, df_bin_centroids_tree, benchmark_value = benchmark_tree, distance = distance_tree, distance_col = distance, col_start = "PC")
-
-```
-
-
-```{r}
-#| warning: false
-#| echo: false
-#| out-width: 100%
-#| label: fig-example2
-#| fig-pos: H
-#| fig-cap: Visualization and refinement of low-dimensional representation for tree structured data$\colon$ (a) 2D layout of TriMAP (n-inliers = 5, n-outliers = 4, n-random = 3), (b) triangular mesh, and (c) triangular mesh colored by edge type. Edges with lengths less than the benchmark value of $2$ are classified as small, while edges with lengths greater than or equal to this value are labeled as long. The combination of TriMAP, hexagonal binning, and triangulation provides the effectiveness of our approach in visualizing and refining the low-dimensional representation of the tree structured data.
-
-TriMAP_tree + trimesh_tree + trimesh_gr_tree +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect') &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
-
-::: {#fig-exp2_sc layout-ncol="3"}
-![](figures/example_2a.png)
-
-![](figures/example_2b.png)
-
-![](figures/example_2c.png)
-
-Screen shots of the **langevitour** with the low-dimensional view applied to tree structured data set, a video of the tour animation is available at (\url{https://drive.google.com/file/d/1YQx4UGlzDify1mGqeDtlqTHncgqidDhq/view}). Combination of the **langevitour** and low-dimensional representation of the tree structured data provides the effectiveness of our approach.
-:::
--->
 
 ## Applications {#sec-applications}
 
 ### Single-cell RNA-seq data of human
 
 In the field of single-cell studies, a common analysis task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories (e.g., example 1). In clustering workflows, the main objective is to verify the existence of clusters and subsequently identify them as specific cell types by examining the expression of "known" marker genes. In this context, a "faithful" embedding should ideally preserve the topology of the data, ensuring that cells corresponding to the same cell type are situated close to the high-dimensional space.
-
-To begin our analysis, we installed the Peripheral Blood Mononuclear Cells (pbmc) data set obtained from 10x Genomics using the `SeuratData` R package [@Rahul2019], which facilitates the distribution of data sets in the form of Seurat objects [@Yuhan2021]. This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions. After loading the data set, we obtained the principal components (PCs) and assessed the variance explained by each PC. Based on this evaluation, we selected seven PCs, representing approximately 50% of the variance in gene expression, for further analysis.
-
-Next, we employed the UMAP technique with default parameter settings. As illustrated in @fig-pbmc, the cell types B and Platelet are well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono, and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and CD8 T are grouped together in another cluster. The values utilized to construct the smooth low-dimensional manifold are presented in @tbl-table02. The linked video, demonstrating the tour with the model, showcases the generation of a smooth surface for this application, enabling a comprehensive exploration of the data's structure and relationships (see @fig-pbmc_sc).
+  
+  To begin our analysis, we installed the Peripheral Blood Mononuclear Cells (pbmc) data set obtained from 10x Genomics using the `SeuratData` R package [@Rahul2019], which facilitates the distribution of data sets in the form of Seurat objects [@Yuhan2021]. This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions. After loading the data set, we obtained the principal components (PCs) and assessed the variance explained by each PC. Based on this evaluation, we selected seven PCs, representing approximately 50% of the variance in gene expression, for further analysis.
+  
+  Next, we employed the UMAP technique with default parameter settings. As illustrated in @fig-pbmc, the cell types B and Platelet are well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono, and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and CD8 T are grouped together in another cluster. The values utilized to construct the smooth low-dimensional manifold are presented in @tbl-table02. The linked video, demonstrating the tour with the model, showcases the generation of a smooth surface for this application, enabling a comprehensive exploration of the data's structure and relationships (see @fig-pbmc_sc).
 
 
 ```{r}
@@ -2283,12 +1956,13 @@ plot_list1_pbmc + plot_list2_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_lis
 ```
 
 
-
 ```{r}
 #| warning: false
 #| echo: false
 
 MSE_df_pbmc <- read_rds("data/pbmc/summary_pbmc.rds")
+MSE_df_pbmc$method <- factor(MSE_df_pbmc$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
 
 ## To draw with AIC
 aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
@@ -2303,7 +1977,7 @@ aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training"), a
   theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -2320,7 +1994,7 @@ mse_plot_pbmc <- ggplot(MSE_df_pbmc, aes(x = number_of_bins,
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -2427,6 +2101,7 @@ plot_list1_zeisel + plot_list2_zeisel + plot_list3_zeisel + plot_list4_zeisel + 
 #| echo: false
 
 MSE_df_zei <- read_rds("data/zeisel/summary_zei.rds")
+MSE_df_zei$method <- factor(MSE_df_zei$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
 
 ## To draw with AIC
 aic_plot_zei <- ggplot(MSE_df_zei |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
@@ -2441,7 +2116,7 @@ aic_plot_zei <- ggplot(MSE_df_zei |> dplyr::filter(data_type == "training"), aes
   theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -2458,7 +2133,7 @@ mse_plot_zei <- ggplot(MSE_df_zei, aes(x = number_of_bins,
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_color_discrete_qualitative() +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -2489,11 +2164,12 @@ The advantages of our approach include its versatility across various NLDR techn
 However, one limitation is that the approach may be less effective in cases with significant noise, as seen in the tree simulation example. Additionally, while our method aids in visual verification, quantifying the accuracy of embeddings might require further evaluation metrics.
 
 In conclusion, our framework presents a powerful tool for researchers and analysts in single-cell studies to assess their embeddings by visually inspecting them alongside the original data. By leveraging the advantages of tours and low-dimensional manifolds, our approach offers valuable insights into the data transformation process, empowering users to make informed decisions in analyzing high-dimensional data. Future work could enhance the method's robustness in the presence of noise and explore additional evaluation metrics for quantifying embedding accuracy.
-
-
+  
+  
 ## References {.unnumbered}
-
+  
 ::: {#refs}
 :::
-
+      
 {{< pagebreak >}}
+    
