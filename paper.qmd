@@ -404,8 +404,7 @@ p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
   geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  xlim(-5, 7) +
-  ylim(-10, 10) +
+  coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
   theme_void() +
   theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -430,8 +429,7 @@ p2 <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
   geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  xlim(-5, 8) +
-  ylim(-10, 10) +
+  coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
   theme_void() +
   theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -455,6 +453,7 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
   geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
   theme_void() +
   theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -758,7 +757,7 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| warning: false
 #| echo: false
 #| label: fig-wkhighD
-#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 31th and 239th hexagons, (b) visualization of the edge connected the 31th and 239th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at (need to add the link of lg_high).
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 31st and 239th hexagons, (b) visualization of the edge connected the 31th and 239th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at (need to add the link of lg_high).
 
 a2 + a1 +
   plot_annotation(tag_levels = 'a') +

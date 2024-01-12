@@ -935,3 +935,66 @@ weighted_highD_data <- function(.data, weight_df) {
 
   return(weighted_mean)
 }
+
+
+predict_2d_embeddings <- function(test_data, df_bin_centroids, df_bin, type_NLDR = "UMAP") {
+
+  columns_df <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID")
+  vec <- stats::setNames(rep("", length(columns_df)), columns_df)  ## Define column names
+
+  predict_coord_test <- dplyr::bind_rows(vec)[0, ]
+  predict_coord_test <- predict_coord_test |>
+    dplyr::mutate_if(is.character, as.numeric)
+
+  for (i in 1:NROW(test_data)) {
+
+    ### Filter the new data point
+    test_data_point <- test_data |>
+      dplyr::filter(dplyr::row_number() == i)
+
+    ## Obtain centroid coordinates in high-D
+    centroid_coord_high_D <- df_bin |>
+      dplyr::select(-hb_id)
+
+    ## Compute the distance between test point and the centroid points in high-D
+    d <- stats::dist(dplyr::bind_rows(test_data_point |> dplyr::select(-ID), centroid_coord_high_D)) |> as.matrix()
+
+    ## Obtain the distances
+    distance_vec <- d[2:dim(d)[1], 1] |> as.vector()
+
+    ## Add the distance vec as a column in high-D centroid coordinate data set
+    centroid_coord_high_D <- centroid_coord_high_D |>
+      dplyr::mutate(distance = distance_vec) |>
+      dplyr::mutate(hb_id = df_bin$hb_id)
+
+    ## Sort by distance and obtain the centroid which is nearest
+    predict_centroid_coord_high_D <- centroid_coord_high_D |>
+      dplyr::arrange(distance) |>
+      dplyr::filter(dplyr::row_number() == 1)
+
+    ## Rename columns
+    #names(predict_centroid_coord_high_D)[1:(NCOL(test_data_point) - 1)] <- paste0("C_", names(predict_centroid_coord_high_D)[1:(NCOL(test_data_point) - 1)])
+
+    ## Obtain 2D coordinate of the nearest high-D centroid
+    predict_centroid_coord_2D <- df_bin_centroids |>
+      dplyr::filter(hexID %in% predict_centroid_coord_high_D$hb_id) |>
+      dplyr::select(x, y) |>
+      dplyr::mutate(ID = test_data_point$ID)
+
+    ## Rename columns
+    names(predict_centroid_coord_2D) <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID")
+
+    ## Combine high-D and 2D coordinate
+    #predict_centroid_coord_all <- dplyr::bind_cols(test_data_point, predict_centroid_coord_high_D, predict_centroid_coord_2D)
+
+    ## Combine all
+    predict_coord_test <- dplyr::bind_rows(predict_coord_test, predict_centroid_coord_2D)
+
+
+  }
+
+  return(predict_coord_test)
+
+
+}
+
