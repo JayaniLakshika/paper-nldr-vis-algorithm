@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, boxrule=0pt, enhanced, sharp corners, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, sharp corners, interior hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -305,10 +305,10 @@ visualization.
 \subsection{Dimension Reduction}\label{dimension-reduction}}
 
 Consider the high-dimensional data a rectangular matrix \(X\), where
-\(X = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}\),
+\(X = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}^\top\),
 with \(n\) observations in \(p\) dimensions. The objective is to
 discover a low-dimensional projection
-\(Y = \begin{bmatrix} \textbf{y}_{1} & \textbf{y}_{2} & \cdots & \textbf{y}_{n}\\ \end{bmatrix}\),
+\(Y = \begin{bmatrix} \textbf{y}_{1} & \textbf{y}_{2} & \cdots & \textbf{y}_{n}\\ \end{bmatrix}^\top\),
 represented as an \(n\) × \(d\) matrix, where \(d \ll p\). The reduction
 process seeks to remove noise from the original data set while retaining
 essential information.
@@ -471,8 +471,8 @@ PCA as a pre-processing step \citep[\citet{article68},
 identifying principal components that represent directions of maximum
 variance, capturing essential patterns in the data.
 
-\hypertarget{constructing-the-2d-model}{%
-\subsection{Constructing the 2D model}\label{constructing-the-2d-model}}
+\hypertarget{sec-construct2d}{%
+\subsection{Constructing the 2D model}\label{sec-construct2d}}
 
 \textbf{Step 1: Computing the hexagonal grid configuration}
 
@@ -571,8 +571,8 @@ exist to effectively represent the low-dimensional data?}
 
 After computing hexagonal grid configurations, the 2D emdeddings are
 binned into hexagon cells. As a result of hexagonal binning , the bin
-centroids (\(C_k^{(2)} \equiv (C_{kx}, C_{ky}\))) (see
-Figure~\ref{fig-meth} (Step 2)) are obtained.
+centroids (\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2}\)) (see
+Figure~\ref{fig-meth} Step 2) are obtained.
 
 \textbf{Step 3: Triangulate bin centroids}
 
@@ -597,13 +597,54 @@ interconnected representation of the data.
 \subsection{Lifting the model into high
 dimensions}\label{lifting-the-model-into-high-dimensions}}
 
-Creating the model in the high-D space involves a two-step process.
-Initially, we identify observations within each hexagonal bin. After
-this, we calculate the average of the high-dimensional data within each
-hex bin. The resulting values represent the averaged high-dimensional
-data points (\(C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p}\))).
-Essentially, these averaged high-dimensional data points serve as the
-representation of the hex bin centroids in the high-D space.
+\hypertarget{lifting-the-triangular-mesh-points-into-high-dimensions}{%
+\subsubsection{Lifting the triangular mesh points into high
+dimensions}\label{lifting-the-triangular-mesh-points-into-high-dimensions}}
+
+\textbf{Step1: Cluster 2D points to hexagons}
+
+Expanding upon the information regarding hexagonal binning discussed in
+Step 1 of Section~\ref{sec-construct2d}, the primary objective in this
+step is to determine the 2D embedding points associated with each
+hexagon. As the initial process of hexagonal binning, the 2D points are
+clustered into their respective hexagonal bins. By mapping this
+information with the hexagonal bin centroids
+(\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})\)) that obtained in Step 2 of
+the 2D model building (see Section~\ref{sec-construct2d}), we can find
+which 2D points are assigned to which data set. (see
+Figure~\ref{fig-wkhighD} (a)).
+
+\textbf{Step2: Cluster high dimensional points to hexagons}
+
+Following the step 1, the main focus in this step to determine the
+corresponding high dimensional points for each hexagon. Every 2D
+embedding point serves as a projection of a data point belonging to high
+dimensional space. By using this mapping between the high dimensional
+data and their corresponding projections, the high dimensional points
+allocated to each hexagons are determined (see video linked in
+Figure~\ref{fig-wkhighD}).
+
+\textbf{Step3: Compute the mean within hexagon}
+
+Having identified the high-dimensional points associated with hexagons,
+the final step involves computing the mean within each hexagonal bin.
+This implies calculating the average of the high-dimensional data points
+located within each hex bin. These averaged high-dimensional data
+points, denoted as \(C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})\), serve
+as the representative coordinates for the hex bin centroids within the
+expansive high-dimensional space (see video linked in
+Figure~\ref{fig-wkhighD}).
+
+\hypertarget{lifting-the-2d-triangular-mesh-into-high-dimensions}{%
+\subsubsection{Lifting the 2D triangular mesh into high
+dimensions}\label{lifting-the-2d-triangular-mesh-into-high-dimensions}}
+
+Based on the insights gained in Step 3 of Section~\ref{sec-construct2d},
+where connected edges in the 2D triangular mesh were identified, this
+step involves lifting these connections into the high dimensions. Having
+the mappings of all 2D triangular mesh points into high dimensions, the
+points connected in 2D are also connected in high dimensional space (see
+video linked in Figure~\ref{fig-wkhighD}).
 
 \begin{figure}
 

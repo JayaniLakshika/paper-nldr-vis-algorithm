@@ -69,7 +69,7 @@ keywords-formatted: [high-dimensional data, dimension reduction, triangulation, 
 
 bibliography: bibliography.bib  
 ---
-  
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -118,6 +118,7 @@ source("nldr_code.R", local = TRUE)
 -->
 ```
 
+
 ## Introduction {#sec-intro}
 
 High-dimensional (high-D) data is widespread in many fields including ecology and bioinformatics [@Guo2023], in part because of new data collection technologies [@Johnstone2009; @ayesha2020overview]. Working with high-dimensional data poses considerable challenges due to the difficulty in visualizing beyond two dimensions [@Jia2022]. High-dimensional data also presents difficulties for model fitting [@Johnstone2009], both computationally and interpretation, each of which benefits from visualization.
@@ -159,6 +160,7 @@ For trajectory data, PHATE provides specialized capabilities. It models the affi
 TriMAP adopts a unique approach by approximating the data manifold through the construction of a triangulated graph representation. This technique efficiently captures both global and local structures by representing the data as a network of triangles. TriMAP's strength lies in its ability to efficiently capture complex structures, albeit with sensitivity to parameter choices, including the number of neighbors.
 
 In contrast, PaCMAP introduces supervised learning to create a low-dimensional representation while preserving pair-wise relationships. Constructing a graph based on pair-wise distances, PaCMAP optimizes an embedding using a customizable loss function. Particularly notable is PaCMAP's flexibility in incorporating class labels or additional information to guide the embedding process, offering users a means to customize its behavior and performance.
+
 
 
 ```{r}
@@ -221,7 +223,6 @@ plot_list2 <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
 
 ```
 
-
 ```{r}
 #| warning: false
 #| echo: false
@@ -273,7 +274,6 @@ plot_list4 <- plot_TriMAP_2D(TriMAP_data) + #ggtitle("(d)") +
 
 ```
 
-
 ```{r}
 #| warning: false
 #| echo: false
@@ -313,6 +313,7 @@ plot_list5 <- plot_PaCMAP_2D(PaCMAP_data) + #ggtitle("(e)") +
 plot_list1 + plot_list2 + plot_list3 + plot_list4 + plot_list5 +
   plot_layout(ncol=5)
 ```
+
 
 
 ### Linear overviews using tours
@@ -394,6 +395,7 @@ $$ {#eq-equation2}
                 
 <!--first value-->
                   
+
 ```{r}
 #| echo: false
 #| message: false
@@ -417,8 +419,7 @@ p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
   annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ```
-                
-                
+
 ```{r}
 #| echo: false
 #| message: false
@@ -475,6 +476,7 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
 
 p1 + p2 + p3
 ```
+
                 
 **Step 2: Obtain bin centroids**
   
@@ -505,6 +507,7 @@ Having identified the high-dimensional points associated with hexagons, the fina
 #### Lifting the 2D triangular mesh into high dimensions
 
 Based on the insights gained in Step 3 of @sec-construct2d, where connected edges in the 2D triangular mesh were identified, this step involves lifting these connections into the high dimensions. Having the mappings of all 2D triangular mesh points into high dimensions, the points connected in 2D are also connected in high dimensional space (see video linked in @fig-wkhighD). 
+
 
 
 ```{r}
@@ -698,8 +701,6 @@ distance_plot <- plot_dist(distance) +
         axis.title = element_text(size = 12))
 ```
 
-
-
 ```{r}
 #| echo: false
 #| warning: false
@@ -854,6 +855,7 @@ a2 + a1 +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
+
 ### Tunning the model
 
 In our model tuning process, we strategically adjust three key parameters to optimize the performance and accuracy of our approach. They are (i) the total number of bins ($b$), (ii) a benchmark value to remove low-density hexagons, and (iii) a benchmark value to remove long edges.
@@ -923,6 +925,7 @@ $$ {#eq-equation10}
   These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
 
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -965,7 +968,6 @@ eval_data_training <- eval_data_training |>
 MSE_df_1 <- eval_data_training |>
   dplyr::mutate(method = "tSNE")
 ```
-
 
 ```{r}
 #| warning: false
@@ -1196,7 +1198,9 @@ aic_plot + mse_plot +
 ```
 
 
+
 <!--UMAP with different param choices-->
+
 
 ```{r}
 #| warning: false
@@ -1274,7 +1278,6 @@ plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
 
 ```
 
-
 ```{r}
 #| echo: false
 #| fig-cap: "2D layouts from UMAP applied for the S-curve data: (a) UMAP (n_neighbors = 7), (b) UMAP (n_neighbors = 15), (c) UMAP (n_neighbors = 32), (d) UMAP (n_neighbors = 50). Is there a best parameter choice in representing UMAP or are they all providing  equivalent information?"
@@ -1284,7 +1287,6 @@ plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
 plot_list1_umap + plot_list2_umap + plot_list3_umap + plot_list4_umap +
   plot_layout(ncol=4)
 ```
-
 
 ```{r}
 #| warning: false
@@ -1526,7 +1528,6 @@ MSE_df_umap_4 <- bind_rows(eval_data_training, eval_data_test) |>
   dplyr::mutate(param = "n_neighbors: 50")
 ```
 
-
 ```{r}
 #| warning: false
 #| echo: false
@@ -1598,7 +1599,9 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
+
 <!--lwd smoothing criteria with s-curve-->
+
 
 ```{r}
 #| warning: false
@@ -1664,11 +1667,13 @@ aic_plot_lwd + mse_plot_lwd +
 ```
 
 
+
 ### Simulated data example {#sec-simpleex}
 
 In this section, we showcase the effectiveness of our methodology using simulated data. The dataset comprises five spherical Gaussian clusters in 4-$d$, with each cluster containing an equal number of points and consistent within variation.  
 
 We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.
+
 
 
 ```{r}
@@ -1787,7 +1792,6 @@ eval_data_training <- eval_data_training |>
 MSE_df_1_gau <- eval_data_training |>
   dplyr::mutate(method = "tSNE")
 ```
-
 
 ```{r}
 #| warning: false
@@ -2021,6 +2025,7 @@ aic_gau_plot + mse_gau_plot +
 
 
 
+
 ## Applications {#sec-applications}
 
 ### Single-cell RNA-seq data of human
@@ -2030,6 +2035,7 @@ In the field of single-cell studies, a common analysis task involves clustering 
 To begin our analysis, we installed the Peripheral Blood Mononuclear Cells (pbmc) data set obtained from 10x Genomics using the `SeuratData` R package [@Rahul2019], which facilitates the distribution of data sets in the form of Seurat objects [@Yuhan2021]. This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions. After loading the data set, we obtained the principal components (PCs) and assessed the variance explained by each PC. Based on this evaluation, we selected seven PCs, representing approximately 50% of the variance in gene expression, for further analysis.
   
   Next, we employed the UMAP technique with default parameter settings. As illustrated in @fig-pbmc, the cell types B and Platelet are well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono, and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and CD8 T are grouped together in another cluster. The values utilized to construct the smooth low-dimensional manifold are presented in @tbl-table02. The linked video, demonstrating the tour with the model, showcases the generation of a smooth surface for this application, enabling a comprehensive exploration of the data's structure and relationships (see @fig-pbmc_sc).
+
 
 
 ```{r}
@@ -2108,7 +2114,6 @@ plot_list1_pbmc + plot_list2_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_lis
   plot_layout(ncol=5)
 ```
 
-
 ```{r}
 #| warning: false
 #| echo: false
@@ -2166,11 +2171,13 @@ aic_plot_pbmc + mse_plot_pbmc +
 ```
 
 
+
 ### Single-Cell Tagged Reverse Transcription sequencing data of mouse
 
 The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics (STRT-Seq). Within this dataset, information is collected from a substantial 2,816 individual mouse brain cells. Each of these cells acts as a molecular snapshot, capturing the distinctive genetic activity within various cell types. This diversity spans neurons, glial cells, and other essential components of the brain, offering a comprehensive view of the cellular tapestry.
 
 What makes this dataset particularly valuable is its ability to shed light on the spatial distribution of cells. Researchers can explore how gene expression patterns vary across different regions of the mouse brain, unlocking insights into the functional specialization of these regions and the intricate networks that underpin neural processes.
+
 
 ```{r}
 #| warning: false
@@ -2248,7 +2255,6 @@ plot_list1_zeisel + plot_list2_zeisel + plot_list3_zeisel + plot_list4_zeisel + 
   plot_layout(ncol=5)
 ```
 
-
 ```{r}
 #| warning: false
 #| echo: false
@@ -2304,6 +2310,7 @@ aic_plot_zei + mse_plot_zei +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
+
 ## Discussion {#sec-discussion}
 
 Our research introduces a comprehensive framework that leverages tours for interactive exploration of high-dimensional data coupled with a low-dimensional manifold, facilitated by the `quollr` R package. Regardless of the Non-Linear Dimension Reduction (NLDR) technique in use, our approach demonstrates effectiveness through simulation examples, particularly in the iterative removal of long edges for a smoother representation and capturing cluster variance.
@@ -2324,5 +2331,7 @@ In conclusion, our framework presents a powerful tool for researchers and analys
 ::: {#refs}
 :::
       
+
 {{< pagebreak >}}
-    
+
+

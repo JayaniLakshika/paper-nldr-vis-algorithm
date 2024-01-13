@@ -15,7 +15,7 @@ PHATE_data <- read_rds("data/s_curve/s_curve_phate.rds")
 shape_value_curve <- calculate_effective_shape_value(.data = PHATE_data,
                                                      x = PHATE1, y = PHATE2)
 
-num_bins_x <- 5 ## Number of bins along the x-axis (looking at mse plot)
+num_bins_x <- 8 ## Number of bins along the x-axis (looking at mse plot)
 
 benchmark_rm_hex_vec <- sample(seq(0, 0.5, by=0.001), 20) |> sort()
 

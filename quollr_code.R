@@ -326,7 +326,7 @@ find_benchmark_value <- function(.data, distance_col) {
       {
         distance_col
       }
-    }, \(x) round(x, 1)))
+    }, \(x) round(x, 3)))
 
 
   sorted_distance_df <- .data |>
