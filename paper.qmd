@@ -917,7 +917,7 @@ data <- read_rds("data/s_curve/s_curve.rds")
 shape_value_curve <- calculate_effective_shape_value(.data = tSNE_data,
                                                    x = tSNE1, y = tSNE2)
 
-num_bins_vec <- 1:10 ## Number of bins along the x-axis
+num_bins_vec <- 1:20 ## Number of bins along the x-axis
 
 vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
@@ -960,7 +960,7 @@ MSE_df_1 <- eval_data_training |>
 shape_value_curve <- calculate_effective_shape_value(.data = UMAP_data,
                                                    x = UMAP1, y = UMAP2)
 
-num_bins_vec <- 1:10 ## Number of bins along the x-axis
+num_bins_vec <- 1:14 ## Number of bins along the x-axis
 
 vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
@@ -1001,7 +1001,7 @@ MSE_df_2 <- eval_data_training |>
 shape_value_curve <- calculate_effective_shape_value(.data = PHATE_data,
                                                    x = PHATE1, y = PHATE2)
 
-num_bins_vec <- 1:10 ## Number of bins along the x-axis
+num_bins_vec <- 1:18 ## Number of bins along the x-axis
 
 vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
@@ -1089,7 +1089,7 @@ MSE_df_4 <- eval_data_training |>
 shape_value_curve <- calculate_effective_shape_value(.data = PaCMAP_data,
                                                    x = PaCMAP1, y = PaCMAP2)
 
-num_bins_vec <- 1:10 ## Number of bins along the x-axis
+num_bins_vec <- 1:18 ## Number of bins along the x-axis
 
 vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
 
@@ -1578,6 +1578,71 @@ mse_plot_param_test <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "test"),
 aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
+<!--lwd smoothing criteria with s-curve-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_1_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_tsne.rds")
+MSE_df_2_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_umap.rds")
+MSE_df_3_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_phate.rds")
+MSE_df_4_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_trimap.rds")
+MSE_df_5_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_pacmap.rds")
+
+MSE_df_lwd <- dplyr::bind_rows(MSE_df_1_lwd, MSE_df_2_lwd, MSE_df_3_lwd, MSE_df_4_lwd, MSE_df_5_lwd)
+
+MSE_df_lwd$method <- factor(MSE_df_lwd$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+## To draw with AIC
+aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training"), aes(x = benchmark_rm_hex,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Benchmark value")
+## Effective number of bins along x-axis
+
+mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Benchmark value")
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchark valuw to remove the low-density heaxgons?
+#| label: fig-diagnosticpltScurvelwd
+#| out-width: 100%
+
+aic_plot_lwd + mse_plot_lwd +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 

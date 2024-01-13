@@ -548,33 +548,43 @@ compute_aic <- function(p, total, num_bins, num_obs) {
 
 ## df_bin_centroids_all: all bin centroids without removing any
 ## df_bin_centroids: bin centroids after removing removing any
-generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_bins, col_start = "x") {
+generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_bins, col_start = "x", rm_lwd_hex = FALSE, df_bin_centroids_all = NA) {
 
-  ## Generate all possible bin centroids in the full grid
-  full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
+  if (rm_lwd_hex == TRUE) {
+
+    ## Generate all possible bin centroids in the full grid
+    full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_all)
+
+  } else {
+    ## Generate all possible bin centroids in the full grid
+    full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
+
+  }
+
+
 
   df_bin_centroids_filtered <- df_bin_centroids |>
     dplyr::select(hexID, x, y)
 
   ## To map centroid coordinates to predicted hexID
-  prediction_df <- dplyr::inner_join(prediction_df, df_bin_centroids_filtered, by = c("pred_hb_id" = "hexID"))
+  prediction_df_join <- dplyr::inner_join(prediction_df, df_bin_centroids_filtered, by = c("pred_hb_id" = "hexID"))
 
   df_bin_train <- df_bin
   names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
 
-  prediction_df <- prediction_df |>
+  prediction_df_join <- prediction_df_join |>
     dplyr::left_join(df_bin_train, by = c("pred_hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
 
-  prediction_df <- prediction_df |>
+  prediction_df_join <- prediction_df_join |>
     dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
 
   for (i in 1:(NCOL(df_bin_train) - 1)) {
 
-    prediction_df[ , paste0("error_square_", col_start, i)] <- (prediction_df[ , paste0(col_start, i)] - prediction_df[ , paste0("avg_", col_start, i)])^2
+    prediction_df_join[ , paste0("error_square_", col_start, i)] <- (prediction_df_join[ , paste0(col_start, i)] - prediction_df_join[ , paste0("avg_", col_start, i)])^2
 
   }
 
-  prediction_df <- prediction_df |>
+  prediction_df_join <- prediction_df_join |>
     dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("error_square_", col_start)))))
 
   # prediction_df <- prediction_df |>
@@ -593,10 +603,10 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_
 
   #number_of_bins: Total number of bins with empty bins
   eval_df <- tibble::tibble(number_of_bins = NROW(full_centroid_df), number_of_observations = NROW(prediction_df),
-                            total_error = compute_aic((NCOL(df_bin) - 1), prediction_df$total, NROW(full_centroid_df), NROW(prediction_df)),
+                            total_error = compute_aic((NCOL(df_bin) - 1), prediction_df_join$total, NROW(full_centroid_df), NROW(prediction_df_join)),
                             #totol_error_method_2 = prediction_df$total * NROW(full_centroid_df)/NROW(prediction_df),
                             #totol_error_method_3 = prediction_df$total /NROW(full_centroid_df),
-                            total_mse = mean(prediction_df$total)/(NCOL(df_bin) - 1))
+                            total_mse = mean(prediction_df_join$total)/(NCOL(df_bin) - 1))
 
   return(eval_df)
 
