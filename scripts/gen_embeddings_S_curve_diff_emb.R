@@ -45,6 +45,10 @@ write_rds(test_data, file = "data/s_curve/s_curve_test.rds")
 
 tSNE_data <- Fit_tSNE(training_data |> select(-ID), opt_perplexity = calculate_effective_perplexity(training_data), with_seed = 20240110)
 
+tSNE_data <- tSNE_data |>
+  select(-ID) |>
+  mutate(ID = training_data$ID)
+
 write_rds(tSNE_data, file = paste0("data/s_curve/s_curve_tsne_", calculate_effective_perplexity(training_data), ".rds"))
 
 ## UMAP

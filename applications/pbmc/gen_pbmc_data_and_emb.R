@@ -73,6 +73,10 @@ write_rds(test_data, file = "data/pbmc/pbmc_test.rds")
 
 tSNE_data <- Fit_tSNE(training_data |> select(-ID), opt_perplexity = 30, with_seed = 20240110)
 
+tSNE_data <- tSNE_data |>
+  select(-ID) |>
+  mutate(ID = training_data$ID)
+
 write_rds(tSNE_data, file = paste0("data/pbmc/pbmc_tsne_", 30, ".rds"))
 
 ## UMAP

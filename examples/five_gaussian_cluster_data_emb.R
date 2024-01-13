@@ -62,6 +62,10 @@ write_rds(test_data_5, file = "data/five_gau_clusters/data_five_gau_test.rds")
 ### tSNE
 tSNE_data_gau <- Fit_tSNE(training_data_5 |> dplyr::select(-ID), opt_perplexity = calculate_effective_perplexity(training_data_5), with_seed = 20240110)
 
+tSNE_data_gau <- tSNE_data_gau |>
+  select(-ID) |>
+  mutate(ID = training_data_5$ID)
+
 plot_tSNE_2D(tSNE_data_gau)
 
 write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_", calculate_effective_perplexity(training_data_5),".rds"))
