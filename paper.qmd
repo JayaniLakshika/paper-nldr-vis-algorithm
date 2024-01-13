@@ -116,7 +116,7 @@ source("nldr_code.R", local = TRUE)
   Notes
 * Use American spelling
 -->
-  ```
+```
 
 ## Introduction {#sec-intro}
 
@@ -685,12 +685,90 @@ distance_plot <- plot_dist(distance) +
 
 ```{r}
 #| echo: false
-# distance |> dplyr::filter(distance == max(distance))
-# df_bin_centroids |> dplyr::filter(row_number() %in% c(10, 65))
+#| warning: false
+data <- read_rds("data/s_curve/s_curve.rds")
+training_data <- read_rds("data/s_curve/s_curve_training.rds")
+UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 
-a1 <- colour_long_edges(.data = distance, benchmark_value = 15, 
-                        triangular_object = tr1_object, distance_col = distance) + 
-  geom_point(size = 2, colour = "#33a02c") + 
+num_bins_x <- 2
+
+shape_value <- calculate_effective_shape_value(.data = UMAP_data, 
+                                               x = UMAP1, y = UMAP2)
+
+## To extract bin centroids
+hexbin_data_object <-extract_hexbin_centroids(nldr_df = UMAP_data, num_bins = num_bins_x, shape_val = shape_value)
+
+df_bin_centroids <- hexbin_data_object$hexdf_data
+
+# ## Data set with all possible centroids in the hexagonal grid
+# 
+# full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
+# 
+# ## Generate all coordinates of hexagons
+# hex_grid <- full_hex_grid(full_centroid_df)
+# 
+# hex_full_count_df <- generate_full_grid_info(df_bin_centroids)
+# 
+# write_rds(hex_full_count_df, "data/s_curve/s_curve_hex_2.rds")
+
+min_std_cell_threshold <- 0.05
+
+df_bin_centroids_all <- hexbin_data_object$hexdf_data ## All the centroids without removing low-density hexagons
+
+
+hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_2.rds") 
+
+df_bin_centroids <- df_bin_centroids |>
+  dplyr::mutate(stand_cell_count = counts/max(counts)) |>
+  dplyr::filter(stand_cell_count > min_std_cell_threshold)
+
+UMAP_data_with_hb_id <- UMAP_data |> 
+  dplyr::mutate(hb_id = hexbin_data_object$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
+
+## Averaged on high-D
+df_bin <- avg_highD_data(.data = df_all)
+
+## Triangulate bin centroids
+tr1_object <- triangulate_bin_centroids(df_bin_centroids, x, y)
+tr_from_to_df <- generate_edge_info(triangular_object = tr1_object)
+
+# Create the tibble with x and y coordinates
+tr_df <- tibble::tibble(x = tr1_object$x, y = tr1_object$y)
+
+## Compute 2D distances
+distance <- cal_2D_dist(.data = tr_from_to_df)
+
+benchmark_value <- 19.4
+
+# Filter and label small and long edges
+distance_df_small_edges <- distance |>
+  dplyr::filter(distance < benchmark_value) |>
+  dplyr::mutate(type = "small_edges")
+
+distance_df_long_edges <- distance |>
+  dplyr::filter(distance >= benchmark_value) |>
+  dplyr::mutate(type = "long_edges")
+
+# Combine small and long edges
+distance_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
+
+tr_from_to_df_coord_with_group <- merge(tr_from_to_df, distance_edges, by = c("from", "to"))
+
+UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(2, 15)) |>
+  dplyr::mutate(select_point = if_else(hb_id == 2, "data1", "data2"))
+
+a1 <- ggplot(tr_df |> dplyr::filter((y == min(tr_df$y)) | (y == max(tr_df$y))), aes(x = x, y = y)) +
+  geom_segment(
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to, color = type),
+    data = tr_from_to_df_coord_with_group
+  ) +
+  geom_point() +
+  coord_equal() +
+  scale_colour_manual(values = c("#000000", "#f6e8c3"))  + 
+  geom_point(size = 3, colour = "#33a02c") + 
   #ggtitle("(b)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
   theme_light() +
@@ -702,14 +780,12 @@ a1 <- colour_long_edges(.data = distance, benchmark_value = 15,
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
   ) 
 
-UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(31, 239)) |>
-  dplyr::mutate(select_point = if_else(hb_id == 31, "data1", "data2"))
 
 a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = polygon_id), fill = "#ffffff") +
+  geom_polygon(color = "#e7e1ef", aes(group = polygon_id), fill = "#ffffff") +
   geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5) +
   scale_color_manual(values=c("#e6550d", "#000000")) +
-  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(31, 239)), aes(x = x, y = y), colour = "#33a02c") +
+  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(2, 15)), aes(x = x, y = y), colour = "#33a02c", size = 3) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   theme_light() +
   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
@@ -723,33 +799,29 @@ a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
 ## Script to make coloring data points with a line
 
 df1 <- df_all |> 
-  dplyr::filter(hb_id == "31") |>
+  dplyr::filter(hb_id == "2") |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data1") ## original dataset
 
 df2 <- df_all |> 
-  dplyr::filter(hb_id == "239") |>
+  dplyr::filter(hb_id == "15") |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data2") ## original dataset
 
 df3 <- df_all |> 
-  dplyr::filter(!(hb_id %in% c("31", "239"))) |>
+  dplyr::filter(!(hb_id %in% c("2", "15"))) |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data") ## original dataset
 
 df_b <- df_bin |> 
   dplyr::filter(hb_id %in% df_bin_centroids$hexID) |>
+  dplyr::filter(hb_id %in% c("2", "15")) |>
   dplyr::select(-hb_id) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 df_exe <- dplyr::bind_rows(df_b, df1, df2, df3)
 
-distance_df_small_edges <- distance |> 
-  dplyr::filter(from == 10) |>
-  dplyr::filter(to == 65) |>
-  head(1)
-
-lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#e6550d", "#000000", "#33a02c"), lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, lineColors = "#e31a1c")
+lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#e6550d", "#000000", "#33a02c"), lineFrom = 1, lineTo = 2, lineColors = "#e31a1c")
 
 ```
 
@@ -757,7 +829,7 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| warning: false
 #| echo: false
 #| label: fig-wkhighD
-#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 31st and 239th hexagons, (b) visualization of the edge connected the 31th and 239th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at (need to add the link of lg_high).
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://www.youtube.com/watch?v=vBvM30Plt24>.
 
 a2 + a1 +
   plot_annotation(tag_levels = 'a') +
