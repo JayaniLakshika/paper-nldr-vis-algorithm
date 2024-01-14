@@ -5,9 +5,9 @@ set.seed(20240110)
 source("quollr_code.R", local = TRUE)
 
 ## Import data
-data <- read_rds("data/five_gau_clusters/data_five_gau.rds")
-training_data <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
-test <- read_rds("data/five_gau_clusters/data_five_gau_test.rds")
+data <- read_rds("data/s_curve/data_s_curve.rds")
+training_data <- read_rds("data/s_curve/data_s_curve_training.rds")
+test_data <- read_rds("data/s_curve/data_s_curve_test.rds")
 
 tSNE_s_curve <- read_rds("data/s_curve/s_curve_tsne_27.rds")
 UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
@@ -39,10 +39,10 @@ df_bin_tsne_s_curve <- avg_highD_data(.data = df_all_tsne_s_curve)
 tr1_object_tsne_s_curve <- triangulate_bin_centroids(df_bin_centroids_tsne_s_curve, x, y)
 tr_from_to_df_tsne_s_curve <- generate_edge_info(triangular_object = tr1_object_tsne_s_curve)
 
-ggplot(df_bin_centroids_tsne_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_tsne_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
+# ggplot(df_bin_centroids_tsne_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_tsne_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
 
 
 ## Compute 2D distances
@@ -51,8 +51,16 @@ distance_tsne_s_curve <- cal_2D_dist(.data = tr_from_to_df_tsne_s_curve)
 ## To find the benchmark value
 benchmark_tsne_s_curve <- find_benchmark_value(.data = distance_tsne_s_curve, distance_col = distance)
 
-colour_long_edges(.data = distance_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve,
-                  triangular_object = tr1_object_tsne_s_curve, distance_col = distance)
+# colour_long_edges(.data = distance_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve,
+#                   triangular_object = tr1_object_tsne_s_curve, distance_col = distance)
+
+trimesh_removed_tsne_s_curve <- remove_long_edges(.data = distance_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve,
+                                                  triangular_object = tr1_object_tsne_s_curve, distance_col = distance)
+
+trimesh_removed_tsne_s_curve <- trimesh_removed_tsne_s_curve +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7))
 
 tour_tsne_s_curve <- show_langevitour(df_all_tsne_s_curve, df_bin_tsne_s_curve, df_bin_centroids_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve, distance = distance_tsne_s_curve, distance_col = distance)
 
@@ -81,10 +89,10 @@ df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
 tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
 tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
 
-ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
 
 
 ## Compute 2D distances
@@ -93,8 +101,16 @@ distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
 ## To find the benchmark value
 benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
 
-colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
-                  triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+                                     triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve <- trimesh_removed_umap_s_curve +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7))
 
 tour_umap_s_curve <- show_langevitour(df_all_umap_s_curve, df_bin_umap_s_curve, df_bin_centroids_umap_s_curve, benchmark_value = benchmark_umap_s_curve, distance = distance_umap_s_curve, distance_col = distance)
 
@@ -122,10 +138,10 @@ df_bin_trimap_s_curve <- avg_highD_data(.data = df_all_trimap_s_curve)
 tr1_object_trimap_s_curve <- triangulate_bin_centroids(df_bin_centroids_trimap_s_curve, x, y)
 tr_from_to_df_trimap_s_curve <- generate_edge_info(triangular_object = tr1_object_trimap_s_curve)
 
-ggplot(df_bin_centroids_trimap_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_trimap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
+# ggplot(df_bin_centroids_trimap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_trimap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
 
 
 ## Compute 2D distances
@@ -134,8 +150,16 @@ distance_trimap_s_curve <- cal_2D_dist(.data = tr_from_to_df_trimap_s_curve)
 ## To find the benchmark value
 benchmark_trimap_s_curve <- find_benchmark_value(.data = distance_trimap_s_curve, distance_col = distance)
 
-colour_long_edges(.data = distance_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve,
-                  triangular_object = tr1_object_trimap_s_curve, distance_col = distance)
+# colour_long_edges(.data = distance_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve,
+#                   triangular_object = tr1_object_trimap_s_curve, distance_col = distance)
+
+trimesh_removed_trimap_s_curve <- remove_long_edges(.data = distance_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve,
+                                                    triangular_object = tr1_object_trimap_s_curve, distance_col = distance)
+
+trimesh_removed_trimap_s_curve <- trimesh_removed_trimap_s_curve +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7))
 
 tour_trimap_s_curve <- show_langevitour(df_all_trimap_s_curve, df_bin_trimap_s_curve, df_bin_centroids_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve, distance = distance_trimap_s_curve, distance_col = distance)
 
@@ -164,10 +188,10 @@ df_bin_pacmap_s_curve <- avg_highD_data(.data = df_all_pacmap_s_curve)
 tr1_object_pacmap_s_curve <- triangulate_bin_centroids(df_bin_centroids_pacmap_s_curve, x, y)
 tr_from_to_df_pacmap_s_curve <- generate_edge_info(triangular_object = tr1_object_pacmap_s_curve)
 
-ggplot(df_bin_centroids_pacmap_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_pacmap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
+# ggplot(df_bin_centroids_pacmap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_pacmap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
 
 
 ## Compute 2D distances
@@ -176,8 +200,16 @@ distance_pacmap_s_curve <- cal_2D_dist(.data = tr_from_to_df_pacmap_s_curve)
 ## To find the benchmark value
 benchmark_pacmap_s_curve <- find_benchmark_value(.data = distance_pacmap_s_curve, distance_col = distance)
 
-colour_long_edges(.data = distance_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve,
-                  triangular_object = tr1_object_pacmap_s_curve, distance_col = distance)
+# colour_long_edges(.data = distance_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve,
+#                   triangular_object = tr1_object_pacmap_s_curve, distance_col = distance)
+
+trimesh_removed_pacmap_s_curve <- remove_long_edges(.data = distance_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve,
+                                     triangular_object = tr1_object_pacmap_s_curve, distance_col = distance)
+
+trimesh_removed_pacmap_s_curve <- trimesh_removed_pacmap_s_curve +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7))
 
 tour_pacmap_s_curve <- show_langevitour(df_all_pacmap_s_curve, df_bin_pacmap_s_curve, df_bin_centroids_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve, distance = distance_pacmap_s_curve, distance_col = distance)
 
@@ -210,10 +242,10 @@ df_bin_phate_s_curve <- avg_highD_data(.data = df_all_phate_s_curve)
 tr1_object_phate_s_curve <- triangulate_bin_centroids(df_bin_centroids_phate_s_curve, x, y)
 tr_from_to_df_phate_s_curve <- generate_edge_info(triangular_object = tr1_object_phate_s_curve)
 
-ggplot(df_bin_centroids_phate_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_phate_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
+# ggplot(df_bin_centroids_phate_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_phate_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
 
 
 ## Compute 2D distances
@@ -222,7 +254,15 @@ distance_phate_s_curve <- cal_2D_dist(.data = tr_from_to_df_phate_s_curve)
 ## To find the benchmark value
 benchmark_phate_s_curve <- find_benchmark_value(.data = distance_phate_s_curve, distance_col = distance)
 
-colour_long_edges(.data = distance_phate_s_curve, benchmark_value = benchmark_phate_s_curve,
-                  triangular_object = tr1_object_phate_s_curve, distance_col = distance)
+# colour_long_edges(.data = distance_phate_s_curve, benchmark_value = benchmark_phate_s_curve,
+#                   triangular_object = tr1_object_phate_s_curve, distance_col = distance)
+
+trimesh_removed_phate_s_curve <- remove_long_edges(.data = distance_phate_s_curve, benchmark_value = benchmark_phate_s_curve,
+                                                   triangular_object = tr1_object_phate_s_curve, distance_col = distance)
+
+trimesh_removed_phate_s_curve <- trimesh_removed_phate_s_curve +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7))
 
 tour_phate_s_curve <- show_langevitour(df_all_phate_s_curve, df_bin_phate_s_curve, df_bin_centroids_phate_s_curve, benchmark_value = benchmark_phate_s_curve, distance = distance_phate_s_curve, distance_col = distance)

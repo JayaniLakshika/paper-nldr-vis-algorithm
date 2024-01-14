@@ -300,7 +300,7 @@ plot_list5 <- plot_PaCMAP_2D(PaCMAP_data) + #ggtitle("(e)") +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'e', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 ```
 
@@ -869,6 +869,328 @@ a2 + a1 +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
+<!--model for S-curve with 5 methods-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+
+tSNE_s_curve <- read_rds("data/s_curve/s_curve_tsne_27.rds")
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+PHATE_s_curve <- read_rds("data/s_curve/s_curve_phate.rds")
+TriMAP_s_curve <- read_rds("data/s_curve/s_curve_trimap.rds")
+PaCMAP_s_curve <- read_rds("data/s_curve/s_curve_pacmap.rds")
+
+
+## tSNE
+
+num_bins_tsne_s_curve <- 8
+shape_val_tsne_s_curve <- calculate_effective_shape_value(.data = tSNE_s_curve,
+                                                          x = tSNE1, y = tSNE2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_tsne_s_curve <- extract_hexbin_centroids(nldr_df = tSNE_s_curve, num_bins = num_bins_tsne_s_curve, shape_val = shape_val_tsne_s_curve, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_s_curve <- hexbin_data_object_tsne_s_curve$hexdf_data
+
+tSNE_data_with_hb_id_s_curve <- tSNE_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), tSNE_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_tsne_s_curve <- avg_highD_data(.data = df_all_tsne_s_curve)
+
+## Triangulate bin centroids
+tr1_object_tsne_s_curve <- triangulate_bin_centroids(df_bin_centroids_tsne_s_curve, x, y)
+tr_from_to_df_tsne_s_curve <- generate_edge_info(triangular_object = tr1_object_tsne_s_curve)
+
+# ggplot(df_bin_centroids_tsne_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_tsne_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_tsne_s_curve <- cal_2D_dist(.data = tr_from_to_df_tsne_s_curve)
+
+## To find the benchmark value
+benchmark_tsne_s_curve <- find_benchmark_value(.data = distance_tsne_s_curve, distance_col = distance)
+
+# colour_long_edges(.data = distance_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve,
+#                   triangular_object = tr1_object_tsne_s_curve, distance_col = distance)
+
+trimesh_removed_tsne_s_curve <- remove_long_edges(.data = distance_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve,
+                                                  triangular_object = tr1_object_tsne_s_curve, distance_col = distance)
+
+trimesh_removed_tsne_s_curve <- trimesh_removed_tsne_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+# tour_tsne_s_curve <- show_langevitour(df_all_tsne_s_curve, df_bin_tsne_s_curve, df_bin_centroids_tsne_s_curve, benchmark_value = benchmark_tsne_s_curve, distance = distance_tsne_s_curve, distance_col = distance)
+
+
+
+## UMAP
+
+num_bins_umap_s_curve <- 6
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+                                     triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve <- trimesh_removed_umap_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+# tour_umap_s_curve <- show_langevitour(df_all_umap_s_curve, df_bin_umap_s_curve, df_bin_centroids_umap_s_curve, benchmark_value = benchmark_umap_s_curve, distance = distance_umap_s_curve, distance_col = distance)
+
+
+## TriMAP
+
+num_bins_trimap_s_curve <- 6
+shape_val_trimap_s_curve <- calculate_effective_shape_value(.data = TriMAP_s_curve,
+                                                            x = TriMAP1, y = TriMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_trimap_s_curve <- extract_hexbin_centroids(nldr_df = TriMAP_s_curve, num_bins = num_bins_trimap_s_curve, shape_val = shape_val_trimap_s_curve, x = TriMAP1, y = TriMAP2)
+
+df_bin_centroids_trimap_s_curve <- hexbin_data_object_trimap_s_curve$hexdf_data
+
+TriMAP_data_with_hb_id_s_curve <- TriMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_trimap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_trimap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), TriMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_trimap_s_curve <- avg_highD_data(.data = df_all_trimap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_trimap_s_curve <- triangulate_bin_centroids(df_bin_centroids_trimap_s_curve, x, y)
+tr_from_to_df_trimap_s_curve <- generate_edge_info(triangular_object = tr1_object_trimap_s_curve)
+
+# ggplot(df_bin_centroids_trimap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_trimap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_trimap_s_curve <- cal_2D_dist(.data = tr_from_to_df_trimap_s_curve)
+
+## To find the benchmark value
+benchmark_trimap_s_curve <- find_benchmark_value(.data = distance_trimap_s_curve, distance_col = distance)
+
+# colour_long_edges(.data = distance_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve,
+#                   triangular_object = tr1_object_trimap_s_curve, distance_col = distance)
+
+trimesh_removed_trimap_s_curve <- remove_long_edges(.data = distance_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve,
+                                                    triangular_object = tr1_object_trimap_s_curve, distance_col = distance)
+
+trimesh_removed_trimap_s_curve <- trimesh_removed_trimap_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.25) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3) 
+
+# tour_trimap_s_curve <- show_langevitour(df_all_trimap_s_curve, df_bin_trimap_s_curve, df_bin_centroids_trimap_s_curve, benchmark_value = benchmark_trimap_s_curve, distance = distance_trimap_s_curve, distance_col = distance)
+
+
+
+## PacMAP
+
+num_bins_pacmap_s_curve <- 10
+shape_val_pacmap_s_curve <- calculate_effective_shape_value(.data = PaCMAP_s_curve,
+                                                            x = PaCMAP1, y = PaCMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_pacmap_s_curve <- extract_hexbin_centroids(nldr_df = PaCMAP_s_curve, num_bins = num_bins_pacmap_s_curve, shape_val = shape_val_pacmap_s_curve, x = PaCMAP1, y = PaCMAP2)
+
+df_bin_centroids_pacmap_s_curve <- hexbin_data_object_pacmap_s_curve$hexdf_data
+
+PaCMAP_data_with_hb_id_s_curve <- PaCMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_pacmap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pacmap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), PaCMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_pacmap_s_curve <- avg_highD_data(.data = df_all_pacmap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_pacmap_s_curve <- triangulate_bin_centroids(df_bin_centroids_pacmap_s_curve, x, y)
+tr_from_to_df_pacmap_s_curve <- generate_edge_info(triangular_object = tr1_object_pacmap_s_curve)
+
+# ggplot(df_bin_centroids_pacmap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_pacmap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_pacmap_s_curve <- cal_2D_dist(.data = tr_from_to_df_pacmap_s_curve)
+
+## To find the benchmark value
+benchmark_pacmap_s_curve <- find_benchmark_value(.data = distance_pacmap_s_curve, distance_col = distance)
+
+# colour_long_edges(.data = distance_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve,
+#                   triangular_object = tr1_object_pacmap_s_curve, distance_col = distance)
+
+trimesh_removed_pacmap_s_curve <- remove_long_edges(.data = distance_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve,
+                                     triangular_object = tr1_object_pacmap_s_curve, distance_col = distance)
+
+trimesh_removed_pacmap_s_curve <- trimesh_removed_pacmap_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'e', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+# tour_pacmap_s_curve <- show_langevitour(df_all_pacmap_s_curve, df_bin_pacmap_s_curve, df_bin_centroids_pacmap_s_curve, benchmark_value = benchmark_pacmap_s_curve, distance = distance_pacmap_s_curve, distance_col = distance)
+
+## PHATE
+
+num_bins_phate_s_curve <- 8
+shape_val_phate_s_curve <- calculate_effective_shape_value(.data = PHATE_s_curve,
+                                                           x = PHATE1, y = PHATE2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_phate_s_curve <- extract_hexbin_centroids(nldr_df = PHATE_s_curve, num_bins = num_bins_phate_s_curve, shape_val = shape_val_phate_s_curve, x = PHATE1, y = PHATE2)
+
+df_bin_centroids_phate_s_curve <- hexbin_data_object_phate_s_curve$hexdf_data
+
+## Identify bins with low-density
+identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_phate_s_curve, num_bins_phate_s_curve, benchmark_rm_hex = 0.06)
+
+df_bin_centroids_phate_s_curve <- df_bin_centroids_phate_s_curve |>
+  filter(!(hexID %in% identify_rm_bins))
+
+PHATE_data_with_hb_id_s_curve <- PHATE_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_phate_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_phate_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), PHATE_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_phate_s_curve <- avg_highD_data(.data = df_all_phate_s_curve)
+
+## Triangulate bin centroids
+tr1_object_phate_s_curve <- triangulate_bin_centroids(df_bin_centroids_phate_s_curve, x, y)
+tr_from_to_df_phate_s_curve <- generate_edge_info(triangular_object = tr1_object_phate_s_curve)
+
+# ggplot(df_bin_centroids_phate_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_phate_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_phate_s_curve <- cal_2D_dist(.data = tr_from_to_df_phate_s_curve)
+
+## To find the benchmark value
+benchmark_phate_s_curve <- find_benchmark_value(.data = distance_phate_s_curve, distance_col = distance)
+
+# colour_long_edges(.data = distance_phate_s_curve, benchmark_value = benchmark_phate_s_curve,
+#                   triangular_object = tr1_object_phate_s_curve, distance_col = distance)
+
+trimesh_removed_phate_s_curve <- remove_long_edges(.data = distance_phate_s_curve, benchmark_value = benchmark_phate_s_curve,
+                                                   triangular_object = tr1_object_phate_s_curve, distance_col = distance)
+
+trimesh_removed_phate_s_curve <- trimesh_removed_phate_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+# tour_phate_s_curve <- show_langevitour(df_all_phate_s_curve, df_bin_phate_s_curve, df_bin_centroids_phate_s_curve, benchmark_value = benchmark_phate_s_curve, distance = distance_phate_s_curve, distance_col = distance)
+
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+#| label: fig-modelScurve
+#| fig-cap: Model.
+
+trimesh_removed_tsne_s_curve + trimesh_removed_umap_s_curve + trimesh_removed_phate_s_curve + trimesh_removed_trimap_s_curve + trimesh_removed_pacmap_s_curve +
+  #plot_annotation(tag_levels = 'a') +
+  plot_layout(ncol = 5) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
 ### Tunning the model
 
 In our model tuning process, we strategically adjust three key parameters to optimize the performance and accuracy of our approach. They are (i) the total number of bins ($b$), (ii) a benchmark value to remove low-density hexagons, and (iii) a benchmark value to remove long edges.
@@ -900,7 +1222,7 @@ The removal of long edges is a critical step to create a smoother representation
 
 #### Predicted values and residuals
 
-In this context, the term "prediction values" refers to the 2D coordinates predicted for the NLDR technique. The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as t-SNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
+The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
 
 The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
 
@@ -1673,6 +1995,13 @@ aic_plot_lwd + mse_plot_lwd +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
+### Prediction {#sec-prediction}
+
+In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
+The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
+
+Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
+  
 
 ### Simulated data example {#sec-simpleex}
 
