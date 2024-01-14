@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, boxrule=0pt, interior hidden, enhanced, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, frame hidden, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -465,11 +465,12 @@ other to generate the model in the high-D space.}
 \hypertarget{preprocessing-steps}{%
 \subsection{Preprocessing steps}\label{preprocessing-steps}}
 
-To tackle the complexities and noise in high-dimensional data, we apply
-PCA as a pre-processing step \citep[\citet{article68},
-\citet{article69}]{article67}. This step helps in noise reduction by
-identifying principal components that represent directions of maximum
-variance, capturing essential patterns in the data.
+In order to reduce the computational complexity associated with
+performing NLDR techniques to high-D data, and as a initial step of
+noise reduction of high-D data, PCA \citep[\citet{article68},
+\citet{article69}]{article67} is applied as a preprocessing step.
+Subsequently, the identified principal components, representing
+directions of maximum variance, are used to construct the model.
 
 \hypertarget{sec-construct2d}{%
 \subsection{Constructing the 2D model}\label{sec-construct2d}}
