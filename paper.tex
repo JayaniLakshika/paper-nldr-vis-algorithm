@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, frame hidden, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, boxrule=0pt, interior hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -477,80 +477,96 @@ directions of maximum variance, are used to construct the model.
 
 \textbf{Step 1: Computing the hexagonal grid configuration}
 
-Hexagonal binning is a data visualization technique that aggregates
-high-dimensional data into a two-dimensional representation using
-hexagonal regions called bins \citep{article66}. The hexagonal shape is
-preferred due to its circular-like appearance, providing smoother
-transitions between neighboring bins and efficient data aggregation.
-This technique is especially useful for handling large data sets as it
-reduces visual clutter while capturing the underlying data distribution
-effectively. By considering the data distribution, important features
-are captured, and gaps between bins are minimized, leading to a more
-accurate representation of the data. In our algorithm, hexagonal binning
-is utilized to create a low-dimensional manifold.
+The hexagonal grid, formed through hexagonal binning
+\citep[\citet{article66}]{Carr1987}, serves as a type of bivariate
+histogram employed to visualize the structure of high-D data. Hexagons,
+being one of only three regular polygons capable of tessellating a plane
+\citep{Carr2013}, possess both symmetry of nearest neighbors and the
+maximum number of sides for a regular tessellation of the plane. This
+unique combination makes hexagons more efficient in covering the plane
+compared to other regular tessellations. Additionally, hexagons exhibit
+lower visual bias when displaying densities, setting them apart from
+other regular tessellations \citep{Dan2023}. In our algorithm, hexagonal
+binning is used as the initial step of constructing the 2D model and the
+total number of bins (\(b\)) is the crucial parameter that defines the
+granularity of the hexagonal grid.
 
 \textbf{(a) Determine the number of bins along the x-axis} (\(b_1\))
 
-The first step involves to determine the optimal number of bins (\(b\))
-for creating regular hexagons in the hexagonal grid. To achieve this, we
-rely on the relationship between the diameter (\(h\)) and the area
-(\(A\)) of regular hexagons, as given by Equation~\ref{eq-equation3}.
+First, the number of bins along the x-axis (\(b_1\)) is computed using
+the relationship between the diameter (\(h\)) and the area (\(A\)) of
+regular hexagons (see Equation~\ref{eq-equation3}).
 
 \begin{equation}\protect\hypertarget{eq-equation3}{}{
  \text{A} = \frac{\sqrt{3}}{2}h^2
 }\label{eq-equation3}\end{equation}
 
-To capture the data's structure effectively, we consider the optimal
-\(A = 1\) (see Figure~\ref{fig-binsize}). Using
-Equation~\ref{eq-equation4}, we then calculate \(h\) of a regular
-hexagon.
+To construct regular hexagons, \(A = 1\) (see Figure~\ref{fig-binsize})
+use as the default setting. Then, the diameter (\(h\)) of the regular
+hexagons is calculated (see Equation~\ref{eq-equation4}).
 
 \begin{equation}\protect\hypertarget{eq-equation4}{}{
   \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
 }\label{eq-equation4}\end{equation}
 
-Next, we refer the \texttt{hexbin} function in R, which provides a
-relationship between the diameter of the hexagon (\(h\)) and the number
-of bins along the x-axis (\(b_1\)) (Equation~\ref{eq-equation6}).
+\citet{Carr2013} mentioned about the relationship between the diameter
+(\(h\)) of regular hexagons and the height (\(y\)) of the plotting
+region. According to our algorithm, the height (\(y\)) of the plotting
+region is the the range of 2D embedding component 1 (\(r_1\)) (see
+Equation~\ref{eq-equation6}).
 
 \begin{equation}\protect\hypertarget{eq-equation6}{}{
 h = \frac{r_1}{b_1}
 }\label{eq-equation6}\end{equation}
 
-By utilizing the calculated \(h\) and the range of the non-linear
-projection component 1 (\(r_1\)), we determine the \(b_1\)
-(Equation~\ref{eq-equation5}). The result is rounded up to the nearest
-whole number to ensure an appropriate number of bins that capture the
-variability of the data along the x-axis.
+After rearranging the Equation~\ref{eq-equation6} as
+Equation~\ref{eq-equation5}, \(b_1\) is computed. The \(b_1\) value is
+rounded up to the nearest whole number to have an integer value.
 
 \begin{equation}\protect\hypertarget{eq-equation5}{}{
 b_1 = \frac{r_1}{h}
 }\label{eq-equation5}\end{equation}
 
-\textbf{(b) Determine the effective shape parameter} (\(s\))
+\textbf{(b) Determine the shape parameter} (\(s\))
 
-In this step, we determine the optimal shape parameter (\(s\)) for the
-hexagonal bins, which significantly influences their shape and
-arrangement within the grid. The shape parameter (\(s\)) in the
-hexagonal binning algorithm is defined as the ratio of the height
-(\(y\)) to the width (\(x\)) of the plotting region, referring to the
-\texttt{hexbin} function in R (see Equation~\ref{eq-equation1}). It
-determines the shape of the plotting regions and plays a vital role in
-generating an appropriate hexagonal grid for the data visualization.
+In this step, we determine the shape parameter (\(s\)) for the hexagonal
+bins, which significantly influences their shape and arrangement within
+the grid. The \(s\) in the hexagonal binning algorithm is defined as the
+ratio of the height (\(y\)) to the width (\(x\)) of the plotting region
+as defined in Equation~\ref{eq-equation1}.
 
 \begin{equation}\protect\hypertarget{eq-equation1}{}{
 s = \frac{y}{x}
 }\label{eq-equation1}\end{equation}
 
-To calculate the effective shape parameter (\(s\)) for our algorithm, we
-consider the ranges of the non-linear projection components. Denoting
-the range of the non-linear projection component 1 as \(r_1\) and the
-range of the non-linear projection component 2 as \(r_2\), we find the
-shape parameter using Equation~\ref{eq-equation2}.
+The shape parameter (\(s\)) of our algorithm is calculated as the ratio
+of the ranges of 2D embedding components, where \(r_1\) and \(r_2\)
+represent the ranges of 2D embedding components 1 and component 2,
+respectively (see Equation~\ref{eq-equation2}).
 
 \begin{equation}\protect\hypertarget{eq-equation2}{}{
 s = \frac{r_2}{r_1}
 }\label{eq-equation2}\end{equation}
+
+\textbf{(c) Determine the number of bins along the y-axis} (\(b_2\))
+
+Next, the number of bins along the y-axis is computed based on the
+number of bins along the x-axis (\(b_1\)) and the shape parameter
+(\(s\)) (see Equation~\ref{eq-equation12}) \citep{Carr2013}.
+
+\begin{equation}\protect\hypertarget{eq-equation12}{}{
+b_2 = 2 * \left(\frac{(b_1 \times s)}{\sqrt(3)} + 1.5001 \right)
+}\label{eq-equation12}\end{equation}
+
+\textbf{(d) Determine the total number of bins} (\(b\))
+
+The total number of bins is determined by multiplying the number of bins
+along the x-axis (\(b_1\)) with the number of bins along the y-axis
+(\(b_2\)) (see Equation~\ref{eq-equation13}).
+
+\begin{equation}\protect\hypertarget{eq-equation13}{}{
+b = b_1 \times b_2
+}\label{eq-equation13}\end{equation}
 
 \begin{figure}[H]
 
@@ -559,34 +575,33 @@ s = \frac{r_2}{r_1}
 }
 
 \caption{\label{fig-binsize}Hexbin plots from different number of bins
-for the same \textbf{s\_curve\_noise\_umap} data: (a) b = (4, 8), s =
-1.643542, (b) b = (12, 22), s = 1.643542, and (c) b = (21, 40), s =
-1.643542. The hexbins are colored based on the density of points, with
-yellow indicating higher point density and darker colors representing
-lower point density within each bin. Does a value of number of bins
-exist to effectively represent the low-dimensional data?}
+for the \textbf{UMAP} projections of \textbf{S-curve} data: (a) b = 32
+(4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b =
+840 (21, 40), s = 1.643542. The hexbins are colored based on the density
+of points, with darker colors indicating higher point density and yellow
+color representing lower point density within each bin. Does a value of
+number of bins exist to effectively represent the low-dimensional data?}
 
 \end{figure}
 
 \textbf{Step 2: Obtain bin centroids}
 
-After computing hexagonal grid configurations, the 2D emdeddings are
-binned into hexagon cells. As a result of hexagonal binning , the bin
-centroids (\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2}\)) (see
-Figure~\ref{fig-meth} Step 2) are obtained.
+As a result of hexagonal binning for high-D data, all the high-D data
+are clustered into hexagons. In this step, the bin centroids
+(\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2}\)) (see Figure~\ref{fig-meth}
+Step 2) are obtained \citep{Carr2013}.
 
 \textbf{Step 3: Triangulate bin centroids}
 
-In this step, the algorithm proceeds to triangulate the centroids (see
-Figure~\ref{fig-meth} (Step 3)) of the hex bins. Triangulation is a
+In this step, the algorithm proceeds to triangulate the hexagonal bin
+centroids (see Figure~\ref{fig-meth} (Step 3)). Triangulation is a
 fundamental process in computational geometry and computer graphics that
 involves dividing a set of points in a given space into interconnected
 triangles \citep{article30}. One common algorithm used for triangulation
-is Delaunay triangulation \citep{article26}, where points are connected
-in a way that maximizes the minimum angles of the resulting triangles,
-leading to a more regular and well-conditioned triangulation. In our
-algorithm, triangulation helps us identify geometric relationships and
-patterns in the data.
+is Delaunay triangulation \citep[\citet{article54}]{article26}, where
+points are connected in a way that maximizes the minimum angles of the
+resulting triangles, leading to a more regular and well-conditioned
+triangulation.
 
 Since we are working with the centroids of regular hexagonal bins, the
 resulting mesh will predominantly comprise equal-sized regular
@@ -674,20 +689,8 @@ edges.
 \hypertarget{total-number-of-bins}{%
 \subsubsection{Total number of bins}\label{total-number-of-bins}}
 
-The total number of bins is a crucial parameter that defines the
-granularity of our hexagonal grid. This parameter particularly
-influential in capturing the intricacies of the data structure. It is
-determined by multiplying the number of bins along the x-axis ((b\_1))
-with the number of bins along the y-axis ((b\_2)), as per the formula:
-
-\begin{equation}\protect\hypertarget{eq-equationp1}{}{
-b = b_1 \times b_2
-}\label{eq-equationp1}\end{equation}
-
-Here, (b) represents the total number of bins. Adjusting the parameter
-(b\_1) provides control over the total bin count ((b)), allowing us to
-fine-tune the grid's configuration along the x-axis based on specific
-requirements.
+Adjusting the parameter \(b_1\) provides control over the total number
+of bins \(b\), allowing us to fine-tune the hexagonal grid.
 
 \hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
 \subsubsection{Benchmark value to remove low-density
