@@ -5,9 +5,9 @@ set.seed(20240110)
 source("quollr_code.R", local = TRUE)
 
 ## Import data
-data <- read_rds("data/s_curve/data_s_curve.rds")
-training_data <- read_rds("data/s_curve/data_s_curve_training.rds")
-test_data <- read_rds("data/s_curve/data_s_curve_test.rds")
+data <- read_rds("data/s_curve/s_curve.rds")
+training_data <- read_rds("data/s_curve/s_curve_training.rds")
+test_data <- read_rds("data/s_curve/s_curve_test.rds")
 
 tSNE_s_curve <- read_rds("data/s_curve/s_curve_tsne_27.rds")
 UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")

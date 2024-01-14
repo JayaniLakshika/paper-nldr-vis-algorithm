@@ -478,7 +478,7 @@ show_langevitour <- function(df, df_b, df_b_with_center_data, benchmark_value = 
       dplyr::filter({{ distance_col }} < benchmark_value)
     ## Since erase brushing is considerd.
 
-    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, group = df_exe$type)
+    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"))
 
   } else if ((is.na(benchmark_value)) && (!(is.na(min_points_threshold)))) {
     df_bin_centroids_filterd <- df_bin_centroids %>%

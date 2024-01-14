@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, breakable, enhanced, sharp corners, frame hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, sharp corners, frame hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -677,16 +677,6 @@ animation is available at
 
 \end{figure}
 
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
-
-}
-
-\caption{\label{fig-modelScurve}Model.}
-
-\end{figure}
-
 \hypertarget{tunning-the-model}{%
 \subsection{Tunning the model}\label{tunning-the-model}}
 
@@ -793,7 +783,7 @@ the predicted bin centroid data in high-D (\(C_{x_ij}\)) values across
 all bins. Mathematically, this is expressed as:
 
 \begin{equation}\protect\hypertarget{eq-equation9}{}{
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{\text{total number of bins}}
+\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{b}
 }\label{eq-equation9}\end{equation}
 
 Here, \(b\) signifies the total number of bins, \(p\) denotes the number
@@ -878,6 +868,62 @@ low-dimensional predicted values for the test data in the 2D space.
 Some NLDR techniques, such as tSNE, often lack a direct prediction,
 making our approach valuable for generating predicted values in the
 absence of such functionalities.
+
+\hypertarget{model-interpretation}{%
+\subsection{Model interpretation}\label{model-interpretation}}
+
+The visualizations of NLDR techniques for the S-curve dataset shows
+different representations in 2D, as showcased in Figure
+Figure~\ref{fig-nldervis}. The question at hand is determining the best
+NLDR technique to represent the S-curve data. Examining the 2D layouts
+in Figure~\ref{fig-nldervis} suggests that TriMAP or PaCMAP may be best
+representations. However, the challenge is to decide the best
+representation with considerable evidence.
+
+After considering the models constructed from the algorithm for each
+NLDR techniques and visualizing them in high-D space with the original
+data, shows that all the NLDR techniques capture the non-linearity of
+the S-curve (see videos of the models linked in
+Figure~\ref{fig-modelScurve}). But thorough examination of each model in
+high-D space shows some surprising findings. The model of PHATE is
+flattened and lack of capturing the width of S-curve (see videos of the
+model with PHATE linked in Figure~\ref{fig-modelScurve}). This nature of
+PHATE is also evicted by the considerably higher AIC and MSE values for
+PHATE as shown in Figure~\ref{fig-diagnosticpltScurve}. Furthermore,
+there are two edges that are not connected to any points in the model of
+TriMAP (see see videos of the model with TriMAP linked in
+Figure~\ref{fig-modelScurve}). This model shows how the patterns in 2D
+representation of TriMAP capture by the model (see
+Figure~\ref{fig-nldervis} (d)). As shown in Figure~\ref{fig-nldervis}
+(b), UMAP have four clusters in a curvilinear structure. However, the
+model reveals that even though UMAP shows a curvilinear in 2D, UMAP
+actually capture the structure of the S-curve without any disjoint in
+the model (see see videos of the model with UMAP linked in
+Figure~\ref{fig-modelScurve}). In the 2D layouts of tSNE and PaCMAP (see
+Figure~\ref{fig-nldervis} (a), (e)), there are some sparse areas that
+are captured by the models effectively (see see videos of the model with
+tSNE and PaCMAP linked in Figure~\ref{fig-modelScurve}).
+
+Different NLDR techniques perform differently on the S-curve data and
+tSNE provides the best representation in 2D according to AIC and MSE
+values (see Figure~\ref{fig-diagnosticpltScurve}).
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
+
+}
+
+\caption{\label{fig-modelScurve}Is there a best model to represent the
+original data in 2D space or are they all providing equivalent
+information?, (a) Model in the 2D space with tSNE
+(\url{https://youtu.be/uy9SkAo6gAE}), (b) Model in the 2D space with
+UMAP (\url{https://youtu.be/0MJDhHrh_Ug}), (c) Model in the 2D space
+with PHATE (\url{https://youtu.be/HbVv0uy0QWk}), (d) Model in the 2D
+space with TriMAP (\url{https://youtu.be/2OGwipAjzc8}), and (e) Model in
+the 2D space with PaCMAP (\url{https://youtu.be/pkokI8d-cBk}).}
+
+\end{figure}
 
 \hypertarget{sec-simpleex}{%
 \subsection{Simulated data example}\label{sec-simpleex}}
