@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, interior hidden, enhanced, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -724,6 +724,33 @@ identified and removed. This refinement step contributes to enhancing
 the quality of the triangular mesh, ensuring a more accurate
 representation of the data structure.
 
+\begin{itemize}
+\tightlist
+\item
+  Compute high-D distances (using averaged high-D data)
+\item
+  Fit a linear model using response as distance\_high\_D and predictor
+  as distance\_2D
+\item
+  Filter the model residuals only for short edges
+\item
+  compute error for each edge connection as (residual for that
+  point)/(total residual for all edges * number of short edges)
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurvelgrm-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltScurvelgrm}Goodness of fit statistics
+from different NLDR techniques applied to training S-curve dataset with
+different benchmark values to remove the long edges. What is the
+effective benchmark value to remove the long edges?}
+
+\end{figure}
+
 \hypertarget{sec-summary}{%
 \subsection{Model summaries}\label{sec-summary}}
 
@@ -841,7 +868,7 @@ the original data in 2D?}
 \caption{\label{fig-diagnosticpltScurvelwd}Goodness of fit statistics
 from different NLDR techniques applied to training S-curve dataset with
 different benchmark values to remove the low-density heaxgons. What is
-the effective benchark valuw to remove the low-density heaxgons?}
+the effective benchmark value to remove the low-density heaxgons?}
 
 \end{figure}
 
@@ -967,6 +994,9 @@ original data in 2D?}
 \subsection{Single-cell RNA-seq data of
 human}\label{single-cell-rna-seq-data-of-human}}
 
+https://satijalab.org/seurat/articles/pbmc3k\_tutorial.html
+https://www.cell.com/fulltext/S0092-8674(15)00549-8
+
 In the field of single-cell studies, a common analysis task involves
 clustering to identify groups of cells with similar expression profiles.
 Analysts often turn to NLDR techniques to verify and identify these
@@ -1075,6 +1105,15 @@ dataset. What is the best NLDR technique to represent the original data
 in 2D?}
 
 \end{figure}
+
+\hypertarget{retina-dataset}{%
+\subsection{Retina dataset}\label{retina-dataset}}
+
+https://www.cell.com/cms/10.1016/j.cell.2015.05.002/attachment/fd52950c-fd35-401a-9e60-ca7588ef9001/mmc1.pdf
+
+https://www.cell.com/fulltext/S0092-8674(15)00549-8\#app3
+
+32 PCs tSNE (perplexity 30)
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}

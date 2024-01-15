@@ -34,7 +34,7 @@ plot_tSNE_2D <- function(tSNE_df){
   tSNE_df_plot <- tSNE_df %>%
     ggplot(aes(x = tSNE1,
                y = tSNE2))+
-    geom_point(alpha=0.5, color="#e41a1c") +
+    geom_point(alpha=0.5, color="#e41a1c", size = 0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
           axis.text = element_text(size = 5),
@@ -69,7 +69,7 @@ plot_UMAP_2D <- function(UMAP_df){
   UMAP_df_plot <- UMAP_df %>%
     ggplot(aes(x = UMAP1,
                y = UMAP2))+
-    geom_point(alpha=0.5, color="#377eb8") +
+    geom_point(alpha=0.5, color="#377eb8", size = 0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
           axis.text = element_text(size = 5),
@@ -98,7 +98,7 @@ plot_PHATE_2D <- function(PHATE_df){
   PHATE_df_plot <- PHATE_df %>%
     ggplot(aes(x = PHATE1,
                y = PHATE2))+
-    geom_point(alpha=0.5, color="#4daf4a") +
+    geom_point(alpha=0.5, color="#4daf4a", size = 0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
           axis.text = element_text(size = 5),
@@ -115,7 +115,7 @@ plot_TriMAP_2D <- function(TRIMAP_df){
   TriMAP_df_plot <- TRIMAP_df %>%
     ggplot(aes(x = TriMAP1,
                y = TriMAP2))+
-    geom_point(alpha=0.5, color="#984ea3") +
+    geom_point(alpha=0.5, color="#984ea3", size = 0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
           axis.text = element_text(size = 5),
@@ -132,7 +132,7 @@ plot_PaCMAP_2D <- function(PaCMAP_df){
   PaCMAP_df_plot <- PaCMAP_df %>%
     ggplot(aes(x = PaCMAP1,
                y = PaCMAP2))+
-    geom_point(alpha=0.5, color="#ff7f00") +
+    geom_point(alpha=0.5, color="#ff7f00", size = 0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold"),
           axis.text = element_text(size = 5),

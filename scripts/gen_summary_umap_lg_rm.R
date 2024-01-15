@@ -151,7 +151,3 @@ ggplot(eval_data_training, aes(x = benchmark_rm_lg,
   geom_point() +
   geom_line()
 
-eval_data_training <- eval_data_training |>
-  dplyr::mutate(method = "UMAP")
-
-write_rds(eval_data_training, "data/s_curve/s_curve_summary_lg_umap.rds")

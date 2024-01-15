@@ -917,6 +917,106 @@ The standard count is derived from the number of observations in the hex bins. B
 
 The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
 
+
+- Compute high-D distances (using averaged high-D data)
+- Fit a linear model using response as distance_high_D and predictor as distance_2D
+- Filter the model residuals only for short edges
+- compute error for each edge connection as (residual for that point)/(total residual for all edges * number of short edges) 
+
+```{r}
+#| echo: false
+#| warning: false
+
+error_df_lg_1 <- read_rds("data/s_curve/s_curve_summary_lg_tsne.rds")
+error_df_lg_2 <- read_rds("data/s_curve/s_curve_summary_lg_umap.rds")
+error_df_lg_3 <- read_rds("data/s_curve/s_curve_summary_lg_phate.rds")
+error_df_lg_4 <- read_rds("data/s_curve/s_curve_summary_lg_trimap.rds")
+error_df_lg_5 <- read_rds("data/s_curve/s_curve_summary_lg_pacmap.rds")
+
+error_df_lg <- dplyr::bind_rows(error_df_lg_1, error_df_lg_2, error_df_lg_3, error_df_lg_4, error_df_lg_5)
+
+error_df_lg$method <- factor(error_df_lg$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+error_plot_lg_1 <- ggplot(error_df_lg_1, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c")) +
+  ylab("error") +
+  xlab("Benchmark value")
+
+error_plot_lg_2 <- ggplot(error_df_lg_2, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8")) +
+  ylab("error") +
+  xlab("Benchmark value")
+
+error_plot_lg_3 <- ggplot(error_df_lg_3, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#4daf4a")) +
+  ylab("error") +
+  xlab("Benchmark value")
+
+
+error_plot_lg_4 <- ggplot(error_df_lg_4, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#984ea3")) +
+  ylab("error") +
+  xlab("Benchmark value")
+
+error_plot_lg_5 <- ggplot(error_df_lg_5, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#ff7f00")) +
+  ylab("error") +
+  xlab("Benchmark value")
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges?
+#| label: fig-diagnosticpltScurvelgrm
+#| out-width: 100%
+
+error_plot_lg_1 + error_plot_lg_2 + error_plot_lg_3 + error_plot_lg_4 + error_plot_lg_5 +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', nrow = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
+```
+
 ### Model summaries {#sec-summary}
 
 #### Predicted values and residuals
@@ -1237,7 +1337,7 @@ UMAP_data_7 <- read_rds(file = "data/s_curve/s_curve_umap_7.rds")
 
 #(n-neighbors: 50)
 plot_list1_umap <- plot_UMAP_2D(UMAP_data_7) + #ggtitle("(b)") +
-  geom_point(color = "#8dd3c7") +
+  geom_point(alpha=0.5, size = 0.5, colour = "#8dd3c7", fill = "#8dd3c7") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -1256,7 +1356,7 @@ UMAP_data_15 <- read_rds(file = "data/s_curve/s_curve_umap_15.rds")
 
 #(n-neighbors: 50)
 plot_list2_umap <- plot_UMAP_2D(UMAP_data_15) + #ggtitle("(b)") + 
-  geom_point(color = "#a65628") +
+  geom_point(alpha=0.5, size = 0.5, colour = "#a65628", fill = "#a65628") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -1275,7 +1375,7 @@ UMAP_data_32 <- read_rds(file = "data/s_curve/s_curve_umap_32.rds")
 
 #(n-neighbors: 50)
 plot_list3_umap <- plot_UMAP_2D(UMAP_data_32) + #ggtitle("(b)") +
-  geom_point(color = "#f781bf") +
+  geom_point(alpha=0.5, size = 0.5, color = "#f781bf", fill = "#f781bf") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -1294,7 +1394,7 @@ UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 
 #(n-neighbors: 50)
 plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
-  geom_point(color = "#999999") +
+  geom_point(alpha=0.5, size = 0.5, colour = "#999999", fill = "#999999") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -1629,7 +1729,7 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-<!--lwd smoothing criteria with s-curve-->
+<!--lwd smoothing criteria 1 with s-curve-->
 
 ```{r}
 #| warning: false
@@ -1684,7 +1784,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchark valuw to remove the low-density heaxgons?
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?
 #| label: fig-diagnosticpltScurvelwd
 #| out-width: 100%
 
@@ -2398,6 +2498,9 @@ aic_gau_plot + mse_gau_plot +
 
 ### Single-cell RNA-seq data of human
 
+https://satijalab.org/seurat/articles/pbmc3k_tutorial.html
+https://www.cell.com/fulltext/S0092-8674(15)00549-8
+
 In the field of single-cell studies, a common analysis task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories (e.g., example 1). In clustering workflows, the main objective is to verify the existence of clusters and subsequently identify them as specific cell types by examining the expression of "known" marker genes. In this context, a "faithful" embedding should ideally preserve the topology of the data, ensuring that cells corresponding to the same cell type are situated close to the high-dimensional space.
   
 To begin our analysis, we installed the Peripheral Blood Mononuclear Cells (pbmc) data set obtained from 10x Genomics using the `SeuratData` R package [@Rahul2019], which facilitates the distribution of data sets in the form of Seurat objects [@Yuhan2021]. This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions. After loading the data set, we obtained the principal components (PCs) and assessed the variance explained by each PC. Based on this evaluation, we selected seven PCs, representing approximately 50% of the variance in gene expression, for further analysis.
@@ -2676,6 +2779,15 @@ aic_plot_zei + mse_plot_zei +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+
+### Retina dataset
+
+https://www.cell.com/cms/10.1016/j.cell.2015.05.002/attachment/fd52950c-fd35-401a-9e60-ca7588ef9001/mmc1.pdf
+
+https://www.cell.com/fulltext/S0092-8674(15)00549-8#app3
+
+32 PCs
+tSNE (perplexity 30)
 
 ## Conclusion {#sec-conclusion}
 

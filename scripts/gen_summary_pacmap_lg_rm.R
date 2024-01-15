@@ -10,25 +10,25 @@ source("nldr_code.R", local = TRUE)
 df_s_curve <- read_rds("data/s_curve/s_curve.rds")
 training_data_s_curve <- read_rds("data/s_curve/s_curve_training.rds")
 
-UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+PaCMAP_s_curve <- read_rds("data/s_curve/s_curve_pacmap.rds")
 
-num_bins_s_curve <- 6
+num_bins_s_curve <- 10
 
-shape_value_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
-                                                      x = UMAP1, y = UMAP2) ## 1.259938
+shape_value_s_curve <- calculate_effective_shape_value(.data = PaCMAP_s_curve,
+                                                       x = PaCMAP1, y = PaCMAP2) ## 1.259938
 
 ## To extract bin centroids
-hexbin_data_object_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve,
-                                                      num_bins = num_bins_s_curve,
-                                                      shape_val = shape_value_s_curve, x = UMAP1, y = UMAP2)
+hexbin_data_object_s_curve <- extract_hexbin_centroids(nldr_df = PaCMAP_s_curve,
+                                                       num_bins = num_bins_s_curve,
+                                                       shape_val = shape_value_s_curve, x = PaCMAP1, y = PaCMAP2)
 
 df_bin_centroids_s_curve <- hexbin_data_object_s_curve$hexdf_data
 
-UMAP_s_curve_with_hb_id <- UMAP_s_curve |>
+PaCMAP_s_curve_with_hb_id <- PaCMAP_s_curve |>
   dplyr::mutate(hb_id = hexbin_data_object_s_curve$hb_data@cID)
 
 ## To generate a data set with high-D and 2D training data
-df_all_s_curve <- dplyr::bind_cols(training_data_s_curve |> dplyr::select(-ID), UMAP_s_curve_with_hb_id)
+df_all_s_curve <- dplyr::bind_cols(training_data_s_curve |> dplyr::select(-ID), PaCMAP_s_curve_with_hb_id)
 
 ## Averaged on high-D
 df_bin_s_curve <- avg_highD_data(.data = df_all_s_curve, column_start_text = "x")
@@ -42,7 +42,7 @@ distance_s_curve <- cal_2D_dist(.data = tr_from_to_df_s_curve)
 
 ## To find the benchmark value
 benchmark <- find_benchmark_value(.data = distance_s_curve, distance_col = distance)
-benchmark <- 4.8
+#benchmark <- 4.8
 
 
 distance <- distance_s_curve
@@ -103,12 +103,12 @@ diagnostic_plot2 <- ggplot(high_low_dist, aes(x = distance_2D, y = distance_high
   ylab(expression(d^{(p)}))
 
 
-trimesh_gr_s_curve_umap <- colour_long_edges(.data = distance_s_curve, benchmark_value = benchmark,
-                                            triangular_object = tr1_object_s_curve, distance_col = distance)
+trimesh_gr_s_curve_pacmap <- colour_long_edges(.data = distance_s_curve, benchmark_value = benchmark,
+                                               triangular_object = tr1_object_s_curve, distance_col = distance)
 
-tour1_s_curve_umap <- show_langevitour(df_all_s_curve, df_bin_s_curve,
-                                      df_bin_centroids_s_curve, benchmark_value = benchmark,
-                                      distance = distance_s_curve, distance_col = distance, col_start = "x")
+tour1_s_curve_pacmap <- show_langevitour(df_all_s_curve, df_bin_s_curve,
+                                         df_bin_centroids_s_curve, benchmark_value = benchmark,
+                                         distance = distance_s_curve, distance_col = distance, col_start = "x")
 
 
 a <- broom::augment(lm_fit) |> mutate(edge_type = if_else(distance_2D >= benchmark, "long edge", "short edge"))
@@ -146,12 +146,12 @@ for(i in 1:length(benchmark_dist_vec)) {
 }
 
 ggplot(eval_data_training, aes(x = benchmark_rm_lg,
-                                                               y = total_error
+                               y = total_error
 )) +
   geom_point() +
   geom_line()
 
 eval_data_training <- eval_data_training |>
-  dplyr::mutate(method = "UMAP")
+  dplyr::mutate(method = "PaCMAP")
 
-write_rds(eval_data_training, "data/s_curve/s_curve_summary_lg_umap.rds")
+write_rds(eval_data_training, "data/s_curve/s_curve_summary_lg_pacmap.rds")
