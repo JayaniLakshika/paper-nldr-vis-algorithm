@@ -207,89 +207,81 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, sharp corners, frame hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, interior hidden, enhanced, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
 
-High-dimensional (high-D) data is widespread in many fields including
-ecology and bioinformatics \citep{Guo2023}, in part because of new data
-collection technologies \citep{Johnstone2009, ayesha2020overview}.
-Working with high-dimensional data poses considerable challenges due to
-the difficulty in visualizing beyond two dimensions \citep{Jia2022}.
-High-dimensional data also presents difficulties for model fitting
-\citep{Johnstone2009}, both computationally and interpretation, each of
-which benefits from visualization.
+High-dimensional (high-D) data is prevalent across various fields, such
+as ecology and bioinformatics \citep{Guo2023}, due to advancements in
+data collection technologies \citep{Johnstone2009, ayesha2020overview}.
+However, visualization of high-D data introduces significant challenges,
+because the complexity of visualizing data beyond two dimensions
+\citep{Jia2022}. In recent years, interactive and dynamic graphics
+systems like \textbf{liminal} \citep{article21} ---which employs
+interactive tools like brushing and linking \citep{article58}---and
+software tools such as \textbf{XGobi}, \textbf{GGobi} \citep{article60},
+\textbf{tourr} \citep{article61}, \textbf{detourr} \citep{article22},
+and \textbf{langevitour} \citep{article09}, involving dynamic methods
+like tours \citep{Asimov1985}, have played a key role in visualizing
+high-D data (data-vis).
 
-To create visual representations of high-dimensional data, it is common
-to apply dimension reduction techniques. Linear methods such as
-principal component analysis (PCA) \citep{Karl1901} have been used for
-many years, and remain popular. Non-linear methods such as
-multi-dimensional scaling (MDS) \citep{Torgerson1967} have also been
-routinely used. In the past decade, there has merged many new techniques
-non-linear dimension reduction (NLDR), such as t-distributed stochastic
-neighbor embedding (tSNE) \citep{Laurens2008}, uniform manifold
-approximation and projection (UMAP) \citep{Leland2018}, designed to
-capture the complex and non-linear relationships present within
-high-dimensional data \citep{Johnstone2009}.
+To create low-dimensional representations (typically in 2D) of high-D
+data, it is common to apply dimension reduction (DR) techniques.
+Approaches for DR involve linear methods such as principal component
+analysis (PCA) \citep{Karl1901}, non-linear methods such as
+multi-dimensional scaling (MDS) \citep{Torgerson1967}. In the past
+decade, many new non-linear dimension reduction (NLDR) techniques have
+emerged, such as t-distributed stochastic neighbor embedding (tSNE)
+\citep{Laurens2008} and uniform manifold approximation and projection
+(UMAP) \citep{Leland2018}, designed to capture the complex and
+non-linear relationships present within high-D data
+\citep{Johnstone2009}. NLDR techniques are the 2D models of high-D data
+in our context.
 
-However, projecting high-dimensional data has limitations, such as
-information loss and potential distortion of essential structures and
-patterns \citep[\citet{article53}]{Jia2022}. The choice of technique and
-parameters further impacts the accuracy of the visualization,
-necessitating careful consideration for meaningful interpretation (see
-Figure~\ref{fig-nldervis}).
+Visualization of NLDR techniques (m-vis) \citep{article59} for the same
+high-D data is particularly important in understanding and finding the
+best representation. If we have done so, the 2D models can be quite
+different from the data structure shown in high-D space. Therefore,
+visualizing the 2D model in high-D space (m-in-dis) is more useful to
+answer different types of questions:
 
-Interactive and dynamic graphics systems have also been developed over
-the years to enable visualizing high dimensions. One method, called a
-tour \citep{Asimov1985}, shows a sequence of linear projections is shown
-as a movie, allowing exploration without warping the space
-\citep{lee2021review}. Interactive tools like \textbf{XGobi} and
-\textbf{GGobi} have been successful in incorporating tours for exploring
-high-dimensional data \citep{article60}. The R package \textbf{tourr}
-\citep{article61} further enhances tour visualization within R, although
-it may face limitations in frame rate and interactive features compared
-to \textbf{GGobi}.
+\begin{itemize}
+\item
+  Is there a best representation of high-D data or are they all
+  providing equivalent information? Is there a best parameter choice to
+  fit the 2D model? How does the model change when it's parameters
+  change?
+\item
+  How well the does the 2D models capture the data structure? Is the
+  model fitting able to capture different data structure like
+  non-linear, clustering?
+\end{itemize}
 
-To overcome these limitations, the R package \textbf{detourr}
-\citep{article22} has been developed, leveraging a Javascript widget via
-htmlwidgets \citep{Ramnath2023} to achieve higher frame rates and
-enhanced interactivity. Additionally, the R package \textbf{langevitour}
-\citep{article09} utilizes Langevin Dynamics to generate a continuous
-path of projections, eliminating the need for interpolation between
-projections for animation. The tour technique has proven valuable in
-exploring statistical model fits \citep{article58} and factorial
-experimental designs \citep{article59}. Augmenting the results of
-non-linear dimensional reduction methods with the tour, as demonstrated
-in the \textbf{liminal} R package \citep{article21}, further enhances
-data exploration.
+If we can't easily ask and answer these questions, the ability of
+understanding the models are restricted. To find the best 2D model and
+the parameter choices, better understanding of the underlying science is
+really important.
 
-While tours \citep{Asimov1985} preserve space without warping
-\citep{lee2021review}, they require integrating multiple low-dimensional
-views mentally to perceive high-dimensional structures. To address this
-challenge, we propose a novel approach by combining the tour technique
-with a low-dimensional manifold. This manifold is created through the
-synergistic use of Non-Linear Dimension Reduction (NLDR) techniques,
-hexagonal binning, and triangulation. By merging these techniques, our
-approach offers a comprehensive and efficient means to visualize and
-explore high-dimensional data while retaining the advantages of both
-tours and NLDR. This integration facilitates a more intuitive perception
-of complex data structures and empowers analysts with a robust tool for
-assessing the accuracy of data transformations. The implementation of
-our approach is available as an R package called \textbf{quollr}.
+Also, the importance of m-vis along with data-vis has been recognized
+and incorporated into interactive software, \textbf{liminal}
+\citep{article21}. But the 2D model and high-D visualize side by side
+and interactive like brushing and linking connect the data in the two
+panels. To address this challenge, we propose a novel approach by
+combining the tour technique with a low-dimensional manifold. This
+manifold is created through the synergistic use of NLDR techniques,
+hexagonal binning, and triangulation. This integration facilitates a
+more understanding of the data structure, how well (or how poorly) NLDR
+techniques perform.
 
 The outline of this paper is as follows. The
 Section~\ref{sec-background} provides an detailed overview of dimension
-reduction methods, triangulation, and tours. Building upon this
-foundation, the Section~\ref{sec-methods} delves into the proposed
-algorithm, \textbf{quollr}, and its implementation details. In
-Section~\ref{sec-prediction}, discusses the effectiveness of the learned
-low-dimensional manifold in accurately representing the complex
-high-dimensional data. Following that, Section~\ref{sec-simpleex}
-presents simple examples from simulations to illustrate the
-functionality of the algorithm. Subsequently,
-Section~\ref{sec-applications} showcases real-world applications of
-\textbf{quollr} on different data sets, particularly in single-cell
+reduction methods, and tours. Building upon this foundation, the
+Section~\ref{sec-methods} delves into the proposed algorithm, its
+implementation details, how to tune the model, model summaries, and a
+synthetic example to illustrate the functionality of the algorithm.
+Subsequently, Section~\ref{sec-applications} showcases applications of
+the algorithm on different data sets, particularly in single-cell
 RNA-seq data. These applications reveal insights into the performance
 and trustworthiness of NLDR algorithms. We analyze the results to
 identify situations where NLDR techniques may lead to misleading
@@ -588,13 +580,13 @@ number of bins exist to effectively represent the low-dimensional data?}
 
 As a result of hexagonal binning for high-D data, all the high-D data
 are clustered into hexagons. In this step, the bin centroids
-(\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2}\)) (see Figure~\ref{fig-meth}
+(\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})\)) (see Figure~\ref{fig-meth}
 Step 2) are obtained \citep{Carr2013}.
 
 \textbf{Step 3: Triangulate bin centroids}
 
 In this step, the algorithm proceeds to triangulate the hexagonal bin
-centroids (see Figure~\ref{fig-meth} (Step 3)). Triangulation is a
+centroids (see Figure~\ref{fig-meth} Step 3). Triangulation is a
 fundamental process in computational geometry and computer graphics that
 involves dividing a set of points in a given space into interconnected
 triangles \citep{article30}. One common algorithm used for triangulation
@@ -1084,48 +1076,8 @@ in 2D?}
 
 \end{figure}
 
-\hypertarget{sec-discussion}{%
-\section{Discussion}\label{sec-discussion}}
-
-Our research introduces a comprehensive framework that leverages tours
-for interactive exploration of high-dimensional data coupled with a
-low-dimensional manifold, facilitated by the \texttt{quollr} R package.
-Regardless of the Non-Linear Dimension Reduction (NLDR) technique in
-use, our approach demonstrates effectiveness through simulation
-examples, particularly in the iterative removal of long edges for a
-smoother representation and capturing cluster variance.
-
-In the example with doublets, our method successfully captures the tweak
-within each cluster, indicating the variance present within them.
-However, the model may not appear smooth in high-dimensional space due
-to considerable noise when the data has a piecewise linear geometry,
-such as the tree simulation.
-
-The practical application of our framework, as showcased with the UMAP
-view, enables visual inspection of well-separated clusters. Furthermore,
-the combined tour and model provide a robust assessment of whether UMAP
-preserves the data structure and accurately transforms the data.
-
-The advantages of our approach include its versatility across various
-NLDR techniques and the ability to generate interactive visualizations
-for detailed exploration. The tour provides an intuitive way to navigate
-and comprehend high-dimensional data while assessing the accuracy of
-dimensionality reduction.
-
-However, one limitation is that the approach may be less effective in
-cases with significant noise, as seen in the tree simulation example.
-Additionally, while our method aids in visual verification, quantifying
-the accuracy of embeddings might require further evaluation metrics.
-
-In conclusion, our framework presents a powerful tool for researchers
-and analysts in single-cell studies to assess their embeddings by
-visually inspecting them alongside the original data. By leveraging the
-advantages of tours and low-dimensional manifolds, our approach offers
-valuable insights into the data transformation process, empowering users
-to make informed decisions in analyzing high-dimensional data. Future
-work could enhance the method's robustness in the presence of noise and
-explore additional evaluation metrics for quantifying embedding
-accuracy.
+\hypertarget{sec-conclusion}{%
+\section{Conclusion}\label{sec-conclusion}}
 
 \hypertarget{references}{%
 \section*{References}\label{references}}

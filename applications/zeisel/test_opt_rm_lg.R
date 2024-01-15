@@ -7,44 +7,45 @@ source("quollr_code.R", local = TRUE)
 source("nldr_code.R", local = TRUE)
 
 ## Import data
-df_zeisel <- read_rds("data/zeisel/zeisel.rds")
-training_data_zeisel <- read_rds("data/zeisel/zeisel_training.rds")
+df_s_curve <- read_rds("data/s_curve/s_curve.rds")
+training_data_s_curve <- read_rds("data/s_curve/s_curve_training.rds")
 
-UMAP_zeisel <- read_rds("data/zeisel/zeisel_umap.rds")
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
 
-num_bins_zeisel <- 6
+num_bins_s_curve <- 6
 
-shape_value_zeisel <- calculate_effective_shape_value(.data = UMAP_zeisel,
+shape_value_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
                                                       x = UMAP1, y = UMAP2) ## 1.259938
 
 ## To extract bin centroids
-hexbin_data_object_zeisel <- extract_hexbin_centroids(nldr_df = UMAP_zeisel,
-                                                      num_bins = num_bins_zeisel,
-                                                      shape_val = shape_value_zeisel, x = UMAP1, y = UMAP2)
+hexbin_data_object_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve,
+                                                      num_bins = num_bins_s_curve,
+                                                      shape_val = shape_value_s_curve, x = UMAP1, y = UMAP2)
 
-df_bin_centroids_zeisel <- hexbin_data_object_zeisel$hexdf_data
+df_bin_centroids_s_curve <- hexbin_data_object_s_curve$hexdf_data
 
-UMAP_zeisel_with_hb_id <- UMAP_zeisel |>
-  dplyr::mutate(hb_id = hexbin_data_object_zeisel$hb_data@cID)
+UMAP_s_curve_with_hb_id <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_s_curve$hb_data@cID)
 
 ## To generate a data set with high-D and 2D training data
-df_all_zeisel <- dplyr::bind_cols(training_data_zeisel |> dplyr::select(-ID), UMAP_zeisel_with_hb_id)
+df_all_s_curve <- dplyr::bind_cols(training_data_s_curve |> dplyr::select(-ID), UMAP_s_curve_with_hb_id)
 
 ## Averaged on high-D
-df_bin_zeisel <- avg_highD_data(.data = df_all_zeisel, column_start_text = "PC")
+df_bin_s_curve <- avg_highD_data(.data = df_all_s_curve, column_start_text = "x")
 
 ## Triangulate bin centroids
-tr1_object_zeisel <- triangulate_bin_centroids(df_bin_centroids_zeisel, x, y)
-tr_from_to_df_zeisel <- generate_edge_info(triangular_object = tr1_object_zeisel)
+tr1_object_s_curve <- triangulate_bin_centroids(df_bin_centroids_s_curve, x, y)
+tr_from_to_df_s_curve <- generate_edge_info(triangular_object = tr1_object_s_curve)
 
 ## Compute 2D distances
-distance_zeisel <- cal_2D_dist(.data = tr_from_to_df_zeisel)
+distance_s_curve <- cal_2D_dist(.data = tr_from_to_df_s_curve)
 
 ## To find the benchmark value
-#benchmark <- find_benchmark_value(.data = distance_zeisel, distance_col = distance)
+benchmark <- find_benchmark_value(.data = distance_s_curve, distance_col = distance)
+benchmark <- 4.8
 
 
-distance <- distance_zeisel
+distance <- distance_s_curve
 
 ###############
 
@@ -53,8 +54,8 @@ distance <- distance %>%
 
 #num_pca <- 4
 
-high_d <- training_data_zeisel
-rownames(high_d) <- training_data_zeisel$ID
+high_d <- training_data_s_curve
+rownames(high_d) <- training_data_s_curve$ID
 
 data_matrix <- data.matrix(high_d, rownames.force = NA)
 
@@ -97,23 +98,24 @@ diagnostic_plot2 <- ggplot(high_low_dist, aes(x = distance_2D, y = distance_high
   ylab(expression(d^{(p)}))
 
 
-trimesh_gr_zeisel_umap <- colour_long_edges(.data = distance_zeisel, benchmark_value = benchmark,
-                                            triangular_object = tr1_object_zeisel, distance_col = distance)
+trimesh_gr_s_curve_umap <- colour_long_edges(.data = distance_s_curve, benchmark_value = benchmark,
+                                            triangular_object = tr1_object_s_curve, distance_col = distance)
 
-tour1_zeisel_umap <- show_langevitour(df_all_zeisel, df_bin_zeisel,
-                                      df_bin_centroids_zeisel, benchmark_value = benchmark,
-                                      distance = distance_zeisel, distance_col = distance, col_start = "PC")
+tour1_s_curve_umap <- show_langevitour(df_all_s_curve, df_bin_s_curve,
+                                      df_bin_centroids_s_curve, benchmark_value = benchmark,
+                                      distance = distance_s_curve, distance_col = distance, col_start = "x")
 
 
 a <- broom::augment(lm_fit) |> mutate(edge_type = if_else(distance_2D >= benchmark, "long edge", "short edge"))
 a_short <- a |> filter(edge_type == "short edge")
-error <- a_short$.resid |> sum()
+error <- a_short$.resid/(a$.resid |> sum())
 
-tibble::tibble(benchmark = benchmark, total_error = error)
+tibble::tibble(benchmark = benchmark, total_error = error |> sum())
 
 ##################
 
-benchmark_dist_vec <- distance_zeisel$distance |> round(1) |> unique()
+benchmark_dist_vec <- distance_s_curve$distance |> round(3) |> unique() |> sort()
+#benchmark_dist_vec <- seq(min(distance_s_curve$distance |> round(3) |> unique()), max(distance_s_curve$distance |> round(3) |> unique()), 1)
 
 vec <- stats::setNames(rep("", 2), c("benchmark_rm_lg", "total_error"))  ## Define column names
 
@@ -127,9 +129,10 @@ for(i in 1:length(benchmark_dist_vec)) {
     mutate(edge_type = if_else(distance_2D >= benchmark_dist_vec[i], "long edge", "short edge"))
   df_with_residuals_short <- df_with_residuals |>
     filter(edge_type == "short edge")
-  tot <- (df_with_residuals_short$.resid |> sum())/(df_with_residuals$.resid |> sum())
+  #tot <- (df_with_residuals_short$.resid |> sum())/(df_with_residuals$.resid |> sum())
+  tot <- (df_with_residuals_short$.resid)/((df_with_residuals$.resid |> sum()) * NROW(df_with_residuals_short))
 
-  df_res_benchamrk <- tibble::tibble(benchmark_rm_lg = benchmark_dist_vec[i], total_error = tot)
+  df_res_benchamrk <- tibble::tibble(benchmark_rm_lg = benchmark_dist_vec[i], total_error = tot |> sum())
 
   eval_data_training <- dplyr::bind_rows(eval_data_training, df_res_benchamrk)
 
@@ -142,3 +145,4 @@ ggplot(eval_data_training, aes(x = benchmark_rm_lg,
 )) +
   geom_point() +
   geom_line()
+
