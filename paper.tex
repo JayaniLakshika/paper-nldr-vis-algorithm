@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -929,7 +929,7 @@ values (see Figure~\ref{fig-diagnosticpltScurve}).
 
 \begin{figure}
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-modelScurve-1.pdf}
 
 }
 
@@ -971,6 +971,23 @@ n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
 = random, MN\_ratio = 0.9, FP\_ratio = 2). Is there a best
 representation of the original data or are they all providing equivalent
 information?}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-modelfiveGau-1.pdf}
+
+}
+
+\caption{\label{fig-modelfiveGau}Is there a best model to represent the
+original data in 2D space or are they all providing equivalent
+information?, (a) Model in the 2D space with tSNE
+(\url{https://youtu.be/uy9SkAo6gAE}), (b) Model in the 2D space with
+UMAP (\url{https://youtu.be/0MJDhHrh_Ug}), (c) Model in the 2D space
+with PHATE (\url{https://youtu.be/HbVv0uy0QWk}), (d) Model in the 2D
+space with TriMAP (\url{https://youtu.be/2OGwipAjzc8}), and (e) Model in
+the 2D space with PaCMAP (\url{https://youtu.be/pkokI8d-cBk}).}
 
 \end{figure}
 
@@ -1033,29 +1050,13 @@ structure and relationships (see \textbf{?@fig-pbmc\_sc}).
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5PBMC-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
 
 }
 
-\caption{\label{fig-nldervis5PBMC}2D layouts from different NLDR
-techniques applied for the training PBMC dataset: (a) tSNE (perplexity =
-30), (b) UMAP (n\_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP
-(n\_inliers = 5, n\_outliers = 4, n\_random = 3), and (e) PaCMAP
-(n\_neighbors = 10, init = random, MN\_ratio = 0.9, FP\_ratio = 2). Is
-there a best representation of the original data or are they all
-providing equivalent information?}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
-different NLDR techniques applied to training PBMC dataset. What is the
-best NLDR technique to represent the original data in 2D?}
+\caption{\label{fig-nldervisPBMCUMAP}2D layout from UMAP (n\_neighbors =
+30, min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
+representation of the original data?}
 
 \end{figure}
 
