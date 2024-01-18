@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, breakable, sharp corners, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, borderline west={3pt}{0pt}{shadecolor}, breakable, enhanced, interior hidden, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -983,11 +983,11 @@ information?}
 \caption{\label{fig-modelfiveGau}Is there a best model to represent the
 original data in 2D space or are they all providing equivalent
 information?, (a) Model in the 2D space with tSNE
-(\url{https://youtu.be/uy9SkAo6gAE}), (b) Model in the 2D space with
-UMAP (\url{https://youtu.be/0MJDhHrh_Ug}), (c) Model in the 2D space
-with PHATE (\url{https://youtu.be/HbVv0uy0QWk}), (d) Model in the 2D
-space with TriMAP (\url{https://youtu.be/2OGwipAjzc8}), and (e) Model in
-the 2D space with PaCMAP (\url{https://youtu.be/pkokI8d-cBk}).}
+(\url{https://youtu.be/x5VPB-wOLm4}), (b) Model in the 2D space with
+UMAP (\url{https://youtu.be/Cm1dW6iLyHQ}), (c) Model in the 2D space
+with PHATE (\url{https://youtu.be/HB0Y3ilz6sI}), (d) Model in the 2D
+space with TriMAP (\url{https://youtu.be/iSVkXIrOrSA}), and (e) Model in
+the 2D space with PaCMAP (\url{https://youtu.be/O2QBctsc4uM}).}
 
 \end{figure}
 
@@ -1007,50 +1007,40 @@ original data in 2D?}
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
 
-\hypertarget{single-cell-rna-seq-data-of-human}{%
-\subsection{Single-cell RNA-seq data of
-human}\label{single-cell-rna-seq-data-of-human}}
+\hypertarget{human-peripheral-blood-mononclear-cells-pbmcs-data}{%
+\subsection{Human peripheral blood mononclear cells (PBMCs)
+data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
 
-https://github.com/XiDsLab/Festem\_paper/tree/main
-
-\citet{Chen2023}
-
-https://satijalab.org/seurat/articles/pbmc3k\_tutorial.html
-https://www.cell.com/fulltext/S0092-8674(15)00549-8
-
-In the field of single-cell studies, a common analysis task involves
-clustering to identify groups of cells with similar expression profiles.
-Analysts often turn to NLDR techniques to verify and identify these
-clusters and explore developmental trajectories (e.g., example 1). In
-clustering workflows, the main objective is to verify the existence of
-clusters and subsequently identify them as specific cell types by
-examining the expression of ``known'' marker genes. In this context, a
-``faithful'' embedding should ideally preserve the topology of the data,
-ensuring that cells corresponding to the same cell type are situated
-close to the high-dimensional space.
-
-To begin our analysis, we installed the Peripheral Blood Mononuclear
-Cells (pbmc) data set obtained from 10x Genomics using the
-\texttt{SeuratData} R package \citep{Rahul2019}, which facilitates the
-distribution of data sets in the form of Seurat objects
-\citep{Yuhan2021}. This data set contains 13,714 features across 2,700
-samples within a single assay. The active assay is RNA, with 13,714
-features representing different gene expressions. After loading the data
-set, we obtained the principal components (PCs) and assessed the
-variance explained by each PC. Based on this evaluation, we selected
-seven PCs, representing approximately 50\% of the variance in gene
-expression, for further analysis.
-
-Next, we employed the UMAP technique with default parameter settings. As
-illustrated in \textbf{?@fig-pbmc}, the cell types B and Platelet are
-well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono,
-and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and
-CD8 T are grouped together in another cluster. The values utilized to
-construct the smooth low-dimensional manifold are presented in
-\textbf{?@tbl-table02}. The linked video, demonstrating the tour with
-the model, showcases the generation of a smooth surface for this
-application, enabling a comprehensive exploration of the data's
-structure and relationships (see \textbf{?@fig-pbmc\_sc}).
+\begin{itemize}
+\item
+  Intro to the data set (This data set contains 13,714 features across
+  2,700 samples within a single assay. The active assay is RNA, with
+  13,714 features representing different gene expressions.)
+\item
+  2622 cells
+\item
+  Evaluate Festem on DEG detection (Festem enabled identification of
+  often-missed fine cell types)
+\item
+  Using the Festem-selected genes, identified 10 clusters in the PBMCsk
+  data and annotated them based on the expression of canonical markers
+\item
+  The 10 clusters included immune cells such as naive CD4 T cells,
+  memory CD4 T cells, CD8 T cells, CD14 monocytes, FCGR3A monocytes,
+  Natural Killer (NK) cells, B cells and Dendritic Cells (DC).
+\item
+  In addition to these common cell types, Festem identified a fine cell
+  type, CD27− CD4+ memory T cells, which were often missed by other
+  methods.
+\item
+  The CD27. CD4+ memory T cells identified by Festem expressed common
+  marker genes (IL7R and S100A4) of memory T cells, but did not express
+  CD27. These cells also had downregulated expression of SELL, CCR7, MAL
+  and LEF1, and upregulated expression of CCL5 (Fig. 4B) and thus were
+  the CD27- CD4+ memory T cells in the literature (36). The CD27- CD4+
+  memory T cells were known to be at a more differentiated state and
+  have stronger antigen-recall responses than their CD27+ counterparts.
+\end{itemize}
 
 \begin{figure}
 
@@ -1058,9 +1048,10 @@ structure and relationships (see \textbf{?@fig-pbmc\_sc}).
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP}2D layout from UMAP (n\_neighbors =
-30, min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
-representation of the original data?}
+\caption{\label{fig-nldervisPBMCUMAP}(a) 2D layout from UMAP
+(n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
+this a best representation of the original data?, (b) Model in the 2D
+space with UMAP (\url{https://youtu.be/Ia3aL3L-fCk})}
 
 \end{figure}
 
@@ -1114,6 +1105,9 @@ in 2D?}
 \hypertarget{retina-dataset}{%
 \subsection{Retina dataset}\label{retina-dataset}}
 
+Human retina:
+https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-7316
+
 https://www.cell.com/cms/10.1016/j.cell.2015.05.002/attachment/fd52950c-fd35-401a-9e60-ca7588ef9001/mmc1.pdf
 
 https://www.cell.com/fulltext/S0092-8674(15)00549-8\#app3
@@ -1122,6 +1116,16 @@ https://www.cell.com/fulltext/S0092-8674(15)00549-8\#app3
 
 \hypertarget{kang-dataset}{%
 \subsection{Kang dataset}\label{kang-dataset}}
+
+For the Kang lupus dataset (29), we obtained 16 cell types based on
+clustering of the Festem- selected genes (Fig. 4E and Fig. S10, S11),
+including 2 fine cell types that were often missed by other methods. The
+2 cell types were IFNhi CD14+ monocytes with high expression of type I
+interferon-related (IFN) genes, and HSP+ CD4 T cells with up-regulated
+heat- shock-protein-related (HSP) genes. The HSP+ CD4 T cells might
+result from cryopreservation and thawing of T cells (37). Other than
+devianceFS, other available methods could not identify these HSP+ CD4 T
+cells (Fig. S11).
 
 \begin{figure}
 

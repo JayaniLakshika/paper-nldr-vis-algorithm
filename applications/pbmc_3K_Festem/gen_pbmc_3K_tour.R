@@ -136,6 +136,30 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
   )
 
 
+### Define type column
+df <- df_all_pbmc |>
+  dplyr::select(tidyselect::starts_with("PC"), cell_label) |>
+  dplyr::rename("type" = "cell_label") ## original dataset
+
+df$type <- as.factor(df$type)
+
+levels(df$type) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+
+df_b <- df_bin_pbmc |>
+  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::select(-hb_id) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+df_exe <- dplyr::bind_rows(df_b, df)
+
+distance_df_small_edges <- distance_pbmc %>%
+  dplyr::filter(distance < benchmark_pbmc)
+## Since erase brushing is considerd.
+
+langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from,
+                         lineTo = distance_df_small_edges$to, group = factor(df_exe$type, levels = c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC", "model")), pointSize = 3,
+                         levelColors = c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#33a02c"))
+
 
 tour1_pbmc_umap <- show_langevitour(df_all_pbmc, df_bin_pbmc,
                                       df_bin_centroids_pbmc, benchmark_value = benchmark_pbmc,
