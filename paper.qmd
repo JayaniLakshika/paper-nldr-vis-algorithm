@@ -890,7 +890,7 @@ a2 + a1 +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
-### Tunning the model
+### Tuning the model
 
 In our model tuning process, we strategically adjust three key parameters to optimize the performance and accuracy of our approach. They are (i) the total number of bins ($b$), (ii) a benchmark value to remove low-density hexagons, and (iii) a benchmark value to remove long edges.
 
@@ -2790,6 +2790,8 @@ thus were the CD27- CD4+ memory T cells in the literature (36). The CD27- CD4+ m
 cells were known to be at a more differentiated state and have stronger antigen-recall responses
 than their CD27+ counterparts.
 
+- learned from the model: There are 3 well-separated clusters in 2D, but if look at the model in high-D space, the three clusters are much closer. Also, there is some continuity within the clustering structure and it didn't capture well. Therefore UMAP with n:neighbour 30 is not a good representation for this data set. 
+
 
 
 
@@ -2942,7 +2944,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/Ia3aL3L-fCk>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/lIA6ZPZAcLE>)"
 #| label: fig-nldervisPBMCUMAP
  #| out-width: 100%
 
@@ -3034,6 +3036,137 @@ aic_plot_pbmc + mse_plot_pbmc +
 ```
 -->
 
+### HARPS GTO sample dataset 
+
+- In 2D, there are two well-separated clusters
+
+- One cluster have a sparse data space within the cluster
+
+- There is a line in right corner of the structure that is not connected any other trimesh points. This line create a long edge in high-D space.
+
+- In high-D view, the clusters having some non-linearity patter, which is also not captured in tSNE. Therefore, this is not a good choice.
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_40.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = cluster))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) #+
+  # annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+training_data_1 <- read_rds("data/harps/harps_data.rds")
+training_data_1 <- training_data_1 |>
+  mutate(ID = 1:NROW(training_data_1))
+
+clusters <- training_data_1$cluster
+select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+
+training_data_1 <- training_data_1 |> select(-cluster)
+names(training_data_1) <- append(paste0("x", 1:17), "ID")
+
+tSNE_data_harps <- tSNE_data_harps |>
+  select(tSNE1, tSNE2) |>
+  mutate(ID = 1:NROW(tSNE_data_harps))
+
+### tSNE
+
+num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
+                                                cell_area = 1) #43
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+#
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2D_dist(.data = tr_from_to_df_tsne_harps)
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
+
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 40) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/txTD7GTxt6Y>)"
+#| label: fig-nldervisharpstSNE
+
+
+plot_list2_harps + trimesh_removed_tsne_harps +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+<!--
 ### Single-Cell Tagged Reverse Transcription sequencing data of mouse
 
 The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics (STRT-Seq). Within this dataset, information is collected from a substantial 2,816 individual mouse brain cells. Each of these cells acts as a molecular snapshot, capturing the distinctive genetic activity within various cell types. This diversity spans neurons, glial cells, and other essential components of the brain, offering a comprehensive view of the cellular tapestry.
@@ -3301,6 +3434,7 @@ plot_list2_kang
 
 # 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
 ```
+-->
 
 ## Conclusion {#sec-conclusion}
 
@@ -3315,7 +3449,7 @@ The advantages of our approach include its versatility across various NLDR techn
 However, one limitation is that the approach may be less effective in cases with significant noise, as seen in the tree simulation example. Additionally, while our method aids in visual verification, quantifying the accuracy of embeddings might require further evaluation metrics.
 
 In conclusion, our framework presents a powerful tool for researchers and analysts in single-cell studies to assess their embeddings by visually inspecting them alongside the original data. By leveraging the advantages of tours and low-dimensional manifolds, our approach offers valuable insights into the data transformation process, empowering users to make informed decisions in analyzing high-dimensional data. Future work could enhance the method's robustness in the presence of noise and explore additional evaluation metrics for quantifying embedding accuracy.-->
-  
+
   
 ## References {.unnumbered}
   
