@@ -794,15 +794,31 @@ tr_df <- tibble::tibble(x = tr1_object$x, y = tr1_object$y)
 ## Compute 2D distances
 distance <- cal_2D_dist(.data = tr_from_to_df)
 
-benchmark_value <- 19.4
+## Map hb_id
+
+df_bin_n <- df_bin |>
+  mutate(ID = 1:NROW(df_bin))
+
+tr_from_to_df_n <- left_join(tr_from_to_df, df_bin_n, by = c("from" = "ID")) |>
+  rename("from_hb_id" = "hb_id")
+
+tr_from_to_df_n <- left_join(tr_from_to_df_n, df_bin_n, by = c("to" = "ID")) |>
+  rename("to_hb_id" = "hb_id")
+
+hb_id_selected <- tr_from_to_df_n |>
+  dplyr::filter((from == 2) & (to == 3)) |>
+  head(1)
+
+
+# benchmark_value <- 19.4
 
 # Filter and label small and long edges
 distance_df_small_edges <- distance |>
-  dplyr::filter(distance < benchmark_value) |>
+  dplyr::filter((from != 2) | (to != 3)) |>
   dplyr::mutate(type = "small_edges")
 
 distance_df_long_edges <- distance |>
-  dplyr::filter(distance >= benchmark_value) |>
+  dplyr::filter((from == 2) & (to == 3)) |>
   dplyr::mutate(type = "long_edges")
 
 # Combine small and long edges
@@ -810,17 +826,38 @@ distance_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edg
 
 tr_from_to_df_coord_with_group <- merge(tr_from_to_df, distance_edges, by = c("from", "to"))
 
-UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(2, 15)) |>
-  dplyr::mutate(select_point = if_else(hb_id == 2, "data1", "data2"))
+UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)) |>
+  dplyr::mutate(select_point = if_else(hb_id == hb_id_selected$from_hb_id, "data1", "data2"))
 
-a1 <- ggplot(tr_df |> dplyr::filter((y == min(tr_df$y)) | (y == max(tr_df$y))), aes(x = x, y = y)) +
+UMAP_data_with_hb_id_selected_no <- UMAP_data_with_hb_id |> dplyr::filter(!(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)))
+
+# bin_coord_1 <- tr_df |>
+#   dplyr::filter((x == hb_id_selected$x_from)) |>
+#   dplyr::filter((y == hb_id_selected$y_from))
+
+bin_coord_1 <- tr_df |>
+  head(1)
+
+
+# bin_coord_2 <- tr_df |>
+#   dplyr::filter((x == hb_id_selected$x_to)) |>
+#   dplyr::filter((y == hb_id_selected$y_to))
+
+bin_coord_2 <- tr_df |>
+  dplyr::filter(row_number() == 2)
+  
+
+bin_coord <- dplyr::bind_rows(bin_coord_1, bin_coord_2)
+
+a1 <- ggplot(bin_coord, aes(x = x, y = y)) +
   geom_segment(
-    aes(x = x_from, y = y_from, xend = x_to, yend = y_to, color = type),
-    data = tr_from_to_df_coord_with_group
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to),
+    data = tr_from_to_df_coord_with_group, colour = "#f6e8c3"
   ) +
   geom_point() +
   coord_equal() +
-  scale_colour_manual(values = c("#000000", "#f6e8c3"))  + 
+  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5, size = 1) +
+  scale_color_manual(values=c("#e6550d", "#000000")) +
   geom_point(size = 3, colour = "#33a02c") + 
   #ggtitle("(b)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
@@ -835,11 +872,17 @@ a1 <- ggplot(tr_df |> dplyr::filter((y == min(tr_df$y)) | (y == max(tr_df$y))), 
 
 
 a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
-  geom_polygon(color = "#e7e1ef", aes(group = polygon_id), fill = "#ffffff") +
-  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5) +
+  geom_polygon(color = "#deebf7", aes(group = polygon_id), fill = "#ffffff") +
+  geom_segment(
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to), colour = "#f6e8c3",
+    data = tr_from_to_df_coord_with_group
+  ) +
+  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), size = 1, alpha = 0.5) +
   scale_color_manual(values=c("#e6550d", "#000000")) +
-  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(2, 15)), aes(x = x, y = y), colour = "#33a02c", size = 3) +
+  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)), aes(x = x, y = y), colour = "#33a02c", size = 3) +
+    geom_point(data = UMAP_data_with_hb_id_selected_no, aes(x = UMAP1, y = UMAP2), colour = "#6a3d9a", size = 1, alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  coord_cartesian(xlim =c(-5, 8), ylim = c(-10, 10)) +
   theme_light() +
   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -852,23 +895,23 @@ a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
 ## Script to make coloring data points with a line
 
 df1 <- df_all |> 
-  dplyr::filter(hb_id == "2") |>
+  dplyr::filter(hb_id == as.character(hb_id_selected$from_hb_id)) |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data1") ## original dataset
 
 df2 <- df_all |> 
-  dplyr::filter(hb_id == "15") |>
+  dplyr::filter(hb_id == as.character(hb_id_selected$to_hb_id)) |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data2") ## original dataset
 
 df3 <- df_all |> 
-  dplyr::filter(!(hb_id %in% c("2", "15"))) |>
+  dplyr::filter(!(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id)))) |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data") ## original dataset
 
 df_b <- df_bin |> 
   dplyr::filter(hb_id %in% df_bin_centroids$hexID) |>
-  dplyr::filter(hb_id %in% c("2", "15")) |>
+  dplyr::filter(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id))) |>
   dplyr::select(-hb_id) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
@@ -882,7 +925,7 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| warning: false
 #| echo: false
 #| label: fig-wkhighD
-#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://www.youtube.com/watch?v=vBvM30Plt24>.
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/yN-RNPV_cHQ>.
 
 a2 + a1 +
   plot_annotation(tag_levels = 'a') +
@@ -899,7 +942,7 @@ In our model tuning process, we strategically adjust three key parameters to opt
 Adjusting the parameter $b_1$ provides control over the total number of bins $b$, allowing us to fine-tune the hexagonal grid.
 
 
-#### Benchmark value to remove low-density hexagons
+#### Remove low-density hexagons
 
 Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
 
@@ -913,7 +956,7 @@ $${#eq-equationp3}
 
 The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
 
-#### Benchmark value to remove long edges
+#### Remove long edges
 
 The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
 

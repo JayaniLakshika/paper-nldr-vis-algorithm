@@ -207,7 +207,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, frame hidden, interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, boxrule=0pt, enhanced, sharp corners, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -664,8 +664,7 @@ video linked in Figure~\ref{fig-wkhighD}).
 (a) visualize the points and the hexagonal bin centroids related 2nd and
 15th hexagons, (b) visualization of the edge connected the 2nd and 15th
 hexagons (colored in red) in the triangular mesh. A video of tour
-animation is available at
-\url{https://www.youtube.com/watch?v=vBvM30Plt24}.}
+animation is available at \url{https://youtu.be/yN-RNPV_cHQ}.}
 
 \end{figure}
 
@@ -684,9 +683,9 @@ edges.
 Adjusting the parameter \(b_1\) provides control over the total number
 of bins \(b\), allowing us to fine-tune the hexagonal grid.
 
-\hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
-\subsubsection{Benchmark value to remove low-density
-hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
+\hypertarget{remove-low-density-hexagons}{%
+\subsubsection{Remove low-density
+hexagons}\label{remove-low-density-hexagons}}
 
 Addressing low-density hexagons is a systematic process to handle
 sparsely represented data in certain regions. For each hex bin, we
@@ -709,9 +708,8 @@ of regions with insufficient data density, focusing on areas with more
 significant data representation and preserving the overall structure in
 the low-dimensional space.
 
-\hypertarget{benchmark-value-to-remove-long-edges}{%
-\subsubsection{Benchmark value to remove long
-edges}\label{benchmark-value-to-remove-long-edges}}
+\hypertarget{remove-long-edges}{%
+\subsubsection{Remove long edges}\label{remove-long-edges}}
 
 The removal of long edges is a critical step to create a smoother
 representation by iteratively eliminating hexagons with excessive
