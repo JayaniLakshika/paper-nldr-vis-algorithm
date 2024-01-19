@@ -135,15 +135,57 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
   )
 
+############ Compute absolute residuals
+
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+library(ggbeeswarm)
+error_df$group <- "1"
+ggplot(error_df, aes(x = group, y = total)) +
+  geom_quasirandom()+
+  ylim(0, max(unlist(error_df$total))+ 0.5) + coord_flip()
+
+### The minimum error is 0 and the maximum is 42.17439
+### There is lot of points with error 0,
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 2, "error 2 or less",
+                        if_else(total <= 10, "error 2-10",
+                        if_else(total <= 15, "error 10-15",
+                        if_else(total <= 20, "error 15-20",
+                        if_else(total <= 25, "error 20-25",
+                        if_else(total <= 30, "error 25-30",
+                        if_else(total <= 35, "error 30-35", "error greter than 35"))))))))
 
 ### Define type column
 df <- df_all_pbmc |>
-  dplyr::select(tidyselect::starts_with("PC"), cell_label) |>
-  dplyr::rename("type" = "cell_label") ## original dataset
+  dplyr::select(tidyselect::starts_with("PC")) #|>
+  #dplyr::rename("type" = "cell_label") ## original dataset
 
-df$type <- as.factor(df$type)
+residual_df <- error_df |> select(type)
 
-levels(df$type) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+df <- dplyr::bind_cols(df, residual_df)
+
+
+#df$type <- as.factor(df$type)
+
+#levels(df$type) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
 
 df_b <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
@@ -157,8 +199,11 @@ distance_df_small_edges <- distance_pbmc %>%
 ## Since erase brushing is considerd.
 
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from,
-                         lineTo = distance_df_small_edges$to, group = factor(df_exe$type, levels = c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC", "model")), pointSize = 3,
-                         levelColors = c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#33a02c"))
+                         lineTo = distance_df_small_edges$to, group = factor(df_exe$type , levels = c("error 2 or less", "error 2-10", "error 10-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error greter than 35", "model")
+), pointSize = 3,
+                         levelColors = c("#b15928", "#1f78b4", "#ccebc5",
+                                         "#fb9a99", "#cab2d6", "#ff7f00",
+                                         "#ffed6f", "#e31a1c", "#33a02c"))
 
 
 tour1_pbmc_umap <- show_langevitour(df_all_pbmc, df_bin_pbmc,

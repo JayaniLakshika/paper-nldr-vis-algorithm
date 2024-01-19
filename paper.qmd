@@ -796,18 +796,18 @@ distance <- cal_2D_dist(.data = tr_from_to_df)
 
 ## Map hb_id
 
-df_bin_n <- df_bin |>
-  mutate(ID = 1:NROW(df_bin))
+df_bin_centroids_n <- df_bin_centroids |>
+  select(hexID) |>
+  mutate(ID = 1:NROW(df_bin_centroids))
 
-tr_from_to_df_n <- left_join(tr_from_to_df, df_bin_n, by = c("from" = "ID")) |>
-  rename("from_hb_id" = "hb_id")
+tr_from_to_df_n <- left_join(tr_from_to_df, df_bin_centroids_n, by = c("from" = "ID")) |>
+  rename("from_hb_id" = "hexID")
 
-tr_from_to_df_n <- left_join(tr_from_to_df_n, df_bin_n, by = c("to" = "ID")) |>
-  rename("to_hb_id" = "hb_id")
+tr_from_to_df_n <- left_join(tr_from_to_df_n, df_bin_centroids_n, by = c("to" = "ID")) |>
+  rename("to_hb_id" = "hexID")
 
 hb_id_selected <- tr_from_to_df_n |>
-  dplyr::filter((from == 2) & (to == 3)) |>
-  head(1)
+  dplyr::filter((from == 2) & (to == 3)) 
 
 
 # benchmark_value <- 19.4
@@ -824,40 +824,39 @@ distance_df_long_edges <- distance |>
 # Combine small and long edges
 distance_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
 
-tr_from_to_df_coord_with_group <- merge(tr_from_to_df, distance_edges, by = c("from", "to"))
+tr_from_to_df_coord_with_group <- inner_join(tr_from_to_df, distance_edges, by = c("from" = "from", "to" = "to"))
 
 UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)) |>
   dplyr::mutate(select_point = if_else(hb_id == hb_id_selected$from_hb_id, "data1", "data2"))
 
 UMAP_data_with_hb_id_selected_no <- UMAP_data_with_hb_id |> dplyr::filter(!(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)))
 
-# bin_coord_1 <- tr_df |>
-#   dplyr::filter((x == hb_id_selected$x_from)) |>
-#   dplyr::filter((y == hb_id_selected$y_from))
-
 bin_coord_1 <- tr_df |>
-  head(1)
+  dplyr::filter((x == hb_id_selected$x_from)) |>
+  dplyr::filter((y == hb_id_selected$y_from))
 
+# bin_coord_1 <- tr_df |>
+#   head(1)
 
-# bin_coord_2 <- tr_df |>
-#   dplyr::filter((x == hb_id_selected$x_to)) |>
-#   dplyr::filter((y == hb_id_selected$y_to))
 
 bin_coord_2 <- tr_df |>
-  dplyr::filter(row_number() == 2)
+  dplyr::filter((x == hb_id_selected$x_to)) |>
+  dplyr::filter((y == hb_id_selected$y_to))
+
+# bin_coord_2 <- tr_df |>
+#   dplyr::filter(row_number() == 2)
   
 
 bin_coord <- dplyr::bind_rows(bin_coord_1, bin_coord_2)
 
 a1 <- ggplot(bin_coord, aes(x = x, y = y)) +
   geom_segment(
-    aes(x = x_from, y = y_from, xend = x_to, yend = y_to),
-    data = tr_from_to_df_coord_with_group, colour = "#f6e8c3"
-  ) +
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to, colour = type),
+    data = tr_from_to_df_coord_with_group) +
   geom_point() +
   coord_equal() +
   geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5, size = 1) +
-  scale_color_manual(values=c("#e6550d", "#000000")) +
+  scale_color_manual(values=c("#e6550d", "#000000", "#e31a1c", "#f6e8c3")) +
   geom_point(size = 3, colour = "#33a02c") + 
   #ggtitle("(b)") + 
   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
@@ -925,7 +924,7 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| warning: false
 #| echo: false
 #| label: fig-wkhighD
-#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/yN-RNPV_cHQ>.
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/ffWFVK1UTIc>.
 
 a2 + a1 +
   plot_annotation(tag_levels = 'a') +
@@ -940,162 +939,6 @@ In our model tuning process, we strategically adjust three key parameters to opt
 #### Total number of bins
 
 Adjusting the parameter $b_1$ provides control over the total number of bins $b$, allowing us to fine-tune the hexagonal grid.
-
-
-#### Remove low-density hexagons
-
-Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
-
-$$
-\text{standard count} = \frac{\text{count}}{\text{max count}} 
-$${#eq-equationp2}
-
-$$
-\text{mean density} = \frac{\text{standard count}}{6} 
-$${#eq-equationp3}
-
-The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
-
-#### Remove long edges
-
-The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
-
-
-- Compute high-D distances (using averaged high-D data)
-- Fit a linear model using response as distance_high_D and predictor as distance_2D
-- Filter the model residuals only for short edges
-- compute error for each edge connection as (residual for that point)/(total residual for all edges * number of short edges) 
-
-```{r}
-#| echo: false
-#| warning: false
-
-error_df_lg_1 <- read_rds("data/s_curve/s_curve_summary_lg_tsne.rds")
-error_df_lg_2 <- read_rds("data/s_curve/s_curve_summary_lg_umap.rds")
-error_df_lg_3 <- read_rds("data/s_curve/s_curve_summary_lg_phate.rds")
-error_df_lg_4 <- read_rds("data/s_curve/s_curve_summary_lg_trimap.rds")
-error_df_lg_5 <- read_rds("data/s_curve/s_curve_summary_lg_pacmap.rds")
-
-error_df_lg <- dplyr::bind_rows(error_df_lg_1, error_df_lg_2, error_df_lg_3, error_df_lg_4, error_df_lg_5)
-
-error_df_lg$method <- factor(error_df_lg$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-error_plot_lg_1 <- ggplot(error_df_lg_1, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c")) +
-  ylab("error") +
-  xlab("Benchmark value")
-
-error_plot_lg_2 <- ggplot(error_df_lg_2, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#377eb8")) +
-  ylab("error") +
-  xlab("Benchmark value")
-
-error_plot_lg_3 <- ggplot(error_df_lg_3, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#4daf4a")) +
-  ylab("error") +
-  xlab("Benchmark value")
-
-
-error_plot_lg_4 <- ggplot(error_df_lg_4, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#984ea3")) +
-  ylab("error") +
-  xlab("Benchmark value")
-
-error_plot_lg_5 <- ggplot(error_df_lg_5, aes(x = benchmark_rm_lg, y = total_error, color = method)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#ff7f00")) +
-  ylab("error") +
-  xlab("Benchmark value")
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges?
-#| label: fig-diagnosticpltScurvelgrm
-#| out-width: 100%
-
-error_plot_lg_1 + error_plot_lg_2 + error_plot_lg_3 + error_plot_lg_4 + error_plot_lg_5 +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', nrow = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
-```
-
-### Model summaries {#sec-summary}
-
-#### Predicted values and residuals
-
-The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
-
-The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
-
-$$
-\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-$$ {#eq-equation11}
-
-
-Here, $n$ represents the number of bins, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
-
-The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
-
-
-#### Goodness of fit statistics
-
-Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
-
-$$
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{b}
-$$ {#eq-equation9}
-
-Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
-
-Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
-                    
-$$
-\text{AIC} = 2bp + np * log(\text{MSE})
-$$ {#eq-equation10}
-  
-  These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
-
 
 ```{r}
 #| warning: false
@@ -1368,6 +1211,189 @@ aic_plot + mse_plot +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+
+#### Remove low-density hexagons
+
+Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
+
+$$
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+$${#eq-equationp2}
+
+$$
+\text{mean density} = \frac{\text{standard count}}{6} 
+$${#eq-equationp3}
+
+The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
+
+<!--lwd smoothing criteria 1 with s-curve-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_1_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_tsne.rds")
+MSE_df_2_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_umap.rds")
+MSE_df_3_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_phate.rds")
+MSE_df_4_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_trimap.rds")
+MSE_df_5_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_pacmap.rds")
+
+MSE_df_lwd <- dplyr::bind_rows(MSE_df_1_lwd, MSE_df_2_lwd, MSE_df_3_lwd, MSE_df_4_lwd, MSE_df_5_lwd)
+
+MSE_df_lwd$method <- factor(MSE_df_lwd$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+## To draw with AIC
+aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training"), aes(x = benchmark_rm_hex,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Benchmark value")
+## Effective number of bins along x-axis
+
+mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Benchmark value")
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?
+#| label: fig-diagnosticpltScurvelwd
+#| out-width: 100%
+
+aic_plot_lwd + mse_plot_lwd +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
+#### Remove long edges
+
+The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
+
+
+```{r}
+#| echo: false
+#| warning: false
+
+error_df_lg_1 <- read_rds("data/s_curve/s_curve_summary_lg_tsne.rds")
+error_df_lg_2 <- read_rds("data/s_curve/s_curve_summary_lg_umap.rds")
+error_df_lg_3 <- read_rds("data/s_curve/s_curve_summary_lg_phate.rds")
+error_df_lg_4 <- read_rds("data/s_curve/s_curve_summary_lg_trimap.rds")
+error_df_lg_5 <- read_rds("data/s_curve/s_curve_summary_lg_pacmap.rds")
+
+error_df_lg <- dplyr::bind_rows(error_df_lg_1, error_df_lg_2, error_df_lg_3, error_df_lg_4, error_df_lg_5)
+
+error_df_lg$method <- factor(error_df_lg$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+## To draw with AIC
+aic_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Benchmark value")
+## Effective number of bins along x-axis
+
+mse_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Benchmark value")
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges?
+#| label: fig-diagnosticpltScurvelgrm
+#| out-width: 100%
+
+aic_plot_lg + mse_plot_lg +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
+```
+
+### Model summaries {#sec-summary}
+
+#### Predicted values and residuals
+
+The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
+
+The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
+
+$$
+\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
+$$ {#eq-equation11}
+
+
+Here, $n$ represents the number of bins, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
+
+The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
+
+
+#### Goodness of fit statistics
+
+Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
+
+$$
+\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{b}
+$$ {#eq-equation9}
+
+Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
+
+Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
+                    
+$$
+\text{AIC} = 2bp + np * log(\text{MSE})
+$$ {#eq-equation10}
+  
+  These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
 
 <!--UMAP with different param choices-->
@@ -1772,70 +1798,7 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-<!--lwd smoothing criteria 1 with s-curve-->
 
-```{r}
-#| warning: false
-#| echo: false
-
-MSE_df_1_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_tsne.rds")
-MSE_df_2_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_umap.rds")
-MSE_df_3_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_phate.rds")
-MSE_df_4_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_trimap.rds")
-MSE_df_5_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_pacmap.rds")
-
-MSE_df_lwd <- dplyr::bind_rows(MSE_df_1_lwd, MSE_df_2_lwd, MSE_df_3_lwd, MSE_df_4_lwd, MSE_df_5_lwd)
-
-MSE_df_lwd$method <- factor(MSE_df_lwd$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-## To draw with AIC
-aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training"), aes(x = benchmark_rm_hex,
-                                                                                 y = total_error,
-                                                                                 color = method
-)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("AIC") +
-  xlab("Benchmark value")
-## Effective number of bins along x-axis
-
-mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
-                                       y = total_mse,
-                                       color = method
-)) +
-  geom_point() +
-  geom_line() +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("MSE") +
-  xlab("Benchmark value")
-
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?
-#| label: fig-diagnosticpltScurvelwd
-#| out-width: 100%
-
-aic_plot_lwd + mse_plot_lwd +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
 
 ### Prediction {#sec-prediction}
 

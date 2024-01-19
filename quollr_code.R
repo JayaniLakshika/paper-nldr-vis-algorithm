@@ -159,6 +159,14 @@ generate_edge_info <- function(triangular_object) {
   tr_arcs_df2 <- tibble::tibble(from = trang$node1, to = trang$node3)
   tr_arcs_df3 <- tibble::tibble(from = trang$node2, to = trang$node3)
   tr_arcs_df <- dplyr::bind_rows(tr_arcs_df1, tr_arcs_df2, tr_arcs_df3)  ## Create dataframe with from and to edges
+  tr_arcs_df <- tr_arcs_df |> ## To remove duplicates
+    distinct()
+
+  ## To extract unique combinations
+  tr_arcs_df <- tr_arcs_df |>
+    mutate(x = pmin(from, to), y = pmax(from, to)) |>
+    distinct(x, y) |>
+    rename(c("from" = "x", "to" = "y"))
 
   ## To obtain x and values of from to in a dataframe
   vec <- stats::setNames(rep("", 6), c("from", "to", "x_from", "y_from",
