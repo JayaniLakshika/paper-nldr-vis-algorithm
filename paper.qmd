@@ -859,7 +859,9 @@ The performance and robustness of our model depend on three key parameters: (i) 
 
 #### Total number of bins
 
-The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the model. This is because it is the initial step in building the 2D model. The hexagonal grid with the chosen total number of bins must be able to capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to build an effective model.
+The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the 2D model. This is because it is the initial step in building the 2D model. The hexagonal grid with the chosen total number of bins must be able to capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to build an effective model.
+
+Furthermore, the total number of bins is determined by the number of bins along the x-axis and y-axis (see @eq-equation13). To calculate the effective total number of bins, the minimum and approximate maximum number of bins along the x-axis are used as candidate values. The minimum number of bins along the x-axis is $1$. The maximum number of bins along the x-axis can be estimated by taking the square root of the number of NLDR data points. To investigate the impact of the number of bins on MSE, the analysis is focused on the MSE for different total numbers of bins. This range encompasses the total number of bins calculated for the minimum and maximum values of the number of bins along the x-axis.
 
 Typically, the MSE plot will have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope will gradually decline or level off, indicating that a higher number of bins generates a smaller error. This MSE plot is useful in determining the effective number of bins required to construct the 2D model. @fig-diagnosticpltScurve (b) has created a graph that shows how the Mean Squared Error (MSE) changes depending on the number of bins assigned in the hexagonal grid for various NLDR techniques applied to the S-curve data set. As per the rule of thumb mentioned earlier, the effective number of bins for each NLDR method is shown in the @tbl-msebinsnldr. Furthermore, @fig-modelScurve shows the 2D models constructed for each NLDR technique with the selected total number of bins and how the models look in high-D with original data.   
 
@@ -1263,6 +1265,20 @@ aic_plot + mse_plot +
 ```
 
 #### Benchmark value to remove low-density hexagons
+
+After setting up the hexagonal grid with an appropriate number of bins, it is possible that some hexagonal bins may have very few or no data points within them. To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins that have a considerable number of data points within their hexagons. To achieve this, the standard number of points within each hexagon is first calculated. This standard count is obtained by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, the bins that have a standard number of points less than a certain benchmark value are removed. After removing the hexagons that have insufficient data density, the hexagons with more substantial data representation are used to construct the 2D model.
+
+$$
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+$${#eq-equationp2}
+
+Furthermore, it is crucial to choose the benchmark value to remove low-density hexagons carefully. If we remove unnecessary bins, then it may result in long edges and an uneven 2D model. Therefore, instead of removing hexagons only identified by the benchmark value, we examine the standard number of points in the neighboring hexagons of the identified low-density hexagons. If the neighboring bins also have low counts, then only those bins will be removed. The other identified bins will be kept and used for constructing the 2D model along with the high-density bins (see Appendix for more details).
+
+The benchmark value for removing low-density hexagons has a range of $0$ and $1$. When analyzing how these benchmark values affect model performance, it's important to observe the change in Mean Squared Error (MSE) as the benchmark value increases. The MSE exhibits a gradual increase as the benchmark value progresses from $0$ to $1$. Assessing this rate of increase is crucial. If the increment is not substantial, the decision might lean towards retaining low-density hexagons. According to @fig-diagnosticpltScurvelwd, the change in MSE for NLDR techniques is relatively small across different benchmark values, except for the PHATE method.
+
+Consequently, it is not necessary to remove low-density hexagons when constructing the 2D model for the S-curve dataset in NLDR techniques, except for PHATE. While there may be some fluctuations in MSE between benchmark values of 0 to 1, the absence of significant changes suggests that maintaining low-density hexagons is preferable. However, to choose the best selection, it's recommended to examine the benchmark values around the first local minimum in the MSE curve. However, the MSE for PHATE fluctuates when benchmark values range between 0 and 1. Therefore, it is necessary to explore the benchmark values surrounding the first local minimum to determine an effective benchmark value. There is no universal rule for selecting a process. As shown in @fig-diagnosticpltScurvelwd, the MSE values for PHATE fluctuate, and the first local minimum is at $0$. Therefore, nearby benchmark values such as $0.01$, $0.04$, and $0.06$ were explored to identify the best value for preserving the data structure. In this case, a benchmark value of $0.06$ was chosen. The resulting 2D model is shown in @fig-modelScurve (c), while the video link provides a visual representation of how the model appears in high-D.
+
+
 
 <!--Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
 
@@ -1848,6 +1864,9 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
+### Model selection {#sec-selection}
+
+- By comaring AIC what is the best NLDR technique to reprrsnt NLDR data
 
 
 ### Prediction {#sec-prediction}

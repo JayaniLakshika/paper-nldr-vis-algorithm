@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, sharp corners, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -682,7 +682,7 @@ values depends on the model performance computed by Mean Squared Error
 \subsubsection{Total number of bins}\label{total-number-of-bins}}
 
 The number of hexagonal bins in the hexagonal grid has a considerable
-impact on the construction of the model. This is because it is the
+impact on the construction of the 2D model. This is because it is the
 initial step in building the 2D model. The hexagonal grid with the
 chosen total number of bins must be able to capture the structure of the
 NLDR data. If the number of bins is too low, the model may not be able
@@ -691,6 +691,18 @@ Figure~\ref{fig-binsize} (a)), while if there are too many bins, it may
 result in over-fitting the individual points of the NLDR data (see
 Figure~\ref{fig-binsize} (c)). Therefore, it is important to determine
 an appropriate number of bins to build an effective model.
+
+Furthermore, the total number of bins is determined by the number of
+bins along the x-axis and y-axis (see Equation~\ref{eq-equation13}). To
+calculate the effective total number of bins, the minimum and
+approximate maximum number of bins along the x-axis are used as
+candidate values. The minimum number of bins along the x-axis is \(1\).
+The maximum number of bins along the x-axis can be estimated by taking
+the square root of the number of NLDR data points. To investigate the
+impact of the number of bins on MSE, the analysis is focused on the MSE
+for different total numbers of bins. This range encompasses the total
+number of bins calculated for the minimum and maximum values of the
+number of bins along the x-axis.
 
 Typically, the MSE plot will have a steep slope at the beginning,
 indicating that a smaller number of bins causes a larger amount of
@@ -758,6 +770,64 @@ create a 2D model?}
 \hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
 \subsubsection{Benchmark value to remove low-density
 hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
+
+After setting up the hexagonal grid with an appropriate number of bins,
+it is possible that some hexagonal bins may have very few or no data
+points within them. To ensure comprehensive coverage of the NLDR data,
+it is necessary to select hexagonal bins that have a considerable number
+of data points within their hexagons. To achieve this, the standard
+number of points within each hexagon is first calculated. This standard
+count is obtained by dividing the number of points within each hexagon
+by the maximum number of points in the grid (see
+Equation~\ref{eq-equationp2}). Next, the bins that have a standard
+number of points less than a certain benchmark value are removed. After
+removing the hexagons that have insufficient data density, the hexagons
+with more substantial data representation are used to construct the 2D
+model.
+
+\begin{equation}\protect\hypertarget{eq-equationp2}{}{
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+}\label{eq-equationp2}\end{equation}
+
+Furthermore, it is crucial to choose the benchmark value to remove
+low-density hexagons carefully. If we remove unnecessary bins, then it
+may result in long edges and an uneven 2D model. Therefore, instead of
+removing hexagons only identified by the benchmark value, we examine the
+standard number of points in the neighboring hexagons of the identified
+low-density hexagons. If the neighboring bins also have low counts, then
+only those bins will be removed. The other identified bins will be kept
+and used for constructing the 2D model along with the high-density bins
+(see Appendix for more details).
+
+The benchmark value for removing low-density hexagons has a range of
+\(0\) and \(1\). When analyzing how these benchmark values affect model
+performance, it's important to observe the change in Mean Squared Error
+(MSE) as the benchmark value increases. The MSE exhibits a gradual
+increase as the benchmark value progresses from \(0\) to \(1\).
+Assessing this rate of increase is crucial. If the increment is not
+substantial, the decision might lean towards retaining low-density
+hexagons. According to Figure~\ref{fig-diagnosticpltScurvelwd}, the
+change in MSE for NLDR techniques is relatively small across different
+benchmark values, except for the PHATE method.
+
+Consequently, it is not necessary to remove low-density hexagons when
+constructing the 2D model for the S-curve dataset in NLDR techniques,
+except for PHATE. While there may be some fluctuations in MSE between
+benchmark values of 0 to 1, the absence of significant changes suggests
+that maintaining low-density hexagons is preferable. However, to choose
+the best selection, it's recommended to examine the benchmark values
+around the first local minimum in the MSE curve. However, the MSE for
+PHATE fluctuates when benchmark values range between 0 and 1. Therefore,
+it is necessary to explore the benchmark values surrounding the first
+local minimum to determine an effective benchmark value. There is no
+universal rule for selecting a process. As shown in
+Figure~\ref{fig-diagnosticpltScurvelwd}, the MSE values for PHATE
+fluctuate, and the first local minimum is at \(0\). Therefore, nearby
+benchmark values such as \(0.01\), \(0.04\), and \(0.06\) were explored
+to identify the best value for preserving the data structure. In this
+case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
+is shown in Figure~\ref{fig-modelScurve} (c), while the video link
+provides a visual representation of how the model appears in high-D.
 
 \begin{figure}
 
@@ -883,6 +953,15 @@ S-curve dataset. What is the best parameter choice in UMAP to represent
 the original data in 2D?}
 
 \end{figure}
+
+\hypertarget{sec-selection}{%
+\subsection{Model selection}\label{sec-selection}}
+
+\begin{itemize}
+\tightlist
+\item
+  By comaring AIC what is the best NLDR technique to reprrsnt NLDR data
+\end{itemize}
 
 \hypertarget{sec-prediction}{%
 \subsection{Prediction}\label{sec-prediction}}
