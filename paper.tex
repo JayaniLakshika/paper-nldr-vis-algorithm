@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -257,7 +257,7 @@ Visualization of NLDR techniques (m-vis) \citep{article59} for the same
 high-D data is particularly important in understanding and finding the
 best representation. If we have done so, the 2D models can be quite
 different from the data structure shown in high-D space. Therefore,
-visualizing the 2D model in high-D space (m-in-dis) is more useful to
+visualizing the 2D model in high-D space (m-in-ds) is more useful to
 answer different types of questions:
 
 \begin{itemize}
@@ -431,10 +431,10 @@ interesting projections defined by a predefined index function
 
 The process begins with a real data matrix \(X\) containing \(n\)
 observations in \(p\) dimensions. It generates a sequence of \(p\) ×
-\(d\) orthonormal projection matrices (bases), usually 1 or 2
-dimensions. For each pair of orthonormal bases \(A_t\) and \(A_{t+1}\),
-a geodesic path is interpolated to create smooth animation between
-projections.
+\(d\) orthonormal projection matrices (bases) \(A_t\), usually \(d\) is
+\(1\) or \(2\) dimensions. For each pair of orthonormal bases \(A_t\)
+and \(A_{t+1}\), a geodesic path is interpolated to create smooth
+animation between projections.
 
 In the Grand Tour, new orthonormal bases are randomly chosen to explore
 the \(d\)-dimensional subspace. The data is often sphered via principal
@@ -450,6 +450,17 @@ flexibility for exploring high-dimensional data with various objectives.
 
 \hypertarget{sec-methods}{%
 \section{Methodology}\label{sec-methods}}
+
+In this paper, we introduce a novel approach, which is designed to
+determine which method, and which parameter choice provide the most
+useful representation of high dimensional data. Our approach involves
+dividing the data set into two subsets: a training set, which serves to
+construct the low-dimensional manifold, and a test set, utilized to
+generate predictive values and residuals. For the implementation of our
+approach, a 2D embedding data set serves as the initiation point for the
+subsequent analysis and visualization. The output
+
+write about the S-curve as well.
 
 Our algorithm comprises two main phases: (1) generate the model in the
 2D space, and (2) generate the model in the high-D space. These two
@@ -721,18 +732,18 @@ look in high-D with original data.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{rll}
+\begin{tabular}{rllr}
   \hline
-\textbf{} & \textbf{NLDR technique} & \textbf{total number of bins }\\ 
+\textbf{} & \textbf{NLDR technique} & \textbf{total number of bins} & \textbf{AIC }\\ 
   \hline
-\cellcolor{gray!6}{1} & \cellcolor{gray!6}{tSNE} & \cellcolor{gray!6}{8 }\\ 
-  2 & UMAP & 6 \\ 
-\cellcolor{gray!6}{  3} & \cellcolor{gray!6}{PHATE} & \cellcolor{gray!6}{8 }\\ 
-  4 & TriMAP & 6 \\ 
-\cellcolor{gray!6}{  5} & \cellcolor{gray!6}{PaCMAP} & \cellcolor{gray!6}{10 }\\ 
+\cellcolor{gray!6}{1} & \cellcolor{gray!6}{tSNE} & \cellcolor{gray!6}{72} & \cellcolor{gray!6}{-21882.46 }\\ 
+  2 & UMAP & 98 & -20013.27 \\ 
+\cellcolor{gray!6}{  3} & \cellcolor{gray!6}{PHATE} & \cellcolor{gray!6}{90} & \cellcolor{gray!6}{-15036.91 }\\ 
+\textcolor{red}{\textbf{  4}} & \textcolor{red}{\textbf{TriMAP}} & \textcolor{red}{\textbf{154}} & \textcolor{red}{\textbf{-23001.90 }}\\ 
+\cellcolor{gray!6}{  5} & \cellcolor{gray!6}{PaCMAP} & \cellcolor{gray!6}{132} & \cellcolor{gray!6}{-21330.06 }\\ 
    \hline
 \end{tabular}
-\caption{Total number of bins suggested by rule of thumb for each NLDR technique applied to S-curve dataset.} 
+\caption{Total number of bins suggested by rule of thumb and AIC values for each NLDR technique applied to S-curve dataset.} 
 \label{tbl-msebinsnldr}
 \end{table}
 
@@ -831,6 +842,16 @@ provides a visual representation of how the model appears in high-D.
 
 \begin{figure}
 
+{\centering \includegraphics{paper_files/figure-pdf/fig-rmlowdenshex-1.pdf}
+
+}
+
+\caption{\label{fig-rmlowdenshex}Goodness of f}
+
+\end{figure}
+
+\begin{figure}
+
 {\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
 
 }
@@ -863,7 +884,8 @@ There is no definitive rule for determining the benchmark value to
 remove long edges. However, we have a method to find a default value
 (see Appendix). Adjusting values around this default can help to find
 benchmark value to remove long edges, contributing to the construction
-of a smoother 2D representation.
+of a smoother 2D representation (see
+Figure~\ref{fig-diagnosticpltScurvelgrm}).
 
 \begin{figure}
 
@@ -974,13 +996,15 @@ the original data in 2D?}
 \end{figure}
 
 \hypertarget{sec-selection}{%
-\subsection{Model selection}\label{sec-selection}}
+\subsubsection{Model selection}\label{sec-selection}}
 
-\begin{itemize}
-\tightlist
-\item
-  By comaring AIC what is the best NLDR technique to reprrsnt NLDR data
-\end{itemize}
+In the process of selecting the most suitable NLDR technique to
+represent high-D data, the Akaike Information Criterion (AIC) stands as
+a crucial tool for insightful comparisons. Once the effective number of
+bins has been determined for each method, AIC values can be compared to
+identify the best NLDR technique with the lowest AIC value. For example,
+as shown in Figure~\ref{fig-diagnosticpltScurve} (a), TriMAP is the most
+suitable NLDR technique to represent the S-curve data (see table 1).
 
 \hypertarget{sec-prediction}{%
 \subsection{Prediction}\label{sec-prediction}}

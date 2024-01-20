@@ -132,7 +132,7 @@ High-dimensional (high-D) data is prevalent across various fields, such as ecolo
 
 To create low-dimensional representations (typically in 2D) of high-D data, it is common to apply dimension reduction (DR) techniques. Approaches for DR involve linear methods such as principal component analysis (PCA) [@Karl1901], non-linear methods such as multi-dimensional scaling (MDS) [@Torgerson1967]. In the past decade, many new non-linear dimension reduction (NLDR) techniques have emerged, such as t-distributed stochastic neighbor embedding (tSNE) [@Laurens2008] and uniform manifold approximation and projection (UMAP) [@Leland2018], designed to capture the complex and non-linear relationships present within high-D data [@Johnstone2009]. NLDR techniques are the 2D models of high-D data in our context.  
 
-Visualization of NLDR techniques (m-vis) [@article59] for the same high-D data is particularly important in understanding and finding the best representation. If we have done so, the 2D models can be quite different from the data structure shown in high-D space. Therefore, visualizing the 2D model in high-D space (m-in-dis) is more useful to answer different types of questions:
+Visualization of NLDR techniques (m-vis) [@article59] for the same high-D data is particularly important in understanding and finding the best representation. If we have done so, the 2D models can be quite different from the data structure shown in high-D space. Therefore, visualizing the 2D model in high-D space (m-in-ds) is more useful to answer different types of questions:
 
 - Is there a best representation of high-D data or are they all providing  equivalent information? Is there a best parameter choice to fit the 2D model? How does the model change when it's parameters change?
 
@@ -348,7 +348,7 @@ plot_list1 + plot_list2 + plot_list3 + plot_list4 + plot_list5 +
 
 A tour is a powerful visualization technique used to explore high-dimensional data by generating a sequence of projections, typically into two dimensions. There are two main types of tours: the Grand Tour and the Guided Tour. The Grand Tour explores the data's shape and global structure by using random projections [@Asimov1985]. In contrast, the Guided Tour focuses on specific patterns by moving towards interesting projections defined by a predefined index function [@article29].
 
-The process begins with a real data matrix $X$ containing $n$ observations in $p$ dimensions. It generates a sequence of $p$ × $d$ orthonormal projection matrices (bases), usually 1 or 2 dimensions. For each pair of orthonormal bases $A_t$ and $A_{t+1}$, a geodesic path is interpolated to create smooth animation between projections.
+The process begins with a real data matrix $X$ containing $n$ observations in $p$ dimensions. It generates a sequence of $p$ × $d$ orthonormal projection matrices (bases) $A_t$, usually $d$ is $1$ or $2$ dimensions. For each pair of orthonormal bases $A_t$ and $A_{t+1}$, a geodesic path is interpolated to create smooth animation between projections.
 
 In the Grand Tour, new orthonormal bases are randomly chosen to explore the $d$-dimensional subspace. The data is often sphered via principal components to reduce dimensionality. The Guided Tour uses a predefined index function to generate a sequence of 'interesting' projections. The resulting tour continuously visualizes the projected data $Y_t$ = $XA_t$ as it interpolates between successive bases.
 
@@ -361,6 +361,10 @@ While both tours can be used to visualize data, examples often focus on using th
 For the implementation of our approach, a 2D embedding data set serves as the initiation point for the subsequent analysis and visualization (see @fig-nldervis (b)).-->
 
 <!--### Overview {#sec-algorithm}-->
+
+In this paper, we introduce a novel approach, which is designed to determine which method, and which parameter choice provide the most useful representation of high dimensional data. Our approach involves dividing the data set into two subsets: a training set, which serves to construct the low-dimensional manifold, and a test set, utilized to generate predictive values and residuals. For the implementation of our approach, a 2D embedding data set serves as the initiation point for the subsequent analysis and visualization. The output 
+
+write about the S-curve as well.
 
 Our algorithm comprises two main phases: (1) generate the model in the 2D space, and (2) generate the model in the high-D space. These two phases are described in details in this section.
 
@@ -870,19 +874,19 @@ Typically, the MSE plot will have a steep slope at the beginning, indicating tha
 #| message: false
 #| warning: false
 
-num_bins_for_nldr_methods_df <- tibble::tibble(NLDR_technique = "tSNE", tot_bins = 8)
+num_bins_for_nldr_methods_df <- tibble::tibble(NLDR_technique = "tSNE", tot_bins = 72, aic = -21882.462)
 
 num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "UMAP", tot_bins = 6)
+  tibble::add_row(NLDR_technique = "UMAP", tot_bins = 98, aic = -20013.266)
 
 num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "PHATE", tot_bins = 8)
+  tibble::add_row(NLDR_technique = "PHATE", tot_bins = 90, aic = -15036.91)
 
 num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "TriMAP", tot_bins = 6)
+  tibble::add_row(NLDR_technique = "TriMAP", tot_bins = 154, aic = -23001.90)
 
 num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "PaCMAP", tot_bins = 10)
+  tibble::add_row(NLDR_technique = "PaCMAP", tot_bins = 132, aic = -21330.059)
 
 # knitr::kable(
 #   num_bins_for_nldr_methods_df,
@@ -892,13 +896,14 @@ num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |>
 #   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
 #   row_spec(0, bold = TRUE)
 num_bins_for_nldr_methods_df$tot_bins <- as.character(num_bins_for_nldr_methods_df$tot_bins)
-colnames(num_bins_for_nldr_methods_df) <- c('NLDR technique', 'total number of bins')
+colnames(num_bins_for_nldr_methods_df) <- c('NLDR technique', 'total number of bins', "AIC")
 num_bins_for_nldr_methods_df <- tibble::remove_rownames(num_bins_for_nldr_methods_df)
 
-xtable(num_bins_for_nldr_methods_df, caption = "Total number of bins suggested by rule of thumb for each NLDR technique applied to S-curve dataset.", label = "tbl-msebinsnldr") |>
+xtable(num_bins_for_nldr_methods_df, caption = "Total number of bins suggested by rule of thumb and AIC values for each NLDR technique applied to S-curve dataset.", label = "tbl-msebinsnldr") |>
   xtable2kable() |> 
   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
-  row_spec(0, bold = TRUE) 
+  row_spec(0, bold = TRUE) |>
+  row_spec(4, bold=T, color = "red")
 
 
 ```
@@ -1005,7 +1010,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = tSNE_data,
 
 num_bins_vec <- 1:18 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -1019,6 +1024,9 @@ for (i in 1:length(num_bins_vec)) {
   avg_df_training <- pred_df_training_object$df_bin
   
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
   
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
   
@@ -1048,7 +1056,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = UMAP_data,
 
 num_bins_vec <- 1:13 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -1062,6 +1070,9 @@ for (i in 1:length(num_bins_vec)) {
   avg_df_training <- pred_df_training_object$df_bin
   
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
   
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
   
@@ -1089,7 +1100,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = PHATE_data,
 
 num_bins_vec <- 1:18 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -1103,6 +1114,9 @@ for (i in 1:length(num_bins_vec)) {
   avg_df_training <- pred_df_training_object$df_bin
   
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
   
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
   
@@ -1133,7 +1147,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = TriMAP_data,
 
 num_bins_vec <- 1:10 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -1147,6 +1161,9 @@ for (i in 1:length(num_bins_vec)) {
   avg_df_training <- pred_df_training_object$df_bin
   
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
   
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
   
@@ -1177,7 +1194,7 @@ shape_value_curve <- calculate_effective_shape_value(.data = PaCMAP_data,
 
 num_bins_vec <- 1:18 ## Number of bins along the x-axis
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -1191,6 +1208,9 @@ for (i in 1:length(num_bins_vec)) {
   avg_df_training <- pred_df_training_object$df_bin
   
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
   
   eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
   
@@ -1278,6 +1298,68 @@ The benchmark value for removing low-density hexagons has a range of $0$ and $1$
 
 Consequently, it is not necessary to remove low-density hexagons when constructing the 2D model for the S-curve dataset in NLDR techniques, except for PHATE. While there may be some fluctuations in MSE between benchmark values of 0 to 1, the absence of significant changes suggests that maintaining low-density hexagons is preferable. However, to choose the best selection, it's recommended to examine the benchmark values around the first local minimum in the MSE curve. However, the MSE for PHATE fluctuates when benchmark values range between 0 and 1. Therefore, it is necessary to explore the benchmark values surrounding the first local minimum to determine an effective benchmark value. There is no universal rule for selecting a process. As shown in @fig-diagnosticpltScurvelwd, the MSE values for PHATE fluctuate, and the first local minimum is at $0$. Therefore, nearby benchmark values such as $0.01$, $0.04$, and $0.06$ were explored to identify the best value for preserving the data structure. In this case, a benchmark value of $0.06$ was chosen. The resulting 2D model is shown in @fig-modelScurve (c), while the video link provides a visual representation of how the model appears in high-D.
 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+hex_full_count_df_loop2 <- hex_full_count_df_loop2 |>
+  dplyr::mutate(type = if_else(std_counts < 0.12, "low", "high"))
+
+hex_full_count_df_filtered <- hex_full_count_df_loop2 |>
+  dplyr::filter(type == "low")
+
+
+p2_n <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) #+
+  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+
+p2_n_rm <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+  geom_text(data = hex_full_count_df_filtered, color = "red", aes(x = c_x, y = c_y, group = polygon_id, label = "X", size = 0.5)) +
+  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) #+
+  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: Goodness of f
+#| label: fig-rmlowdenshex
+##| out-width: 100%
+
+p2_n + p2_n_rm +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
 
 
 <!--Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
@@ -1347,7 +1429,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?"
 #| label: fig-diagnosticpltScurvelwd
 ##| out-width: 100%
 
@@ -1364,7 +1446,7 @@ Achieving a smooth representation in 2D space is crucial, and one factor influen
 
 To investigate the effect of removing long edges on the MSE, we analyzed the MSE for various benchmark values. Surprisingly, the results indicated that the MSE remained consistent across different benchmark values, as shown in @fig-diagnosticpltScurvelgrm. It's important to note that edges are defined only in the 2D model and do not extend to higher dimensions. Consequently, removing edges does not affect the model in higher dimensions.
 
-There is no definitive rule for determining the benchmark value to remove long edges. However, we have a method to find a default value (see Appendix). Adjusting values around this default can help to find benchmark value to remove long edges, contributing to the construction of a smoother 2D representation.
+There is no definitive rule for determining the benchmark value to remove long edges. However, we have a method to find a default value (see Appendix). Adjusting values around this default can help to find benchmark value to remove long edges, contributing to the construction of a smoother 2D representation (see @fig-diagnosticpltScurvelgrm).
 
 <!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.-->
 
@@ -1872,10 +1954,9 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-### Model selection {#sec-selection}
+#### Model selection {#sec-selection}
 
-- By comaring AIC what is the best NLDR technique to reprrsnt NLDR data
-
+In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). 
 
 ### Prediction {#sec-prediction}
 
