@@ -82,6 +82,20 @@
 \addtolength{\textheight}{1.7in}%
 \addtolength{\topmargin}{-1in}%
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \makeatletter
 \makeatother
 \makeatletter
@@ -207,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, breakable, enhanced, sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, sharp corners, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -560,22 +574,6 @@ along the x-axis (\(b_1\)) with the number of bins along the y-axis
 b = b_1 \times b_2
 }\label{eq-equation13}\end{equation}
 
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-binsize-1.pdf}
-
-}
-
-\caption{\label{fig-binsize}Hexbin plots from different number of bins
-for the \textbf{UMAP} projections of \textbf{S-curve} data: (a) b = 32
-(4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b =
-840 (21, 40), s = 1.643542. The hexbins are colored based on the density
-of points, with darker colors indicating higher point density and yellow
-color representing lower point density within each bin. Does a value of
-number of bins exist to effectively represent the low-dimensional data?}
-
-\end{figure}
-
 \textbf{Step 2: Obtain bin centroids}
 
 As a result of hexagonal binning for high-D data, all the high-D data
@@ -671,17 +669,77 @@ animation is available at \url{https://youtu.be/ffWFVK1UTIc}.}
 \hypertarget{tuning-the-model}{%
 \subsection{Tuning the model}\label{tuning-the-model}}
 
-In our model tuning process, we strategically adjust three key
-parameters to optimize the performance and accuracy of our approach.
-They are (i) the total number of bins (\(b\)), (ii) a benchmark value to
-remove low-density hexagons, and (iii) a benchmark value to remove long
-edges.
+The performance and robustness of our model depend on three key
+parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
+used to remove low-density hexagons, and (iii) a benchmark value used to
+remove long edges. However, there is no analytical formula to calculate
+an appropriate value for these parameters (see Appendix for details on
+how default values are calculated). The selection of these parameter
+values depends on the model performance computed by Mean Squared Error
+(MSE) (see Section~\ref{sec-goodfit}).
 
 \hypertarget{total-number-of-bins}{%
 \subsubsection{Total number of bins}\label{total-number-of-bins}}
 
-Adjusting the parameter \(b_1\) provides control over the total number
-of bins \(b\), allowing us to fine-tune the hexagonal grid.
+The number of hexagonal bins in the hexagonal grid has a considerable
+impact on the construction of the model. This is because it is the
+initial step in building the 2D model. The hexagonal grid with the
+chosen total number of bins must be able to capture the structure of the
+NLDR data. If the number of bins is too low, the model may not be able
+to capture the structure of the NLDR data effectively (see
+Figure~\ref{fig-binsize} (a)), while if there are too many bins, it may
+result in over-fitting the individual points of the NLDR data (see
+Figure~\ref{fig-binsize} (c)). Therefore, it is important to determine
+an appropriate number of bins to build an effective model.
+
+Typically, the MSE plot will have a steep slope at the beginning,
+indicating that a smaller number of bins causes a larger amount of
+error. Then, the slope will gradually decline or level off, indicating
+that a higher number of bins generates a smaller error. This MSE plot is
+useful in determining the effective number of bins required to construct
+the 2D model. Figure~\ref{fig-diagnosticpltScurve} (b) has created a
+graph that shows how the Mean Squared Error (MSE) changes depending on
+the number of bins assigned in the hexagonal grid for various NLDR
+techniques applied to the S-curve data set. As per the rule of thumb
+mentioned earlier, the effective number of bins for each NLDR method is
+shown in the \textbf{?@tbl-msebinsnldr}. Furthermore,
+Figure~\ref{fig-modelScurve} shows the 2D models constructed for each
+NLDR technique with the selected total number of bins and how the models
+look in high-D with original data.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{rll}
+  \hline
+\textbf{} & \textbf{NLDR technique} & \textbf{total number of bins }\\ 
+  \hline
+\cellcolor{gray!6}{1} & \cellcolor{gray!6}{tSNE} & \cellcolor{gray!6}{8 }\\ 
+  2 & UMAP & 6 \\ 
+\cellcolor{gray!6}{  3} & \cellcolor{gray!6}{PHATE} & \cellcolor{gray!6}{8 }\\ 
+  4 & TriMAP & 6 \\ 
+\cellcolor{gray!6}{  5} & \cellcolor{gray!6}{PaCMAP} & \cellcolor{gray!6}{10 }\\ 
+   \hline
+\end{tabular}
+\caption{Total number of bins suggested by rule of thumb for each NLDR technique applied to S-curve dataset.} 
+\label{tbl-msebinsnldr}
+\end{table}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-binsize-1.pdf}
+
+}
+
+\caption{\label{fig-binsize}Hexbin plots from different number of bins
+for the \textbf{UMAP} projections of \textbf{S-curve} data: (a) b = 32
+(4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b =
+840 (21, 40), s = 1.643542. The hexbins are colored based on the density
+of points, with darker colors indicating higher point density and yellow
+color representing lower point density within each bin. What is the
+number of bins that would be effective in representing low-dimensional
+data?}
+
+\end{figure}
 
 \begin{figure}
 
@@ -691,34 +749,15 @@ of bins \(b\), allowing us to fine-tune the hexagonal grid.
 
 \caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
 different NLDR techniques applied to training S-curve dataset. What is
-the best NLDR technique to represent the original data in 2D?}
+the most effective NLDR technique to represent the original data in a 2D
+space? What is the effective number of bins in each NLDR technique to
+create a 2D model?}
 
 \end{figure}
 
-\hypertarget{remove-low-density-hexagons}{%
-\subsubsection{Remove low-density
-hexagons}\label{remove-low-density-hexagons}}
-
-Addressing low-density hexagons is a systematic process to handle
-sparsely represented data in certain regions. For each hex bin, we
-identify the six nearest hex bins using an equal 2D distance metric.
-Then, we calculate the mean density, as outlined in the equations:
-
-\begin{equation}\protect\hypertarget{eq-equationp2}{}{
-\text{standard count} = \frac{\text{count}}{\text{max count}} 
-}\label{eq-equationp2}\end{equation}
-
-\begin{equation}\protect\hypertarget{eq-equationp3}{}{
-\text{mean density} = \frac{\text{standard count}}{6} 
-}\label{eq-equationp3}\end{equation}
-
-The standard count is derived from the number of observations in the hex
-bins. By examining the distribution of mean densities and designating
-the first quartile as the benchmark value, hex bins with mean densities
-below this benchmark are removed. This process ensures the elimination
-of regions with insufficient data density, focusing on areas with more
-significant data representation and preserving the overall structure in
-the low-dimensional space.
+\hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
+\subsubsection{Benchmark value to remove low-density
+hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
 
 \begin{figure}
 
@@ -733,19 +772,9 @@ the effective benchmark value to remove the low-density heaxgons?}
 
 \end{figure}
 
-\hypertarget{remove-long-edges}{%
-\subsubsection{Remove long edges}\label{remove-long-edges}}
-
-The removal of long edges is a critical step to create a smoother
-representation by iteratively eliminating hexagons with excessive
-distances between centroids. This process eliminates outliers and noise
-while preserving essential local relationships within the data. To
-achieve this, distances between vertices are sorted, and unique distance
-values are extracted. By setting a threshold based on the largest
-difference between consecutive distance values, long edges are
-identified and removed. This refinement step contributes to enhancing
-the quality of the triangular mesh, ensuring a more accurate
-representation of the data structure.
+\hypertarget{benchmark-value-to-remove-long-edges}{%
+\subsubsection{Benchmark value to remove long
+edges}\label{benchmark-value-to-remove-long-edges}}
 
 \begin{figure}
 
@@ -800,9 +829,8 @@ reduced 2D space. This assessment is crucial for evaluating the efficacy
 of our NLDR technique in preserving the essential information present in
 the original high-dimensional data.
 
-\hypertarget{goodness-of-fit-statistics}{%
-\subsubsection{Goodness of fit
-statistics}\label{goodness-of-fit-statistics}}
+\hypertarget{sec-goodfit}{%
+\subsubsection{Goodness of fit statistics}\label{sec-goodfit}}
 
 Moving on to the assessment of prediction accuracy, we calculate the
 Mean Squared Error (MSE). The MSE helps measure the average squared
@@ -917,7 +945,7 @@ values (see Figure~\ref{fig-diagnosticpltScurve}).
 
 }
 
-\caption{\label{fig-modelScurve}Is there a best model to represent the
+\caption{\label{fig-modelScurve}Is there a good model to represent the
 original data in 2D space or are they all providing equivalent
 information?, (a) Model in the 2D space with tSNE
 (\url{https://youtu.be/uy9SkAo6gAE}), (b) Model in the 2D space with
@@ -1077,6 +1105,9 @@ tSNE (\url{https://youtu.be/txTD7GTxt6Y})}
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}
+
+We introduce a new tool to help to determine which method, which
+parameter choice provide the most useful representation of high-D data.
 
 \hypertarget{references}{%
 \section*{References}\label{references}}

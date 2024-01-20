@@ -633,6 +633,19 @@ p1 + p2 + p3
 
 ### Benchmark value to remove low-density hexagons
 
+Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
+
+$$
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+$${#eq-equationp2}
+
+$$
+\text{mean density} = \frac{\text{standard count}}{6} 
+$${#eq-equationp3}
+
+The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
+
+<!--
 In the step of addressing low-density hexagons, which can arise from sparsely represented data in certain regions, we employ a systematic strategy. The goal is to ensure a more comprehensive coverage of the data by removing hexagons with low data density. To achieve this, we initiate the process by identifying, for each hex bin, the six nearest hex bins based on an equal 2D distance metric. Following this, we calculate the mean density (see @eq-equationp3), as outlined in the equation:
 
 $$
@@ -645,7 +658,7 @@ $$ {#eq-equationp3}
 
 
 The standard count is derived from the number of observations in the hex bins (see @eq-equationp2). Next, we examine the distribution of mean densities across all hex bins and designate the first quartile as the benchmark value for removing low-density hexagons. Finally, hex bins with mean densities below this benchmark value are removed from consideration. This meticulous procedure ensures the elimination of regions with inadequate data density, allowing the focus to shift to areas with more significant data representation. The result is the preservation of the overall structure of the data in the low-dimensional space, as illustrated in @fig-bintorm (c).
-
+-->
 
 
 ```{r}
@@ -758,6 +771,9 @@ hexgrid_with_points + hex_grid_centers_rm_l_n +
 ```
 
 ### Benchmark value to remove long edges
+
+<!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
+-->
 
 In this step, we aim to create a smoother surface in the low-dimensional space by removing long edges from the triangular mesh. This process helps eliminate outliers and noise while preserving important local relationships and intricate structures within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. A data frame is created to calculate the differences between consecutive distance values, and the largest difference serves as a threshold to identify long edges. By removing edges that exceed this threshold, the algorithm refines the triangular mesh (see @fig-traingularmeshgr).
 
