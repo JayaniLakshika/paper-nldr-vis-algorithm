@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -831,7 +831,7 @@ provides a visual representation of how the model appears in high-D.
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
 
 }
 
@@ -846,9 +846,28 @@ the effective benchmark value to remove the low-density heaxgons?}
 \subsubsection{Benchmark value to remove long
 edges}\label{benchmark-value-to-remove-long-edges}}
 
+Achieving a smooth representation in 2D space is crucial, and one factor
+influencing this smoothness is the presence of long edges. These long
+edges occur when a line connects points that are distant in the
+triangular mesh, impacting the overall smoothness of the mesh.
+
+To investigate the effect of removing long edges on the MSE, we analyzed
+the MSE for various benchmark values. Surprisingly, the results
+indicated that the MSE remained consistent across different benchmark
+values, as shown in Figure~\ref{fig-diagnosticpltScurvelgrm}. It's
+important to note that edges are defined only in the 2D model and do not
+extend to higher dimensions. Consequently, removing edges does not
+affect the model in higher dimensions.
+
+There is no definitive rule for determining the benchmark value to
+remove long edges. However, we have a method to find a default value
+(see Appendix). Adjusting values around this default can help to find
+benchmark value to remove long edges, contributing to the construction
+of a smoother 2D representation.
+
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurvelgrm-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelgrm-1.pdf}
 
 }
 

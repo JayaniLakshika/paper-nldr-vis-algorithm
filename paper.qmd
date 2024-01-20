@@ -1349,15 +1349,22 @@ mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
 #| warning: false
 #| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?
 #| label: fig-diagnosticpltScurvelwd
-#| out-width: 100%
+##| out-width: 100%
 
-aic_plot_lwd + mse_plot_lwd +
-  plot_annotation(tag_levels = 'a') +
+#aic_plot_lwd + 
+  mse_plot_lwd +
+  #plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
 #### Benchmark value to remove long edges
+
+Achieving a smooth representation in 2D space is crucial, and one factor influencing this smoothness is the presence of long edges. These long edges occur when a line connects points that are distant in the triangular mesh, impacting the overall smoothness of the mesh.
+
+To investigate the effect of removing long edges on the MSE, we analyzed the MSE for various benchmark values. Surprisingly, the results indicated that the MSE remained consistent across different benchmark values, as shown in @fig-diagnosticpltScurvelgrm. It's important to note that edges are defined only in the 2D model and do not extend to higher dimensions. Consequently, removing edges does not affect the model in higher dimensions.
+
+There is no definitive rule for determining the benchmark value to remove long edges. However, we have a method to find a default value (see Appendix). Adjusting values around this default can help to find benchmark value to remove long edges, contributing to the construction of a smoother 2D representation.
 
 <!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.-->
 
@@ -1417,10 +1424,11 @@ mse_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
 #| warning: false
 #| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges?
 #| label: fig-diagnosticpltScurvelgrm
-#| out-width: 100%
+##| out-width: 100%
 
-aic_plot_lg + mse_plot_lg +
-  plot_annotation(tag_levels = 'a') +
+#aic_plot_lg + 
+  mse_plot_lg +
+  #plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
 ```
