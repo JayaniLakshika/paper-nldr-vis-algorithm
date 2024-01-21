@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, breakable, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, frame hidden, breakable, sharp corners, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -451,20 +451,19 @@ flexibility for exploring high-dimensional data with various objectives.
 \hypertarget{sec-methods}{%
 \section{Methodology}\label{sec-methods}}
 
-In this paper, we introduce a novel approach, which is designed to
-determine which method, and which parameter choice provide the most
-useful representation of high dimensional data. Our approach involves
-dividing the data set into two subsets: a training set, which serves to
-construct the low-dimensional manifold, and a test set, utilized to
-generate predictive values and residuals. For the implementation of our
-approach, a 2D embedding data set serves as the initiation point for the
-subsequent analysis and visualization. The output
-
-write about the S-curve as well.
-
-Our algorithm comprises two main phases: (1) generate the model in the
-2D space, and (2) generate the model in the high-D space. These two
-phases are described in details in this section.
+In this paper, we present a novel method that aims to determine the most
+effective way to represent high-D data by selecting the best method and
+hyperparameter choice. Our approach involves dividing the data set into
+two parts: a training set to construct the model and a test set to
+generate predictive values and residuals. To implement our approach, we
+first use a 2D embedding data set as the initial point. The output of
+our algorithm is a tour that displays the model and original data in the
+high-dimensional space. A flow chart of the proposed algorithm is shown
+in Figure~\ref{fig-meth}. Our algorithm comprises two main phases: (1)
+generate the model in the 2D space, and (2) generate the model in the
+high-D space. These two phases are described in detail in this section
+using UMAP 2D embedding of the S-curve data set, which has seven
+dimensions, including four noise dimensions.
 
 \begin{figure}
 
