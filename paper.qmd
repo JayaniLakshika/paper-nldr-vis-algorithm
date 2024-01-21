@@ -130,15 +130,15 @@ source("nldr_code.R", local = TRUE)
 
 High-dimensional (high-D) data is prevalent across various fields, such as ecology and bioinformatics [@Guo2023], due to advancements in data collection technologies [@Johnstone2009; @ayesha2020overview]. However, visualization of high-D data introduces significant challenges, because the complexity of visualizing data beyond two dimensions [@Jia2022]. In recent years, interactive and dynamic graphics systems like **liminal** [@article21] —which employs interactive tools like brushing and linking [@article58]—and software tools such as **XGobi**, **GGobi** [@article60], **tourr**  [@article61], **detourr** [@article22], and **langevitour**  [@article09], involving dynamic methods like tours [@Asimov1985], have played a key role in visualizing high-D data (data-vis).
 
-To create low-dimensional representations (typically in 2D) of high-D data, it is common to apply dimension reduction (DR) techniques. Approaches for DR involve linear methods such as principal component analysis (PCA) [@Karl1901], non-linear methods such as multi-dimensional scaling (MDS) [@Torgerson1967]. In the past decade, many new non-linear dimension reduction (NLDR) techniques have emerged, such as t-distributed stochastic neighbor embedding (tSNE) [@Laurens2008] and uniform manifold approximation and projection (UMAP) [@Leland2018], designed to capture the complex and non-linear relationships present within high-D data [@Johnstone2009]. NLDR techniques are the 2D models of high-D data in our context.  
+To create low-dimensional representations (typically in 2D) (m-vis) [@article59] of high-D data, it is common to apply dimension reduction (DR) techniques. Approaches for DR involve linear methods such as principal component analysis (PCA) [@Karl1901], non-linear methods such as multi-dimensional scaling (MDS) [@Torgerson1967]. In the past decade, many new non-linear dimension reduction (NLDR) techniques have emerged, such as t-distributed stochastic neighbor embedding (tSNE) [@Laurens2008] and uniform manifold approximation and projection (UMAP) [@Leland2018], designed to capture the complex and non-linear relationships present within high-D data [@Johnstone2009]. NLDR techniques are the 2D models of high-D data in our context.  
 
-Visualization of NLDR techniques (m-vis) [@article59] for the same high-D data is particularly important in understanding and finding the best representation. If we have done so, the 2D models can be quite different from the data structure shown in high-D space. Therefore, visualizing the 2D model in high-D space (m-in-ds) is more useful to answer different types of questions:
+It is important to visualize various Non-Linear Dimensionality Reduction (NLDR) techniques for the same high-D data in order to understand and find the best representation. After doing so, the 2D models may differ considerably from each other and may also deviate from the original data structure in high-dimensional space. Therefore, visualizing the 2D model in high-D space (m-in-ds) is more useful to answer different types of questions:
 
-- Is there a best representation of high-D data or are they all providing  equivalent information? Is there a best parameter choice to fit the 2D model? How does the model change when it's parameters change?
+- Is there a best 2D representation of high-D data or are they all providing  equivalent information? Is there a best parameter choice to fit the 2D model? How does the model change when it's parameters change?
 
 - How well the does the 2D models capture the data structure? Is the model fitting able to capture different data structure like non-linear, clustering?
 
-If we can't easily ask and answer these questions, the ability of understanding the models are restricted. To find the best 2D model and the parameter choices, better understanding of the underlying science is really important.
+If we cannot easily ask and answer these questions, our ability to understand the models is limited. To find the best 2D model and parameter choices, a better understanding of the underlying science is important.
 
 Also, the importance of m-vis along with data-vis has been recognized and incorporated into interactive software, **liminal** [@article21]. But the 2D model and high-D visualize side by side and interactive like brushing and linking connect the data in the two panels. To address this challenge, we propose a novel approach by combining the tour technique with a low-dimensional manifold. This manifold is created through the synergistic use of NLDR techniques, hexagonal binning, and triangulation. This integration facilitates a more understanding of the data structure, how well (or how poorly) NLDR techniques perform.
 
@@ -167,7 +167,7 @@ The outline of this paper is as follows. The @sec-background provides an detaile
 
 ### Dimension Reduction
 
-Consider the high-dimensional data a rectangular matrix $X$, where $X = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}^\top$, with $n$ observations in $p$ dimensions. The objective is to discover a low-dimensional projection $Y = \begin{bmatrix} \textbf{y}_{1} & \textbf{y}_{2} & \cdots & \textbf{y}_{n}\\ \end{bmatrix}^\top$, represented as an $n$ × $d$ matrix, where $d \ll p$. The reduction process seeks to remove noise from the original data set while retaining essential information.
+Consider the high-dimensional data a rectangular matrix $X_{n \times p}$, where $X_{n \times p} = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}^\top$, with $n$ observations in $p$ dimensions. The objective is to discover a low-dimensional projection $Y_{n \times d} = \begin{bmatrix} \textbf{y}_{1} & \textbf{y}_{2} & \cdots & \textbf{y}_{n}\\ \end{bmatrix}^\top$, represented as an $n$ × $d$ matrix, where $d \ll p$. The reduction process seeks to remove noise from the original data set while retaining essential information.
 
 There are two main categories of dimension reduction techniques: linear and non-linear methods. Linear techniques involve a linear transformation of the data, with one popular example being PCA. PCA performs an eigen-decomposition of the sample covariance matrix to obtain orthogonal principal components that capture the variance of the data [@Karl1901]. However, linear methods may not fully capture complex non-linear relationships present in the data.
 
@@ -1950,24 +1950,13 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
-#### Model selection {#sec-selection}
-
-In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). 
-
-### Prediction {#sec-prediction}
-
-In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
-The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
-
-Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
-
 ### Model interpretation
 
 The visualizations of NLDR techniques for the S-curve dataset shows different representations in 2D, as showcased in Figure @fig-nldervis. The question at hand is determining the best NLDR technique to represent the S-curve data. Examining the 2D layouts in @fig-nldervis suggests that TriMAP or PaCMAP may be best representations. However, the challenge is to decide the best representation with considerable evidence.
 
 After considering the models constructed from the algorithm for each NLDR techniques and visualizing them in high-D space with the original data, shows that all the NLDR techniques capture the non-linearity of the S-curve (see videos of the models linked in @fig-modelScurve). But thorough examination of each model in high-D space shows some surprising findings. The model of PHATE is flattened and lack of capturing the width of S-curve (see videos of the model with PHATE linked in @fig-modelScurve). This nature of PHATE is also evicted by the considerably higher AIC and MSE values for PHATE as shown in @fig-diagnosticpltScurve. Furthermore, there are two edges that are not connected to any points in the model of TriMAP (see see videos of the model with TriMAP linked in @fig-modelScurve). This model shows how the patterns in 2D representation of TriMAP capture by the model (see @fig-nldervis (d)). As shown in @fig-nldervis (b), UMAP have four clusters in a curvilinear structure. However, the model reveals that even though UMAP shows a curvilinear in 2D, UMAP actually capture the structure of the S-curve without any disjoint in the model (see see videos of the model with UMAP linked in @fig-modelScurve). In the 2D layouts of tSNE and PaCMAP (see @fig-nldervis (a), (e)), there are some sparse areas that are captured by the models effectively (see see videos of the model with tSNE and PaCMAP linked in @fig-modelScurve). 
 
-Different NLDR techniques perform differently on the S-curve data and tSNE provides the best representation in 2D according to AIC and MSE values (see @fig-diagnosticpltScurve). 
+<!--Different NLDR techniques perform differently on the S-curve data and tSNE provides the best representation in 2D according to AIC and MSE values (see @fig-diagnosticpltScurve). -->
 
 <!--model for S-curve with 5 methods-->
 
@@ -2293,10 +2282,16 @@ trimesh_removed_tsne_s_curve + trimesh_removed_umap_s_curve + trimesh_removed_ph
 
 
 
+### Model selection {#sec-selection}
 
+In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). 
 
+### Prediction {#sec-prediction}
 
-  
+In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
+The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
+
+Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
 
 ### Simulated data example {#sec-simpleex}
 
@@ -2950,6 +2945,8 @@ thus were the CD27- CD4+ memory T cells in the literature (36). The CD27- CD4+ m
 cells were known to be at a more differentiated state and have stronger antigen-recall responses
 than their CD27+ counterparts.
 
+- 15 PCs
+
 - learned from the model: There are 3 well-separated clusters in 2D, but if look at the model in high-D space, the three clusters are much closer. Also, there is some continuity within the clustering structure and it didn't capture well. Therefore UMAP with n:neighbour 30 is not a good representation for this data set. 
 
 
@@ -3085,12 +3082,13 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+benchmark_pbmc <- 1.072513
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
 
 trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
-  geom_point(size = 2, colour = "#33a02c") +
+  geom_point(size = 1, colour = "#33a02c") +
   #ggtitle("(b)") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3104,7 +3102,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/lIA6ZPZAcLE>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/CNXjWZMyh_M>)"
 #| label: fig-nldervisPBMCUMAP
  #| out-width: 100%
 
