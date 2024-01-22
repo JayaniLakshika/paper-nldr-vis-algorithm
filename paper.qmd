@@ -2949,7 +2949,9 @@ than their CD27+ counterparts.
 
 - learned from the model: There are 3 well-separated clusters in 2D, but if look at the model in high-D space, the three clusters are much closer. Also, there is some continuity within the clustering structure and it didn't capture well. Therefore UMAP with n:neighbour 30 is not a good representation for this data set. 
 
+- The most important parameter is n_neighbors - the number of approximate nearest neighbors used to construct the initial high-dimensional graph. It effectively controls how UMAP balances local versus global structure - low values will push UMAP to focus more on local structure by constraining the number of neighboring points considered when analyzing the data in high dimensions, while high values will push UMAP towards representing the big-picture structure while losing fine detail.
 
+- The second parameter we’ll investigate is min_dist, or the minimum distance between points in low-dimensional space. This parameter controls how tightly UMAP clumps points together, with low values leading to more tightly packed embeddings. Larger values of min_dist will make UMAP pack points together more loosely, focusing instead on the preservation of the broad topological structure.
 
 
 ```{r}
@@ -3083,6 +3085,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
 benchmark_pbmc <- 1.072513
+  
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3116,6 +3119,337 @@ plot_layout(ncol=2)
 # 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
 ```
 
+<!--UMAP parm 2-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+#df_2 <- read_rds("data/pbmc/pbmc.rds")
+training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:15] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+#test_1 <- read_rds("data/pbmc/pbmc_test.rds")
+
+#tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_5_min_dist_0.1.rds")
+# PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
+# TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
+# PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
+
+#load("data/pbmc/pbmc_3k_festem/pbmc3k_label.RData")
+
+## Visualise embeddings
+
+# plot_list1_pbmc <- plot_tSNE_2D(tSNE_pbmc) + #ggtitle("(a)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+class_avg <- UMAP_pbmc |>
+  group_by(cell_label) |>
+  summarise(
+    UMAP1 = median(UMAP1),
+    UMAP2 = median(UMAP2)
+  ) |>
+  mutate(cell_label = as.numeric(cell_label)) |>
+  arrange(cell_label)
+
+class_avg$cell_label <- as.factor(class_avg$cell_label)
+
+levels(class_avg$cell_label) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+
+plot_list2_pbmc <- UMAP_pbmc |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = cell_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) #+
+  # guides(color = guide_legend(title = "Cell type"),
+  #        color = guide_legend(nrow = 3)) #+
+  # annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+
+# plot_list3_pbmc <- plot_PHATE_2D(PHATE_pbmc) + #ggtitle("(c)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+# plot_list4_pbmc <- plot_TriMAP_2D(TriMAP_pbmc) + #ggtitle("(d)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+# 
+# plot_list5_pbmc <- plot_PaCMAP_2D(PaCMAP_pbmc) + #ggtitle("(e)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
+                                              cell_area = 1) ##23
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2) ## 0.8772751
+
+## To extract bin centroids
+hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
+                                                      num_bins = num_bins_pbmc,
+                                                      shape_val = shape_value_pbmc, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
+  dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), UMAP_pbmc_with_hb_id)
+
+## Averaged on high-D
+df_bin_pbmc <- avg_highD_data(.data = df_all_pbmc, column_start_text = "PC")
+
+## Triangulate bin centroids
+tr1_object_pbmc <- triangulate_bin_centroids(df_bin_centroids_pbmc, x, y)
+tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
+
+## To find the benchmark value
+benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+benchmark_pbmc <- 1.055271
+
+trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
+                                                 triangular_object = tr1_object_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
+  geom_point(size = 1, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 5, min_dist = 0.1) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/SO3thJ8PMi8>)"
+#| label: fig-nldervisPBMCUMAP2
+ #| out-width: 100%
+
+
+plot_list2_pbmc + trimesh_removed_pbmc_umap + 
+plot_layout(ncol=2)
+
+#  plot_list1_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_list5_pbmc +
+#   plot_layout(ncol=5) #| out-width: 100%
+
+# 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
+
+<!--UMAP parm 3-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+#df_2 <- read_rds("data/pbmc/pbmc.rds")
+training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:15] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+#test_1 <- read_rds("data/pbmc/pbmc_test.rds")
+
+#tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_30_min_dist_0.01.rds")
+# PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
+# TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
+# PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
+
+#load("data/pbmc/pbmc_3k_festem/pbmc3k_label.RData")
+
+## Visualise embeddings
+
+# plot_list1_pbmc <- plot_tSNE_2D(tSNE_pbmc) + #ggtitle("(a)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+class_avg <- UMAP_pbmc |>
+  group_by(cell_label) |>
+  summarise(
+    UMAP1 = median(UMAP1),
+    UMAP2 = median(UMAP2)
+  ) |>
+  mutate(cell_label = as.numeric(cell_label)) |>
+  arrange(cell_label)
+
+class_avg$cell_label <- as.factor(class_avg$cell_label)
+
+levels(class_avg$cell_label) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+
+plot_list2_pbmc <- UMAP_pbmc |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = cell_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) #+
+  # guides(color = guide_legend(title = "Cell type"),
+  #        color = guide_legend(nrow = 3)) #+
+  # annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+
+# plot_list3_pbmc <- plot_PHATE_2D(PHATE_pbmc) + #ggtitle("(c)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+# plot_list4_pbmc <- plot_TriMAP_2D(TriMAP_pbmc) + #ggtitle("(d)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+# 
+# plot_list5_pbmc <- plot_PaCMAP_2D(PaCMAP_pbmc) + #ggtitle("(e)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
+                                              cell_area = 1) ##23
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2) ## 0.8772751
+
+## To extract bin centroids
+hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
+                                                      num_bins = num_bins_pbmc,
+                                                      shape_val = shape_value_pbmc, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
+  dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), UMAP_pbmc_with_hb_id)
+
+## Averaged on high-D
+df_bin_pbmc <- avg_highD_data(.data = df_all_pbmc, column_start_text = "PC")
+
+## Triangulate bin centroids
+tr1_object_pbmc <- triangulate_bin_centroids(df_bin_centroids_pbmc, x, y)
+tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
+
+## To find the benchmark value
+benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+benchmark_pbmc <- 1.057549
+
+trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
+                                                 triangular_object = tr1_object_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
+  geom_point(size = 1, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.01) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/hP8ie_oMXw0>)"
+#| label: fig-nldervisPBMCUMAP3
+ #| out-width: 100%
+
+
+plot_list2_pbmc + trimesh_removed_pbmc_umap + 
+plot_layout(ncol=2)
+
+#  plot_list1_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_list5_pbmc +
+#   plot_layout(ncol=5) #| out-width: 100%
+
+# 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
 
 
 <!--
@@ -3203,6 +3537,8 @@ aic_plot_pbmc + mse_plot_pbmc +
 - There is a line in right corner of the structure that is not connected any other trimesh points. This line create a long edge in high-D space.
 
 - In high-D view, the clusters having some non-linearity patter, which is also not captured in tSNE. Therefore, this is not a good choice.
+
+- The parameter is, in a sense, a guess about the number of close neighbors each point has.
 
 
 ```{r}

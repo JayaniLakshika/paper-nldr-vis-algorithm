@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1179,6 +1179,22 @@ data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
   closer. Also, there is some continuity within the clustering structure
   and it didn't capture well. Therefore UMAP with n:neighbour 30 is not
   a good representation for this data set.
+\item
+  The most important parameter is n\_neighbors - the number of
+  approximate nearest neighbors used to construct the initial
+  high-dimensional graph. It effectively controls how UMAP balances
+  local versus global structure - low values will push UMAP to focus
+  more on local structure by constraining the number of neighboring
+  points considered when analyzing the data in high dimensions, while
+  high values will push UMAP towards representing the big-picture
+  structure while losing fine detail.
+\item
+  The second parameter we'll investigate is min\_dist, or the minimum
+  distance between points in low-dimensional space. This parameter
+  controls how tightly UMAP clumps points together, with low values
+  leading to more tightly packed embeddings. Larger values of min\_dist
+  will make UMAP pack points together more loosely, focusing instead on
+  the preservation of the broad topological structure.
 \end{itemize}
 
 \begin{figure}
@@ -1191,6 +1207,32 @@ data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
 (n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
 this a best representation of the original data?, (b) Model in the 2D
 space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP2-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCUMAP2}(a) 2D layout from UMAP
+(n\_neighbors = 5, min\_dist = 0.1) applied for the PBMC3k dataset. Is
+this a best representation of the original data?, (b) Model in the 2D
+space with UMAP (\url{https://youtu.be/SO3thJ8PMi8})}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP3-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCUMAP3}(a) 2D layout from UMAP
+(n\_neighbors = 30, min\_dist = 0.01) applied for the PBMC3k dataset. Is
+this a best representation of the original data?, (b) Model in the 2D
+space with UMAP (\url{https://youtu.be/hP8ie_oMXw0})}
 
 \end{figure}
 
@@ -1209,6 +1251,9 @@ space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
 \item
   In high-D view, the clusters having some non-linearity patter, which
   is also not captured in tSNE. Therefore, this is not a good choice.
+\item
+  The parameter is, in a sense, a guess about the number of close
+  neighbors each point has.
 \end{itemize}
 
 \begin{figure}
