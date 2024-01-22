@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -767,7 +767,7 @@ data?}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
 
 }
 
@@ -869,9 +869,10 @@ the effective benchmark value to remove the low-density heaxgons?}
 edges}\label{benchmark-value-to-remove-long-edges}}
 
 Achieving a smooth representation in 2D space is crucial, and one factor
-influencing this smoothness is the presence of long edges. These long
-edges occur when a line connects points that are distant in the
-triangular mesh, impacting the overall smoothness of the mesh.
+influencing this smoothness is the presence of long edges (see
+Figure~\ref{fig-modelScurvermlgimp}). These long edges occur when a line
+connects points that are distant in the triangular mesh, impacting the
+overall smoothness of the mesh.
 
 To investigate the effect of removing long edges on the MSE, we analyzed
 the MSE for various benchmark values. Surprisingly, the results
@@ -887,6 +888,21 @@ remove long edges. However, we have a method to find a default value
 benchmark value to remove long edges, contributing to the construction
 of a smoother 2D representation (see
 Figure~\ref{fig-diagnosticpltScurvelgrm}).
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurvermlgimp-1.pdf}
+
+}
+
+\caption{\label{fig-modelScurvermlgimp}What does the 2D model,
+constructed using UMAP (applied to the S-curve dataset), look like in
+high dimensions with long edges? (\url{https://youtu.be/pSL_G_n7-fM})
+(a) 2D model without removing the long edges, and (b) 2D model with long
+edges coloured by red. The default benchmark value is used to identify
+long edges.}
+
+\end{figure}
 
 \begin{figure}
 
