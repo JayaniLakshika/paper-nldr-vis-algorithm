@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, breakable, boxrule=0pt, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, breakable, interior hidden, enhanced, boxrule=0pt, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -248,12 +248,10 @@ methods such as multi-dimensional scaling (MDS) \citep{Torgerson1967}.
 In the past decade, many new non-linear dimension reduction (NLDR)
 techniques have emerged, such as t-distributed stochastic neighbor
 embedding (tSNE) \citep{Laurens2008} and uniform manifold approximation
-and projection (UMAP) \citep{Leland2018}, designed to capture the
-complex and non-linear relationships present within high-D data
-\citep{Johnstone2009}. NLDR techniques are the 2D models of high-D data
-in our context.
+and projection (UMAP) \citep{Leland2018}. NLDR techniques are the 2D
+models of high-D data in our context.
 
-It is important to visualize various Non-Linear Dimensionality Reduction
+It is important to visualize various non-linear dimensionality reduction
 (NLDR) techniques for the same high-D data in order to understand and
 find the best representation. After doing so, the 2D models may differ
 considerably from each other and may also deviate from the original data
@@ -311,8 +309,7 @@ visualization.
 \hypertarget{dimension-reduction}{%
 \subsection{Dimension Reduction}\label{dimension-reduction}}
 
-Consider the high-dimensional data a rectangular matrix
-\(X_{n \times p}\), where
+Consider the high-D data a rectangular matrix \(X_{n \times p}\), where
 \(X_{n \times p} = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}^\top\),
 with \(n\) observations in \(p\) dimensions. The objective is to
 discover a low-dimensional projection
@@ -326,8 +323,7 @@ and non-linear methods. Linear techniques involve a linear
 transformation of the data, with one popular example being PCA. PCA
 performs an eigen-decomposition of the sample covariance matrix to
 obtain orthogonal principal components that capture the variance of the
-data \citep{Karl1901}. However, linear methods may not fully capture
-complex non-linear relationships present in the data.
+data \citep{Karl1901}.
 
 In contrast, NLDR techniques generate the low-dimensional representation
 \(Y\) from the high-dimensional data \(X\), often using pre-processing
@@ -338,69 +334,74 @@ the pair-wise distances in \(X\) \citep{Torgerson1967}. Variants of MDS
 include non-metric scaling \citep{article62} and Isomap, which estimate
 geodesic distances to create the low-dimensional representation
 \citep{article63}. Other approaches based on diffusion processes, like
-diffusion maps \citep{article64} and the PHATE algorithm
+diffusion maps \citep{article64} and the PHATE (Potential of
+Heat-diffusion for Affinity-based Trajectory Embedding) algorithm
 \citep{article03}, also fall under NLDR methods.
-
-A challenge with NLDR methods is selecting and tuning appropriate
-parameters. One specific technique we focus on is Pairwise Controlled
-Manifold Approximation (PaCMAP). Similar considerations apply to related
-methods like tSNE \citep{Laurens2008}, UMAP \citep{Leland2018}, and
-TrMAP \citep{article02}.
-
-It is important to note that methods like PCA and auto-encoders
-\citep{article65} provide a reverse mapping from the low-dimensional
-space back to the high-dimensional space, enabling data reconstruction.
-However, many non-linear methods, including tSNE, prioritize
-visualization and exploration over reconstruction. Their focus is on
-capturing complex structures that may not be easily represented in the
-original space, making a straightforward reverse mapping challenging.
 
 \hypertarget{non-linear-dimension-reduction-techniques}{%
 \subsubsection{Non-linear dimension reduction
 techniques}\label{non-linear-dimension-reduction-techniques}}
 
-Non-linear dimension reduction techniques play a crucial role in the
-analysis and visualization of high-dimensional data, where the
-complexities of relationships among variables may not be adequately
-captured by linear methods. Among these techniques, tSNE stands out for
-its emphasis on preserving pairwise distances. By minimizing the
-divergence between probability distributions in both the high and
-low-dimensional spaces, t-SNE effectively reveals intricate structures
-and patterns within the data. Its application is widespread in tasks
-requiring the visualization of clusters and local relationships, though
-it does require careful consideration of the perplexity parameter for
-optimal results.
+NLDR techniques are crucial for analyzing and displaying
+high-dimensional data, where linear approaches may not adequately
+capture complexities in relationships between variables
+\citep{Johnstone2009}. One of the challenges with NLDR techniques is the
+selection and tuning of appropriate hyperparameters \citep{liao2023}.
+This process involves finding the suitable combination of
+hyperparameters that enhances the performance of the NLDR technique,
+considering the characteristics of the dataset and the specific goals of
+the analysis.
 
-UMAP is another powerful non-linear technique that strikes a balance
-between preserving local and global structures. Constructing a fuzzy
-topological representation using a weighted k-nearest neighbors graph,
-UMAP optimizes the low-dimensional embedding to resemble this
-representation. Known for its efficiency and scalability, UMAP is
-versatile across various scales of relationships in the data, although
-parameter sensitivity, particularly concerning the choice of neighbors,
-must be taken into account.
+Additionally, another challenge is lack of reverse mapping. Techniques
+like PCA and auto-encoders \citep{article65} provide a way to map back
+from the low-dimensional space to the high-D space, facilitating data
+reconstruction. However, some NLDR methods, such as tSNE, don't have a
+specific way to reconstruct the original data from the low-dimensional
+space.
 
-For trajectory data, PHATE provides specialized capabilities. It models
-the affinity between data points, simulating a heat diffusion process to
-capture developmental processes, particularly in single-cell genomics.
-While PHATE excels in revealing trajectory structures and offering
-insights into cellular development, it necessitates careful parameter
-tuning due to its specialized nature.
+In this article, mainly focus on five NLDR techniques. They are tSNE,
+UMAP, PHATE, TriMAP \citep{article02}, and Pairwise Controlled Manifold
+Approximation (PaCMAP) \citep{article01}.
 
-TriMAP adopts a unique approach by approximating the data manifold
-through the construction of a triangulated graph representation. This
-technique efficiently captures both global and local structures by
-representing the data as a network of triangles. TriMAP's strength lies
-in its ability to efficiently capture complex structures, albeit with
-sensitivity to parameter choices, including the number of neighbors.
+Among these, tSNE \citep{Laurens2008} stands out for its ability to
+preserve pairwise distances. By minimizing the divergence between
+probability distributions in both high and low-dimensional spaces, tSNE
+effectively uncovers intricate structures and patterns within the data.
+Its application is widespread, particularly in tasks requiring the
+visualization of clusters and local relationships. However, achieving
+effective results requires careful consideration of hyperparameters,
+such as perplexity.
 
-In contrast, PaCMAP introduces supervised learning to create a
-low-dimensional representation while preserving pair-wise relationships.
-Constructing a graph based on pair-wise distances, PaCMAP optimizes an
-embedding using a customizable loss function. Particularly notable is
-PaCMAP's flexibility in incorporating class labels or additional
-information to guide the embedding process, offering users a means to
-customize its behavior and performance.
+UMAP \citep{Leland2018} is a useful technique for simplifying data while
+maintaining both local and overall structures. It builds a fuzzy
+topological view by considering nearby data points and then optimizes a
+simplified version to match that view. UMAP is known for working well
+with different scales of relationships in data and is efficient in
+handling large datasets. However, it's important to choose parameters
+like neighbors and minimum distance carefully, as they can affect the
+results.
+
+Furthermore, PHATE \citep{article03} is great for understanding how
+things develop, especially in single-cell genomics. It uses a heat
+diffusion process to capture relationships between data points, like
+points along a trajectory. While PHATE is excellent for revealing these
+developmental structures, it requires careful tuning of its parameters
+because of its specialized focus.
+
+Additionally, TriMAP \citep{article02} takes a special approach by
+creating a triangulated graph representation of the data. This method is
+good at understanding both local and global structures by treating the
+data as a network of triangles. TriMAP is powerful in capturing
+complicated structures, but it's important to choose parameters
+carefully, like deciding how many neighbors to consider.
+
+PaCMAP \citep{article01} is different because it adds supervised
+learning to make a 2D representation while keeping the relationships
+between pairs of points. It builds a graph using distances between pairs
+and then makes the 2D representation better using a customizable loss
+function. What's special about PaCMAP is that it can use class labels or
+extra information to guide how it makes the 2D representation. This
+gives users a way to change how PaCMAP works to fit their needs better.
 
 \begin{figure}
 
