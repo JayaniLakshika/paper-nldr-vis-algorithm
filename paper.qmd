@@ -2489,7 +2489,28 @@ Some NLDR techniques, such as tSNE, often lack a direct prediction, making our a
 
 In this section, we showcase the effectiveness of our methodology using simulated data. The dataset comprises five spherical Gaussian clusters in 4-$d$, with each cluster containing an equal number of points and consistent within variation.  
 
-We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.
+In the 2D representations created by all NLDR techniques, as shown in @fig-nldervis5Gau, except for PHATE, there are five distinct clusters. In tSNE, these five clusters are closely located to each other (see @fig-nldervis5Gau (a)). However, in PHATE, two clusters are closely positioned, while the other three are more distant (see @fig-nldervis5Gau (c)). In PaCMAP, one cluster is at the center, and the remaining four are positioned in four different directions (see @fig-nldervis5Gau (e)). In TriMAP, two clusters are close, although not as close as in PHATE, and the other three are well-separated (see @fig-nldervis5Gau (d)). In UMAP, all clusters are arranged in a parallel manner, with three in one line and the other two in a separate line (see @fig-nldervis5Gau (b)).
+
+Visualizing the models alongside the original high-D data provides insights into how different techniques capture the underlying clustering structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures (see video link of @fig-modelfiveGau (a)). UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance (see video link of @fig-modelfiveGau (b)). The PHATE model shows five separated clusters resembling triangles or partial triangles but struggles to capture local structures (see video link of @fig-modelfiveGau (c)). TriMAP and PaCMAP both display five well-separated clusters with flat surfaces, each capturing within-cluster variation to varying extents. Despite the various 2D representations, all NLDR techniques preserve the global structure (see video link of @fig-modelfiveGau (d), (e) respectively). However, tSNE, effectively capture both local and global structures, as indicated by lower AIC values in @fig-diagnosticpltGau (a).
+
+
+
+<!--By visualizing the models with original data in high-D space, we are able to understand how various techniques capture the clustering data structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures. UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance. The PHATE model shows five clusters resembling triangles but struggles to capture local structures. TriMAP and PaCMAP both display five well-separated clusters with a flat surface appearance, capturing within-cluster variation to varying extents. As we can see, even though all NLDR techniques have different representations in 2D, all the NLDR techniques preserve the global structure, but some NLDR techniques fail to capture the local structure. According to the visualizations, we can see that tSNE preserve both local and global structure than other NLDR techniques that is also evident by the AIC plot shown in Figure 4.-->   
+
+<!--We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.-->
+
+<!--In all NLDR techniques, except for PHATE, there are five well separated clusters. In tSNE, the five clusters are close to each other. However, in PHATE, two clusters are really close to each other and other three clusters are far away from them. In PaCMAP, one cluster is at the center and other four positioned in four directions. In TriMAP also, there are two clusters close to each other and other three are well-separated from each other. In UMAP, four clusters are positioned parallel to each and remaining one far away from them.-->
+
+<!--The model with tSNE shows five well-separated clusters. Also, within cluster variation is captured by giving proof that with clustering tSNE preserve local and global structures of high-D data.
+
+The model with UMAP also shows five well-separated clusters. But now, the clusters are more flat surfaces.
+
+The model with PHATE also shows five well-separated clusters. The five clusters are more like triangles and couldn't able to capture local structure at all.
+
+In the model with TriMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.
+
+In the model with PaCMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.-->
+
 
 
 ```{r}
@@ -2510,6 +2531,7 @@ PaCMAP_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 ## Visualise embeddings
 
 plot_list1_gau <- plot_tSNE_2D(tSNE_data_gau) + #ggtitle("(a)") + 
+  geom_point(size = 0.00001, colour = "#e41a1c") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -2519,7 +2541,8 @@ plot_list1_gau <- plot_tSNE_2D(tSNE_data_gau) + #ggtitle("(a)") +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 
-plot_list2_gau <- plot_UMAP_2D(UMAP_data_gau) + #ggtitle("(b)") + 
+plot_list2_gau <- plot_UMAP_2D(UMAP_data_gau) + #ggtitle("(b)") +
+  geom_point(size = 0.00001, colour = "#377eb8") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -2529,7 +2552,8 @@ plot_list2_gau <- plot_UMAP_2D(UMAP_data_gau) + #ggtitle("(b)") +
   annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 
-plot_list3_gau <- plot_PHATE_2D(PHATE_data_gau) + #ggtitle("(c)") + 
+plot_list3_gau <- plot_PHATE_2D(PHATE_data_gau) + #ggtitle("(c)") +
+  geom_point(size = 0.00001, colour = "#4daf4a") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -2539,7 +2563,8 @@ plot_list3_gau <- plot_PHATE_2D(PHATE_data_gau) + #ggtitle("(c)") +
   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 
-plot_list4_gau <- plot_TriMAP_2D(TriMAP_data_gau) + #ggtitle("(d)") + 
+plot_list4_gau <- plot_TriMAP_2D(TriMAP_data_gau) + #ggtitle("(d)") +
+  geom_point(size = 0.00001, colour = "#984ea3") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -2548,7 +2573,8 @@ plot_list4_gau <- plot_TriMAP_2D(TriMAP_data_gau) + #ggtitle("(d)") +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
-plot_list5_gau <- plot_PaCMAP_2D(PaCMAP_data_gau) + #ggtitle("(e)") + 
+plot_list5_gau <- plot_PaCMAP_2D(PaCMAP_data_gau) + #ggtitle("(e)") +
+  geom_point(size = 0.00001, colour = "#ff7f00") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -2669,7 +2695,7 @@ trimesh_removed_umap_gau <- trimesh_removed_umap_gau +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 # tour_umap_gau <- show_langevitour(df_all_umap_gau, df_bin_umap_gau, df_bin_centroids_umap_gau, benchmark_value = benchmark_umap_gau, distance = distance_umap_gau, distance_col = distance)
 
@@ -2721,7 +2747,7 @@ trimesh_removed_phate_gau <- trimesh_removed_phate_gau +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'c', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 # tour_phate_gau <- show_langevitour(df_all_phate_gau, df_bin_phate_gau, df_bin_centroids_phate_gau, benchmark_value = benchmark_phate_gau, distance = distance_phate_gau, distance_col = distance)
 
@@ -2771,7 +2797,7 @@ trimesh_removed_trimap_gau <- trimesh_removed_trimap_gau +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'd', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 # tour_trimap_gau <- show_langevitour(df_all_trimap_gau, df_bin_trimap_gau, df_bin_centroids_trimap_gau, benchmark_value = benchmark_trimap_gau, distance = distance_trimap_gau, distance_col = distance)
 
@@ -2822,7 +2848,7 @@ trimesh_removed_pacmap_gau <- trimesh_removed_pacmap_gau +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1, size = 3)
 
 # tour_pacmap_gau <- show_langevitour(df_all_pacmap_gau, df_bin_pacmap_gau, df_bin_centroids_pacmap_gau, benchmark_value = benchmark_pacmap_gau, distance = distance_pacmap_gau, distance_col = distance)
 

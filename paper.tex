@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, breakable, interior hidden, enhanced, boxrule=0pt, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1096,11 +1096,36 @@ simulated data. The dataset comprises five spherical Gaussian clusters
 in 4-\(d\), with each cluster containing an equal number of points and
 consistent within variation.
 
-We \emph{strongly} recommend viewing the linked videos for each study
-while reading. Links to the videos are available in the figures for each
-example. The videos show the visual appearance of the
-\textbf{langevitour} interface with low-dimensional view and how we can
-interact with the tour via the controls.
+In the 2D representations created by all NLDR techniques, as shown in
+Figure~\ref{fig-nldervis5Gau}, except for PHATE, there are five distinct
+clusters. In tSNE, these five clusters are closely located to each other
+(see Figure~\ref{fig-nldervis5Gau} (a)). However, in PHATE, two clusters
+are closely positioned, while the other three are more distant (see
+Figure~\ref{fig-nldervis5Gau} (c)). In PaCMAP, one cluster is at the
+center, and the remaining four are positioned in four different
+directions (see Figure~\ref{fig-nldervis5Gau} (e)). In TriMAP, two
+clusters are close, although not as close as in PHATE, and the other
+three are well-separated (see Figure~\ref{fig-nldervis5Gau} (d)). In
+UMAP, all clusters are arranged in a parallel manner, with three in one
+line and the other two in a separate line (see
+Figure~\ref{fig-nldervis5Gau} (b)).
+
+Visualizing the models alongside the original high-D data provides
+insights into how different techniques capture the underlying clustering
+structure. The tSNE model exhibits five well-separated clusters,
+effectively preserving both local and global structures (see video link
+of Figure~\ref{fig-modelfiveGau} (a)). UMAP, on the other hand, also
+presents five distinct clusters but with a more flattened surface
+appearance (see video link of Figure~\ref{fig-modelfiveGau} (b)). The
+PHATE model shows five separated clusters resembling triangles or
+partial triangles but struggles to capture local structures (see video
+link of Figure~\ref{fig-modelfiveGau} (c)). TriMAP and PaCMAP both
+display five well-separated clusters with flat surfaces, each capturing
+within-cluster variation to varying extents. Despite the various 2D
+representations, all NLDR techniques preserve the global structure (see
+video link of Figure~\ref{fig-modelfiveGau} (d), (e) respectively).
+However, tSNE, effectively capture both local and global structures, as
+indicated by lower AIC values in Figure~\ref{fig-diagnosticpltGau} (a).
 
 \begin{figure}
 
