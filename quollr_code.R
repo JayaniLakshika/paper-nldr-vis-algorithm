@@ -479,7 +479,7 @@ show_langevitour <- function(df, df_b, df_b_with_center_data, benchmark_value = 
     tr1 <- triangulate_bin_centroids(df_b_with_center_data, x, y)
     tr_from_to_df <- generate_edge_info(triangular_object = tr1)
 
-    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = tr_from_to_df$from , lineTo = tr_from_to_df$to, group = df_exe$type)
+    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = tr_from_to_df$from , lineTo = tr_from_to_df$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"))
   } else if ((!(is.na(benchmark_value))) && (is.na(min_points_threshold))) {
     ## Set the maximum difference as the criteria
     distance_df_small_edges <- distance_df %>%
@@ -495,7 +495,7 @@ show_langevitour <- function(df, df_b, df_b_with_center_data, benchmark_value = 
     tr1 <- triangulate_bin_centroids(df_bin_centroids_filterd, x, y)
     tr_from_to_df <- generate_edge_info(triangular_object = tr1)
 
-    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = tr_from_to_df$from , lineTo = tr_from_to_df$to, group = df_exe$type)
+    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = tr_from_to_df$from , lineTo = tr_from_to_df$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"))
 
   }  else if ((!(is.na(benchmark_value))) && (!(is.na(min_points_threshold)))) {
 
@@ -511,7 +511,7 @@ show_langevitour <- function(df, df_b, df_b_with_center_data, benchmark_value = 
       dplyr::filter(distance < benchmark_value)
     ## Since erase brushing is considerd.
 
-    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, group = df_exe$type)
+    langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_small_edges$from, lineTo = distance_df_small_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"))
 
   } else {
 
