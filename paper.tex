@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, sharp corners, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, frame hidden, enhanced, breakable, boxrule=0pt, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -422,33 +422,29 @@ information?}
 \subsection{Linear overviews using
 tours}\label{linear-overviews-using-tours}}
 
-A tour is a powerful visualization technique used to explore
-high-dimensional data by generating a sequence of projections, typically
-into two dimensions. There are two main types of tours: the Grand Tour
-and the Guided Tour. The Grand Tour explores the data's shape and global
-structure by using random projections \citep{Asimov1985}. In contrast,
-the Guided Tour focuses on specific patterns by moving towards
-interesting projections defined by a predefined index function
-\citep{article29}.
+A tour is a powerful visualization technique used to explore the shape
+and global structure of high-dimensional data by generating a sequence
+of projections, typically into two dimensions. There are two main types
+of tours: the grand tour \citep{Asimov1985} and the guided tour
+\citep{article29}. A grand tour involves randomly selecting new
+orthonormal bases, enabling users to understand the structure by
+exploring the subspace of d-dimensional projections \citep{Asimov1985}.
+In contrast, a guided tour can be employed to generate a sequence of
+`interesting' projections based on an index function \citep{article29}.
 
-The process begins with a real data matrix \(X\) containing \(n\)
-observations in \(p\) dimensions. It generates a sequence of \(p\) ×
-\(d\) orthonormal projection matrices (bases) \(A_t\), usually \(d\) is
-\(1\) or \(2\) dimensions. For each pair of orthonormal bases \(A_t\)
-and \(A_{t+1}\), a geodesic path is interpolated to create smooth
-animation between projections.
+The process begins with the data matrix \(X\). It generates a sequence
+of \(p\) × \(d\) orthonormal projection matrices (bases) \(P_t\),
+usually \(d\) is one or two dimensions. For each pair of orthonormal
+bases \(P_t\) and \(P_{t+1}\), a geodesic path is interpolated to create
+smooth animation between projections. The resulting tour continuously
+visualizes the projected data \(Y_t\) = \(XP_t\) as it interpolates
+between successive bases.
 
-In the Grand Tour, new orthonormal bases are randomly chosen to explore
-the \(d\)-dimensional subspace. The data is often sphered via principal
-components to reduce dimensionality. The Guided Tour uses a predefined
-index function to generate a sequence of `interesting' projections. The
-resulting tour continuously visualizes the projected data \(Y_t\) =
-\(XA_t\) as it interpolates between successive bases.
-
-While both tours can be used to visualize data, examples often focus on
-using the Grand Tour to observe global structures. However, software
-like \textbf{langevitour} can visualize both types of tours, providing
-flexibility for exploring high-dimensional data with various objectives.
+Furthermore, software like \textbf{langevitour} can visualize both types
+of tours, providing flexibility for exploring high-dimensional data with
+various objectives. In our context, use grand tour along with the model
+to observe how effectively the model captures the underlying structure
+of the data.
 
 \hypertarget{sec-methods}{%
 \section{Methodology}\label{sec-methods}}

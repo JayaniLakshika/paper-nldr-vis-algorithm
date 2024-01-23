@@ -346,13 +346,13 @@ plot_list1 + plot_list2 + plot_list3 + plot_list4 + plot_list5 +
 
 ### Linear overviews using tours
 
-A tour is a powerful visualization technique used to explore high-dimensional data by generating a sequence of projections, typically into two dimensions. There are two main types of tours: the Grand Tour and the Guided Tour. The Grand Tour explores the data's shape and global structure by using random projections [@Asimov1985]. In contrast, the Guided Tour focuses on specific patterns by moving towards interesting projections defined by a predefined index function [@article29].
+A tour is a powerful visualization technique used to explore the shape and global structure of high-dimensional data by generating a sequence of projections, typically into two dimensions. There are two main types of tours: the grand tour [@Asimov1985] and the guided tour [@article29]. A grand tour involves randomly selecting new orthonormal bases, enabling users to understand the structure by exploring the subspace of d-dimensional projections [@Asimov1985]. In contrast, a guided tour can be employed to generate a sequence of 'interesting' projections based on an index function [@article29].
 
-The process begins with a real data matrix $X$ containing $n$ observations in $p$ dimensions. It generates a sequence of $p$ × $d$ orthonormal projection matrices (bases) $A_t$, usually $d$ is $1$ or $2$ dimensions. For each pair of orthonormal bases $A_t$ and $A_{t+1}$, a geodesic path is interpolated to create smooth animation between projections.
+The process begins with the data matrix $X$. It generates a sequence of $p$ × $d$ orthonormal projection matrices (bases) $P_t$, usually $d$ is one or two dimensions. For each pair of orthonormal bases $P_t$ and $P_{t+1}$, a geodesic path is interpolated to create smooth animation between projections. The resulting tour continuously visualizes the projected data $Y_t$ = $XP_t$ as it interpolates between successive bases.
 
-In the Grand Tour, new orthonormal bases are randomly chosen to explore the $d$-dimensional subspace. The data is often sphered via principal components to reduce dimensionality. The Guided Tour uses a predefined index function to generate a sequence of 'interesting' projections. The resulting tour continuously visualizes the projected data $Y_t$ = $XA_t$ as it interpolates between successive bases.
+Furthermore, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives. In our context, use grand tour along with the model to observe how effectively the model captures the underlying structure of the data.
 
-While both tours can be used to visualize data, examples often focus on using the Grand Tour to observe global structures. However, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives.
+<!--While both tours can be used to visualize data, examples often focus on using the grand tour to observe global structures. However, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives. --> 
 
 ## Methodology {#sec-methods}
 
@@ -1340,6 +1340,52 @@ p2_n_rm <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   guides(fill = guide_colourbar(title = "Standardized count")) #+
   #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
+## Import data
+
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- 11
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+df_bin_centroids_umap_s_curve <- df_bin_centroids_umap_s_curve |>
+  dplyr::filter(std_counts > 0.12)
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+
+
+
+trimesh_umap_s_curve_rm_low <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+  geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+  geom_point(size = 2, colour = "#33a02c") +
+  coord_equal()
+
+trimesh_umap_s_curve_rm_low <- trimesh_umap_s_curve_rm_low +
+  coord_cartesian(xlim =c(-5, 7.5), ylim = c(-10, 10)) +
+  #ggtitle("(a)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) #+
+  #annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
 
 ```
 
@@ -1350,9 +1396,9 @@ p2_n_rm <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
 #| label: fig-rmlowdenshex
 ##| out-width: 100%
 
-p2_n + p2_n_rm +
+p2_n + p2_n_rm + trimesh_umap_s_curve_rm_low +
   plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
+  plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
@@ -3689,8 +3735,8 @@ plot_list2_harps <- tSNE_data_harps |>
          legend.key.width = unit(0.25, 'cm')) +
   scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
   guides(color = guide_legend(title = "cluster"),
-         color = guide_legend(nrow = 3)) #+
-  # annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 
 
@@ -3767,7 +3813,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 
 ```
