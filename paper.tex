@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, breakable, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, frame hidden, interior hidden, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1279,7 +1279,8 @@ space with UMAP (\url{https://youtu.be/hP8ie_oMXw0})}
 
 \begin{itemize}
 \item
-  In 2D, there are two well-separated clusters
+  In 2D, there are two well-separated clusters, but the clusters are
+  really close
 \item
   One cluster have a sparse data space within the cluster
 \item
@@ -1289,12 +1290,15 @@ space with UMAP (\url{https://youtu.be/hP8ie_oMXw0})}
 \item
   In high-D view, the clusters having some non-linearity patter, which
   is also not captured in tSNE. Therefore, this is not a good choice.
+  Also, the two clusters are really near to each other and can't see any
+  separation. Also continuity of the structure. Long edges are presence
+  also.
 \item
   The parameter is, in a sense, a guess about the number of close
   neighbors each point has.
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[h]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE-1.pdf}
 
@@ -1303,7 +1307,40 @@ space with UMAP (\url{https://youtu.be/hP8ie_oMXw0})}
 \caption{\label{fig-nldervisharpstSNE}(a) 2D layout from tSNE
 (perplexity = 40) applied for the HARPS GTO dataset. Is this a best
 representation of the original data?, (b) Model in the 2D space with
-tSNE (\url{https://youtu.be/txTD7GTxt6Y})}
+tSNE (\url{https://youtu.be/jxo_rPyGv9k})}
+
+\end{figure}
+
+\begin{itemize}
+\item
+  5 clusters shows in 2D
+\item
+  3 clusters which are really close shows in high\_d data with the model
+\end{itemize}
+
+\begin{figure}[h]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE2-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisharpstSNE2}(a) 2D layout from tSNE
+(perplexity = 23) applied for the HARPS GTO dataset. Is this a best
+representation of the original data?, (b) Model in the 2D space with
+tSNE (\url{https://youtu.be/_is9qStggFE})}
+
+\end{figure}
+
+\begin{figure}[h]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE3-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisharpstSNE3}(a) 2D layout from tSNE
+(perplexity = 91) applied for the HARPS GTO dataset. Is this a best
+representation of the original data?, (b) Model in the 2D space with
+tSNE (\url{https://youtu.be/aGvHFhWw_Xs})}
 
 \end{figure}
 

@@ -2132,7 +2132,7 @@ mse_plot_param_test <- ggplot(MSE_df_umap |> dplyr::filter(data_type == "test"),
 
 ```{r}
 #| echo: false
-#| fig-cap: Goodness of fit statistics from different n_neighbors parameter of UMAP applied to training S-curve dataset. What is the best parameter choice in UMAP to represent the original data in 2D?
+#| fig-cap: "Goodness of fit statistics from different n_neighbors parameter of UMAP applied to training S-curve dataset. What is the best parameter choice in UMAP to represent the original data in 2D?"
 #| label: fig-diagnosticpltDiffParam
 #| out-width: 100%
 
@@ -2859,7 +2859,7 @@ trimesh_removed_pacmap_gau <- trimesh_removed_pacmap_gau +
 #| warning: false
 #| echo: false
 #| label: fig-modelfiveGau
-#| fig-cap: Is there a best model to represent the original data in 2D space or are they all providing equivalent information?, (a) Model in the 2D space with tSNE (<https://youtu.be/x5VPB-wOLm4>), (b) Model in the 2D space with UMAP (<https://youtu.be/Cm1dW6iLyHQ>), (c) Model in the 2D space with PHATE (<https://youtu.be/HB0Y3ilz6sI>), (d) Model in the 2D space with TriMAP (<https://youtu.be/iSVkXIrOrSA>), and (e) Model in the 2D space with PaCMAP (<https://youtu.be/O2QBctsc4uM>).
+#| fig-cap: "Is there a best model to represent the original data in 2D space or are they all providing equivalent information?, (a) Model in the 2D space with tSNE (<https://youtu.be/x5VPB-wOLm4>), (b) Model in the 2D space with UMAP (<https://youtu.be/Cm1dW6iLyHQ>), (c) Model in the 2D space with PHATE (<https://youtu.be/HB0Y3ilz6sI>), (d) Model in the 2D space with TriMAP (<https://youtu.be/iSVkXIrOrSA>), and (e) Model in the 2D space with PaCMAP (<https://youtu.be/O2QBctsc4uM>)."
 #| out-width: 100%
 
 trimesh_removed_tsne_gau + trimesh_removed_umap_gau + trimesh_removed_phate_gau + trimesh_removed_trimap_gau + trimesh_removed_pacmap_gau +
@@ -3130,7 +3130,7 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?"
 #| label: fig-diagnosticpltGau
 #| out-width: 100%
 
@@ -3325,7 +3325,8 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 #| echo: false
 #| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/CNXjWZMyh_M>)"
 #| label: fig-nldervisPBMCUMAP
- #| out-width: 100%
+##| out-width: 100%
+#| fig-pos: h
 
 
 plot_list2_pbmc + trimesh_removed_pbmc_umap + 
@@ -3491,7 +3492,8 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 #| echo: false
 #| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 5, min_dist = 0.1) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/SO3thJ8PMi8>)"
 #| label: fig-nldervisPBMCUMAP2
- #| out-width: 100%
+##| out-width: 100%
+#| fig-pos: h
 
 
 plot_list2_pbmc + trimesh_removed_pbmc_umap + 
@@ -3657,7 +3659,8 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 #| echo: false
 #| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.01) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/hP8ie_oMXw0>)"
 #| label: fig-nldervisPBMCUMAP3
- #| out-width: 100%
+##| out-width: 100%
+#| fig-pos: h
 
 
 plot_list2_pbmc + trimesh_removed_pbmc_umap + 
@@ -3748,17 +3751,17 @@ aic_plot_pbmc + mse_plot_pbmc +
 
 ### HARPS GTO sample dataset 
 
-- In 2D, there are two well-separated clusters
+- In 2D, there are two well-separated clusters, but the clusters are really close
 
 - One cluster have a sparse data space within the cluster
 
 - There is a line in right corner of the structure that is not connected any other trimesh points. This line create a long edge in high-D space.
 
-- In high-D view, the clusters having some non-linearity patter, which is also not captured in tSNE. Therefore, this is not a good choice.
+- In high-D view, the clusters having some non-linearity patter, which is also not captured in tSNE. Therefore, this is not a good choice. Also, the two clusters are really near to each other and can't see any separation. Also continuity of the structure. Long edges are presence also.
 
 - The parameter is, in a sense, a guess about the number of close neighbors each point has.
 
-
+<!-- Author suggestion-->
 ```{r}
 #| warning: false
 #| echo: false
@@ -3769,7 +3772,7 @@ plot_list2_harps <- tSNE_data_harps |>
     ggplot(aes(x = tSNE1,
                y = tSNE2, color = cluster))+
     geom_point(alpha=0.5) +
-    coord_equal() +
+    coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
   theme_linedraw() +
     theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3793,6 +3796,7 @@ plot_list2_harps <- tSNE_data_harps |>
 ```{r}
 #| warning: false
 #| echo: false
+
 
 ## Import data
 training_data_1 <- read_rds("data/harps/harps_data.rds")
@@ -3823,7 +3827,7 @@ df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
 
 ## Identify bins with low-density
 # identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
-#
+# 
 # df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
 #   filter(!(hexID %in% identify_rm_bins))
 
@@ -3855,6 +3859,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
   # theme(axis.text = element_text(size = 5),
   #       axis.title = element_text(size = 7)) +
   geom_point(colour = "#33a02c", size = 0.5) +
+  #coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -3868,8 +3873,263 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from tSNE (perplexity = 40) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/txTD7GTxt6Y>)"
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 40) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/jxo_rPyGv9k>)"
 #| label: fig-nldervisharpstSNE
+#| fig-pos: h
+
+
+plot_list2_harps + trimesh_removed_tsne_harps +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+
+<!-- param set 1-->
+
+- 5 clusters shows in 2D
+
+- 3 clusters which are really close shows in high_d data with the model
+
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_23.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = clusters))+
+    geom_point(alpha=0.5) +
+    coord_cartesian(xlim = c(-22, 18), ylim = c(-27, 32)) +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+# training_data_1 <- read_rds("data/harps/harps_data.rds")
+# training_data_1 <- training_data_1 |>
+#   mutate(ID = 1:NROW(training_data_1))
+# 
+# clusters <- training_data_1$cluster
+# select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+# 
+# training_data_1 <- training_data_1 |> select(-cluster)
+# names(training_data_1) <- append(paste0("x", 1:17), "ID")
+# 
+# tSNE_data_harps <- tSNE_data_harps |>
+#   select(tSNE1, tSNE2) |>
+#   mutate(ID = 1:NROW(tSNE_data_harps))
+
+### tSNE
+
+num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
+                                                cell_area = 1) #43
+num_bins_tsne_harps <- 30
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+# 
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2D_dist(.data = tr_from_to_df_tsne_harps)
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
+
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  #coord_cartesian(xlim = c(-22, 18), ylim = c(-27, 32)) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 23) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/_is9qStggFE>)"
+#| label: fig-nldervisharpstSNE2
+#| fig-pos: h
+
+
+plot_list2_harps + trimesh_removed_tsne_harps +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+<!-- param set 2-->
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_91.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = clusters))+
+    geom_point(alpha=0.5) +
+    coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+# training_data_1 <- read_rds("data/harps/harps_data.rds")
+# training_data_1 <- training_data_1 |>
+#   mutate(ID = 1:NROW(training_data_1))
+# 
+# clusters <- training_data_1$cluster
+# select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+# 
+# training_data_1 <- training_data_1 |> select(-cluster)
+# names(training_data_1) <- append(paste0("x", 1:17), "ID")
+# 
+# tSNE_data_harps <- tSNE_data_harps |>
+#   select(tSNE1, tSNE2) |>
+#   mutate(ID = 1:NROW(tSNE_data_harps))
+
+### tSNE
+
+num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
+                                                cell_area = 1) #43
+#num_bins_tsne_harps <- 30
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+# 
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2D_dist(.data = tr_from_to_df_tsne_harps)
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
+
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  #coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 91) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/aGvHFhWw_Xs>)"
+#| label: fig-nldervisharpstSNE3
+#| fig-pos: h
 
 
 plot_list2_harps + trimesh_removed_tsne_harps +
