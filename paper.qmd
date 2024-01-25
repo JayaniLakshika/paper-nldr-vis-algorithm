@@ -3352,7 +3352,7 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 #test_1 <- read_rds("data/pbmc/pbmc_test.rds")
 
 #tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_5_min_dist_0.1.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_100_min_dist_0.3.rds")
 # PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
 # TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
 # PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
@@ -3470,7 +3470,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-benchmark_pbmc <- 1.055271
+benchmark_pbmc <- 1.049766 
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3490,7 +3490,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 5, min_dist = 0.1) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/SO3thJ8PMi8>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 100, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/1jNVVlzI4tM>)"
 #| label: fig-nldervisPBMCUMAP2
 ##| out-width: 100%
 #| fig-pos: h
@@ -3519,7 +3519,7 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 #test_1 <- read_rds("data/pbmc/pbmc_test.rds")
 
 #tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_30_min_dist_0.01.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_15_min_dist_0.3.rds")
 # PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
 # TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
 # PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
@@ -3637,7 +3637,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-benchmark_pbmc <- 1.057549
+benchmark_pbmc <- 1.035666
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3657,7 +3657,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.01) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/hP8ie_oMXw0>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/2GM_SuM866M>)"
 #| label: fig-nldervisPBMCUMAP3
 ##| out-width: 100%
 #| fig-pos: h
@@ -3751,6 +3751,8 @@ aic_plot_pbmc + mse_plot_pbmc +
 
 ### HARPS GTO sample dataset 
 
+@Anders2018
+
 - In 2D, there are two well-separated clusters, but the clusters are really close
 
 - One cluster have a sparse data space within the cluster
@@ -3772,7 +3774,7 @@ plot_list2_harps <- tSNE_data_harps |>
     ggplot(aes(x = tSNE1,
                y = tSNE2, color = cluster))+
     geom_point(alpha=0.5) +
-    coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
+    #coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
   theme_linedraw() +
     theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3901,7 +3903,7 @@ plot_list2_harps <- tSNE_data_harps |>
     ggplot(aes(x = tSNE1,
                y = tSNE2, color = clusters))+
     geom_point(alpha=0.5) +
-    coord_cartesian(xlim = c(-22, 18), ylim = c(-27, 32)) +
+    coord_cartesian(xlim = c(-25, 20), ylim = c(-35, 25)) +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
   theme_linedraw() +
     theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3988,7 +3990,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
   # theme(axis.text = element_text(size = 5),
   #       axis.title = element_text(size = 7)) +
   geom_point(colour = "#33a02c", size = 0.5) +
-  #coord_cartesian(xlim = c(-22, 18), ylim = c(-27, 32)) +
+  coord_cartesian(xlim = c(-25, 20), ylim = c(-35, 25)) +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -4002,7 +4004,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from tSNE (perplexity = 23) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/_is9qStggFE>)"
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 23) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/VO_4SJEoAUA>)"
 #| label: fig-nldervisharpstSNE2
 #| fig-pos: h
 
@@ -4113,7 +4115,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
   # theme(axis.text = element_text(size = 5),
   #       axis.title = element_text(size = 7)) +
   geom_point(colour = "#33a02c", size = 0.5) +
-  #coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
+  coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
@@ -4127,7 +4129,7 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from tSNE (perplexity = 91) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/aGvHFhWw_Xs>)"
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 91) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/vLvRfcogft8>)"
 #| label: fig-nldervisharpstSNE3
 #| fig-pos: h
 
