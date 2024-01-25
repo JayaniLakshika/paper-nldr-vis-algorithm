@@ -1726,15 +1726,15 @@ The error metric outlined above provides valuable insights into the overall accu
 Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
 
 $$
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{b}
+\text{MSE} = \sum_{j = 1}^{n} \frac{\sqrt{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}}{n}
 $$ {#eq-equation9}
 
-Here, $b$ signifies the total number of bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
+Here, $b'$ signifies the total number of bins without empty bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
 
 Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
                     
 $$
-\text{AIC} = 2bp + np * log(\text{MSE})
+\text{AIC} = 2b'p + np * log(\text{MSE})
 $$ {#eq-equation10}
   
   These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
@@ -3143,6 +3143,8 @@ aic_gau_plot + mse_gau_plot +
 ## Applications {#sec-applications}
 
 ### Human peripheral blood mononclear cells (PBMCs) data
+
+@Chen2023
 
 - Intro to the data set (This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions.)
 

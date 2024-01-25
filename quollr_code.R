@@ -549,7 +549,7 @@ predict_hex_id <- function(training_data, nldr_df, nldr_df_test, num_bins, shape
 }
 
 compute_aic <- function(p, total, num_bins, num_obs) {
-  mse <- mean(total) / p
+  mse <- mean(sqrt(total))
   aic <- 2*num_bins*p + num_obs*p*log(mse)
   return(aic)
 }
@@ -611,10 +611,10 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_
 
   #number_of_bins: Total number of bins with empty bins
   eval_df <- tibble::tibble(number_of_bins = NROW(full_centroid_df), number_of_observations = NROW(prediction_df),
-                            total_error = compute_aic((NCOL(df_bin) - 1), prediction_df_join$total, NROW(full_centroid_df), NROW(prediction_df_join)),
+                            total_error = compute_aic((NCOL(df_bin) - 1), prediction_df_join$total, NROW(df_bin_centroids), NROW(prediction_df_join)),
                             #totol_error_method_2 = prediction_df$total * NROW(full_centroid_df)/NROW(prediction_df),
                             #totol_error_method_3 = prediction_df$total /NROW(full_centroid_df),
-                            total_mse = mean(prediction_df_join$total)/(NCOL(df_bin) - 1))
+                            total_mse = mean(sqrt(prediction_df_join$total)))
 
   return(eval_df)
 
