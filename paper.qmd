@@ -1255,7 +1255,7 @@ MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
 MSE_df$method <- factor(MSE_df$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
 
 ## To draw with AIC
-aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
+aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
                                                                                  y = total_error,
                                                                                  color = method
 )) +
@@ -1272,7 +1272,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training"), aes(x = num
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
 
-mse_plot <- ggplot(MSE_df, aes(x = number_of_bins,
+mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
                                        y = total_mse,
                                        color = method
 )) +
@@ -1455,7 +1455,7 @@ MSE_df_lwd <- dplyr::bind_rows(MSE_df_1_lwd, MSE_df_2_lwd, MSE_df_3_lwd, MSE_df_
 MSE_df_lwd$method <- factor(MSE_df_lwd$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
 
 ## To draw with AIC
-aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training"), aes(x = benchmark_rm_hex,
+aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_hex,
                                                                                  y = total_error,
                                                                                  color = method
 )) +
@@ -1472,7 +1472,7 @@ aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training"), aes
   xlab("Benchmark value")
 ## Effective number of bins along x-axis
 
-mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
+mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_hex,
                                        y = total_mse,
                                        color = method
 )) +
@@ -1497,9 +1497,8 @@ mse_plot_lwd <- ggplot(MSE_df_lwd, aes(x = benchmark_rm_hex,
 #| label: fig-diagnosticpltScurvelwd
 ##| out-width: 100%
 
-#aic_plot_lwd + 
-  mse_plot_lwd +
-  #plot_annotation(tag_levels = 'a') +
+aic_plot_lwd + mse_plot_lwd +
+  plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
@@ -1654,7 +1653,7 @@ error_df_lg <- dplyr::bind_rows(error_df_lg_1, error_df_lg_2, error_df_lg_3, err
 error_df_lg$method <- factor(error_df_lg$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
 
 ## To draw with AIC
-aic_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
+aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_lg,
                                                                                  y = total_error,
                                                                                  color = method
 )) +
@@ -1671,7 +1670,7 @@ aic_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
   xlab("Benchmark value")
 ## Effective number of bins along x-axis
 
-mse_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
+mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_lg,
                                        y = total_mse,
                                        color = method
 )) +
@@ -1696,9 +1695,8 @@ mse_plot_lg <- ggplot(error_df_lg, aes(x = benchmark_rm_lg,
 #| label: fig-diagnosticpltScurvelgrm
 ##| out-width: 100%
 
-#aic_plot_lg + 
-  mse_plot_lg +
-  #plot_annotation(tag_levels = 'a') +
+aic_plot_lg + mse_plot_lg +
+  plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
 ```
@@ -3167,11 +3165,23 @@ than their CD27+ counterparts.
 
 - 15 PCs
 
+- Numb bins along the x-axis = 23, shape parameter = 0.8772751
+
 - learned from the model: There are 3 well-separated clusters in 2D, but if look at the model in high-D space, the three clusters are much closer. Also, there is some continuity within the clustering structure and it didn't capture well. Therefore UMAP with n:neighbour 30 is not a good representation for this data set. 
 
 - The most important parameter is n_neighbors - the number of approximate nearest neighbors used to construct the initial high-dimensional graph. It effectively controls how UMAP balances local versus global structure - low values will push UMAP to focus more on local structure by constraining the number of neighboring points considered when analyzing the data in high dimensions, while high values will push UMAP towards representing the big-picture structure while losing fine detail.
 
 - The second parameter we’ll investigate is min_dist, or the minimum distance between points in low-dimensional space. This parameter controls how tightly UMAP clumps points together, with low values leading to more tightly packed embeddings. Larger values of min_dist will make UMAP pack points together more loosely, focusing instead on the preservation of the broad topological structure.
+
+```{r}
+#| warning: false
+#| echo: false
+
+error_df <- read_csv("data/pbmc/pbmc_3k_festem/error_pbmc_umap.csv")
+
+error_df |>
+  knitr::kable() 
+```
 
 
 ```{r}
@@ -3354,7 +3364,7 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 #test_1 <- read_rds("data/pbmc/pbmc_test.rds")
 
 #tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_100_min_dist_0.3.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_15_min_dist_0.99_metric_euclidean.rds")
 # PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
 # TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
 # PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
@@ -3444,8 +3454,11 @@ plot_list2_pbmc <- UMAP_pbmc |>
 num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
                                               cell_area = 1) ##23
 
+num_bins_pbmc <- 23
+
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
+shape_value_pbmc <- 0.8772751
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3472,7 +3485,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-benchmark_pbmc <- 1.049766 
+#benchmark_pbmc <- 1.049766 
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3492,7 +3505,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 100, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/1jNVVlzI4tM>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.99, metric = euclidean) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<>)"
 #| label: fig-nldervisPBMCUMAP2
 ##| out-width: 100%
 #| fig-pos: h
@@ -3521,7 +3534,7 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 #test_1 <- read_rds("data/pbmc/pbmc_test.rds")
 
 #tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap_15_min_dist_0.3.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_5_min_dist_0.99_metric_cosine.rds")
 # PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
 # TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
 # PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
@@ -3610,9 +3623,11 @@ plot_list2_pbmc <- UMAP_pbmc |>
 #| echo: false
 num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
                                               cell_area = 1) ##23
+num_bins_pbmc <- 23
 
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
+shape_value_pbmc <- 0.8772751
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3639,7 +3654,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-benchmark_pbmc <- 1.035666
+#benchmark_pbmc <- 1.035666
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3659,7 +3674,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/2GM_SuM866M>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<>)"
 #| label: fig-nldervisPBMCUMAP3
 ##| out-width: 100%
 #| fig-pos: h
