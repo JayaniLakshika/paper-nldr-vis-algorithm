@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, boxrule=0pt, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1176,9 +1176,89 @@ original data in 2D?}
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
 
-\hypertarget{human-peripheral-blood-mononclear-cells-pbmcs-data}{%
-\subsection{Human peripheral blood mononclear cells (PBMCs)
-data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
+\hypertarget{single-cell-rna-seq-data-of-human}{%
+\subsection{Single-cell RNA-seq data of
+human}\label{single-cell-rna-seq-data-of-human}}
+
+In the field of single-cell studies, a common analysis task involves
+clustering to identify groups of cells with similar expression profiles.
+Analysts often turn to NLDR techniques to verify and identify these
+clusters and explore developmental trajectories. In clustering
+workflows, the main objective is to verify the existence of clusters and
+subsequently identify them as specific cell types by examining the
+expression of ``known'' marker genes. Marker genes are specific genes or
+transcripts that are uniquely or highly expressed in particular cell
+types. Marker genes are identified through differential gene expression
+(DEG) analysis, comparing the expression levels of genes across
+different cell types. In this context, a ``faithful'' embedding should
+ideally preserve the topology of the data, ensuring that cells
+corresponding to the same cell type are situated close to the
+high-dimensional space.
+
+\hypertarget{processing-steps}{%
+\subsection{Processing steps}\label{processing-steps}}
+
+To begin our analysis, we installed the Peripheral Blood Mononuclear
+Cells (pbmc) data set obtained from 10x Genomics using the
+\texttt{SeuratData} R package \citep{Rahul2019}, which facilitates the
+distribution of data sets in the form of Seurat objects
+\citep{Yuhan2021}. This data set contains 13,714 features (genes) across
+2,700 samples (cells) within a single assay. The active assay is RNA,
+with 13,714 features representing different gene expressions. Then, the
+cells that have unique feature counts over 2,500 or less than 200 and
+cells that have \textgreater{} 5\% mitochondrial counts are filtered.
+After removing unwanted cells from the dataset, the next step is to
+normalize the data. By default, we employ a global-scaling normalization
+method ``LogNormalize'' that normalizes the feature expression
+measurements for each cell by the total expression, multiplies this by a
+scale factor (10,000 by default), and log-transforms the result.
+
+Next, top 1000 genes are selected by Festem \citep{Chen2023} DEG method.
+Then, scale the data. Then, perform PCA on the scaled data. Louvain
+algorithm is used to cluster the single cells based on the genes
+selected by Festem. Using the Festem-selected genes and 15 PCs,
+identified 10 clusters in the PBMC3k data and annotated them based on
+the expression of canonical markers. The 10 clusters included immune
+cells such as naive CD4 T cells, memory CD4 T cells, CD8 T cells, CD14
+monocytes, FCGR3A monocytes, Natural Killer (NK) cells, B cells and
+Dendritic Cells (DC). In addition to these common cell types, Festem
+identified a fine cell type, CD27− CD4+ memory T cells, which were often
+missed by other methods.
+
+\begin{itemize}
+\item
+  Human peripheral blood mononclear cells (PBMCs) data
+\item
+  Intro to the data set
+\end{itemize}
+
+Used Louvain algorithm to cluster the single cells based on the genes
+selected by Festem method
+
+\begin{itemize}
+\item
+  Explain what ``Evaluate Festem on DEG detection'' means, in terms of
+  this data
+\item
+\item
+  How did they ``identified 10 clusters''? What were the variables used,
+  PCs or full data or 2D representation, spell this out.
+\item
+  Used top 1000 genes selected by Festem to run PCA, top 15 PCs
+  (original paper mentioned)
+\item
+  The ``10 clusters included immune cells such as naive CD4 T \ldots{}''
+  does this mean that every cluster had all of these, or one cluster was
+  mostly ``CD4 T cells'', another mostly ``memory CD4 T'', \ldots?
+\item
+  How is your use of this data different from the original application.
+\item
+  Original paper used this data set to compare different DEG methods,
+  but we need to look how the performance of UMAP with the author's
+  selected parameter choice.
+\item
+  Why 15 PCs? Is that from the original paper? YES
+\end{itemize}
 
 \citet{Chen2023}
 
@@ -1214,7 +1294,7 @@ data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
 \item
   15 PCs
 \item
-  Numb bins along the x-axis = 23, shape parameter = 0.8772751
+  Num bins along the x-axis = 23, shape parameter = 0.8772751
 \item
   learned from the model: There are 3 well-separated clusters in 2D, but
   if look at the model in high-D space, the three clusters are much
@@ -1237,31 +1317,38 @@ data}\label{human-peripheral-blood-mononclear-cells-pbmcs-data}}
   leading to more tightly packed embeddings. Larger values of min\_dist
   will make UMAP pack points together more loosely, focusing instead on
   the preservation of the broad topological structure.
+\item
+  The third parameter is metric. This parameter plays a crucial role in
+  determining how distances are computed within the ambient space of the
+  input data (The term ``ambient space'' refers to the original or
+  initial space in which the data exists before any transformation or
+  dimensionality reduction).
 \end{itemize}
 
-\begin{tabular}{r|r|l|r}
-\hline
-30 & 0.3 & cosine & 38634.66719286174\\
-\hline
-5 & 0.99 & euclidean & 35938.99\\
-\hline
-5 & 0.99 & cosine & 35597.02\\
-\hline
-15 & 0.99 & euclidean & 35534.76\\
-\hline
-30 & 0.99 & euclidean & 35664.69\\
-\hline
-1022 & 0.99 & cosine & 37022.01\\
-\hline
-1022 & 0.30 & cosine & 39746.35\\
-\hline
-800 & 0.30 & euclidean & 38385.25\\
-\hline
-\end{tabular}
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+n\_neighbors & min\_dist & metric & error \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{30} & \textbf{0.3} & \textbf{cosine} &
+\textbf{38634.66719286174} \\
+5 & 0.99 & euclidean & 35938.98594054407 \\
+5 & 0.99 & cosine & 35597.01981261912 \\
+15 & 0.99 & euclidean & 35534.75778935427 \\
+30 & 0.99 & euclidean & 35664.68763936665 \\
+1022 & 0.99 & cosine & 37022.0125249776 \\
+1022 & 0.3 & cosine & 39746.347504639125 \\
+800 & 0.3 & euclidean & 38385.25485420897 \\
+100 & 0.99 & euclidean & 36528.57424747017 \\
+230 & 0.99 & cosine & 37864.26802578186 \\
+354 & 0.99 & euclidean & 37530.86598361975 \\
+\end{longtable}
 
-\begin{figure}
+\begin{figure}[h]
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
 
 }
 
@@ -1272,9 +1359,9 @@ space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
 
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP2-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP2-1.pdf}
 
 }
 
@@ -1285,9 +1372,9 @@ the PBMC3k dataset. Is this a best representation of the original data?,
 
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h]
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP3-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3-1.pdf}
 
 }
 
@@ -1322,6 +1409,8 @@ Model in the 2D space with UMAP (\textless\textgreater)}
 \item
   The parameter is, in a sense, a guess about the number of close
   neighbors each point has.
+\item
+  Num bins along the x-axis = 43, shape parameter = 0.4466309
 \end{itemize}
 
 \begin{figure}[h]
