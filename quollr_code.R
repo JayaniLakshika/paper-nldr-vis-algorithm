@@ -577,7 +577,9 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin, num_
   ## To map centroid coordinates to predicted hexID
   prediction_df_join <- dplyr::inner_join(prediction_df, df_bin_centroids_filtered, by = c("pred_hb_id" = "hexID"))
 
-  df_bin_train <- df_bin
+  df_bin_train <- df_bin |>
+    dplyr::filter(hb_id %in% df_bin_centroids$hexID)
+
   names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
 
   prediction_df_join <- prediction_df_join |>

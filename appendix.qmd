@@ -301,6 +301,28 @@ distance_plot <- plot_dist(distance) +
 
 ## Notations
 
+| Notation                                                                                                              | Description                                                            |
+|-----------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------|
+| $n$                                                                                                                   | number of observations                                                 |
+| $p$                                                                                                                   | number of dimensions in high-D data                                    |
+| $X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$ | high-D data matrix                                                     |
+| $d$                                                                                                                   | number of dimensions in embedding data, usually two                    |
+| $Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$ | embedding matrix                                                       |
+| $P_t$                                                                                                                 | point along the geodesic path at time $t$                              |
+| $P_{t+1}$                                                                                                             | point along the geodesic path at the next time instant, which is $t+1$ |
+| $b_1$                                                                                                                 | number of bins along the x-axis                                        |
+| $b_2$                                                                                                                 | number of bins along the y-axis                                        |
+| $b$                                                                                                                   | total number of bins in the hexagonal grid                             |
+| $b'$                                                                                                                  | total number of bins without the empty bins                            |
+| $h$                                                                                                                   | diameter of a hexagon                                                  |
+| $A$                                                                                                                   | area of a hexagon                                                      |
+| $r_1$                                                                                                                 | 2D embedding component 1                                               |
+| $r_2$                                                                                                                 | 2D embedding component 2                                               |
+| $s$                                                                                                                   | shape parameter                                                        |
+| $C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$                                                                               | hexagonal bin centroid coordinates                                     |
+| $C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$                                                                          | averaged high-D coordinates                                            |
+: Notations used in this paper and their descriptions. {#tbl-notations}
+
 
 ## Paramter tunning
 
@@ -794,7 +816,7 @@ trimesh + trimesh_gr +
 
 Mainly, the hexagonal bin centroids are used to construct 2D model and averaged high-D data is used to lift the model into high-D space. As options except bin centroids, bin means can used to construct the 2D model. Also, except averaged high-D data, weighted mean can used to lift the model into high-D space. If we use bin centers instead of bin centroids, the triangles are not regular.
 
-- Why bin means? because the distribution of points within hexagonals are not always reprsented by the center.
+- Why bin means? because the distribution of points within hexagonals are not always represented by the center.
 
 
 ### Case 1: Construct 2D model with hexbin means and lift the model into high-D space with averaged high-D data
