@@ -144,6 +144,96 @@ Also, the importance of m-vis along with data-vis has been recognized and incorp
 
 The outline of this paper is as follows. The @sec-background provides an detailed overview of dimension reduction methods, and tours. Building upon this foundation, the @sec-methods delves into the proposed algorithm, its implementation details, how to tune the model, model summaries, and a synthetic example to illustrate the functionality of the algorithm. Subsequently, @sec-applications showcases applications of the algorithm on different data sets, particularly in single-cell RNA-seq data. These applications reveal insights into the performance and trustworthiness of NLDR algorithms. We analyze the results to identify situations where NLDR techniques may lead to misleading interpretations. Finally, @sec-conclusions concludes by summarizing the findings and emphasizing the significance of the proposed approach in tackling the challenges of high-dimensional data visualization.
 
+<!--UMAP with different param choices-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_7 <- read_rds(file = "data/s_curve/s_curve_umap_7.rds")
+
+#(n-neighbors: 50)
+plot_list1_umap <- plot_UMAP_2D(UMAP_data_7) + #ggtitle("(b)") +
+  geom_point(alpha=0.5, size = 0.5, colour = "#8dd3c7", fill = "#8dd3c7") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_15 <- read_rds(file = "data/s_curve/s_curve_umap_15.rds")
+
+#(n-neighbors: 50)
+plot_list2_umap <- plot_UMAP_2D(UMAP_data_15) + #ggtitle("(b)") + 
+  geom_point(alpha=0.5, size = 0.5, colour = "#a65628", fill = "#a65628") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data_32 <- read_rds(file = "data/s_curve/s_curve_umap_32.rds")
+
+#(n-neighbors: 50)
+plot_list3_umap <- plot_UMAP_2D(UMAP_data_32) + #ggtitle("(b)") +
+  geom_point(alpha=0.5, size = 0.5, color = "#f781bf", fill = "#f781bf") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+
+#(n-neighbors: 50)
+plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
+  geom_point(alpha=0.5, size = 0.5, colour = "#999999", fill = "#999999") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'd', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+
+```{r}
+#| echo: false
+#| fig-cap: "2D layouts from UMAP applied for the S-curve data: (a) UMAP (n_neighbors = 7), (b) UMAP (n_neighbors = 15), (c) UMAP (n_neighbors = 32), (d) UMAP (n_neighbors = 50). Is there a best hyperparameter choice in representing UMAP or are they all providing  equivalent information?"
+#| label: fig-nldervisUMAP
+#| out-width: 100%
+
+plot_list1_umap + plot_list2_umap + plot_list3_umap + plot_list4_umap +
+  plot_layout(ncol=4)
+```
+
+
 
 <!--High-dimensional (high-D) data is widespread in many fields including ecology and bioinformatics [@Guo2023], in part because of new data collection technologies [@Johnstone2009; @ayesha2020overview]. Working with high-dimensional data poses considerable challenges due to the difficulty in visualizing beyond two dimensions [@Jia2022]. High-dimensional data also presents difficulties for model fitting [@Johnstone2009], both computationally and interpretation, each of which benefits from visualization.
 
@@ -892,36 +982,36 @@ Typically, the MSE plot will have a steep slope at the beginning, indicating tha
 #| message: false
 #| warning: false
 
-num_bins_for_nldr_methods_df <- tibble::tibble(NLDR_technique = "tSNE", tot_bins = 72, aic = -21882.462)
-
-num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "UMAP", tot_bins = 98, aic = -20013.266)
-
-num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "PHATE", tot_bins = 90, aic = -15036.91)
-
-num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "TriMAP", tot_bins = 154, aic = -23001.90)
-
-num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
-  tibble::add_row(NLDR_technique = "PaCMAP", tot_bins = 132, aic = -21330.059)
-
-# knitr::kable(
-#   num_bins_for_nldr_methods_df,
-#   col.names = c('NLDR technique', 'total number of bins'), format = "latex", 
-#              caption = "Total number of bins suggested by rule of thumb for each NLDR technique applied to S-curve dataset."
-# ) |> 
+# num_bins_for_nldr_methods_df <- tibble::tibble(NLDR_technique = "tSNE", tot_bins = 72, aic = -21882.462)
+# 
+# num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
+#   tibble::add_row(NLDR_technique = "UMAP", tot_bins = 98, aic = -20013.266)
+# 
+# num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
+#   tibble::add_row(NLDR_technique = "PHATE", tot_bins = 90, aic = -15036.91)
+# 
+# num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
+#   tibble::add_row(NLDR_technique = "TriMAP", tot_bins = 154, aic = -23001.90)
+# 
+# num_bins_for_nldr_methods_df <- num_bins_for_nldr_methods_df |> 
+#   tibble::add_row(NLDR_technique = "PaCMAP", tot_bins = 132, aic = -21330.059)
+# 
+# # knitr::kable(
+# #   num_bins_for_nldr_methods_df,
+# #   col.names = c('NLDR technique', 'total number of bins'), format = "latex", 
+# #              caption = "Total number of bins suggested by rule of thumb for each NLDR technique applied to S-curve dataset."
+# # ) |> 
+# #   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
+# #   row_spec(0, bold = TRUE)
+# num_bins_for_nldr_methods_df$tot_bins <- as.character(num_bins_for_nldr_methods_df$tot_bins)
+# colnames(num_bins_for_nldr_methods_df) <- c('NLDR technique', 'total number of bins', "AIC")
+# num_bins_for_nldr_methods_df <- tibble::remove_rownames(num_bins_for_nldr_methods_df)
+# 
+# xtable(num_bins_for_nldr_methods_df, caption = "Total number of bins suggested by rule of thumb and AIC values for each NLDR technique applied to S-curve dataset.", label = "tbl-msebinsnldr") |>
+#   xtable2kable() |> 
 #   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
-#   row_spec(0, bold = TRUE)
-num_bins_for_nldr_methods_df$tot_bins <- as.character(num_bins_for_nldr_methods_df$tot_bins)
-colnames(num_bins_for_nldr_methods_df) <- c('NLDR technique', 'total number of bins', "AIC")
-num_bins_for_nldr_methods_df <- tibble::remove_rownames(num_bins_for_nldr_methods_df)
-
-xtable(num_bins_for_nldr_methods_df, caption = "Total number of bins suggested by rule of thumb and AIC values for each NLDR technique applied to S-curve dataset.", label = "tbl-msebinsnldr") |>
-  xtable2kable() |> 
-  kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
-  row_spec(0, bold = TRUE) |>
-  row_spec(4, bold=T, color = "red")
+#   row_spec(0, bold = TRUE) |>
+#   row_spec(4, bold=T, color = "red")
 
 
 ```
@@ -1264,7 +1354,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
@@ -1279,7 +1369,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1464,7 +1554,7 @@ aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> d
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
@@ -1479,7 +1569,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1662,7 +1752,7 @@ aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
@@ -1677,7 +1767,7 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
   geom_point() +
   geom_line() +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
@@ -1738,96 +1828,8 @@ $$ {#eq-equation10}
   These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
 
-<!--UMAP with different param choices-->
 
-```{r}
-#| warning: false
-#| echo: false
-
-UMAP_data_7 <- read_rds(file = "data/s_curve/s_curve_umap_7.rds")
-
-#(n-neighbors: 50)
-plot_list1_umap <- plot_UMAP_2D(UMAP_data_7) + #ggtitle("(b)") +
-  geom_point(alpha=0.5, size = 0.5, colour = "#8dd3c7", fill = "#8dd3c7") +
-  theme_linedraw() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
-
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-UMAP_data_15 <- read_rds(file = "data/s_curve/s_curve_umap_15.rds")
-
-#(n-neighbors: 50)
-plot_list2_umap <- plot_UMAP_2D(UMAP_data_15) + #ggtitle("(b)") + 
-  geom_point(alpha=0.5, size = 0.5, colour = "#a65628", fill = "#a65628") +
-  theme_linedraw() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
-
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-UMAP_data_32 <- read_rds(file = "data/s_curve/s_curve_umap_32.rds")
-
-#(n-neighbors: 50)
-plot_list3_umap <- plot_UMAP_2D(UMAP_data_32) + #ggtitle("(b)") +
-  geom_point(alpha=0.5, size = 0.5, color = "#f781bf", fill = "#f781bf") +
-  theme_linedraw() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
-
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
-
-#(n-neighbors: 50)
-plot_list4_umap <- plot_UMAP_2D(UMAP_data) + #ggtitle("(b)") +
-  geom_point(alpha=0.5, size = 0.5, colour = "#999999", fill = "#999999") +
-  theme_linedraw() +
-  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'd', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
-
-```
-
-
-```{r}
-#| echo: false
-#| fig-cap: "2D layouts from UMAP applied for the S-curve data: (a) UMAP (n_neighbors = 7), (b) UMAP (n_neighbors = 15), (c) UMAP (n_neighbors = 32), (d) UMAP (n_neighbors = 50). Is there a best parameter choice in representing UMAP or are they all providing  equivalent information?"
-#| label: fig-nldervisUMAP
-#| out-width: 100%
-
-plot_list1_umap + plot_list2_umap + plot_list3_umap + plot_list4_umap +
-  plot_layout(ncol=4)
-```
-
-
+<!--
 ```{r}
 #| warning: false
 #| echo: false
@@ -2139,6 +2141,7 @@ aic_plot_param + mse_plot_param_training + mse_plot_param_test  +
   plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+-->
 
 ### Model interpretation
 
@@ -2472,9 +2475,9 @@ trimesh_removed_tsne_s_curve + trimesh_removed_umap_s_curve + trimesh_removed_ph
 
 
 
-### Model selection {#sec-selection}
+<!--### Model selection {#sec-selection}
 
-In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). 
+In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). -->
 
 ### Prediction {#sec-prediction}
 
