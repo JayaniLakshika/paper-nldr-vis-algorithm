@@ -94,13 +94,13 @@ library(colorspace)
 library(kableExtra)
 
 library(grid)
-library(xtable)
-
-xtable2kable <- function(x) {
-  out <- capture.output(print(x, table.placement = NULL))[-(1:2)]
-  out <- paste(out, collapse = "\n")
-  structure(out, format = "latex", class = "knitr_kable")
-}
+# library(xtable)
+# 
+# xtable2kable <- function(x) {
+#   out <- capture.output(print(x, table.placement = NULL))[-(1:2)]
+#   out <- paste(out, collapse = "\n")
+#   structure(out, format = "latex", class = "knitr_kable")
+# }
 
 
 # install.packages("Seurat")
@@ -1357,7 +1357,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Total number of bins")
 ## Effective number of bins along x-axis
@@ -1374,7 +1374,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Total number of bins")
 
@@ -1389,7 +1389,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
 aic_plot + mse_plot +
   plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+  theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
 #### Benchmark value to remove low-density hexagons
@@ -1557,7 +1557,7 @@ aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> d
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Benchmark value")
 ## Effective number of bins along x-axis
@@ -1574,7 +1574,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Benchmark value")
 
@@ -1590,7 +1590,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
 aic_plot_lwd + mse_plot_lwd +
   plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+  theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
 #### Benchmark value to remove long edges
@@ -1755,7 +1755,7 @@ aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
   xlab("Benchmark value")
 ## Effective number of bins along x-axis
@@ -1772,7 +1772,7 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
   xlab("Benchmark value")
 
@@ -1788,7 +1788,7 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
 aic_plot_lg + mse_plot_lg +
   plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8)) 
+  theme(legend.position='none', plot.tag = element_text(size = 8)) 
 ```
 
 ### Model summaries {#sec-summary}

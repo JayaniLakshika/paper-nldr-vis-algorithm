@@ -104,32 +104,21 @@ source("nldr_code.R", local = TRUE)
 #| warning: false
 #| echo: false
 
-data <- read_csv(paste0(here::here(), "/data/s_curve.csv"))
+data <- read_rds("data/s_curve/s_curve.rds")
 ```
 
 ```{r}
 #| warning: false
 #| echo: false
 
-data <- data |>
-  mutate(ID = row_number())
-
-data_split <- initial_split(data)
-training_data <- training(data_split)
-test_data <- testing(data_split)
+training_data <- read_rds("data/s_curve/s_curve_training.rds")
+test_data <- read_rds("data/s_curve/s_curve_test.rds")
 ```
 
 ```{r}
 #| echo: false
 
-UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
-
-UMAP_data <- UMAP_fit$layout |>
-  as.data.frame()
-names(UMAP_data)[1:(ncol(UMAP_data))] <- paste0(rep("UMAP",(ncol(UMAP_data))), 1:(ncol(UMAP_data)))
-
-UMAP_data <- UMAP_data |>
-  mutate(ID = training_data$ID)
+UMAP_data <- read_rds("data/s_curve/s_curve_umap.rds")
 
 num_bins_x <- calculate_effective_x_bins(.data = UMAP_data, x = UMAP1,
                            cell_area = 1)
@@ -309,6 +298,8 @@ distance_plot <- plot_dist(distance) +
   theme(axis.text = element_text(size = 5),
         axis.title = element_text(size = 12))
 ```
+
+## Notations
 
 
 ## Paramter tunning
@@ -799,3 +790,695 @@ trimesh + trimesh_gr +
 
 ```
 
+## Different options to construct the 2D model and lift the model into high-D space
+
+Mainly, the hexagonal bin centroids are used to construct 2D model and averaged high-D data is used to lift the model into high-D space. As options except bin centroids, bin means can used to construct the 2D model. Also, except averaged high-D data, weighted mean can used to lift the model into high-D space. If we use bin centers instead of bin centroids, the triangles are not regular.
+
+- Why bin means? because the distribution of points within hexagonals are not always reprsented by the center.
+
+
+### Case 1: Construct 2D model with hexbin means and lift the model into high-D space with averaged high-D data
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- calculate_effective_x_bins(.data = UMAP_s_curve, x = UMAP1,
+                                         cell_area = 1)
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_mean(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+## To generate the grid
+hexbin_data_object_n <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+df_bin_centroids_n <- hexbin_data_object_n$hexdf_data
+## Data set with all possible centroids in the hexagonal grid
+full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_n)
+## Generate all coordinates of hexagons
+hex_grid <- full_hex_grid(full_centroid_df)
+
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+benchmark_umap_s_curve <- 2.0384346  
+
+
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+
+
+# trimesh_umap_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+# 
+# trimesh_umap_s_curve <- trimesh_umap_s_curve +
+#   #ggtitle("(a)") +
+#   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+#   theme_light() +
+#   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+#   ) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+# theme(axis.text = element_text(size = 5),
+#       axis.title = element_text(size = 7))
+
+trimesh_removed_umap_s_curve_bin_mean <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve, triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve_bin_mean <- trimesh_removed_umap_s_curve_bin_mean +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+
+# ### Define type column
+# df <- df_all_umap_s_curve |>
+#   dplyr::select(tidyselect::starts_with("x")) |>
+#   dplyr::mutate(type = "data") ## original dataset
+# 
+# df_b <- df_bin_umap_s_curve |>
+#   dplyr::filter(hb_id %in% df_bin_centroids_umap_s_curve$hexID) |>
+#   dplyr::select(-hb_id) |>
+#   dplyr::mutate(type = "model") ## Data with summarized mean
+# 
+# df_exe <- dplyr::bind_rows(df_b, df)
+# 
+# distance_df_small_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance < benchmark_umap_s_curve)
+# 
+# distance_df_long_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance >= benchmark_umap_s_curve)
+# 
+# distance_df_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
+# 
+# langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_edges$from , lineTo = distance_df_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"), lineColors = append(rep("black", length(distance_df_small_edges$from)), rep("red", length(distance_df_long_edges$from))))
+# 
+# show_langevitour(df_all_umap_s_curve, df_bin_umap_s_curve, df_bin_centroids_umap_s_curve, benchmark_value = benchmark_umap_s_curve, distance = distance_umap_s_curve, distance_col = distance)
+
+ggplot(data = hex_grid, aes(x = x, y = y)) + geom_polygon(fill = "white", color = "black", aes(group = id)) +
+  geom_point(data = df_bin_centroids_n, aes(x = x, y = y), color = "#33a02c") +
+  geom_point(data = df_bin_centroids_umap_s_curve, aes(x = x, y = y), color = "black")
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                   x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:13 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_s_curve, nldr_df_test = UMAP_s_curve, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "x")
+  pred_df_training <- pred_df_training_object$pred_data
+  centroid_df_training <- pred_df_training_object$df_bin_centroids
+  avg_df_training <- pred_df_training_object$df_bin
+  
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+eval_data_training <- eval_data_training |>
+  mutate(data_type = "training")
+
+MSE_df_2 <- eval_data_training |>
+  dplyr::mutate(method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+#MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
+MSE_df <- MSE_df_2
+
+MSE_df$method <- factor(MSE_df$method, levels = c("UMAP"))
+
+## To draw with AIC
+aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset. What is the most effective NLDR technique to represent the original data in a 2D space? What is the effective number of bins in each NLDR technique to create a 2D model?"
+#| label: fig-diagnosticpltScurve
+##| out-width: 100%
+
+trimesh_removed_umap_s_curve_bin_mean + aic_plot + mse_plot +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
+### Case 2: Construct 2D model with hexbin centroid and lift the model into high-D space with weighted mean of high-D data
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- calculate_effective_x_bins(.data = UMAP_s_curve, x = UMAP1,
+                                         cell_area = 1)
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+## Data set with all possible centroids in the hexagonal grid
+full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_umap_s_curve)
+## Generate all coordinates of hexagons
+hex_grid <- full_hex_grid(full_centroid_df)
+
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Weighted averaged on high-D
+hb_object <- hexbin_data_object_umap_s_curve$hb_data
+df_bin_umap_s_curve <- weighted_highD_data(training_data, nldr_df_with_id = UMAP_data_with_hb_id_s_curve, hb_object, column_start_text = "x")
+
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+#benchmark_umap_s_curve <- 2.0384346  
+
+
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+
+
+# trimesh_umap_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+# 
+# trimesh_umap_s_curve <- trimesh_umap_s_curve +
+#   #ggtitle("(a)") +
+#   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+#   theme_light() +
+#   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+#   ) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+# theme(axis.text = element_text(size = 5),
+#       axis.title = element_text(size = 7))
+
+trimesh_removed_umap_s_curve_bin_centroid <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve, triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve_bin_centroid <- trimesh_removed_umap_s_curve_bin_centroid +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+
+# ### Define type column
+# df <- df_all_umap_s_curve |>
+#   dplyr::select(tidyselect::starts_with("x")) |>
+#   dplyr::mutate(type = "data") ## original dataset
+# 
+# df_b <- df_bin_umap_s_curve |>
+#   dplyr::filter(hb_id %in% df_bin_centroids_umap_s_curve$hexID) |>
+#   dplyr::select(-hb_id) |>
+#   dplyr::mutate(type = "model") ## Data with summarized mean
+# 
+# df_exe <- dplyr::bind_rows(df_b, df)
+# 
+# distance_df_small_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance < benchmark_umap_s_curve)
+# 
+# distance_df_long_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance >= benchmark_umap_s_curve)
+# 
+# distance_df_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
+# 
+# langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_edges$from , lineTo = distance_df_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"), lineColors = append(rep("black", length(distance_df_small_edges$from)), rep("red", length(distance_df_long_edges$from))))
+# 
+# show_langevitour(df_all_umap_s_curve, df_bin_umap_s_curve, df_bin_centroids_umap_s_curve, benchmark_value = benchmark_umap_s_curve, distance = distance_umap_s_curve, distance_col = distance)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                   x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:13 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_s_curve, nldr_df_test = UMAP_s_curve, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "x")
+  pred_df_training <- pred_df_training_object$pred_data
+  centroid_df_training <- pred_df_training_object$df_bin_centroids
+  avg_df_training <- pred_df_training_object$df_bin
+  
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+eval_data_training <- eval_data_training |>
+  mutate(data_type = "training")
+
+MSE_df_2 <- eval_data_training |>
+  dplyr::mutate(method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+#MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
+MSE_df <- MSE_df_2
+
+MSE_df$method <- factor(MSE_df$method, levels = c("UMAP"))
+
+## To draw with AIC
+aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset. What is the most effective NLDR technique to represent the original data in a 2D space? What is the effective number of bins in each NLDR technique to create a 2D model?"
+#| label: fig-diagnosticpltScurve2
+##| out-width: 100%
+
+trimesh_removed_umap_s_curve_bin_centroid + aic_plot + mse_plot +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
+### Case 3: Construct 2D model with hexbin means and lift the model into high-D space with weighted mean of high-D data
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- calculate_effective_x_bins(.data = UMAP_s_curve, x = UMAP1,
+                                         cell_area = 1)
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_mean(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+## To generate the grid
+hexbin_data_object_n <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+df_bin_centroids_n <- hexbin_data_object_n$hexdf_data
+## Data set with all possible centroids in the hexagonal grid
+full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_n)
+## Generate all coordinates of hexagons
+hex_grid <- full_hex_grid(full_centroid_df)
+
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Weighted averaged on high-D
+hb_object <- hexbin_data_object_umap_s_curve$hb_data
+df_bin_umap_s_curve <- weighted_highD_data(training_data, nldr_df_with_id = UMAP_data_with_hb_id_s_curve, hb_object, column_start_text = "x")
+
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+benchmark_umap_s_curve <- 2.0384346  
+
+
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+
+
+# trimesh_umap_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+# 
+# trimesh_umap_s_curve <- trimesh_umap_s_curve +
+#   #ggtitle("(a)") +
+#   xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+#   theme_light() +
+#   theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+#   ) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+# theme(axis.text = element_text(size = 5),
+#       axis.title = element_text(size = 7))
+
+trimesh_removed_umap_s_curve_bin_mean <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve, triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve_bin_mean <- trimesh_removed_umap_s_curve_bin_mean +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+
+# ### Define type column
+# df <- df_all_umap_s_curve |>
+#   dplyr::select(tidyselect::starts_with("x")) |>
+#   dplyr::mutate(type = "data") ## original dataset
+# 
+# df_b <- df_bin_umap_s_curve |>
+#   dplyr::filter(hb_id %in% df_bin_centroids_umap_s_curve$hexID) |>
+#   dplyr::select(-hb_id) |>
+#   dplyr::mutate(type = "model") ## Data with summarized mean
+# 
+# df_exe <- dplyr::bind_rows(df_b, df)
+# 
+# distance_df_small_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance < benchmark_umap_s_curve)
+# 
+# distance_df_long_edges <- distance_umap_s_curve %>%
+#   dplyr::filter(distance >= benchmark_umap_s_curve)
+# 
+# distance_df_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
+# 
+# langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_edges$from , lineTo = distance_df_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"), lineColors = append(rep("black", length(distance_df_small_edges$from)), rep("red", length(distance_df_long_edges$from))))
+# 
+# show_langevitour(df_all_umap_s_curve, df_bin_umap_s_curve, df_bin_centroids_umap_s_curve, benchmark_value = benchmark_umap_s_curve, distance = distance_umap_s_curve, distance_col = distance)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                   x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:13 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_s_curve, nldr_df_test = UMAP_s_curve, num_bins = num_bins_vec[i], shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "x")
+  pred_df_training <- pred_df_training_object$pred_data
+  centroid_df_training <- pred_df_training_object$df_bin_centroids
+  avg_df_training <- pred_df_training_object$df_bin
+  
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+eval_data_training <- eval_data_training |>
+  mutate(data_type = "training")
+
+MSE_df_2 <- eval_data_training |>
+  dplyr::mutate(method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+#MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
+MSE_df <- MSE_df_2
+
+MSE_df$method <- factor(MSE_df$method, levels = c("UMAP"))
+
+## To draw with AIC
+aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset. What is the most effective NLDR technique to represent the original data in a 2D space? What is the effective number of bins in each NLDR technique to create a 2D model?"
+#| label: fig-diagnosticpltScurve3
+##| out-width: 100%
+
+trimesh_removed_umap_s_curve_bin_mean + aic_plot + mse_plot +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```

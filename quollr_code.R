@@ -885,29 +885,31 @@ cal_2D_dist <- function(.data, start_x = "x_from", start_y = "y_from", end_x = "
 
 compute_weights <- function(nldr_df, hb_object) {
 
+  hb_object <- hb_object
+
   ## To get the average of each bin
   bin_val_hexagons <- nldr_df |>
     dplyr::mutate(hb_id = hb_object@cID) |>
-    dplyr::select(-ID) |>
+    #dplyr::select(-ID) |>
     dplyr::group_by(hb_id) |>
     dplyr::summarise(dplyr::across(tidyselect::everything(), mean))
 
-  new_col <- paste0("avg_", names(UMAP_data)[1:2] |> tolower())
+  new_col <- paste0("avg_", names(nldr_df)[1:2] |> tolower())
 
   names(bin_val_hexagons) <- append("hb_id", new_col)
 
   ## To calculate distances from average point
 
   umap_with_avg_all <- dplyr::inner_join(bin_val_hexagons , nldr_df |>
-                                           dplyr::mutate(hb_id = hb_object@cID) |>
-                                           dplyr::select(-ID), by = c("hb_id" = "hb_id"))
+                                           dplyr::mutate(hb_id = hb_object@cID) ,
+                                         by = c("hb_id" = "hb_id"))
 
 
   umap_with_avg_all_split <- umap_with_avg_all |>
     dplyr::group_by(hb_id) |>
     dplyr::group_split()
 
-  col_names1 <- append(names(bin_val_hexagons), (names(nldr_df) - 1))
+  col_names1 <- append(names(bin_val_hexagons), (names(nldr_df)[-length(names(nldr_df))]))
   col_names <- append(col_names1, "distance")
 
   vec <- stats::setNames(1:6, col_names)
@@ -916,7 +918,7 @@ compute_weights <- function(nldr_df, hb_object) {
   for(i in 1:length(umap_with_avg_all_split)){
 
     weighted_mean_df <- umap_with_avg_all_split[[i]] |> ## These are the weights for weighted mean
-      cal_2D_dist_umap()
+      cal_2D_dist(start_x = new_col[1], start_y = new_col[2], end_x = names(nldr_df)[1], end_y = names(nldr_df)[2], select_col_vec = col_names)
 
     weight_df <- dplyr::bind_rows(weight_df, weighted_mean_df)
 
@@ -927,29 +929,32 @@ compute_weights <- function(nldr_df, hb_object) {
 }
 
 
-weighted_highD_data <- function(.data, weight_df) {
+weighted_highD_data <- function(training_data, nldr_df_with_id, hb_object, column_start_text = "x") {
 
-  weighted_mean_all <- dplyr::inner_join(.data, weight_df, by = c("hb_id" = "hb_id", "UMAP1" = "UMAP1", "UMAP2" = "UMAP2")) |>
+  df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), nldr_df_with_id)
+
+  weight_df <- compute_weights(nldr_df_with_id |> dplyr::select(-ID), hb_object)
+
+  weighted_mean_all <- dplyr::inner_join(df_all, weight_df, by = c("hb_id" = "hb_id", "UMAP1" = "UMAP1", "UMAP2" = "UMAP2")) |>
     mutate(distance_trans =  1/ (distance + 0.05))
 
   weighted_mean_df_list <- list()
 
-  for (j in 1:(NCOL(weighted_mean_all) - 8)) {
+  for (j in 1:(NCOL(training_data |> dplyr::select(-ID)))) {
 
     weighted_mean_df_list[[j]] <- weighted_mean_all |>
-      dplyr::select(hb_id, names(weighted_mean_all)[-((length(weighted_mean_all)-7):length(weighted_mean_all))][j], distance_trans) |>
+      dplyr::select(hb_id, names(training_data |> dplyr::select(-ID))[j], distance_trans) |>
       dplyr::group_by(hb_id) |>
-      dplyr::summarise(dplyr::across(names(weighted_mean_all)[-((length(weighted_mean_all)-7):length(weighted_mean_all))][j], ~ weighted.mean(., distance_trans)))
+      dplyr::summarise(dplyr::across(names(training_data |> dplyr::select(-ID))[j], ~ weighted.mean(., distance_trans)))
 
   }
 
-  weighted_mean <- weighted_mean_df_list %>%
-    Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by="hb_id"), .)
+  weighted_mean <- Reduce(function(dtf1,dtf2) dplyr::full_join(dtf1,dtf2,by="hb_id"), weighted_mean_df_list)
 
 
-  ## Column names starts with x
+  ## Column names start with x
   weighted_mean <- weighted_mean |>
-    dplyr::select(hb_id, tidyselect::starts_with("x"))
+    dplyr::select(hb_id, tidyselect::starts_with(column_start_text))
 
   return(weighted_mean)
 }
