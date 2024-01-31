@@ -78,6 +78,7 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+benchmark_pbmc <- 1.072513
 ##1.8
 
 trimesh_pbmc_umap <- ggplot(df_bin_centroids_pbmc, aes(x = x, y = y)) +
@@ -172,6 +173,10 @@ error_df <- error_df |>
                         if_else(total <= 25, "error 20-25",
                         if_else(total <= 30, "error 25-30",
                         if_else(total <= 35, "error 30-35", "error greter than 35"))))))))
+
+error_sum_df <- tibble::tibble(n_neighbors = 30, min_dist = 0.3, total_error = sum(error_df$total))
+write_csv(error_sum_df, "data/pbmc/pbmc_3k_festem/error_pbmc_umap.csv", append = TRUE)
+
 
 ### Define type column
 df <- df_all_pbmc |>

@@ -324,6 +324,55 @@ distance_plot <- plot_dist(distance) +
 : Notations used in this paper and their descriptions. {#tbl-notations}
 
 
+## Default parameter values
+
+### Benchmark value to remove low-density hexagons
+
+Removing all the bins that have a standard number of points less than a certain benchmark value will generate unnecessary holes within the triangular mesh. Therefore, before removing the low-density bins, it's necessary to investigate the number of points in neighboring bins as well. 
+
+$$
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+$${#eq-equationp2}
+
+The process begins by identifying the six nearest hex bins of specified low-density hex bins. To identify the nearest hex bins 2D Euclidean distance metric is used. Then, we calculate the mean density, as outlined in the equations:
+
+$$
+\text{mean density} = \frac{\text{standard count}}{6} 
+$${#eq-equationp3}
+
+The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.
+
+### Benchmark value to remove long edges {#sec-rmlgdefault}
+
+Determining a benchmark value for removing long edges isn't a straightforward process with standard guidelines. Having a default value provides a practical starting point for decision-making, helping users choose whether to stick with the default, choose a value below it, or select one above it for long edge removal.
+
+To calculate the default value, the process involves computing the 2D Euclidean distances between the vertices in the triangular mesh. Initially, distances between vertices are sorted. Then, unique distance values are extracted. Following this, the differences between consecutive distance values are computed, and a data frame is constructed with unique distance values and their corresponding differences. The first largest difference is then used as a benchmark to identify and remove the long edges.
+
+![A flow diagram detailing the steps taken to find the benchmark value to remove long edges.](figures/remove_long_edges_workflow.png){#fig-rmlgmeth fig-align="center" width="100%" height="100%"}
+
+```{r}
+#| echo: false
+
+dist_p <- plot_dist(distance)  +
+  geom_hline(yintercept = benchmark, colour = "blue") + 
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12)) 
+```
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Is the default benchmark value effective in removing the long edges to construct a smooth surface in 2D? (a) Triangular mesh with coloured edges by their type, (b) Distribution of 2D Euclidean distances between triangular mesh vertices."
+#| label: fig-defaultrmlg
+##| out-width: 100%
+
+trimesh_gr + dist_p +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
 ## Paramter tunning
 
 ### Total number of bins
@@ -783,34 +832,159 @@ hexgrid_with_points + hex_grid_centers_rm_l_n +
 
 ```
 
-### Benchmark value to remove long edges
+### Benchmark value to remove long edges 
 
 <!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.
 -->
 
-In this step, we aim to create a smoother surface in the low-dimensional space by removing long edges from the triangular mesh. This process helps eliminate outliers and noise while preserving important local relationships and intricate structures within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. A data frame is created to calculate the differences between consecutive distance values, and the largest difference serves as a threshold to identify long edges. By removing edges that exceed this threshold, the algorithm refines the triangular mesh (see @fig-traingularmeshgr).
-
-![A flow diagram detailing the steps taken to find the benchmark value to remove long edges.](figures/remove_long_edges_workflow.png){#fig-rmlgmeth fig-align="center" width="100%" height="100%"}
+Creating a smooth surfaces in 2D involves experimenting with various benchmark values. The challenge lies in determining the most effective benchmark value. This is precisely why the default value was introduced, as outlined in @sec-rmlgdefault, serving as a fundamental reference. To assess its effectiveness, a visual inspection of the triangular mesh is conducted to verify whether it successfully eliminates long edges. If it does, proceeding with that value is a effective choice; if not, it signals the initiation of the tuning process. @fig-diffrmlg shows how the 2D triangular meshes look after removing long edges with different benchmark values. Higher values tend to retain long edges, while lower values may remove not only long edges but also shorter ones.
 
 ```{r}
+#| warning: false
 #| echo: false
 
-dist_p <- plot_dist(distance)  +
-  geom_hline(yintercept = benchmark, colour = "red") + 
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12)) 
+## Import data
 
-dist_p
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- calculate_effective_x_bins(.data = UMAP_s_curve, x = UMAP1,
+                           cell_area = 1)
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+
+## To find the benchmark value
+benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+
+
+# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+
+
+trimesh_umap_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+  geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+  geom_point(size = 2, colour = "#33a02c") +
+  coord_equal()
+
+trimesh_umap_s_curve <- trimesh_umap_s_curve +
+  #ggtitle("(a)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+# theme(axis.text = element_text(size = 5),
+#       axis.title = element_text(size = 7))
+
+trimesh_gr_umap_s_curve <- colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve, triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_gr_umap_s_curve <- trimesh_gr_umap_s_curve +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+trimesh_removed_umap_s_curve <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
+                                                  triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve <- trimesh_removed_umap_s_curve +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+trimesh_removed_umap_s_curve1 <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = 0.8794136,
+                                                  triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve1 <- trimesh_removed_umap_s_curve1 +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+trimesh_removed_umap_s_curve2 <- remove_long_edges(.data = distance_umap_s_curve, benchmark_value = 5.0891822,
+                                                  triangular_object = tr1_object_umap_s_curve, distance_col = distance)
+
+trimesh_removed_umap_s_curve2 <- trimesh_removed_umap_s_curve2 +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
 ```
 
 ```{r}
 #| echo: false
+#| fig-cap: "What is the effective benchmark value to remove long edges? (a) benchmark value = $0.8794136$, (b) benchmark value = $1.696$ (default), and (c) benchmark value = $5.0891822$."
+#| label: fig-diffrmlg
+##| out-width: 100%
 
-trimesh + trimesh_gr +
-  plot_layout(ncol = 2)
-
+trimesh_removed_umap_s_curve1 + trimesh_removed_umap_s_curve + trimesh_removed_umap_s_curve2 +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom')
 ```
+
 
 ## Different options to construct the 2D model and lift the model into high-D space
 
@@ -1504,3 +1678,7 @@ trimesh_removed_umap_s_curve_bin_mean + aic_plot + mse_plot +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
+
+## How model perform less than and greater than the selected number of bins (UMAP with S-curve)
+
+

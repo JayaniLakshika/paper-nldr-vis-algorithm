@@ -3209,6 +3209,8 @@ than their CD27+ counterparts.
 
 - The third parameter is metric. This parameter plays a crucial role in determining how distances are computed within the ambient space of the input data (The term "ambient space" refers to the original or initial space in which the data exists before any transformation or dimensionality reduction).
 
+- If it is completely a mess, then that is also further evidence that the fit is poor in high-dimensions.
+
 
 ```{r}
 #| warning: false
@@ -3908,6 +3910,306 @@ plot_list2_pbmc_error <- error_df |>
 
 #plot_list2_pbmc + 
 trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_layout(guides='collect', ncol=3) &
+  theme(legend.position='bottom')
+
+#  plot_list1_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_list5_pbmc +
+#   plot_layout(ncol=5) #| out-width: 100%
+
+# 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
+
+<!--tSNE parm 1-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+#df_2 <- read_rds("data/pbmc/pbmc.rds")
+training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:15] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+#test_1 <- read_rds("data/pbmc/pbmc_test.rds")
+
+tSNE_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_tsne_5.rds")
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+num_bins_pbmc <- calculate_effective_x_bins(.data = tSNE_pbmc, x = tSNE1,
+                                            cell_area = 1) ##23
+
+num_bins_pbmc <- 23
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = tSNE_pbmc,
+                                                    x = tSNE1, y = tSNE2) ## 0.8772751
+shape_value_pbmc <- 0.8772751
+
+## To extract bin centroids
+hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = tSNE_pbmc,
+                                                    num_bins = num_bins_pbmc,
+                                                    shape_val = shape_value_pbmc, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+
+tSNE_pbmc_with_hb_id <- tSNE_pbmc |>
+  dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), tSNE_pbmc_with_hb_id)
+
+## Averaged on high-D
+df_bin_pbmc <- avg_highD_data(.data = df_all_pbmc, column_start_text = "PC")
+
+## Triangulate bin centroids
+tr1_object_pbmc <- triangulate_bin_centroids(df_bin_centroids_pbmc, x, y)
+tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
+
+## To find the benchmark value
+benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_tsne <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
+                                               triangular_object = tr1_object_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_tsne <- trimesh_removed_pbmc_tsne +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  )
+
+
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+  
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+  
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+# library(ggbeeswarm)
+# error_df$group <- "1"
+# ggplot(error_df, aes(x = group, y = total)) +
+#   geom_quasirandom()+
+#   ylim(0, max(unlist(error_df$total))+ 0.5) + coord_flip()
+
+### The minimum error is 0 and the maximum is 42.17439
+### There is lot of points with error 0,
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 2, "error 2 or less",
+                        if_else(total <= 10, "error 2-10",
+                                if_else(total <= 15, "error 10-15",
+                                        if_else(total <= 20, "error 15-20",
+                                                if_else(total <= 25, "error 20-25",
+                                                        if_else(total <= 30, "error 25-30",
+                                                                if_else(total <= 35, "error 30-35", "error greter than 35"))))))))
+
+plot_list2_pbmc_error <- error_df |>
+    mutate(type = factor(type , levels = c("error 2 or less", "error 2-10", "error 10-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error greter than 35"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 5) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with tSNE (<>)"
+#| label: fig-nldervisPBMCtSNE1
+#| out-width: 100%
+#| fig-pos: h
+
+#plot_list2_pbmc + 
+trimesh_removed_pbmc_tsne + plot_list2_pbmc_error +
+plot_layout(guides='collect', ncol=3) &
+  theme(legend.position='bottom')
+
+#  plot_list1_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_list5_pbmc +
+#   plot_layout(ncol=5) #| out-width: 100%
+
+# 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
+
+<!--tSNE parm 2-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+#df_2 <- read_rds("data/pbmc/pbmc.rds")
+training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:15] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+#test_1 <- read_rds("data/pbmc/pbmc_test.rds")
+
+tSNE_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_tsne_2.rds")
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+num_bins_pbmc <- calculate_effective_x_bins(.data = tSNE_pbmc, x = tSNE1,
+                                            cell_area = 1) ##23
+
+num_bins_pbmc <- 23
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = tSNE_pbmc,
+                                                    x = tSNE1, y = tSNE2) ## 0.8772751
+shape_value_pbmc <- 0.8772751
+
+## To extract bin centroids
+hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = tSNE_pbmc,
+                                                    num_bins = num_bins_pbmc,
+                                                    shape_val = shape_value_pbmc, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+
+tSNE_pbmc_with_hb_id <- tSNE_pbmc |>
+  dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), tSNE_pbmc_with_hb_id)
+
+## Averaged on high-D
+df_bin_pbmc <- avg_highD_data(.data = df_all_pbmc, column_start_text = "PC")
+
+## Triangulate bin centroids
+tr1_object_pbmc <- triangulate_bin_centroids(df_bin_centroids_pbmc, x, y)
+tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
+
+## To find the benchmark value
+benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_tsne <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
+                                               triangular_object = tr1_object_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_tsne <- trimesh_removed_pbmc_tsne +
+  geom_point(size = 2, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  )
+
+
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+  
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+  
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+# library(ggbeeswarm)
+# error_df$group <- "1"
+# ggplot(error_df, aes(x = group, y = total)) +
+#   geom_quasirandom()+
+#   ylim(0, max(unlist(error_df$total))+ 0.5) + coord_flip()
+
+### The minimum error is 0 and the maximum is 42.17439
+### There is lot of points with error 0,
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 2, "error 2 or less",
+                        if_else(total <= 10, "error 2-10",
+                                if_else(total <= 15, "error 10-15",
+                                        if_else(total <= 20, "error 15-20",
+                                                if_else(total <= 25, "error 20-25",
+                                                        if_else(total <= 30, "error 25-30",
+                                                                if_else(total <= 35, "error 30-35", "error greter than 35"))))))))
+
+plot_list2_pbmc_error <- error_df |>
+    mutate(type = factor(type , levels = c("error 2 or less", "error 2-10", "error 10-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error greter than 35"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 2) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with tSNE (<>)"
+#| label: fig-nldervisPBMCtSNE2
+#| out-width: 100%
+#| fig-pos: h
+
+#plot_list2_pbmc + 
+trimesh_removed_pbmc_tsne + plot_list2_pbmc_error +
 plot_layout(guides='collect', ncol=3) &
   theme(legend.position='bottom')
 

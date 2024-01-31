@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1282,6 +1282,9 @@ selected by Festem method
   input data (The term ``ambient space'' refers to the original or
   initial space in which the data exists before any transformation or
   dimensionality reduction).
+\item
+  If it is completely a mess, then that is also further evidence that
+  the fit is poor in high-dimensions.
 \end{itemize}
 
 \begin{longtable}[]{@{}llll@{}}
@@ -1341,6 +1344,32 @@ the PBMC3k dataset. Is this a best representation of the original data?,
 (n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for the
 PBMC3k dataset. Is this a best representation of the original data?, (b)
 Model in the 2D space with UMAP (\textless\textgreater)}
+
+\end{figure}
+
+\begin{figure}[h]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCtSNE1-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCtSNE1}(a) 2D layout from tSNE
+(perplexity = 5) applied for the PBMC3k dataset. Is this a best
+representation of the original data?, (b) Model in the 2D space with
+tSNE (\textless\textgreater)}
+
+\end{figure}
+
+\begin{figure}[h]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCtSNE2-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCtSNE2}(a) 2D layout from tSNE
+(perplexity = 2) applied for the PBMC3k dataset. Is this a best
+representation of the original data?, (b) Model in the 2D space with
+tSNE (\textless\textgreater)}
 
 \end{figure}
 
