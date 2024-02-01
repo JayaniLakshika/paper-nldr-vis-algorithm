@@ -3498,7 +3498,7 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 #test_1 <- read_rds("data/pbmc/pbmc_test.rds")
 
 #tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
-UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_15_min_dist_0.99_metric_euclidean.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_15_min_dist_0.99_metric_cosine.rds")
 # PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
 # TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
 # PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
@@ -3585,14 +3585,10 @@ plot_list2_pbmc <- UMAP_pbmc |>
 ```{r}
 #| warning: false
 #| echo: false
-num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
-                                              cell_area = 1) ##23
-
-num_bins_pbmc <- 23
-
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
-shape_value_pbmc <- 0.8772751
+
+num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3626,7 +3622,7 @@ trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
 
 trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
-  geom_point(size = 1, colour = "#33a02c") +
+  geom_point(size = 0.005, colour = "#33a02c") +
   #ggtitle("(b)") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3697,13 +3693,12 @@ plot_list2_pbmc_error <- error_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.99, metric = euclidean) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.99, metric = cosine) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<>)"
 #| label: fig-nldervisPBMCUMAP2
 #| out-width: 100%
 #| fig-pos: h
 
-#plot_list2_pbmc + 
-trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_list2_pbmc + trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
 plot_layout(guides='collect', ncol=3) &
   theme(legend.position='bottom')
 
@@ -3854,7 +3849,7 @@ trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
 
 trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
-  geom_point(size = 0.01, colour = "#33a02c") +
+  geom_point(size = 0.005, colour = "#33a02c") +
   #ggtitle("(b)") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
