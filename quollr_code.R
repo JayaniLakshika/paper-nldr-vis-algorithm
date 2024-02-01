@@ -1023,3 +1023,59 @@ predict_2d_embeddings <- function(test_data, df_bin_centroids, df_bin, type_NLDR
 
 }
 
+find_pts_in_hexbins <- function(full_grid_with_hexbin_id, UMAP_data_with_hb_id) {
+
+  ## Dataframe to store points info
+  pts_df <- data.frame(matrix(ncol = 0, nrow = 0))
+
+  for (i in 1:length(UMAP_data_with_hb_id$hb_id)) {
+
+    ## Filter a hexagon and find the point within that hexagon
+    pts_vec <- UMAP_data_with_hb_id |>
+      dplyr::filter(hb_id == UMAP_data_with_hb_id$hb_id[i]) |>
+      dplyr::pull(ID)
+
+    ## Store the hexagon ID with the respective points
+    hb_pts <- tibble::tibble(hexID = UMAP_data_with_hb_id$hb_id[i], pts = list(pts_vec))
+
+    pts_df <- dplyr::bind_rows(pts_df, hb_pts)
+
+  }
+
+  return(pts_df)
+
+}
+
+find_non_empty_bins <- function(nldr_df, x = "UMAP1", y = "UMAP2", shape_val, non_empty_bins) {
+
+  num_bins_x <- 1
+  ## To extract bin centroids
+  hexbin_data_object <- extract_hexbin_centroids(nldr_df = nldr_df,
+                                                 num_bins = num_bins_x,
+                                                 shape_val = shape_val, x = x, y = y)
+  df_bin_centroids <- hexbin_data_object$hexdf_data
+
+  num_of_non_empty_bins <- df_bin_centroids$hexID |> length()
+
+  while (num_of_non_empty_bins < non_empty_bins) {
+
+    num_bins_x <- num_bins_x + 1
+
+    ## To extract bin centroids
+    hexbin_data_object <- extract_hexbin_centroids(nldr_df = nldr_df,
+                                                   num_bins = num_bins_x,
+                                                   shape_val = shape_val, x = y, y = y)
+
+    df_bin_centroids <- hexbin_data_object$hexdf_data
+
+    num_of_non_empty_bins <- df_bin_centroids$hexID |> length()
+
+    if (num_of_non_empty_bins >= non_empty_bins) {
+      return(num_bins_x)
+      break
+    } else {
+      next
+    }
+  }
+}
+

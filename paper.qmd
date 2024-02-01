@@ -3238,7 +3238,8 @@ than their CD27+ counterparts.
 error_df <- read_csv("data/pbmc/pbmc_3k_festem/error_pbmc_umap.csv", col_names = FALSE)
 
 error_df <- error_df |>
-  mutate(X4 = round(X4/100, 2)) |>
+  mutate(X4 = round(X4/100, 2),
+         X1 = as.integer(X1)) |>
   arrange(X4)
 
 colnames(error_df) <- c("n_neighbors", "min_dist", "metric", "error (x 100)")
@@ -3248,7 +3249,7 @@ xtable(error_df, caption = "errors for different parameter combinations", label 
   xtable2kable() |>
   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
   row_spec(0, bold = TRUE) |>
-  row_spec(3, bold=T, color = "red")
+  row_spec(7, bold=T, color = "red")
 ```
 
 
@@ -3366,6 +3367,8 @@ hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
                                                       shape_val = shape_value_pbmc, x = UMAP1, y = UMAP2)
 
 df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+num_non_empty_bins_pbmc <- df_bin_centroids_pbmc$hexID |> length()
 
 UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
   dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
@@ -3598,6 +3601,7 @@ hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
 
 df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
 
+
 UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
   dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
 
@@ -3810,13 +3814,14 @@ plot_list2_pbmc <- UMAP_pbmc |>
 ```{r}
 #| warning: false
 #| echo: false
-num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
-                                              cell_area = 1) ##23
-num_bins_pbmc <- 23
+# num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
+#                                               cell_area = 1) ##23
+
 
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
-shape_value_pbmc <- 0.8772751
+
+num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3843,13 +3848,13 @@ distance_pbmc <- cal_2D_dist(.data = tr_from_to_df_pbmc)
 
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-#benchmark_pbmc <- 1.035666
+#benchmark_pbmc <- 0.5517801
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
 
 trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
-  geom_point(size = 1, colour = "#33a02c") +
+  geom_point(size = 0.01, colour = "#33a02c") +
   #ggtitle("(b)") +
   theme_linedraw() +
   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
