@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, enhanced, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, frame hidden, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1304,26 +1304,20 @@ selected by Festem method
   the fit is poor in high-dimensions.
 \end{itemize}
 
-\begin{longtable}[]{@{}llll@{}}
-\toprule\noalign{}
-n\_neighbors & min\_dist & metric & error \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-\textbf{30} & \textbf{0.3} & \textbf{cosine} &
-\textbf{38634.66719286174} \\
-5 & 0.99 & euclidean & 35938.98594054407 \\
-5 & 0.99 & cosine & 35597.01981261912 \\
-15 & 0.99 & euclidean & 35534.75778935427 \\
-30 & 0.99 & euclidean & 35664.68763936665 \\
-1022 & 0.99 & cosine & 37022.0125249776 \\
-1022 & 0.3 & cosine & 39746.347504639125 \\
-800 & 0.3 & euclidean & 38385.25485420897 \\
-100 & 0.99 & euclidean & 36528.57424747017 \\
-230 & 0.99 & cosine & 37864.26802578186 \\
-354 & 0.99 & euclidean & 37530.86598361975 \\
-\end{longtable}
+\begin{table}[H]
+\centering
+\begin{tabular}{rrrlr}
+  \hline
+\textbf{} & \textbf{n\_neighbors} & \textbf{min\_dist} & \textbf{metric} & \textbf{error (x 100) }\\ 
+  \hline
+\cellcolor{gray!6}{1} & \cellcolor{gray!6}{5.00} & \cellcolor{gray!6}{0.99} & \cellcolor{gray!6}{cosine} & \cellcolor{gray!6}{355.97 }\\ 
+  2 & 230.00 & 0.99 & cosine & 378.64 \\ 
+\textcolor{red}{\textbf{\cellcolor{gray!6}{  3}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{30.00}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{0.30}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{cosine}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{386.35 }}}\\ 
+   \hline
+\end{tabular}
+\caption{errors for different parameter combinations} 
+\label{tbl-errordiffcomb}
+\end{table}
 
 \begin{figure}[h]
 
@@ -1361,32 +1355,6 @@ the PBMC3k dataset. Is this a best representation of the original data?,
 (n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for the
 PBMC3k dataset. Is this a best representation of the original data?, (b)
 Model in the 2D space with UMAP (\textless\textgreater)}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCtSNE1-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCtSNE1}(a) 2D layout from tSNE
-(perplexity = 5) applied for the PBMC3k dataset. Is this a best
-representation of the original data?, (b) Model in the 2D space with
-tSNE (\textless\textgreater)}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCtSNE2-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCtSNE2}(a) 2D layout from tSNE
-(perplexity = 2) applied for the PBMC3k dataset. Is this a best
-representation of the original data?, (b) Model in the 2D space with
-tSNE (\textless\textgreater)}
 
 \end{figure}
 

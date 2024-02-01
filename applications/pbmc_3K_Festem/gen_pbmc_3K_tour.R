@@ -16,6 +16,7 @@ UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap.rds")
 
 num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
                                               cell_area = 1) ##23
+num_bins_pbmc
 
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
@@ -27,18 +28,22 @@ hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
 
 df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
 
+## Number of non-empty bins
+
+df_bin_centroids_pbmc$hexID #83
+
 ##########
 
 ## Data set with all possible centroids in the hexagonal grid
 
-full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_pbmc)
+full_centroid_df <- generate_full_grid_centroids(df_bin_centroids_pbmc) #576
 
 ## Generate all coordinates of hexagons
 hex_grid <- full_hex_grid(full_centroid_df)
 
 hex_full_count_df <- generate_full_grid_info(df_bin_centroids_pbmc)
 
-write_rds(hex_full_count_df, "data/pbmc/pbmc_3k_festem/pbmc_umap_hex_23.rds")
+#write_rds(hex_full_count_df, "data/pbmc/pbmc_3k_festem/pbmc_umap_hex_23.rds")
 
 ##########
 
