@@ -12,7 +12,7 @@ training_data_s_curve <- read_rds("data/s_curve/s_curve_training.rds")
 
 UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
 
-num_bins_s_curve <- 6
+num_bins_s_curve <- 8
 
 shape_value_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
                                                       x = UMAP1, y = UMAP2) ## 1.259938
@@ -43,7 +43,8 @@ distance_s_curve <- cal_2D_dist(.data = tr_from_to_df_s_curve)
 ## To find the benchmark value
 benchmark <- find_benchmark_value(.data = distance_s_curve, distance_col = distance)
 
-benchmark_dist_vec <- distance_s_curve$distance |> round(3) |> unique() |> sort()
+more_val_vec <- c(0, 0.475, 1)
+benchmark_dist_vec <- append(more_val_vec, distance_s_curve$distance |> round(3) |> unique() |> sort())
 #benchmark_dist_vec <- seq(min(distance_s_curve$distance |> round(3) |> unique()), max(distance_s_curve$distance |> round(3) |> unique()), 1)
 
 vec <- stats::setNames(rep("", 2), c("benchmark_rm_lg", "total_error"))  ## Define column names

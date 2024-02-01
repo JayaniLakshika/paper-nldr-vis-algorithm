@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, enhanced, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -749,13 +749,13 @@ look in high-D with original data.
 }
 
 \caption{\label{fig-binsize}Hexbin plots from different number of bins
-for the \textbf{UMAP} projections of \textbf{S-curve} data: (a) b = 32
-(4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b =
-840 (21, 40), s = 1.643542. The hexbins are colored based on the density
-of points, with darker colors indicating higher point density and yellow
-color representing lower point density within each bin. What is the
-number of bins that would be effective in representing low-dimensional
-data?}
+for the \textbf{UMAP} projections of \textbf{S-curve} training data: (a)
+b = 32 (4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c)
+b = 840 (21, 40), s = 1.643542. The hexbins are colored based on the
+density of points, with darker colors indicating higher point density
+and yellow color representing lower point density within each bin. What
+is the number of bins that would be effective in representing
+low-dimensional data?}
 
 \end{figure}
 
@@ -766,10 +766,16 @@ data?}
 }
 
 \caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
-different NLDR techniques applied to training S-curve dataset. What is
-the most effective NLDR technique to represent the original data in a 2D
-space? What is the effective number of bins in each NLDR technique to
-create a 2D model?}
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
 
 \end{figure}
 
@@ -852,9 +858,17 @@ provides a visual representation of how the model appears in high-D.
 }
 
 \caption{\label{fig-diagnosticpltScurvelwd}Goodness of fit statistics
-from different NLDR techniques applied to training S-curve dataset with
-different benchmark values to remove the low-density heaxgons. What is
-the effective benchmark value to remove the low-density heaxgons?}
+from UMAP applied to training S-curve dataset with different benchmark
+values to remove the low-density heaxgons. What is the effective
+benchmark value to remove the low-density heaxgons? The MSE plot have a
+steep slope at the beginning, indicating that a smaller benchmark causes
+a small amount of error. Then, the slope gradually increases or level
+up, indicating that a higher number of benchmark values generates a
+higher error. Using the reverse elbow method, when the benchmark value
+is set to 0.2, the slope of the Mean Squared Error (MSE) plot
+experiences a sudden and noticeable change, resembling an elbow-like
+shape. This point indicates that higher benchmark values remove the
+necessary bins as well which lead to distruct the 2D structure.}
 
 \end{figure}
 
@@ -905,9 +919,12 @@ long edges.}
 }
 
 \caption{\label{fig-diagnosticpltScurvelgrm}Goodness of fit statistics
-from different NLDR techniques applied to training S-curve dataset with
-different benchmark values to remove the long edges. What is the
-effective benchmark value to remove the long edges?}
+from UMAP applied to training S-curve dataset with different benchmark
+values to remove the long edges. What is the effective benchmark value
+to remove the long edges? \(1.347\) is the chosen benchmark value to
+remove long edges. The value is selected through a visual inspection of
+the triangular mesh is conducted to verify whether it successfully
+eliminates long edges.}
 
 \end{figure}
 
@@ -961,7 +978,7 @@ the predicted bin centroid data in high-D (\(C_{x_ij}\)) values across
 all bins. Mathematically, this is expressed as:
 
 \begin{equation}\protect\hypertarget{eq-equation9}{}{
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sqrt{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}}{n}
+\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 }\label{eq-equation9}\end{equation}
 
 Here, \(b'\) signifies the total number of bins without empty bins,

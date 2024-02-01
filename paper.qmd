@@ -1100,7 +1100,7 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
 #| echo: false
 #| label: fig-binsize
 #| fig-pos: H
-#| fig-cap: "Hexbin plots from different number of bins for the **UMAP** projections of **S-curve** data: (a) b = 32 (4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b = 840 (21, 40), s = 1.643542. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
+#| fig-cap: "Hexbin plots from different number of bins for the **UMAP** projections of **S-curve** training data: (a) b = 32 (4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b = 840 (21, 40), s = 1.643542. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
 
 p1 + p2 + p3
 ```
@@ -1368,6 +1368,8 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
 )) +
   geom_point() +
   geom_line() +
+   geom_vline(xintercept = 144, linetype="dashed", 
+                color = "red", size=0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
@@ -1382,7 +1384,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
 
 ```{r}
 #| echo: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset. What is the most effective NLDR technique to represent the original data in a 2D space? What is the effective number of bins in each NLDR technique to create a 2D model?"
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltScurve
 ##| out-width: 100%
 
@@ -1411,8 +1413,10 @@ Consequently, it is not necessary to remove low-density hexagons when constructi
 #| message: false
 #| warning: false
 
+hex_full_count_df_loop2 <- read_rds("data/s_curve/s_curve_hex_8.rds") 
+
 hex_full_count_df_loop2 <- hex_full_count_df_loop2 |>
-  dplyr::mutate(type = if_else(std_counts < 0.12, "low", "high"))
+  dplyr::mutate(type = if_else(std_counts <= 0.20, "low", "high"))
 
 hex_full_count_df_filtered <- hex_full_count_df_loop2 |>
   dplyr::filter(type == "low")
@@ -1458,7 +1462,7 @@ UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
 
 ## UMAP
 
-num_bins_umap_s_curve <- 11
+num_bins_umap_s_curve <- 8
 shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
                                                           x = UMAP1, y = UMAP2) ## 1.259938
 ## To extract bin centroids
@@ -1467,7 +1471,7 @@ hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_cur
 df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
 
 df_bin_centroids_umap_s_curve <- df_bin_centroids_umap_s_curve |>
-  dplyr::filter(std_counts > 0.12)
+  dplyr::filter(std_counts > 0.20)
 
 ## Triangulate bin centroids
 tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
@@ -1559,7 +1563,7 @@ aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> d
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
-  xlab("Benchmark value")
+  xlab("benchmark value")
 ## Effective number of bins along x-axis
 
 mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_hex,
@@ -1568,6 +1572,8 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
 )) +
   geom_point() +
   geom_line() +
+  geom_vline(xintercept = 0.2, linetype="dashed", 
+                color = "red", size=0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
@@ -1576,14 +1582,14 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
-  xlab("Benchmark value")
+  xlab("benchmark value")
 
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons?"
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons? The MSE plot have a steep slope at the beginning, indicating that a smaller benchmark causes a small amount of error. Then, the slope gradually increases or level up, indicating that a higher number of benchmark values generates a higher error. Using the reverse elbow method, when the benchmark value is set to 0.2, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that higher benchmark values remove the necessary bins as well which lead to distruct the 2D structure."
 #| label: fig-diagnosticpltScurvelwd
 ##| out-width: 100%
 
@@ -1613,7 +1619,7 @@ UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
 
 ## UMAP
 
-num_bins_umap_s_curve <- 6
+num_bins_umap_s_curve <- 8
 shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
                                                           x = UMAP1, y = UMAP2) ## 1.259938
 ## To extract bin centroids
@@ -1643,8 +1649,10 @@ tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_
 ## Compute 2D distances
 distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
 
+
 ## To find the benchmark value
 benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+benchmark_umap_s_curve <- 1.346694
 
 
 # colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
@@ -1748,6 +1756,10 @@ aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
                                                                                  color = method
 )) +
   geom_point() +
+  geom_point(data = error_df_lg |> dplyr::filter(method == "UMAP") |> filter(benchmark_rm_lg == 1.347), aes(x = benchmark_rm_lg,
+                                       y = total_error
+),
+                                       color = "#e41a1c") +
   geom_line() +
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
@@ -1757,7 +1769,7 @@ aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
-  xlab("Benchmark value")
+  xlab("benchmark value")
 ## Effective number of bins along x-axis
 
 mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_lg,
@@ -1765,6 +1777,10 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
                                        color = method
 )) +
   geom_point() +
+  geom_point(data = error_df_lg |> dplyr::filter(method == "UMAP") |> filter(benchmark_rm_lg == 1.347), aes(x = benchmark_rm_lg,
+                                       y = total_mse
+),
+                                       color = "#e41a1c") +
   geom_line() +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -1774,14 +1790,14 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
-  xlab("Benchmark value")
+  xlab("benchmark value")
 
 ```
 
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges?"
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges? $1.347$ is the chosen benchmark value to remove long edges. The value is selected through a visual inspection of the triangular mesh is conducted to verify whether it successfully eliminates long edges."
 #| label: fig-diagnosticpltScurvelgrm
 ##| out-width: 100%
 
@@ -1814,7 +1830,7 @@ The error metric outlined above provides valuable insights into the overall accu
 Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
 
 $$
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sqrt{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}}{n}
+\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 $$ {#eq-equation9}
 
 Here, $b'$ signifies the total number of bins without empty bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
@@ -3096,7 +3112,7 @@ MSE_df_gau$method <- factor(MSE_df_gau$method, levels = c("tSNE", "UMAP", "PHATE
 ## To draw with AIC
 aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
                                                              y = total_error,
-                                                             color = method
+                   color = method
 )) +
   geom_point() +
   geom_line() +
@@ -3108,7 +3124,8 @@ aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
-  xlab("Total number of bins")
+  xlab("total number of bins") + 
+  facet_wrap(vars(method), ncol = 5)
 ## Effective number of bins along x-axis
 
 mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
@@ -3125,7 +3142,8 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
-  xlab("Total number of bins")
+  xlab("total number of bins") + 
+  facet_wrap(vars(method), ncol = 5)
 
 ```
 
@@ -3137,7 +3155,7 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 
 aic_gau_plot + mse_gau_plot +
   plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
+  plot_layout(guides='collect', nrow = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
 
