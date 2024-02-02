@@ -94,13 +94,13 @@ library(colorspace)
 library(kableExtra)
 
 library(grid)
-library(xtable)
-
-xtable2kable <- function(x) {
-  out <- capture.output(print(x, table.placement = NULL))[-(1:2)]
-  out <- paste(out, collapse = "\n")
-  structure(out, format = "latex", class = "knitr_kable")
-}
+# library(xtable)
+# 
+# xtable2kable <- function(x) {
+#   out <- capture.output(print(x, table.placement = NULL))[-(1:2)]
+#   out <- paste(out, collapse = "\n")
+#   structure(out, format = "latex", class = "knitr_kable")
+# }
 
 
 # install.packages("Seurat")
@@ -1351,6 +1351,8 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
 )) +
   geom_point() +
   geom_line() +
+  geom_vline(xintercept = 144, linetype="dashed", 
+                color = "red", size=0.5) +
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
@@ -1359,7 +1361,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
         axis.text = element_text(size = 7)) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("AIC") +
-  xlab("Total number of bins")
+  xlab("total number of bins")
 ## Effective number of bins along x-axis
 
 mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
@@ -1378,7 +1380,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
   ylab("MSE") +
-  xlab("Total number of bins")
+  xlab("total number of bins")
 
 ```
 
@@ -1555,6 +1557,8 @@ aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> d
 )) +
   geom_point() +
   geom_line() +
+  geom_vline(xintercept = 0.2, linetype="dashed", 
+                color = "red", size=0.5) +
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
   theme_light() +
@@ -1756,10 +1760,8 @@ aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
                                                                                  color = method
 )) +
   geom_point() +
-  geom_point(data = error_df_lg |> dplyr::filter(method == "UMAP") |> filter(benchmark_rm_lg == 1.347), aes(x = benchmark_rm_lg,
-                                       y = total_error
-),
-                                       color = "#e41a1c") +
+  geom_vline(xintercept = 1.347, linetype="dashed", 
+                color = "red", size=0.5) +
   geom_line() +
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
@@ -1777,10 +1779,8 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
                                        color = method
 )) +
   geom_point() +
-  geom_point(data = error_df_lg |> dplyr::filter(method == "UMAP") |> filter(benchmark_rm_lg == 1.347), aes(x = benchmark_rm_lg,
-                                       y = total_mse
-),
-                                       color = "#e41a1c") +
+  geom_vline(xintercept = 1.347, linetype="dashed", 
+                color = "red", size=0.5) +
   geom_line() +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -3245,8 +3245,8 @@ error_df <- error_df |>
 colnames(error_df) <- c("n_neighbors", "min_dist", "metric", "error (x 100)")
 
 
-xtable(error_df, caption = "errors for different parameter combinations", label = "tbl-errordiffcomb") |>
-  xtable2kable() |>
+kable(error_df, caption = "errors for different parameter combinations", label = "tbl-errordiffcomb") |>
+  #xtable2kable() |>
   kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
   row_spec(0, bold = TRUE) |>
   row_spec(7, bold=T, color = "red")
