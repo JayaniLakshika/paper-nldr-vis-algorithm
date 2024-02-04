@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, sharp corners, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -738,9 +738,9 @@ the number of bins assigned in the hexagonal grid for various NLDR
 techniques applied to the S-curve data set. As per the rule of thumb
 mentioned earlier, the effective number of bins for each NLDR method is
 shown in the \textbf{?@tbl-msebinsnldr}. Furthermore,
-Figure~\ref{fig-modelScurve} shows the 2D models constructed for each
-NLDR technique with the selected total number of bins and how the models
-look in high-D with original data.
+\textbf{?@fig-modelScurve} shows the 2D models constructed for each NLDR
+technique with the selected total number of bins and how the models look
+in high-D with original data.
 
 \begin{figure}[H]
 
@@ -838,7 +838,7 @@ fluctuate, and the first local minimum is at \(0\). Therefore, nearby
 benchmark values such as \(0.01\), \(0.04\), and \(0.06\) were explored
 to identify the best value for preserving the data structure. In this
 case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
-is shown in Figure~\ref{fig-modelScurve} (c), while the video link
+is shown in \textbf{?@fig-modelScurve} (c), while the video link
 provides a visual representation of how the model appears in high-D.
 
 \begin{figure}
@@ -1011,42 +1011,25 @@ After considering the models constructed from the algorithm for each
 NLDR techniques and visualizing them in high-D space with the original
 data, shows that all the NLDR techniques capture the non-linearity of
 the S-curve (see videos of the models linked in
-Figure~\ref{fig-modelScurve}). But thorough examination of each model in
+\textbf{?@fig-modelScurve}). But thorough examination of each model in
 high-D space shows some surprising findings. The model of PHATE is
 flattened and lack of capturing the width of S-curve (see videos of the
-model with PHATE linked in Figure~\ref{fig-modelScurve}). This nature of
+model with PHATE linked in \textbf{?@fig-modelScurve}). This nature of
 PHATE is also evicted by the considerably higher AIC and MSE values for
 PHATE as shown in Figure~\ref{fig-diagnosticpltScurve}. Furthermore,
 there are two edges that are not connected to any points in the model of
 TriMAP (see see videos of the model with TriMAP linked in
-Figure~\ref{fig-modelScurve}). This model shows how the patterns in 2D
+\textbf{?@fig-modelScurve}). This model shows how the patterns in 2D
 representation of TriMAP capture by the model (see
 Figure~\ref{fig-nldervis} (d)). As shown in Figure~\ref{fig-nldervis}
 (b), UMAP have four clusters in a curvilinear structure. However, the
 model reveals that even though UMAP shows a curvilinear in 2D, UMAP
 actually capture the structure of the S-curve without any disjoint in
 the model (see see videos of the model with UMAP linked in
-Figure~\ref{fig-modelScurve}). In the 2D layouts of tSNE and PaCMAP (see
+\textbf{?@fig-modelScurve}). In the 2D layouts of tSNE and PaCMAP (see
 Figure~\ref{fig-nldervis} (a), (e)), there are some sparse areas that
 are captured by the models effectively (see see videos of the model with
-tSNE and PaCMAP linked in Figure~\ref{fig-modelScurve}).
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-modelScurve-1.pdf}
-
-}
-
-\caption{\label{fig-modelScurve}Is there a good model to represent the
-original data in 2D space or are they all providing equivalent
-information?, (a) Model in the 2D space with tSNE
-(\url{https://youtu.be/uy9SkAo6gAE}), (b) Model in the 2D space with
-UMAP (\url{https://youtu.be/0MJDhHrh_Ug}), (c) Model in the 2D space
-with PHATE (\url{https://youtu.be/HbVv0uy0QWk}), (d) Model in the 2D
-space with TriMAP (\url{https://youtu.be/2OGwipAjzc8}), and (e) Model in
-the 2D space with PaCMAP (\url{https://youtu.be/pkokI8d-cBk}).}
-
-\end{figure}
+tSNE and PaCMAP linked in \textbf{?@fig-modelScurve}).
 
 \hypertarget{sec-prediction}{%
 \subsection{Prediction}\label{sec-prediction}}

@@ -18,12 +18,10 @@ table(training_data_pbmc$cell_label, detour_results1$colour)
 
 ## Import detour results
 detour_results2 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export2.csv")
-#names(detour_results)[1:15] <- paste0("PC_", 1:15)
 table(training_data_pbmc$cell_label, detour_results2$colour)
 
 ## Import detour results
 detour_results3 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export3.csv")
-#names(detour_results)[1:15] <- paste0("PC_", 1:15)
 table(training_data_pbmc$cell_label, detour_results3$colour)
 
 
