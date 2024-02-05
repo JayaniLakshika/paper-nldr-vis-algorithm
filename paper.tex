@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -928,6 +928,26 @@ eliminates long edges.}
 
 \end{figure}
 
+\hypertarget{hexagonal-grid-starting-point}{%
+\subsubsection{Hexagonal grid starting
+point}\label{hexagonal-grid-starting-point}}
+
+Mainly hexagonal grid starts at the lowest x and y values assign for the
+grid. Another possibility is to shift the grid. That's another
+interesting parameter to investigate.
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-1.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-2.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-3.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-4.pdf}
+
+Compute aic, mse after shifting and compare before and after shifting
+errors And investigate how aic, mse change according to the shifted
+amount
+
 \hypertarget{sec-summary}{%
 \subsection{Model summaries}\label{sec-summary}}
 
@@ -1378,6 +1398,23 @@ Model in the 2D space with UMAP (\textless\textgreater)}
 \item
   Num bins along the x-axis = 43, shape parameter = 0.4466309
 \end{itemize}
+
+\begin{table}[H]
+
+\caption{errors for different parameter combinations}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+\textbf{perplexity} & \textbf{error (x 100)}\\
+\hline
+\cellcolor{gray!6}{23} & \cellcolor{gray!6}{0.02}\\
+\hline
+91 & 0.04\\
+\hline
+\textcolor{red}{\textbf{\cellcolor{gray!6}{40}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{1.05}}}\\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[h]
 

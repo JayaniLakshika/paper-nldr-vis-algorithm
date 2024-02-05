@@ -1852,6 +1852,43 @@ aic_plot_lg + mse_plot_lg +
   theme(legend.position='none', plot.tag = element_text(size = 8)) 
 ```
 
+#### Hexagonal grid starting point
+
+Mainly hexagonal grid starts at the lowest x and y values assign for the grid. Another possibility is to shift the grid. That's another interesting parameter to investigate.
+
+```{r}
+#| echo: false
+#| warning: false
+
+hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_8.rds")
+
+shifted_hex_coord_df <- read_rds("data/s_curve/s_curve_hex_8_shifted_hex_coord_df.rds")
+
+ggplot(data = hex_full_count_df, aes(x = c_x, y = c_y)) +
+  geom_point(color = "black") +
+  geom_point(data = shifted_hex_coord_df, aes(x = c_x, y = c_y), color = "red")
+
+ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
+  geom_polygon(fill = NA, color = "#feb24c", aes(group = polygon_id)) +
+  geom_polygon(data = hex_full_count_df, aes(x = x, y = y, group = polygon_id),
+               fill = NA, color = "#bdbdbd")
+
+## Before shift
+ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+  geom_text(aes(x = c_x, y = c_y, label = hexID)) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff")
+
+## After shift
+ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
+  geom_text(aes(x = c_x, y = c_y, label = hexID)) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff")
+```
+Compute aic, mse after shifting and compare before and after shifting errors
+And investigate how aic, mse change according to the shifted amount
+
+
 ### Model summaries {#sec-summary}
 
 #### Predicted values and residuals
@@ -3494,6 +3531,27 @@ aic_plot_pbmc + mse_plot_pbmc +
 
 - Num bins along the x-axis = 43, shape parameter = 0.4466309
 
+```{r}
+#| warning: false
+#| echo: false
+
+error_df <- read_csv("data/harps/error_harps_tsne.csv", col_names = FALSE)
+
+error_df <- error_df |>
+  mutate(X2 = round(X2/100, 2),
+         X1 = as.integer(X1)) |>
+  arrange(X2)
+
+colnames(error_df) <- c("perplexity", "error (x 100)")
+
+
+kable(error_df, caption = "errors for different parameter combinations", label = "tbl-errordiffcombharps") |>
+  #xtable2kable() |>
+  kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
+  row_spec(0, bold = TRUE) |>
+  row_spec(3, bold=T, color = "red")
+```
+
 <!-- Author suggestion-->
 ```{r}
 #| warning: false
@@ -3556,6 +3614,8 @@ hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_ha
 
 df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
 
+num_non_empty_bins_harps <- df_bin_centroids_tsne_harps$hexID |> length()
+
 ## Identify bins with low-density
 # identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
 # 
@@ -3581,7 +3641,6 @@ distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 ## To find the benchmark value
 benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
 
-
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
                                               triangular_object = tr1_object_tsne_harps, distance_col = distance)
 
@@ -3599,6 +3658,52 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
 
 ```
 
@@ -3609,8 +3714,8 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 #| fig-pos: h
 
 
-plot_list2_harps + trimesh_removed_tsne_harps +
-  plot_layout(guides='collect', ncol = 2) &
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 
 ```
@@ -3674,12 +3779,11 @@ plot_list2_harps <- tSNE_data_harps |>
 
 ### tSNE
 
-num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
-                                                cell_area = 1) #43
-num_bins_tsne_harps <- 30
-
 shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
                                                       x = tSNE1, y = tSNE2)
+
+num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+
 ## To extract bin centroids
 hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
 
@@ -3709,6 +3813,7 @@ distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 
 ## To find the benchmark value
 benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
+benchmark_tsne_harps <- 2.5
 
 
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
@@ -3728,6 +3833,52 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
 
 ```
 
@@ -3738,8 +3889,8 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 #| fig-pos: h
 
 
-plot_list2_harps + trimesh_removed_tsne_harps +
-  plot_layout(guides='collect', ncol = 2) &
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 
 ```
@@ -3799,12 +3950,11 @@ plot_list2_harps <- tSNE_data_harps |>
 
 ### tSNE
 
-num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
-                                                cell_area = 1) #43
-#num_bins_tsne_harps <- 30
-
 shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
                                                       x = tSNE1, y = tSNE2)
+
+num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+
 ## To extract bin centroids
 hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
 
@@ -3834,7 +3984,7 @@ distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 
 ## To find the benchmark value
 benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
-
+benchmark_tsne_harps <- 1
 
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
                                               triangular_object = tr1_object_tsne_harps, distance_col = distance)
@@ -3853,7 +4003,52 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
 
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
 ```
 
 ```{r}
@@ -3863,8 +4058,8 @@ trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
 #| fig-pos: h
 
 
-plot_list2_harps + trimesh_removed_tsne_harps +
-  plot_layout(guides='collect', ncol = 2) &
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 
 ```

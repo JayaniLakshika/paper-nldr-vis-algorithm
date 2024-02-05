@@ -41,8 +41,10 @@ for (fold in 1:5) {
 
   for (i in 1:length(num_bins_vec)) {
     # Fit the model for training
-    model_object <- fit_high_d_model(training_data = training_data, nldr_df_with_id = UMAP_s_curve,
-                                     x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_val_umap_s_curve,
+    model_object <- fit_high_d_model(training_data = training_data,
+                                     nldr_df_with_id = UMAP_s_curve,
+                                     x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i],
+                                     shape_val = shape_val_umap_s_curve,
                                      is_bin_centroid = TRUE,
                                      is_rm_lwd_hex = FALSE,
                                      benchmark_to_rm_lwd_hex = NA,

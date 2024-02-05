@@ -36,6 +36,7 @@ ggplot(data = hex_grid, aes(x = x, y = y)) + geom_polygon(fill = "white",
   geom_point()
 
 hex_full_count_df <- generate_full_grid_info(df_bin_centroids)
+#write_rds(hex_full_count_df, file = "data/s_curve/s_curve_hex_8.rds")
 
 ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
@@ -182,6 +183,8 @@ hb_id_with_counts <- nldr_df_with_new_hexID |>
 
 hex_full_count_df_new <- dplyr::left_join(hex_full_count_df_new, hb_id_with_counts,
                                           by = c("hexID" = "hb_id"))
+
+#write_rds(hex_full_count_df_new, file = "data/s_curve/s_curve_hex_8_shifted_hex_coord_df.rds")
 
 ggplot(data = hex_full_count_df_new, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
