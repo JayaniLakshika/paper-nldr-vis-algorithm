@@ -801,12 +801,18 @@ find_low_density_hexagons <- function(df_bin_centroids_all, num_bins_x, df_bin_c
   return(remove_bins)
 }
 
-extract_coord_of_shifted_hex_grid <- function(nldr_data_with_hb_id, num_bins_x, hex_full_count_df, shift = NA) {
+extract_coord_of_shifted_hex_grid <- function(nldr_data_with_hb_id, num_bins_x,
+                                              hex_full_count_df, shift_x = NA, shift_y = NA, cell_area = 1) {
 
-  if (is.na(shift)) {
-    cell_diameter <- sqrt(2 * 1 / sqrt(3))
-    shift <- cell_diameter/2
+  cell_diameter <- sqrt(2 * cell_area / sqrt(3))
+  if (is.na(shift_x) | is.na(shift_y)) {
+    shift_x <- cell_diameter/2
+    shift_y <- cell_diameter/2
 
+  }
+
+  if ((abs(shift_x) > (cell_diameter/2)) | (abs(shift_y) > (cell_diameter/2))) {
+    stop("Shifted amount is not compatibel. Need to use a value less than or equal 0.537285.")
   }
 
   ## Filter centroids with their hexIDs
@@ -815,8 +821,8 @@ extract_coord_of_shifted_hex_grid <- function(nldr_data_with_hb_id, num_bins_x, 
     dplyr::distinct()
 
   hexbin_coord_all_new <- hexbin_coord_all |>
-    dplyr::mutate(c_x = c_x - shift,
-                  c_y = c_y - shift) |>
+    dplyr::mutate(c_x = c_x - shift_x,
+                  c_y = c_y - shift_y) |>
     dplyr::rename(c("x" = "c_x",
                     "y" = "c_y"))
 
@@ -894,7 +900,13 @@ extract_coord_of_shifted_hex_grid <- function(nldr_data_with_hb_id, num_bins_x, 
   hex_full_count_df_new <- dplyr::left_join(hex_full_count_df_new, hb_id_with_counts,
                                             by = c("hexID" = "hb_id"))
 
-  return(hex_full_count_df_new)
+  nldr_data_with_hb_id <- nldr_data_with_hb_id |>
+    dplyr::select(-ID)
+
+  names(nldr_df_with_new_hexID) <- names(nldr_data_with_hb_id)
+
+  return(list(hex_full_count_df_new = hex_full_count_df_new,
+              nldr_df_with_new_hexID = nldr_df_with_new_hexID))
 
 }
 

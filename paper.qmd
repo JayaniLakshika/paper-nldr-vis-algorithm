@@ -1434,6 +1434,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
 #| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltScurve
 ##| out-width: 100%
+#| fig-pos: H
 
 aic_plot + mse_plot +
   plot_annotation(tag_levels = 'a') +
@@ -1557,6 +1558,7 @@ trimesh_umap_s_curve_rm_low <- trimesh_umap_s_curve_rm_low +
 #| warning: false
 #| fig-cap: Goodness of f
 #| label: fig-rmlowdenshex
+#| fig-pos: H
 ##| out-width: 100%
 
 p2_n + p2_n_rm + trimesh_umap_s_curve_rm_low +
@@ -1641,6 +1643,7 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
 #| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons? The MSE plot have a steep slope at the beginning, indicating that a smaller benchmark causes a small amount of error. Then, the slope gradually increases or level up, indicating that a higher number of benchmark values generates a higher error. Using the reverse elbow method, when the benchmark value is set to 0.2, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that higher benchmark values remove the necessary bins as well which lead to distruct the 2D structure."
 #| label: fig-diagnosticpltScurvelwd
 ##| out-width: 100%
+#| fig-pos: H
 
 aic_plot_lwd + mse_plot_lwd +
   plot_annotation(tag_levels = 'a') +
@@ -1776,6 +1779,7 @@ trimesh_gr_umap_s_curve <- trimesh_gr_umap_s_curve +
 #| label: fig-modelScurvermlgimp
 #| fig-cap: "What does the 2D model, constructed using UMAP (applied to the S-curve dataset), look like in high dimensions with long edges? (<https://youtu.be/pSL_G_n7-fM>) (a) 2D model without removing the long edges, and (b) 2D model with long edges coloured by red. The default benchmark value is used to identify long edges."
 ##| out-width: 100%
+#| fig-pos: H
 
 trimesh_umap_s_curve + trimesh_gr_umap_s_curve +
   #plot_annotation(tag_levels = 'a') +
@@ -1845,6 +1849,7 @@ mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = be
 #| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges? $1.347$ is the chosen benchmark value to remove long edges. The value is selected through a visual inspection of the triangular mesh is conducted to verify whether it successfully eliminates long edges."
 #| label: fig-diagnosticpltScurvelgrm
 ##| out-width: 100%
+#| fig-pos: H
 
 aic_plot_lg + mse_plot_lg +
   plot_annotation(tag_levels = 'a') +
@@ -1852,9 +1857,11 @@ aic_plot_lg + mse_plot_lg +
   theme(legend.position='none', plot.tag = element_text(size = 8)) 
 ```
 
-#### Hexagonal grid starting point
+#### Hexagonal grid origin
 
-Mainly hexagonal grid starts at the lowest x and y values assign for the grid. Another possibility is to shift the grid. That's another interesting parameter to investigate.
+According to @Dan2023, the hexagonal binning is done by tessellating the $xy$ plane over the set (range($x$), range($y$)) (see @fig-scurveshifthexgridsexp (b)). In that case, bin centroids are defined as shown in @fig-scurveshifthexgridsexp (a) with gray colour. Rather than sticking to the typical hexagonal grid, introducing a meaningful shift in both the x and y directions presents an opportunity for an improved 2D model. Therefore, investigating this shift in the hexagonal grid is an important parameter to consider.
+
+As shown in @fig-scurveshifthexgrids, the shifting influences the distribution of points and number of non-empty bins, impacting the resulting 2D model. According to @fig-diagnosticpltScurvehexbins, the 2D model with a total of $144$ bins applied to S-curve UMAP data does not require any shifting because the lowest MSE occurs when no shift is introduced.
 
 ```{r}
 #| echo: false
@@ -1864,29 +1871,161 @@ hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_8.rds")
 
 shifted_hex_coord_df <- read_rds("data/s_curve/s_curve_hex_8_shifted_hex_coord_df.rds")
 
-ggplot(data = hex_full_count_df, aes(x = c_x, y = c_y)) +
-  geom_point(color = "black") +
-  geom_point(data = shifted_hex_coord_df, aes(x = c_x, y = c_y), color = "red")
+bin_centroids_shift <- ggplot(data = hex_full_count_df, aes(x = c_x, y = c_y)) +
+  geom_point(color = "#bdbdbd") +
+  geom_point(data = shifted_hex_coord_df, aes(x = c_x, y = c_y), color = "#feb24c") +
+  coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
-ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
+hex_grid_shift <- ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
   geom_polygon(fill = NA, color = "#feb24c", aes(group = polygon_id)) +
   geom_polygon(data = hex_full_count_df, aes(x = x, y = y, group = polygon_id),
-               fill = NA, color = "#bdbdbd")
+               fill = NA, color = "#bdbdbd") +
+  coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
 ## Before shift
-ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
+before_shift_plot <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  geom_text(aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff")
+  geom_text(aes(x = c_x, y = c_y, label = hexID), size = 2) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  coord_equal() +
+  theme_void() +
+  theme(legend.position="bottom", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
 
 ## After shift
-ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
+after_shift_plot <- ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  geom_text(aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff")
+  geom_text(aes(x = c_x, y = c_y, label = hexID), size = 2) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  coord_equal() +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
 ```
-Compute aic, mse after shifting and compare before and after shifting errors
-And investigate how aic, mse change according to the shifted amount
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration before (colored in gray) and after (colored in light orange) shifting the starting point by an identical amount applied in both x and y directions, with a shift value of $0.537285$."
+#| label: fig-scurveshifthexgridsexp
+##| out-width: 100%
+#| fig-pos: H
+
+bin_centroids_shift + hex_grid_shift +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Hexbin plots shows the distribution of points before and after shifting the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after shifting (identical shift applied in both x and y directions, with a shift value of $0.537285$)."
+#| label: fig-scurveshifthexgrids
+##| out-width: 100%
+#| fig-pos: H
+
+before_shift_plot + after_shift_plot +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+#MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
+
+#MSE_df$method <- factor(MSE_df$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+MSE_df <- read_rds("data/s_curve/s_curve_umap_shift_summary.rds") 
+MSE_df$method <- factor(MSE_df$method, levels = c("UMAP"))
+
+## To draw with AIC
+aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = shift,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 0, linetype="dashed",
+                color = "red", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("shift value")
+## Effective number of bins along x-axis
+
+mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = shift,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 0, linetype="dashed",
+                color = "red", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("shift value")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different shift values. In this illustration, an identical shift is applied in both the x and y directions. The Mean Squared Error (MSE) plot exhibits a global minimum at $0$, indicating that no additional shifting is necessary for the current hexagonal grid to yield a well-fitted model."
+#| label: fig-diagnosticpltScurvehexbins
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot + mse_plot +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
 
 
 ### Model summaries {#sec-summary}

@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}, interior hidden, boxrule=0pt, frame hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, breakable, interior hidden, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -841,7 +841,7 @@ case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
 is shown in \textbf{?@fig-modelScurve} (c), while the video link
 provides a visual representation of how the model appears in high-D.
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-rmlowdenshex-1.pdf}
 
@@ -928,25 +928,69 @@ eliminates long edges.}
 
 \end{figure}
 
-\hypertarget{hexagonal-grid-starting-point}{%
-\subsubsection{Hexagonal grid starting
-point}\label{hexagonal-grid-starting-point}}
+\hypertarget{hexagonal-grid-origin}{%
+\subsubsection{Hexagonal grid origin}\label{hexagonal-grid-origin}}
 
-Mainly hexagonal grid starts at the lowest x and y values assign for the
-grid. Another possibility is to shift the grid. That's another
-interesting parameter to investigate.
+According to \citet{Dan2023}, the hexagonal binning is done by
+tessellating the \(xy\) plane over the set (range(\(x\)), range(\(y\)))
+(see Figure~\ref{fig-scurveshifthexgridsexp} (b)). In that case, bin
+centroids are defined as shown in
+Figure~\ref{fig-scurveshifthexgridsexp} (a) with gray colour. Rather
+than sticking to the typical hexagonal grid, introducing a meaningful
+shift in both the x and y directions presents an opportunity for an
+improved 2D model. Therefore, investigating this shift in the hexagonal
+grid is an important parameter to consider.
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-1.pdf}
+As shown in Figure~\ref{fig-scurveshifthexgrids}, the shifting
+influences the distribution of points and number of non-empty bins,
+impacting the resulting 2D model. According to
+Figure~\ref{fig-diagnosticpltScurvehexbins}, the 2D model with a total
+of \(144\) bins applied to S-curve UMAP data does not require any
+shifting because the lowest MSE occurs when no shift is introduced.
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-2.pdf}
+\begin{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-3.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgridsexp-1.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-39-4.pdf}
+}
 
-Compute aic, mse after shifting and compare before and after shifting
-errors And investigate how aic, mse change according to the shifted
-amount
+\caption{\label{fig-scurveshifthexgridsexp}(a) Visualization of bin
+centroids and (b) hexagonal grid, showcasing the configuration before
+(colored in gray) and after (colored in light orange) shifting the
+starting point by an identical amount applied in both x and y
+directions, with a shift value of \(0.537285\).}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgrids-1.pdf}
+
+}
+
+\caption{\label{fig-scurveshifthexgrids}Hexbin plots shows the
+distribution of points before and after shifting the starting point of
+the hexagonal grid generated for UMAP applied to the training S-curve
+dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after
+shifting (identical shift applied in both x and y directions, with a
+shift value of \(0.537285\)).}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvehexbins-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltScurvehexbins}Goodness of fit
+statistics from UMAP applied to training S-curve dataset with different
+shift values. In this illustration, an identical shift is applied in
+both the x and y directions. The Mean Squared Error (MSE) plot exhibits
+a global minimum at \(0\), indicating that no additional shifting is
+necessary for the current hexagonal grid to yield a well-fitted model.}
+
+\end{figure}
 
 \hypertarget{sec-summary}{%
 \subsection{Model summaries}\label{sec-summary}}
