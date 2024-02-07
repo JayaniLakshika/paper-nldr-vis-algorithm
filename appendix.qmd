@@ -2319,3 +2319,349 @@ trimesh_removed_tsne_s_curve + trimesh_removed_umap_s_curve + trimesh_removed_ph
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 -->
+
+<!--
+### Single-Cell Tagged Reverse Transcription sequencing data of mouse
+
+The Zeisel mouse brain dataset, obtained through Spatial Transcriptomics (STRT-Seq). Within this dataset, information is collected from a substantial 2,816 individual mouse brain cells. Each of these cells acts as a molecular snapshot, capturing the distinctive genetic activity within various cell types. This diversity spans neurons, glial cells, and other essential components of the brain, offering a comprehensive view of the cellular tapestry.
+
+What makes this dataset particularly valuable is its ability to shed light on the spatial distribution of cells. Researchers can explore how gene expression patterns vary across different regions of the mouse brain, unlocking insights into the functional specialization of these regions and the intricate networks that underpin neural processes.
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+df_2 <- read_rds("data/zeisel/zeisel.rds")
+training_data_1 <- read_rds("data/zeisel/zeisel_training.rds")
+test_1 <- read_rds("data/zeisel/zeisel_test.rds")
+
+tSNE_zeisel <- read_rds("data/zeisel/zeisel_tsne_30.rds")
+UMAP_zeisel <- read_rds("data/zeisel/zeisel_umap.rds")
+PHATE_zeisel <- read_rds("data/zeisel/zeisel_phate.rds")
+TriMAP_zeisel <- read_rds("data/zeisel/zeisel_trimap.rds")
+PaCMAP_zeisel <- read_rds("data/zeisel/zeisel_pacmap.rds")
+
+## Visualise embeddings
+
+plot_list1_zeisel <- plot_tSNE_2D(tSNE_zeisel) + #ggtitle("(a)") + 
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+plot_list2_zeisel <- plot_UMAP_2D(UMAP_zeisel) + #ggtitle("(b)") + 
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+
+plot_list3_zeisel <- plot_PHATE_2D(PHATE_zeisel) + #ggtitle("(c)") + 
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+plot_list4_zeisel <- plot_TriMAP_2D(TriMAP_zeisel) + #ggtitle("(d)") + 
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+plot_list5_zeisel <- plot_PaCMAP_2D(PaCMAP_zeisel) + #ggtitle("(e)") + 
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "2D layouts from different NLDR techniques applied for the training Zeisel mouse brain dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?"
+#| label: fig-nldervis5Mouse
+#| out-width: 100%
+
+plot_list1_zeisel + plot_list2_zeisel + plot_list3_zeisel + plot_list4_zeisel + plot_list5_zeisel +
+  plot_layout(ncol=5)
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_zei <- read_rds("data/zeisel/summary_zei.rds")
+MSE_df_zei$method <- factor(MSE_df_zei$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+## To draw with AIC
+aic_plot_zei <- ggplot(MSE_df_zei |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_zei <- ggplot(MSE_df_zei, aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training Zeisel mouse brain dataset. What is the best NLDR technique to represent the original data in 2D?
+#| label: fig-diagnosticpltZEI
+#| out-width: 100%
+
+aic_plot_zei + mse_plot_zei +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+
+### Retina dataset
+
+Human retina: https://www.ebi.ac.uk/biostudies/arrayexpress/studies/E-MTAB-7316
+
+https://www.cell.com/cms/10.1016/j.cell.2015.05.002/attachment/fd52950c-fd35-401a-9e60-ca7588ef9001/mmc1.pdf
+
+https://www.cell.com/fulltext/S0092-8674(15)00549-8#app3
+
+32 PCs
+tSNE (perplexity 30)
+
+### Kang dataset
+
+For the Kang lupus dataset (29), we obtained 16 cell types based on clustering of the Festem-
+selected genes (Fig. 4E and Fig. S10, S11), including 2 fine cell types that were often missed by
+other methods. The 2 cell types were IFNhi CD14+ monocytes with high expression of type I
+interferon-related (IFN) genes, and HSP+ CD4 T cells with up-regulated heat-
+shock-protein-related (HSP) genes. The HSP+ CD4 T cells might result from
+cryopreservation and thawing of T cells (37). Other than devianceFS, other available methods
+could not identify these HSP+ CD4 T cells (Fig. S11).
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+#df_2 <- read_rds("data/pbmc/pbmc.rds")
+# training_data_1 <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+# training_data_1 <- training_data_1[, 1:25]
+#test_1 <- read_rds("data/pbmc/pbmc_test.rds")
+
+#tSNE_pbmc <- read_rds("data/pbmc/pbmc_tsne_30.rds")
+tSNE_kang <- read_rds("data/kang/kang_tsne.rds") |>
+  mutate(cell_label = if_else(cell_label %in% c("0", "3", "5"), "0", cell_label))
+# PHATE_pbmc <- read_rds("data/pbmc/pbmc_phate.rds")
+# TriMAP_pbmc <- read_rds("data/pbmc/pbmc_trimap.rds")
+# PaCMAP_pbmc <- read_rds("data/pbmc/pbmc_pacmap.rds")
+
+#load("data/pbmc/pbmc_3k_festem/pbmc3k_label.RData")
+
+## Visualise embeddings
+
+# plot_list1_pbmc <- plot_tSNE_2D(tSNE_pbmc) + #ggtitle("(a)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+class_avg <- tSNE_kang |>
+  group_by(cell_label) |>
+  summarise(
+    tSNE1 = median(tSNE1),
+    tSNE2 = median(tSNE2)
+  ) |>
+  mutate(cell_label = as.numeric(cell_label)) |>
+  arrange(cell_label)
+
+class_avg$cell_label <- as.factor(class_avg$cell_label)
+
+levels(class_avg$cell_label) <- c("CD14 Monocyte", "CD4 \n Memory T", "CD4 Naive T", "CD16 Monocyte", "B", "T Activated", "CD8 T", "NK", "DC", "B \nActivated", "T cell:\nmonocyte \nComplex", "HSP+ CD4 T", "IFN^hi CD14 \n Monocyte", "CD34 \n Progenitors", "pDC")
+
+plot_list2_kang <- tSNE_kang |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = cell_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  geom_text(aes(x=tSNE1,y = tSNE2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) #+
+  # guides(color = guide_legend(title = "Cell type"),
+  #        color = guide_legend(nrow = 3)) #+
+  # annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+
+
+# plot_list3_pbmc <- plot_PHATE_2D(PHATE_pbmc) + #ggtitle("(c)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+# plot_list4_pbmc <- plot_TriMAP_2D(TriMAP_pbmc) + #ggtitle("(d)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
+# 
+# plot_list5_pbmc <- plot_PaCMAP_2D(PaCMAP_pbmc) + #ggtitle("(e)") + 
+#   theme_linedraw() +
+#   theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5), 
+#         axis.title.x = element_blank(), axis.title.y = element_blank(),
+#         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+#         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+#         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+#   annotate(geom = 'text', label = 'e', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "2D layout from tSNE (perplexity = 30) applied for the Kang dataset. Is this a best representation of the original data?"
+#| label: fig-nlderviskangtSNE
+
+
+plot_list2_kang
+
+#  plot_list1_pbmc + plot_list3_pbmc + plot_list4_pbmc + plot_list5_pbmc +
+#   plot_layout(ncol=5) #| out-width: 100%
+
+# 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
+-->
+
+<!--
+### Single-cell RNA-seq data of human
+
+https://github.com/XiDsLab/Festem_paper/tree/main
+
+@Chen2023
+
+https://satijalab.org/seurat/articles/pbmc3k_tutorial.html
+https://www.cell.com/fulltext/S0092-8674(15)00549-8
+
+In the field of single-cell studies, a common analysis task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories (e.g., example 1). In clustering workflows, the main objective is to verify the existence of clusters and subsequently identify them as specific cell types by examining the expression of "known" marker genes. In this context, a "faithful" embedding should ideally preserve the topology of the data, ensuring that cells corresponding to the same cell type are situated close to the high-dimensional space.
+  
+To begin our analysis, we installed the Peripheral Blood Mononuclear Cells (pbmc) data set obtained from 10x Genomics using the `SeuratData` R package [@Rahul2019], which facilitates the distribution of data sets in the form of Seurat objects [@Yuhan2021]. This data set contains 13,714 features across 2,700 samples within a single assay. The active assay is RNA, with 13,714 features representing different gene expressions. After loading the data set, we obtained the principal components (PCs) and assessed the variance explained by each PC. Based on this evaluation, we selected seven PCs, representing approximately 50% of the variance in gene expression, for further analysis.
+  
+Next, we employed the UMAP technique with default parameter settings. As illustrated in @fig-pbmc, the cell types B and Platelet are well-separated in the UMAP layout. Moreover, CD14+ Mono, FCGR3A+ Mono, and DC form a distinct cluster, while Naive CD4 T, NK, Memory CD4 T, and CD8 T are grouped together in another cluster. The values utilized to construct the smooth low-dimensional manifold are presented in @tbl-table02. The linked video, demonstrating the tour with the model, showcases the generation of a smooth surface for this application, enabling a comprehensive exploration of the data's structure and relationships (see @fig-pbmc_sc).
+
+
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+MSE_df_pbmc <- read_rds("data/pbmc/summary_pbmc.rds")
+MSE_df_pbmc$method <- factor(MSE_df_pbmc$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
+
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("Total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc, aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+  theme_light() +
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("Total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: Goodness of fit statistics from different NLDR techniques applied to training PBMC dataset. What is the best NLDR technique to represent the original data in 2D?
+#| label: fig-diagnosticpltPBMC
+#| out-width: 100%
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+```
+-->
