@@ -384,6 +384,97 @@ langevitour(df |> dplyr::select(-type), lineFrom = append(point_connect_df$from,
             lineColors = rep("#e41a1c", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
 
 
+true_model <- true_model |>
+  dplyr::mutate(x4 = runif(NROW(true_model), -0.02, 0.02),
+                x5 = runif(NROW(true_model), -0.02, 0.02),
+                x6 = runif(NROW(true_model), -0.1, 0.1),
+                x7 = runif(NROW(true_model), -0.01, 0.01))
+
+df <- dplyr::bind_rows(true_model, training_data)
+
+langevitour(df |> dplyr::select(-type), lineFrom = append(point_connect_df$from, point_connect_df_dir_2$from),
+            lineTo = append(point_connect_df$to, point_connect_df_dir_2$to),
+            group = df$type, pointSize = 3, levelColors = c("#6a3d9a", "#d95f02"),
+            lineColors = rep("#e41a1c", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
+
+
+######################with high-D model
+library(ggplot2)
+library(ggbeeswarm)
+source("quollr_code.R", local = TRUE)
+## Import data
+training_data <- read_rds("data/s_curve/s_curve_training.rds")
+UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
+
+## UMAP
+
+num_bins_umap_s_curve <- 8
+shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
+                                                          x = UMAP1, y = UMAP2) ## 1.259938
+## To extract bin centroids
+hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
+  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
+
+## Averaged on high-D
+df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
+
+## Triangulate bin centroids
+tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
+tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
+
+# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
+#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
+#   geom_point(size = 2, colour = "#33a02c") +
+#   coord_equal()
+
+
+## Compute 2D distances
+distance_umap_s_curve <- cal_2d_dist(.data = tr_from_to_df_umap_s_curve)
+
+plot_dist <- function(distance_df){
+  distance_df$group <- "1"
+  dist_plot <- ggplot(distance_df, aes(x = group, y = distance)) +
+    geom_quasirandom()+
+    ylim(0, max(unlist(distance_df$distance))+ 0.5) + coord_flip()
+  return(dist_plot)
+}
+
+plot_dist(distance_umap_s_curve)
+
+## To find the benchmark value
+#benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+benchmark_umap_s_curve <- 1.346694
+
+df_b <- df_bin_umap_s_curve |>
+  dplyr::filter(hb_id %in% df_bin_centroids_umap_s_curve$hexID) |>
+  dplyr::select(-hb_id) |>
+  dplyr::mutate(type = "model")
+
+distance_df_small_edges <- distance_umap_s_curve %>%
+  dplyr::filter(distance < benchmark_umap_s_curve)
+
+distance_df_small_edges$from <- distance_df_small_edges$from + max(point_connect_df_dir_2$from)
+distance_df_small_edges$to <- distance_df_small_edges$to + max(point_connect_df_dir_2$to)
+
+point_connect_all <- dplyr::bind_rows(point_connect_df, point_connect_df_dir_2, distance_df_small_edges |> dplyr::select(from, to))
+
+model_df <- dplyr::bind_rows(true_model, df_b)
+
+df <- dplyr::bind_rows(model_df, training_data |> select(-ID) |> mutate(type = "data"))
+
+langevitour(df |> dplyr::select(-type), lineFrom = point_connect_all$from,
+            lineTo = point_connect_all$to,
+            group = df$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c", "#d95f02"),
+            lineColors = append(rep("#e41a1c", length(append(point_connect_df$from, point_connect_df_dir_2$from))), rep("black", length(distance_df_small_edges$from))))
+
+
 
 ##########################
 
