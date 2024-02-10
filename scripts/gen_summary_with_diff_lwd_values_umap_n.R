@@ -15,21 +15,28 @@ UMAP_data <- read_rds("data/s_curve/s_curve_umap.rds")
 shape_value_curve <- calculate_effective_shape_value(.data = UMAP_data,
                                                      x = UMAP1, y = UMAP2)
 
-num_bins_x <- 6 ## Number of bins along the x-axis (looking at mse plot)
+num_bins_x <- 8 ## Number of bins along the x-axis (looking at mse plot)
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations",
+                                     "total_error", "total_mse"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
   dplyr::mutate_if(is.character, as.numeric)
 
-pred_df_training_object <- predict_hex_id(training_data = training_data, nldr_df = UMAP_data, nldr_df_test = UMAP_data, num_bins = num_bins_x, shape_val = shape_value_curve, x = "UMAP1", y = "UMAP2", col_start = "x")
-pred_df_training <- pred_df_training_object$pred_data
-centroid_df_training_all <- pred_df_training_object$df_bin_centroids
+model_object <- fit_high_d_model(training_data = training_data,
+                                 nldr_df_with_id = UMAP_data, x = "UMAP1", y = "UMAP2",
+                                 num_bins_x = num_bins_x, shape_val = shape_value_curve,
+                                 is_bin_centroid = TRUE,
+                                 is_rm_lwd_hex = FALSE,
+                                 benchmark_to_rm_lwd_hex = NA,
+                                 is_avg_high_d = TRUE, column_start_text = "x")
 
-hexbin_data_object_training <- pred_df_training_object$hexbin_data_object
+centroid_df_training_all <- model_object$df_bin_centroids
+avg_df_training <- model_object$df_bin
 
 benchmark_rm_hex_vec <- seq(0, 1, by=0.1)
+benchmark_rm_hex_vec <- append(benchmark_rm_hex_vec[1:10],0.99)
 
 
 for (i in 1:length(benchmark_rm_hex_vec)) {
@@ -37,19 +44,13 @@ for (i in 1:length(benchmark_rm_hex_vec)) {
   centroid_df_training <- centroid_df_training_all |>
     filter(std_counts > benchmark_rm_hex_vec[i])
 
-  ## Add hexbin Id to 2D embeddings
-  UMAP_data_with_hb_id <- UMAP_data |>
-    mutate(hb_id = hexbin_data_object_training$hb_data@cID)
-
-  ## To generate a data set with high-D and 2D training data
-  df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
-
-  ## Averaged on high-D
-  avg_df_training <- avg_highD_data(.data = df_all, column_start_text = "x")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data,
+                                            df_bin_centroids = centroid_df_training,
+                                            df_bin = avg_df_training, type_NLDR = "UMAP")
 
   eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training,
-                                       df_bin_centroids_all = centroid_df_training_all, df_bin = avg_df_training,
-                                       num_bins = num_bins_x, col_start = "x", df_bin_centroids = centroid_df_training, rm_lwd_hex = TRUE)
+                                       df_bin_centroids = centroid_df_training,
+                                       df_bin = avg_df_training, col_start = "x")
 
   eval_df_training <- eval_df_training |>
     dplyr::mutate(benchmark_rm_hex = benchmark_rm_hex_vec[i])

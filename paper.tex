@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -885,7 +885,7 @@ overall smoothness of the mesh.
 To investigate the effect of removing long edges on the MSE, we analyzed
 the MSE for various benchmark values. Surprisingly, the results
 indicated that the MSE remained consistent across different benchmark
-values, as shown in Figure~\ref{fig-diagnosticpltScurvelgrm}. It's
+values, as shown in \textbf{?@fig-diagnosticpltScurvelgrm}. It's
 important to note that edges are defined only in the 2D model and do not
 extend to higher dimensions. Consequently, removing edges does not
 affect the model in higher dimensions.
@@ -895,7 +895,7 @@ remove long edges. However, we have a method to find a default value
 (see Appendix). Adjusting values around this default can help to find
 benchmark value to remove long edges, contributing to the construction
 of a smoother 2D representation (see
-Figure~\ref{fig-diagnosticpltScurvelgrm}).
+\textbf{?@fig-diagnosticpltScurvelgrm}).
 
 \begin{figure}
 
@@ -909,22 +909,6 @@ high dimensions with long edges? (\url{https://youtu.be/pSL_G_n7-fM})
 (a) 2D model without removing the long edges, and (b) 2D model with long
 edges coloured by red. The default benchmark value is used to identify
 long edges.}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelgrm-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltScurvelgrm}Goodness of fit statistics
-from UMAP applied to training S-curve dataset with different benchmark
-values to remove the long edges. What is the effective benchmark value
-to remove the long edges? \(1.347\) is the chosen benchmark value to
-remove long edges. The value is selected through a visual inspection of
-the triangular mesh is conducted to verify whether it successfully
-eliminates long edges.}
 
 \end{figure}
 
@@ -999,13 +983,17 @@ necessary for the current hexagonal grid to yield a well-fitted model.}
 \subsubsection{Predicted values and
 residuals}\label{predicted-values-and-residuals}}
 
-The approach involves employing the K-nearest neighbors (KNN) algorithm
-to identify the nearest hexagonal bin centroid in the 2D space.
-Subsequently, the coordinates of this centroid are assigned as the
-low-dimensional predicted values for the test data in 2D space. It is
-noteworthy that traditional NLDR methods, such as tSNE, often lack a
-direct predict function, making our approach valuable for generating
-predicted values in the absence of such functionalities.
+The prediction approach involves employing the K-nearest neighbors (KNN)
+algorithm. In this method, which operates as an unsupervised
+classification problem, the nearest high-D model point (averaged high-D
+point) is identified for the new high-D data point. Once the nearest
+high-D model point is identified, its coordinates are used as the
+predicted 2D embeddings for the new high-D data point. This step is
+particularly valuable due to the limitations of certain NLDR techniques,
+like tSNE, which don't provide a straightforward method for predicting
+2D embeddings. As a result, our approach presents a solution that can
+generate predicted 2D embeddings, irrespective of the NLDR technique
+employed, effectively addressing this gap in functionality.
 
 The concept of ``residuals'' is pivotal in evaluating the accuracy of
 representing bin centroids in high dimensions. To quantify this
@@ -1019,7 +1007,7 @@ as:
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
 }\label{eq-equation11}\end{equation}
 
-Here, \(n\) represents the number of bins, \(p\) represents the
+Here, \(n\) represents the number of observations, \(p\) represents the
 dimensions, \(x_{ij}\) is the actual high-dimensional data, and
 \(C_{x_ij}\) is the predicted bin centroid data in high dimensions.
 
@@ -1059,57 +1047,6 @@ Information Criterion (AIC), calculated by the formula:
 These metrics, MSE and AIC, collectively offer valuable insights into
 the model's predictive performance, considering both accuracy and
 complexity in the predictions.
-
-\hypertarget{model-interpretation}{%
-\subsection{Model interpretation}\label{model-interpretation}}
-
-The visualizations of NLDR techniques for the S-curve dataset shows
-different representations in 2D, as showcased in Figure
-Figure~\ref{fig-nldervis}. The question at hand is determining the best
-NLDR technique to represent the S-curve data. Examining the 2D layouts
-in Figure~\ref{fig-nldervis} suggests that TriMAP or PaCMAP may be best
-representations. However, the challenge is to decide the best
-representation with considerable evidence.
-
-After considering the models constructed from the algorithm for each
-NLDR techniques and visualizing them in high-D space with the original
-data, shows that all the NLDR techniques capture the non-linearity of
-the S-curve (see videos of the models linked in
-\textbf{?@fig-modelScurve}). But thorough examination of each model in
-high-D space shows some surprising findings. The model of PHATE is
-flattened and lack of capturing the width of S-curve (see videos of the
-model with PHATE linked in \textbf{?@fig-modelScurve}). This nature of
-PHATE is also evicted by the considerably higher AIC and MSE values for
-PHATE as shown in Figure~\ref{fig-diagnosticpltScurve}. Furthermore,
-there are two edges that are not connected to any points in the model of
-TriMAP (see see videos of the model with TriMAP linked in
-\textbf{?@fig-modelScurve}). This model shows how the patterns in 2D
-representation of TriMAP capture by the model (see
-Figure~\ref{fig-nldervis} (d)). As shown in Figure~\ref{fig-nldervis}
-(b), UMAP have four clusters in a curvilinear structure. However, the
-model reveals that even though UMAP shows a curvilinear in 2D, UMAP
-actually capture the structure of the S-curve without any disjoint in
-the model (see see videos of the model with UMAP linked in
-\textbf{?@fig-modelScurve}). In the 2D layouts of tSNE and PaCMAP (see
-Figure~\ref{fig-nldervis} (a), (e)), there are some sparse areas that
-are captured by the models effectively (see see videos of the model with
-tSNE and PaCMAP linked in \textbf{?@fig-modelScurve}).
-
-\hypertarget{sec-prediction}{%
-\subsection{Prediction}\label{sec-prediction}}
-
-In this context, ``prediction'' denotes the 2D embedding generated for
-the NLDR technique. The methodology encompasses identifying the nearest
-averaged high-D points in the high-D space for the test data, by
-computing high-D Euclidean distances. As the averaged high-D point
-corresponds to the lifting of the 2D model, determining its nearest
-counterpart allows us to map its hexagonal bin centroid coordinates.
-Consequently, these centroid coordinates serve as the assigned
-low-dimensional predicted values for the test data in the 2D space.
-
-Some NLDR techniques, such as tSNE, often lack a direct prediction,
-making our approach valuable for generating predicted values in the
-absence of such functionalities.
 
 \hypertarget{sec-simpleex}{%
 \subsection{Simulated data example}\label{sec-simpleex}}
@@ -1263,7 +1200,6 @@ selected by Festem method
   Explain what ``Evaluate Festem on DEG detection'' means, in terms of
   this data
 \item
-\item
   How did they ``identified 10 clusters''? What were the variables used,
   PCs or full data or 2D representation, spell this out.
 \item
@@ -1376,6 +1312,28 @@ selected by Festem method
 \end{tabular}
 \end{table}
 
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-1.pdf}
+
 \begin{figure}[h]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
@@ -1389,6 +1347,26 @@ space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
 
 \end{figure}
 
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC2-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltPBMC2}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
 \begin{figure}[h]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP2-1.pdf}
@@ -1399,6 +1377,26 @@ space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
 (n\_neighbors = 15, min\_dist = 0.99, metric = cosine) applied for the
 PBMC3k dataset. Is this a best representation of the original data?, (b)
 Model in the 2D space with UMAP (\textless\textgreater)}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC3-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltPBMC3}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
 
 \end{figure}
 
@@ -1460,6 +1458,26 @@ Model in the 2D space with UMAP (\textless\textgreater)}
 \end{tabular}
 \end{table}
 
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltHARPS}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
 \begin{figure}[h]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE-1.pdf}
@@ -1480,6 +1498,26 @@ tSNE (\url{https://youtu.be/jxo_rPyGv9k})}
   3 clusters which are really close shows in high\_d data with the model
 \end{itemize}
 
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS2-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltHARPS2}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
 \begin{figure}[h]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE2-1.pdf}
@@ -1490,6 +1528,26 @@ tSNE (\url{https://youtu.be/jxo_rPyGv9k})}
 (perplexity = 23) applied for the HARPS GTO dataset. Is this a best
 representation of the original data?, (b) Model in the 2D space with
 tSNE (\url{https://youtu.be/VO_4SJEoAUA})}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS3-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltHARPS3}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
 
 \end{figure}
 

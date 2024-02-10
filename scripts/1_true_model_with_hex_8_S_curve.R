@@ -38,7 +38,7 @@ tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_
 
 
 ## Compute 2D distances
-distance_umap_s_curve <- cal_2D_dist(.data = tr_from_to_df_umap_s_curve)
+distance_umap_s_curve <- cal_2d_dist(.data = tr_from_to_df_umap_s_curve)
 
 
 ## To find the benchmark value

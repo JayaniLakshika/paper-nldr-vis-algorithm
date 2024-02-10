@@ -126,6 +126,20 @@ source("nldr_code.R", local = TRUE)
 -->
 ```
 
+```{r}
+#| warning: false
+#| echo: false
+
+## To plot the distribution of distance
+plot_dist <- function(distance_df){
+  distance_df$group <- "1"
+  dist_plot <- ggplot(distance_df, aes(x = group, y = distance)) +
+    geom_quasirandom()+
+    ylim(0, max(unlist(distance_df$distance))+ 0.5) + coord_flip()
+  return(dist_plot)
+}
+```
+
 ## Introduction {#sec-intro}
 
 High-dimensional (high-D) data is prevalent across various fields, such as ecology and bioinformatics [@Guo2023], due to advancements in data collection technologies [@Johnstone2009; @ayesha2020overview]. However, visualization of high-D data introduces significant challenges, because the complexity of visualizing data beyond two dimensions [@Jia2022]. In recent years, interactive and dynamic graphics systems like **liminal** [@article21] —which employs interactive tools like brushing and linking [@article58]—and software tools such as **XGobi**, **GGobi** [@article60], **tourr**  [@article61], **detourr** [@article22], and **langevitour**  [@article09], involving dynamic methods like tours [@Asimov1985], have played a key role in visualizing high-D data (data-vis).
@@ -1109,64 +1123,10 @@ p1 + p2 + p3
 #| warning: false
 #| echo: false
 
-data <- read_rds("data/s_curve/s_curve.rds")
-
-## tSNE
-
-shape_value_curve <- calculate_effective_shape_value(.data = tSNE_data,
-                                                   x = tSNE1, y = tSNE2)
-
-num_bins_vec <- 1:18 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data, nldr_df_with_id = tSNE_data, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_value_curve,
-                             is_bin_centroid = TRUE,
-                             is_rm_lwd_hex = FALSE,
-                             benchmark_to_rm_lwd_hex = NA,
-                             is_avg_high_d = TRUE, column_start_text = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = tSNE_data, x = "tSNE1", y = "tSNE2")
-
-  
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_1 <- eval_data_training |>
-  dplyr::mutate(method = "tSNE")
-```
-
-
-```{r}
-#| warning: false
-#| echo: false
-
 ## UMAP
 ## Prediction
+
+data <- read_rds("data/s_curve/s_curve.rds")
 
 shape_value_curve <- calculate_effective_shape_value(.data = UMAP_data,
                                                    x = UMAP1, y = UMAP2)
@@ -1190,65 +1150,12 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = UMAP_data, x = "UMAP1", y = "UMAP2")
-
-  
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_2 <- eval_data_training |>
-  dplyr::mutate(method = "UMAP")
-```
-
-```{r}
-#| warning: false
-#| echo: false
-## PAHTE
-## Prediction
-
-shape_value_curve <- calculate_effective_shape_value(.data = PHATE_data,
-                                                   x = PHATE1, y = PHATE2)
-
-num_bins_vec <- 1:18 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data, nldr_df_with_id = PHATE_data, x = "PHATE1", y = "PHATE2", num_bins_x = num_bins_vec[i], shape_val = shape_value_curve,
-                             is_bin_centroid = TRUE,
-                             is_rm_lwd_hex = FALSE,
-                             benchmark_to_rm_lwd_hex = NA,
-                             is_avg_high_d = TRUE, column_start_text = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = PHATE_data, x = "PHATE1", y = "PHATE2")
+  # pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = UMAP_data, x = "UMAP1", y = "UMAP2")
 
   
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -1261,136 +1168,17 @@ for (i in 1:length(num_bins_vec)) {
 
 ## Add new column with data types
 
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_3 <- eval_data_training |>
-  dplyr::mutate(method = "PHATE")
-
+MSE_df_umap_s_curve <- eval_data_training |>
+  mutate(data_type = "training",
+         method = "UMAP")
 ```
 
 ```{r}
 #| warning: false
 #| echo: false
-
-## TriMAP
-
-## Prediction
-
-shape_value_curve <- calculate_effective_shape_value(.data = TriMAP_data,
-                                                   x = TriMAP1, y = TriMAP2)
-
-num_bins_vec <- 1:10 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data, nldr_df_with_id = TriMAP_data, x = "TriMAP1", y = "TriMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_curve,
-                             is_bin_centroid = TRUE,
-                             is_rm_lwd_hex = FALSE,
-                             benchmark_to_rm_lwd_hex = NA,
-                             is_avg_high_d = TRUE, column_start_text = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = TriMAP_data, x = "TriMAP1", y = "TriMAP2")
-
-  
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_4 <- eval_data_training |>
-  dplyr::mutate(method = "TriMAP")
-
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-## PaCMAP
-
-## Prediction
-
-shape_value_curve <- calculate_effective_shape_value(.data = PaCMAP_data,
-                                                   x = PaCMAP1, y = PaCMAP2)
-
-num_bins_vec <- 1:18 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data, nldr_df_with_id = PaCMAP_data, x = "PaCMAP1", y = "PaCMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_curve,
-                             is_bin_centroid = TRUE,
-                             is_rm_lwd_hex = FALSE,
-                             benchmark_to_rm_lwd_hex = NA,
-                             is_avg_high_d = TRUE, column_start_text = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = PaCMAP_data, x = "PaCMAP1", y = "PaCMAP2")
-
-  
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_5 <- eval_data_training |>
-  dplyr::mutate(method = "PaCMAP")
-
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
-
-MSE_df$method <- factor(MSE_df$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
 
 ## To draw with AIC
-aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+aic_plot <- ggplot(MSE_df_umap_s_curve |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
                                                                                  y = total_error,
                                                                                  color = method
 )) +
@@ -1404,12 +1192,12 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8")) +
   ylab("AIC") +
   xlab("total number of bins")
 ## Effective number of bins along x-axis
 
-mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+mse_plot <- ggplot(MSE_df_umap_s_curve |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
                                        y = total_mse,
                                        color = method
 )) +
@@ -1423,7 +1211,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = number_of_
         axis.text = element_text(size = 7)) +
   # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  scale_colour_manual(values = c("#377eb8")) +
   ylab("MSE") +
   xlab("total number of bins")
 
@@ -1787,76 +1575,6 @@ trimesh_umap_s_curve + trimesh_gr_umap_s_curve +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
-
-
-```{r}
-#| echo: false
-#| warning: false
-
-error_df_lg_1 <- read_rds("data/s_curve/s_curve_summary_lg_tsne.rds")
-error_df_lg_2 <- read_rds("data/s_curve/s_curve_summary_lg_umap.rds")
-error_df_lg_3 <- read_rds("data/s_curve/s_curve_summary_lg_phate.rds")
-error_df_lg_4 <- read_rds("data/s_curve/s_curve_summary_lg_trimap.rds")
-error_df_lg_5 <- read_rds("data/s_curve/s_curve_summary_lg_pacmap.rds")
-
-error_df_lg <- dplyr::bind_rows(error_df_lg_1, error_df_lg_2, error_df_lg_3, error_df_lg_4, error_df_lg_5)
-
-error_df_lg$method <- factor(error_df_lg$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-## To draw with AIC
-aic_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_lg,
-                                                                                 y = total_error,
-                                                                                 color = method
-)) +
-  geom_point() +
-  geom_vline(xintercept = 1.347, linetype="dashed", 
-                color = "red", size=0.5) +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("AIC") +
-  xlab("benchmark value")
-## Effective number of bins along x-axis
-
-mse_plot_lg <- ggplot(error_df_lg |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_lg,
-                                       y = total_mse,
-                                       color = method
-)) +
-  geom_point() +
-  geom_vline(xintercept = 1.347, linetype="dashed", 
-                color = "red", size=0.5) +
-  geom_line() +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("MSE") +
-  xlab("benchmark value")
-
-```
-
-```{r}
-#| echo: false
-#| warning: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the long edges. What is the effective benchmark value to remove the long edges? $1.347$ is the chosen benchmark value to remove long edges. The value is selected through a visual inspection of the triangular mesh is conducted to verify whether it successfully eliminates long edges."
-#| label: fig-diagnosticpltScurvelgrm
-##| out-width: 100%
-#| fig-pos: H
-
-aic_plot_lg + mse_plot_lg +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8)) 
-```
-
 #### Hexagonal grid origin
 
 According to @Dan2023, the hexagonal binning is done by tessellating the $xy$ plane over the set (range($x$), range($y$)) (see @fig-scurveshifthexgridsexp (b)). In that case, bin centroids are defined as shown in @fig-scurveshifthexgridsexp (a) with gray colour. Rather than sticking to the typical hexagonal grid, introducing a meaningful shift in both the x and y directions presents an opportunity for an improved 2D model. Therefore, investigating this shift in the hexagonal grid is an important parameter to consider.
@@ -1981,7 +1699,7 @@ aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::fi
 )) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 0, linetype="dashed",
+  geom_vline(xintercept = MSE_df |> dplyr::filter(total_mse == min(total_mse)) |> dplyr::pull(shift), linetype="dashed",
                 color = "red", size=0.5) +
   #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
   #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
@@ -2000,7 +1718,7 @@ mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = shift,
 )) +
   geom_point() +
   geom_line() +
-   geom_vline(xintercept = 0, linetype="dashed",
+   geom_vline(xintercept = MSE_df |> dplyr::filter(total_mse == min(total_mse)) |> dplyr::pull(shift), linetype="dashed",
                 color = "red", size=0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -2032,7 +1750,18 @@ aic_plot + mse_plot +
 
 #### Predicted values and residuals
 
-The approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
+<!--In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
+The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
+
+Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
+
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. 
+
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest high-D model point (averaged high-D point) for the new high-D data point. Also, the coordinates of the high-D model point serve as the predicted 2D embedings for the new high-D data point. 
+It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
+-->  
+
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm. In this method, which operates as an unsupervised classification problem, the nearest high-D model point (averaged high-D point) is identified for the new high-D data point. Once the nearest high-D model point is identified, its coordinates are used as the predicted 2D embeddings for the new high-D data point. This step is particularly valuable due to the limitations of certain NLDR techniques, like tSNE, which don't provide a straightforward method for predicting 2D embeddings. As a result, our approach presents a solution that can generate predicted 2D embeddings, irrespective of the NLDR technique employed, effectively addressing this gap in functionality. 
 
 The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
 
@@ -2041,7 +1770,7 @@ $$
 $$ {#eq-equation11}
 
 
-Here, $n$ represents the number of bins, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
+Here, $n$ represents the number of observations, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
 
 The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
 
@@ -2062,26 +1791,20 @@ $$
 \text{AIC} = 2b'p + np * log(\text{MSE})
 $$ {#eq-equation10}
   
-  These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
+These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
+<!--
 ### Model interpretation
 
 The visualizations of NLDR techniques for the S-curve dataset shows different representations in 2D, as showcased in Figure @fig-nldervis. The question at hand is determining the best NLDR technique to represent the S-curve data. Examining the 2D layouts in @fig-nldervis suggests that TriMAP or PaCMAP may be best representations. However, the challenge is to decide the best representation with considerable evidence.
 
-After considering the models constructed from the algorithm for each NLDR techniques and visualizing them in high-D space with the original data, shows that all the NLDR techniques capture the non-linearity of the S-curve (see videos of the models linked in @fig-modelScurve). But thorough examination of each model in high-D space shows some surprising findings. The model of PHATE is flattened and lack of capturing the width of S-curve (see videos of the model with PHATE linked in @fig-modelScurve). This nature of PHATE is also evicted by the considerably higher AIC and MSE values for PHATE as shown in @fig-diagnosticpltScurve. Furthermore, there are two edges that are not connected to any points in the model of TriMAP (see see videos of the model with TriMAP linked in @fig-modelScurve). This model shows how the patterns in 2D representation of TriMAP capture by the model (see @fig-nldervis (d)). As shown in @fig-nldervis (b), UMAP have four clusters in a curvilinear structure. However, the model reveals that even though UMAP shows a curvilinear in 2D, UMAP actually capture the structure of the S-curve without any disjoint in the model (see see videos of the model with UMAP linked in @fig-modelScurve). In the 2D layouts of tSNE and PaCMAP (see @fig-nldervis (a), (e)), there are some sparse areas that are captured by the models effectively (see see videos of the model with tSNE and PaCMAP linked in @fig-modelScurve). 
+After considering the models constructed from the algorithm for each NLDR techniques and visualizing them in high-D space with the original data, shows that all the NLDR techniques capture the non-linearity of the S-curve (see videos of the models linked in @fig-modelScurve). But thorough examination of each model in high-D space shows some surprising findings. The model of PHATE is flattened and lack of capturing the width of S-curve (see videos of the model with PHATE linked in @fig-modelScurve). This nature of PHATE is also evicted by the considerably higher AIC and MSE values for PHATE as shown in @fig-diagnosticpltScurve. Furthermore, there are two edges that are not connected to any points in the model of TriMAP (see see videos of the model with TriMAP linked in @fig-modelScurve). This model shows how the patterns in 2D representation of TriMAP capture by the model (see @fig-nldervis (d)). As shown in @fig-nldervis (b), UMAP have four clusters in a curvilinear structure. However, the model reveals that even though UMAP shows a curvilinear in 2D, UMAP actually capture the structure of the S-curve without any disjoint in the model (see see videos of the model with UMAP linked in @fig-modelScurve). In the 2D layouts of tSNE and PaCMAP (see @fig-nldervis (a), (e)), there are some sparse areas that are captured by the models effectively (see see videos of the model with tSNE and PaCMAP linked in @fig-modelScurve). -->
 
 <!--Different NLDR techniques perform differently on the S-curve data and tSNE provides the best representation in 2D according to AIC and MSE values (see @fig-diagnosticpltScurve). -->
 
 <!--### Model selection {#sec-selection}
 
 In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). -->
-
-### Prediction {#sec-prediction}
-
-In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
-The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
-
-Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
 
 ### Simulated data example {#sec-simpleex}
 
@@ -2210,6 +1933,8 @@ hexbin_data_object_tsne_gau <- extract_hexbin_centroids(nldr_df = tSNE_data_gau,
 
 df_bin_centroids_tsne_gau <- hexbin_data_object_tsne_gau$hexdf_data
 
+num_non_empty_bins_gau <- df_bin_centroids_tsne_gau$hexID |> length()
+
 tSNE_data_with_hb_id_gau <- tSNE_data_gau |>
   dplyr::mutate(hb_id = hexbin_data_object_tsne_gau$hb_data@cID)
 
@@ -2251,10 +1976,11 @@ trimesh_removed_tsne_gau <- trimesh_removed_tsne_gau +
 
 # num_bins_umap_gau <- calculate_effective_x_bins(.data = UMAP_data_gau, x = UMAP1,
 #                                                 cell_area = 1) #41
-num_bins_umap_gau <- 26
 
 shape_val_umap_gau <- calculate_effective_shape_value(.data = UMAP_data_gau,
                                                       x = UMAP1, y = UMAP2)
+num_bins_umap_gau <- find_non_empty_bins(nldr_df = UMAP_data_gau, x = "UMAP1", y = "UMAP2", shape_val = shape_val_umap_gau, non_empty_bins = num_non_empty_bins_gau)
+
 ## To extract bin centroids
 hexbin_data_object_umap_gau <- extract_hexbin_centroids(nldr_df = UMAP_data_gau, num_bins = num_bins_umap_gau, shape_val = shape_val_umap_gau, x = UMAP1, y = UMAP2)
 
@@ -2302,10 +2028,12 @@ trimesh_removed_umap_gau <- trimesh_removed_umap_gau +
 
 # num_bins_phate_gau <- calculate_effective_x_bins(.data = PHATE_data_gau, x = PHATE1,
 #                                                  cell_area = 1)
-num_bins_phate_gau <- 70
 
 shape_val_phate_gau <- calculate_effective_shape_value(.data = PHATE_data_gau,
                                                        x = PHATE1, y = PHATE2)
+num_bins_phate_gau <- find_non_empty_bins(nldr_df = PHATE_data_gau, x = "PHATE1", y = "PHATE2", shape_val = shape_val_phate_gau, non_empty_bins = num_non_empty_bins_gau)
+
+
 ## To extract bin centroids
 hexbin_data_object_phate_gau <- extract_hexbin_centroids(nldr_df = PHATE_data_gau, num_bins = num_bins_phate_gau, shape_val = shape_val_phate_gau, x = PHATE1, y = PHATE2)
 
@@ -2354,9 +2082,12 @@ trimesh_removed_phate_gau <- trimesh_removed_phate_gau +
 # num_bins_trimap_gau <- calculate_effective_x_bins(.data = TriMAP_data_gau, x = TriMAP1,
 #                                                   cell_area = 1) #143
 
-num_bins_trimap_gau <- 21
 shape_val_trimap_gau <- calculate_effective_shape_value(.data = TriMAP_data_gau,
                                                         x = TriMAP1, y = TriMAP2)
+
+num_bins_trimap_gau <- find_non_empty_bins(nldr_df = TriMAP_data_gau, x = "TriMAP1", y = "TriMAP2", shape_val = shape_val_trimap_gau, non_empty_bins = num_non_empty_bins_gau)
+
+
 ## To extract bin centroids
 hexbin_data_object_trimap_gau <- extract_hexbin_centroids(nldr_df = TriMAP_data_gau, num_bins = num_bins_trimap_gau, shape_val = shape_val_trimap_gau, x = TriMAP1, y = TriMAP2)
 
@@ -2404,10 +2135,12 @@ trimesh_removed_trimap_gau <- trimesh_removed_trimap_gau +
 
 # num_bins_pacmap_gau <- calculate_effective_x_bins(.data = PaCMAP_data_gau, x = PaCMAP1,
 #                                                   cell_area = 1) #30
-num_bins_pacmap_gau <- 18
 
 shape_val_pacmap_gau <- calculate_effective_shape_value(.data = PaCMAP_data_gau,
                                                         x = PaCMAP1, y = PaCMAP2)
+
+num_bins_pacmap_gau <- find_non_empty_bins(nldr_df = PaCMAP_data_gau, x = "PaCMAP1", y = "PaCMAP2", shape_val = shape_val_pacmap_gau, non_empty_bins = num_non_empty_bins_gau)
+
 ## To extract bin centroids
 hexbin_data_object_pacmap_gau <- extract_hexbin_centroids(nldr_df = PaCMAP_data_gau, num_bins = num_bins_pacmap_gau, shape_val = shape_val_pacmap_gau, x = PaCMAP1, y = PaCMAP2)
 
@@ -2494,12 +2227,9 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = tSNE_data_gau, x = "tSNE1", y = "tSNE2")
-  
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -2547,12 +2277,9 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = UMAP_data_gau, x = "UMAP1", y = "UMAP2")
-  
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -2601,12 +2328,9 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PHATE")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PHATE")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = PHATE_data_gau, x = "PHATE1", y = "PHATE2")
-  
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -2658,12 +2382,9 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "TriMAP")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "TriMAP")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = TriMAP_data_gau, x = "TriMAP1", y = "TriMAP2")
-  
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -2715,12 +2436,9 @@ for (i in 1:length(num_bins_vec)) {
   centroid_df_training <- model_object$df_bin_centroids
   avg_df_training <- model_object$df_bin
   
-  # pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PaCMAP")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PaCMAP")
   
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = PaCMAP_data_gau, x = "PaCMAP1", y = "PaCMAP2")
-  
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = num_bins_vec[i], col_start = "x")
+  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
   
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = num_bins_vec[i])
@@ -2822,7 +2540,6 @@ Used Louvain algorithm to cluster the single cells based on the genes selected b
 
 - Explain what "Evaluate Festem on DEG detection" means, in terms of this data
 
-- 
 
 - How did they "identified 10 clusters"? What were the variables used, PCs or full data or 2D representation, spell this out.
 
@@ -2872,6 +2589,8 @@ than their CD27+ counterparts.
 - If it is completely a mess, then that is also further evidence that the fit is poor in high-dimensions.
 
 <!--https://dicook.github.io/mulgar_book/7-spin-and-brush.html#fig-penguins-bs-detourr-->
+
+
 
 ```{r}
 #| warning: false
@@ -2994,14 +2713,119 @@ plot_list2_pbmc <- UMAP_pbmc |>
 ```{r}
 #| warning: false
 #| echo: false
-num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
-                                              cell_area = 1) ##23
 
-num_bins_pbmc <- 23
+## UMAP
+## Prediction
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:35 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_pbmc, nldr_df_with_id = UMAP_pbmc, x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_pbmc,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "PC_")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_pbmc, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  eval_df_training <- generate_eval_df(data = training_data_pbmc, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "PC_")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_pbmc <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 256, linetype="dashed", 
+                color = "red", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 256, linetype="dashed", 
+                color = "red", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltPBMC
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+# num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
+#                                               cell_area = 1) ##23
+
+num_bins_pbmc <- 15
 
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
-shape_value_pbmc <- 0.8772751
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3010,7 +2834,7 @@ hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
 
 df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
 
-num_non_empty_bins_pbmc <- df_bin_centroids_pbmc$hexID |> length() #83
+#num_non_empty_bins_pbmc <- df_bin_centroids_pbmc$hexID |> length() #83
 
 UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
   dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
@@ -3028,9 +2852,17 @@ tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(.data = tr_from_to_df_pbmc)
 
+distance_plot <- plot_dist(distance_pbmc) +
+  #ggtitle("(b)" ) +
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
+
+distance_plot
+
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-benchmark_pbmc <- 1.072513
+benchmark_pbmc <- 2.5
   
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
@@ -3115,8 +2947,7 @@ plot_list2_pbmc_error <- error_df |>
 #| out-width: 100%
 #| fig-pos: h
 
-# plot_list2_pbmc + 
-trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_list2_pbmc + trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
 plot_layout(guides='collect', ncol=3) &
   theme(legend.position='bottom')
 
@@ -3227,10 +3058,117 @@ plot_list2_pbmc <- UMAP_pbmc |>
 ```{r}
 #| warning: false
 #| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:35 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_pbmc, nldr_df_with_id = UMAP_pbmc, x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_pbmc,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "PC_")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_pbmc, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  eval_df_training <- generate_eval_df(data = training_data_pbmc, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "PC_")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_pbmc <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 192, linetype="dashed", 
+                color = "red", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 192, linetype="dashed", 
+                color = "red", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltPBMC2
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
 
-num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
+# num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
+num_bins_pbmc <-  11
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3256,9 +3194,18 @@ tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(.data = tr_from_to_df_pbmc)
 
+# distance_plot <- plot_dist(distance_pbmc) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
 #benchmark_pbmc <- 1.049766 
+benchmark_pbmc <- 2.5
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3451,6 +3398,112 @@ plot_list2_pbmc <- UMAP_pbmc |>
 ```{r}
 #| warning: false
 #| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:35 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_pbmc, nldr_df_with_id = UMAP_pbmc, x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_pbmc,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "PC_")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_pbmc, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  eval_df_training <- generate_eval_df(data = training_data_pbmc, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "PC_")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_pbmc <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 182, linetype="dashed", 
+                color = "red", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 182, linetype="dashed", 
+                color = "red", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltPBMC3
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
 # num_bins_pbmc <- calculate_effective_x_bins(.data = UMAP_pbmc, x = UMAP1,
 #                                               cell_area = 1) ##23
 
@@ -3458,7 +3511,8 @@ plot_list2_pbmc <- UMAP_pbmc |>
 shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
 
-num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
+# num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
+num_bins_pbmc <- 12
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3483,9 +3537,17 @@ tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(.data = tr_from_to_df_pbmc)
 
+# distance_plot <- plot_dist(distance_pbmc) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
 ## To find the benchmark value
 benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
-#benchmark_pbmc <- 0.5517801
+benchmark_pbmc <- 2.5
 
 trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
                                                  triangular_object = tr1_object_pbmc, distance_col = distance)
@@ -3649,7 +3711,6 @@ plot_list2_harps <- tSNE_data_harps |>
 #| warning: false
 #| echo: false
 
-
 ## Import data
 training_data_1 <- read_rds("data/harps/harps_data.rds")
 training_data_1 <- training_data_1 |>
@@ -3665,19 +3726,129 @@ tSNE_data_harps <- tSNE_data_harps |>
   select(tSNE1, tSNE2) |>
   mutate(ID = 1:NROW(tSNE_data_harps))
 
-### tSNE
 
-num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = tSNE1,
-                                                cell_area = 1) #43
+## tSNE
+## Prediction
 
 shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
                                                       x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 120, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 120, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+
+### tSNE
+
+num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = "tSNE1",
+                                                cell_area = 1) #43
+
+num_bins_tsne_harps <- 14
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = "tSNE1", y = "tSNE2")
 ## To extract bin centroids
-hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = "tSNE1", y = "tSNE2")
 
 df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
 
-num_non_empty_bins_harps <- df_bin_centroids_tsne_harps$hexID |> length()
+#num_non_empty_bins_harps <- df_bin_centroids_tsne_harps$hexID |> length()
 
 ## Identify bins with low-density
 # identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
@@ -3702,7 +3873,16 @@ tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_ts
 distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 
 ## To find the benchmark value
-benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 5
+
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
                                               triangular_object = tr1_object_tsne_harps, distance_col = distance)
@@ -3825,6 +4005,113 @@ plot_list2_harps <- tSNE_data_harps |>
 #| warning: false
 #| echo: false
 
+## tSNE
+## Prediction
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 160, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 160, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS2
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+
 ## Import data
 # training_data_1 <- read_rds("data/harps/harps_data.rds")
 # training_data_1 <- training_data_1 |>
@@ -3845,7 +4132,9 @@ plot_list2_harps <- tSNE_data_harps |>
 shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
                                                       x = tSNE1, y = tSNE2)
 
-num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+# num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+
+num_bins_tsne_harps <- 9
 
 ## To extract bin centroids
 hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
@@ -3874,10 +4163,17 @@ tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_ts
 ## Compute 2D distances
 distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 
-## To find the benchmark value
-benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
-benchmark_tsne_harps <- 2.5
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 6
 
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
                                               triangular_object = tr1_object_tsne_harps, distance_col = distance)
@@ -3996,6 +4292,112 @@ plot_list2_harps <- tSNE_data_harps |>
 #| warning: false
 #| echo: false
 
+## tSNE
+## Prediction
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 180, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 180, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS3
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
 ## Import data
 # training_data_1 <- read_rds("data/harps/harps_data.rds")
 # training_data_1 <- training_data_1 |>
@@ -4016,7 +4418,8 @@ plot_list2_harps <- tSNE_data_harps |>
 shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
                                                       x = tSNE1, y = tSNE2)
 
-num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+# num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+num_bins_tsne_harps <- 9
 
 ## To extract bin centroids
 hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
@@ -4045,9 +4448,17 @@ tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_ts
 ## Compute 2D distances
 distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
 
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
 ## To find the benchmark value
-benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = distance)
-benchmark_tsne_harps <- 1
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 2.5
 
 trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
                                               triangular_object = tr1_object_tsne_harps, distance_col = distance)

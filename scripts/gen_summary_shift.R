@@ -20,7 +20,8 @@ UMAP_data_with_hb_id <- UMAP_data |>
 
 shift_amount_vec <- append(seq(0,0.537285, 0.1) * (-1), seq(0,0.537285, 0.1)) |> unique() ## Shift amount
 
-vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x", "shift"))  ## Define column names
+vec <- stats::setNames(rep("", 6), c("number_of_bins", "number_of_observations",
+                                     "total_error", "total_mse", "num_bins_x", "shift"))  ## Define column names
 
 eval_data_training <- dplyr::bind_rows(vec)[0, ]
 eval_data_training <- eval_data_training |>
@@ -28,7 +29,10 @@ eval_data_training <- eval_data_training |>
 
 for (i in 1:length(shift_amount_vec)) { #length(shift_amount_vec)
 
-  shifted_object <- extract_coord_of_shifted_hex_grid(nldr_data_with_hb_id = UMAP_data_with_hb_id, num_bins_x = 8, hex_full_count_df, shift_x = shift_amount_vec[i], shift_y = shift_amount_vec[i])
+  shifted_object <- extract_coord_of_shifted_hex_grid(nldr_data_with_hb_id = UMAP_data_with_hb_id,
+                                                      num_bins_x = 8, hex_full_count_df,
+                                                      shift_x = shift_amount_vec[i],
+                                                      shift_y = shift_amount_vec[i])
 
   centroid_df_training <- shifted_object$hex_full_count_df_new |>
     dplyr::filter(!is.na(counts)) |>
@@ -48,9 +52,13 @@ for (i in 1:length(shift_amount_vec)) { #length(shift_amount_vec)
   ## Averaged on high-D
   avg_df_training <- avg_highD_data(.data = df_all_umap_s_curve)
 
-  pred_df_training <- predict_hex_id(df_bin_centroids = centroid_df_training, nldr_df_test = UMAP_data, x = "UMAP1", y = "UMAP2")
+  pred_df_training <- predict_2d_embeddings(test_data = training_data,
+                                            df_bin_centroids = centroid_df_training,
+                                            df_bin = avg_df_training, type_NLDR = "UMAP")
 
-  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, num_bins = 8, col_start = "x")
+  eval_df_training <- generate_eval_df(data = data, prediction_df = pred_df_training,
+                                       df_bin_centroids = centroid_df_training,
+                                       df_bin = avg_df_training, num_bins = 8, col_start = "x")
 
   eval_df_training <- eval_df_training |>
     mutate(num_bins_x = 8,
