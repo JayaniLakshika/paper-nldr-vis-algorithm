@@ -94,6 +94,11 @@ library(colorspace)
 library(kableExtra)
 
 library(grid)
+
+# ## For paralleization
+# library(foreach)
+# library(doParallel)
+
 # library(xtable)
 # 
 # xtable2kable <- function(x) {
@@ -1244,6 +1249,14 @@ The benchmark value for removing low-density hexagons has a range of $0$ and $1$
 
 Consequently, it is not necessary to remove low-density hexagons when constructing the 2D model for the S-curve dataset in NLDR techniques, except for PHATE. While there may be some fluctuations in MSE between benchmark values of 0 to 1, the absence of significant changes suggests that maintaining low-density hexagons is preferable. However, to choose the best selection, it's recommended to examine the benchmark values around the first local minimum in the MSE curve. However, the MSE for PHATE fluctuates when benchmark values range between 0 and 1. Therefore, it is necessary to explore the benchmark values surrounding the first local minimum to determine an effective benchmark value. There is no universal rule for selecting a process. As shown in @fig-diagnosticpltScurvelwd, the MSE values for PHATE fluctuate, and the first local minimum is at $0$. Therefore, nearby benchmark values such as $0.01$, $0.04$, and $0.06$ were explored to identify the best value for preserving the data structure. In this case, a benchmark value of $0.06$ was chosen. The resulting 2D model is shown in @fig-modelScurve (c), while the video link provides a visual representation of how the model appears in high-D.
 
+The following steps will help to find a suitable value to remove low density hexagons:
+
+1. Plot the distribution of the standardized counts
+
+2. See the distribution of counts
+
+3. Take the first quartile 
+
 ```{r}
 #| echo: false
 #| message: false
@@ -1305,6 +1318,13 @@ shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
 hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
 
 df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
+
+cell_count_plot_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = reorder(as.factor(hexID), -std_counts), y = std_counts)) +
+  geom_quasirandom() + xlab("hexagonal id") + ylab("Standardized cell count") +
+  geom_hline(yintercept = 0.20, colour = "#de2d26") +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 7),
+        axis.text.x = element_text(angle = 90))
 
 df_bin_centroids_umap_s_curve <- df_bin_centroids_umap_s_curve |>
   dplyr::filter(std_counts > 0.20)
@@ -1447,6 +1467,13 @@ To investigate the effect of removing long edges on the MSE, we analyzed the MSE
 
 There is no definitive rule for determining the benchmark value to remove long edges. However, we have a method to find a default value (see Appendix). Adjusting values around this default can help to find benchmark value to remove long edges, contributing to the construction of a smoother 2D representation (see @fig-diagnosticpltScurvelgrm).
 
+The following steps will help to find a suitable value to remove long edges:
+
+1. Plot the distribution of the 2D distances
+
+2. Find a value which is greater than smallest value
+
+
 <!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.-->
 
 ```{r}
@@ -1489,6 +1516,11 @@ tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_
 ## Compute 2D distances
 distance_umap_s_curve <- cal_2d_dist(.data = tr_from_to_df_umap_s_curve)
 
+distance_plot_s_curve <- plot_dist(distance_umap_s_curve) +
+  #ggtitle("(b)" ) +
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
 
 ## To find the benchmark value
 benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
@@ -1560,6 +1592,22 @@ trimesh_gr_umap_s_curve <- trimesh_gr_umap_s_curve +
 # 
 
 ```
+
+```{r}
+#| warning: false
+#| echo: false
+#| label: fig-modelScurverdistcount
+#| fig-cap: "plots to identify benchmark values"
+##| out-width: 100%
+#| fig-pos: H
+
+cell_count_plot_s_curve + distance_plot_s_curve +
+  #plot_annotation(tag_levels = 'a') +
+  plot_layout(ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
 
 ```{r}
 #| warning: false

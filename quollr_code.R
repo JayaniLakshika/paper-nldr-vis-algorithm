@@ -983,6 +983,162 @@ generate_eval_df <- function(data, prediction_df, df_bin_centroids, df_bin,
 
 }
 
+# nearest_bin_search <- function(centroid_coord_high_D, test_data_point) {
+#
+#   filtered_search_df <- data.frame(matrix(nrow = 0, ncol = 0))
+#
+#   target_values <-  unlist(as.vector(test_data_point |> dplyr::select(-ID)), use.names = FALSE)
+#
+#   for (i in 1:length(target_values)) {
+#     approximately_equal <- centroid_coord_high_D[,i] >= (target_values[i] - quantile(centroid_coord_high_D[,i] |> as.vector() |> unlist(use.names = FALSE), probs = c(0,0.25,0.5,0.75,1))[2]) &
+#       centroid_coord_high_D[,i] <= (target_values[i] + quantile(centroid_coord_high_D[,i] |> as.vector() |> unlist(use.names = FALSE), probs = c(0,0.25,0.5,0.75,1))[2])
+#
+#     df <- centroid_coord_high_D |>
+#       dplyr::filter(!!as.name(names(centroid_coord_high_D)[i]) %in% centroid_coord_high_D[,i][approximately_equal])
+#
+#     filtered_search_df <- dplyr::bind_rows(filtered_search_df, df)
+#
+#   }
+#
+#   return(filtered_search_df)
+#
+# }
+#
+# predict_2d_embeddings <- function(test_data, df_bin_centroids, df_bin, type_NLDR = "UMAP") {
+#
+#   ## To remove low-density hexagons
+#   df_bin <- df_bin |>
+#     dplyr::filter(hb_id %in% df_bin_centroids$hexID)
+#
+#   ## Obtain centroid coordinates in high-D
+#   centroid_coord_high_D <- df_bin |>
+#     dplyr::select(-hb_id)
+#
+#   columns_df <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID", "pred_hb_id")
+#   vec <- stats::setNames(rep("", length(columns_df)), columns_df)  ## Define column names
+#
+#   predict_coord_test <- dplyr::bind_rows(vec)[0, ]
+#   predict_coord_test <- predict_coord_test |>
+#     dplyr::mutate_if(is.character, as.numeric)
+#
+#   for (i in 1:NROW(test_data)) {
+#
+#     ### Filter the new data point
+#     test_data_point <- test_data |>
+#       dplyr::filter(dplyr::row_number() == i)
+#
+#     search_df <- nearest_bin_search(centroid_coord_high_D, test_data_point)
+#
+#     ## Compute the distance between test point and the centroid points in high-D
+#     d <- stats::dist(dplyr::bind_rows(test_data_point |> dplyr::select(-ID), search_df)) |>
+#       as.matrix()
+#
+#     ## Obtain the distances
+#     distance_vec <- d[2:dim(d)[1], 1] |> as.vector()
+#
+#     ## Add the distance vec as a column in high-D centroid coordinate data set
+#     centroid_coord_high_D_n <- search_df |>
+#       dplyr::mutate(distance = distance_vec)
+#
+#     centroid_coord_high_D_n <- dplyr::inner_join(centroid_coord_high_D_n, df_bin)
+#
+#     ## Sort by distance and obtain the centroid which is nearest
+#     predict_centroid_coord_high_D <- centroid_coord_high_D_n |>
+#       dplyr::arrange(distance) |>
+#       dplyr::filter(dplyr::row_number() == 1)
+#
+#     ## Rename columns
+#     #names(predict_centroid_coord_high_D)[1:(NCOL(test_data_point) - 1)] <- paste0("C_", names(predict_centroid_coord_high_D)[1:(NCOL(test_data_point) - 1)])
+#
+#     ## Obtain 2D coordinate of the nearest high-D centroid
+#     predict_centroid_coord_2D <- df_bin_centroids |>
+#       dplyr::filter(hexID %in% predict_centroid_coord_high_D$hb_id) |>
+#       dplyr::select(x, y) |>
+#       dplyr::mutate(ID = test_data_point$ID,
+#                     pred_hb_id = predict_centroid_coord_high_D$hb_id)
+#
+#     ## Rename columns
+#     names(predict_centroid_coord_2D) <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID", "pred_hb_id")
+#
+#     ## Combine high-D and 2D coordinate
+#     #predict_centroid_coord_all <- dplyr::bind_cols(test_data_point, predict_centroid_coord_high_D, predict_centroid_coord_2D)
+#
+#     ## Combine all
+#     predict_coord_test <- dplyr::bind_rows(predict_coord_test, predict_centroid_coord_2D)
+#
+#
+#   }
+#
+#   return(predict_coord_test)
+#
+#
+# }
+
+
+predict_2d_embeddings_new <- function(test_data, df_bin_centroids, df_bin, type_NLDR = "UMAP") {
+  ## To remove low-density hexagons
+  df_bin <- df_bin |>
+    dplyr::filter(hb_id %in% df_bin_centroids$hexID)
+
+  ## Obtain centroid coordinates in high-D
+  centroid_coord_high_D <- df_bin |>
+    dplyr::select(-hb_id)
+
+  columns_df <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID", "pred_hb_id")
+  vec <- stats::setNames(rep("", length(columns_df)), columns_df)  ## Define column names
+
+  predict_coord_test <- dplyr::bind_rows(vec)[0, ]
+  predict_coord_test <- predict_coord_test |>
+    dplyr::mutate_if(is.character, as.numeric)
+
+  ## Define the parallel backend
+  num_cores <- parallel::detectCores()
+  cl <- parallel::makeCluster(num_cores)
+  doParallel::registerDoParallel(cl)
+
+  ## Parallel loop
+  predict_coord_test <- foreach::foreach(i = 1:nrow(test_data), .combine = "rbind") %dopar% {
+    ### Filter the new data point
+    test_data_point <- test_data |>
+      dplyr::filter(dplyr::row_number() == i)
+
+    ## Compute the distance between test point and the centroid points in high-D
+    d <- stats::dist(dplyr::bind_rows(test_data_point |> dplyr::select(-ID), centroid_coord_high_D)) |>
+      as.matrix()
+
+    ## Obtain the distances
+    distance_vec <- d[2:dim(d)[1], 1] |> as.vector()
+
+    ## Add the distance vec as a column in high-D centroid coordinate data set
+    centroid_coord_high_D_n <- centroid_coord_high_D |>
+      dplyr::mutate(distance = distance_vec) |>
+      dplyr::mutate(hb_id = df_bin$hb_id)
+
+    ## Sort by distance and obtain the centroid which is nearest
+    predict_centroid_coord_high_D <- centroid_coord_high_D_n |>
+      dplyr::arrange(distance) |>
+      dplyr::filter(dplyr::row_number() == 1)
+
+    ## Obtain 2D coordinate of the nearest high-D centroid
+    predict_centroid_coord_2D <- df_bin_centroids |>
+      dplyr::filter(hexID %in% predict_centroid_coord_high_D$hb_id) |>
+      dplyr::select(x, y) |>
+      dplyr::mutate(ID = test_data_point$ID,
+             pred_hb_id = predict_centroid_coord_high_D$hb_id)
+
+    ## Rename columns
+    names(predict_centroid_coord_2D) <- c(paste0("pred_", type_NLDR, "_", 1:2), "ID", "pred_hb_id")
+
+    return(predict_centroid_coord_2D)
+  }
+
+  parallel::stopCluster(cl)  ## Stop the parallel backend
+
+  return(predict_coord_test)
+}
+
+
+
 predict_2d_embeddings <- function(test_data, df_bin_centroids, df_bin, type_NLDR = "UMAP") {
 
   ## To remove low-density hexagons
@@ -1049,3 +1205,57 @@ predict_2d_embeddings <- function(test_data, df_bin_centroids, df_bin, type_NLDR
 
 
 }
+
+#' #' Predict Hexagonal IDs
+#' #'
+#' #' This function predicts hexagonal IDs for a test set based on existing bin centroids.
+#' #'
+#' #' @param df_bin_centroids The training dataset containing high-dimensional data with IDs.
+#' #' @param nldr_df_test The non-linear dimensionality reductions that need to find the prediction.
+#' #' @param x The name of the column that contains first 2D embeddings component.
+#' #' @param y The name of the column that contains second 2D embeddings component.
+#' #'
+#' #' @return A data frame containing prediced hexID for 2D embedding data
+#' #'
+#' #' @importFrom dplyr select mutate
+#' #' @importFrom class knn
+#' #' @importFrom rlang syms
+#' #'
+#' #' @examples
+#' #' num_bins_x <- 4
+#' #' shape_value <- 1.833091
+#' #' hexbin_data_object <- extract_hexbin_mean(nldr_df = s_curve_noise_umap, num_bins_x,
+#' #' shape_val = shape_value)
+#' #' df_bin_centroids <- hexbin_data_object$hexdf_data
+#' #' predict_hex_id(df_bin_centroids = df_bin_centroids, nldr_df_test = s_curve_noise_umap,
+#' #' x = "UMAP1", y = "UMAP2")
+#' #'
+#' #' @export
+#' predict_hex_id <- function(df_bin_centroids, nldr_df_test, x = "UMAP1", y = "UMAP2") {
+#'
+#'   df_bin_centroids <- df_bin_centroids |>
+#'     dplyr::select(x, y, hexID)
+#'
+#'   pred_hb_id <- class::knn(df_bin_centroids |> dplyr::select(-hexID),
+#'                            nldr_df_test |> dplyr::select(!!! rlang::syms(c(x, y))),
+#'                            cl = df_bin_centroids$hexID)
+#'
+#'   pred_data <- nldr_df_test |>
+#'     dplyr::mutate(pred_hb_id = as.numeric(as.character(pred_hb_id)))
+#'
+#'   return(pred_data)
+#'
+#' }
+#'
+#' test_that("predict_hex_id() works", {
+#'
+#'   num_bins_x <- 4
+#'   shape_value <- 1.833091
+#'   hexbin_data_object <- extract_hexbin_mean(nldr_df = s_curve_noise_umap, num_bins_x,
+#'                                             shape_val = shape_value)
+#'   df_bin_centroids <- hexbin_data_object$hexdf_data
+#'   testthat::expect_snapshot(predict_hex_id(df_bin_centroids = df_bin_centroids,
+#'                                            nldr_df_test = s_curve_noise_umap,
+#'                                            x = "UMAP1", y = "UMAP2"))
+#'
+#' })

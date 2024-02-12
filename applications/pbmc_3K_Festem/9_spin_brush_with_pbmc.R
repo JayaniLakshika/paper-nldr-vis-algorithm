@@ -1,12 +1,21 @@
 library(readr)
+library(dplyr)
 
 ### Spin-brush
 #remotes::install_github("casperhart/detourr")
 library(detourr)
 
 training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_umap.rds")
+
+UMAP_pbmc$cell_label <- as.factor(UMAP_pbmc$cell_label)
+
+levels(UMAP_pbmc$cell_label) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",
+                                  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+
 training_data_pbmc <- training_data_pbmc[, 1:15] |>
-  mutate(ID = 1:NROW(training_data_pbmc))
+  mutate(ID = 1:NROW(training_data_pbmc),
+          cell_label = UMAP_pbmc$cell_label)
 
 detour(training_data_pbmc,
        tour_aes(projection = PC_1:PC_15)) |>
@@ -27,6 +36,22 @@ table(training_data_pbmc$cell_label, detour_results2$colour)
 ## Import detour results
 detour_results3 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export3.csv")
 table(training_data_pbmc$cell_label, detour_results3$colour)
+
+## Import detour results
+detour_results4 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export4.csv")
+table(training_data_pbmc$cell_label, detour_results4$colour)
+
+## Import detour results
+detour_results5 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export5.csv")
+table(training_data_pbmc$cell_label, detour_results5$colour)
+
+## Import detour results
+detour_results6 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export6.csv")
+table(training_data_pbmc$cell_label, detour_results6$colour)
+
+## Import detour results
+detour_results7 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export7.csv")
+table(training_data_pbmc$cell_label, detour_results7$colour)
 
 
 ### Spin-brush with detour and model

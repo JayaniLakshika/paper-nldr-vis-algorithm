@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, frame hidden, breakable, interior hidden, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -841,6 +841,19 @@ case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
 is shown in \textbf{?@fig-modelScurve} (c), while the video link
 provides a visual representation of how the model appears in high-D.
 
+The following steps will help to find a suitable value to remove low
+density hexagons:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Plot the distribution of the standardized counts
+\item
+  See the distribution of counts
+\item
+  Take the first quartile
+\end{enumerate}
+
 \begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-rmlowdenshex-1.pdf}
@@ -896,6 +909,28 @@ remove long edges. However, we have a method to find a default value
 benchmark value to remove long edges, contributing to the construction
 of a smoother 2D representation (see
 \textbf{?@fig-diagnosticpltScurvelgrm}).
+
+The following steps will help to find a suitable value to remove long
+edges:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Plot the distribution of the 2D distances
+\item
+  Find a value which is greater than smallest value
+\end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurverdistcount-1.pdf}
+
+}
+
+\caption{\label{fig-modelScurverdistcount}plots to identify benchmark
+values}
+
+\end{figure}
 
 \begin{figure}
 
@@ -1332,7 +1367,7 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-56-1.pdf}
 
 \begin{figure}[h]
 
