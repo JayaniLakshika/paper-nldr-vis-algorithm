@@ -160,8 +160,8 @@ detour(df_exe,
 ### Experiment with liminal
 library(liminal)
 
-training_data_pbmc <- training_data_pbmc |>
-  mutate(cell_label = UMAP_pbmc$cell_label)
+# training_data_pbmc <- training_data_pbmc |>
+#   mutate(cell_label = UMAP_pbmc$cell_label)
 
 limn_tour_link(embed_data = UMAP_pbmc |> select("UMAP1", "UMAP2"),
                tour_data = training_data_pbmc,

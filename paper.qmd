@@ -3560,7 +3560,7 @@ shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
                                                       x = UMAP1, y = UMAP2) ## 0.8772751
 
 # num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
-num_bins_pbmc <- 12
+num_bins_pbmc <- 16
 
 ## To extract bin centroids
 hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
@@ -3685,6 +3685,55 @@ plot_layout(guides='collect', ncol=3) &
 #   plot_layout(ncol=5) #| out-width: 100%
 
 # 2D layouts from different NLDR techniques applied for the training PBMC dataset: (a) tSNE (perplexity = 30), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?
+```
+<!--Generate true label for PBMC3k-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_pbmc_with_true_label <- UMAP_pbmc |>
+  dplyr::mutate(true_class_label = case_when(
+    ((UMAP1 >=-12) & (UMAP1 <= -5) & (UMAP2 >= 6) & (UMAP2 <= 18)) ~ "cluster 1",
+    ((UMAP1 >-5) & (UMAP1 <= 7) & (UMAP2 >= 4.8) & (UMAP2 <= max(UMAP2))) ~ "cluster 2", ((UMAP1 >=6) & (UMAP1 <= 15) & (UMAP2 >= -4) & (UMAP2 < 4.8)) ~ "cluster 3",
+    ((UMAP1 >=-3) & (UMAP1 <= 6.6) & (UMAP2 >= min(UMAP2)) & (UMAP2 <= 4.8)) ~ "cluster 4",
+    ((UMAP1 >=min(UMAP1))& (UMAP1 < -3) & (UMAP2 >= -8) & (UMAP2 <= -1)) ~ "cluster 5",
+    ((UMAP1 >=min(UMAP1)) & (UMAP1 <= -7) & (UMAP2 >= -3) & (UMAP2 <= 3)) ~ "cluster 6",
+    .default = "no class"
+    ))
+
+### Reassign some labels
+
+UMAP_pbmc_with_true_label <- UMAP_pbmc_with_true_label |>
+  dplyr::mutate(true_class_label = if_else((ID %in% c(2619, 1158)), "cluster 3", true_class_label)) |>
+  dplyr::mutate(true_class_label = if_else((ID %in% c(948, 285, 158, 268, 731, 1152, 1372, 1651, 2010, 150, 2304, 2546, 487, 2176, 2157, 2451, 264, 63, 1234, 947, 1126, 1699, 1232, 1492, 1488, 2040, 2550, 1313, 361, 372, 1515, 1264, 1307, 1726, 517, 2568, 2274, 591, 1703, 1097, 430, 1556, 2133, 1232, 1194, 1888, 1796, 494, 1194)), "cluster 6", true_class_label))
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+UMAP_pbmc_with_true_label |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = true_class_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "black")) +
+  # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
 ```
 
 
