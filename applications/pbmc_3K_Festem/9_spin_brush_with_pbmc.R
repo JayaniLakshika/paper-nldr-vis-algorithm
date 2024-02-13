@@ -19,10 +19,11 @@ training_data_pbmc <- training_data_pbmc[, 1:15] |>
 
 detour(training_data_pbmc,
        tour_aes(projection = PC_1:PC_15)) |>
-  tour_path(grand_tour(2), fps = 60,
-            max_bases=20) |>
+  tour_path(grand_tour(2), fps = 30,
+            max_bases=100) |>
   show_scatter(alpha = 0.7,
-               axes = FALSE)
+               axes = FALSE,
+               palette = c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f"))
 
 ## Import detour results
 detour_results1 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export.csv")
@@ -39,19 +40,45 @@ table(training_data_pbmc$cell_label, detour_results3$colour)
 
 ## Import detour results
 detour_results4 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export4.csv")
-table(training_data_pbmc$cell_label, detour_results4$colour)
+detour_results4 <- detour_results4 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results4$colour)
+
 
 ## Import detour results
 detour_results5 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export5.csv")
 table(training_data_pbmc$cell_label, detour_results5$colour)
 
+detour_results5 <- detour_results5 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results5$colour)
+
+
 ## Import detour results
 detour_results6 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export6.csv")
 table(training_data_pbmc$cell_label, detour_results6$colour)
 
+detour_results6 <- detour_results6 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results6$colour)
+
+
 ## Import detour results
 detour_results7 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export7.csv")
-table(training_data_pbmc$cell_label, detour_results7$colour)
+detour_results7 <- detour_results7 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results7$colour)
+
+## Import detour results
+detour_results8 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export8.csv")
+detour_results8 <- detour_results8 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results8$colour)
 
 
 ### Spin-brush with detour and model

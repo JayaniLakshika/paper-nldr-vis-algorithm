@@ -3730,9 +3730,16 @@ UMAP_pbmc_with_true_label |>
         legend.text = element_text(size=4),
          legend.key.height = unit(0.25, 'cm'),
          legend.key.width = unit(0.25, 'cm')) +
-  scale_color_manual(values=c("#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "black")) +
+  scale_color_manual(values=c("#d82cd3", "#49df20", "#619cff", "#000000", "#df2020", "#ffbd61", "yellow")) +
   # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+## Import detour results
+detour_results8 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export8.csv")
+detour_results8 <- detour_results8 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+table(UMAP_pbmc_with_true_label$true_class_label, detour_results8$colour)
 
 ```
 
