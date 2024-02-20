@@ -3692,8 +3692,8 @@ plot_layout(guides='collect', ncol=3) &
 #| warning: false
 #| echo: false
 
-UMAP_pbmc_with_true_label <- UMAP_pbmc |>
-  dplyr::mutate(true_class_label = case_when(
+UMAP_pbmc_with_result1_label <- UMAP_pbmc |>
+  dplyr::mutate(result1_class_label = case_when(
     ((UMAP1 >=-12) & (UMAP1 <= -5) & (UMAP2 >= 6) & (UMAP2 <= 18)) ~ "cluster 1",
     ((UMAP1 >-5) & (UMAP1 <= 7) & (UMAP2 >= 4.8) & (UMAP2 <= max(UMAP2))) ~ "cluster 2", ((UMAP1 >=6) & (UMAP1 <= 15) & (UMAP2 >= -4) & (UMAP2 < 4.8)) ~ "cluster 3",
     ((UMAP1 >=-3) & (UMAP1 <= 6.6) & (UMAP2 >= min(UMAP2)) & (UMAP2 <= 4.8)) ~ "cluster 4",
@@ -3704,9 +3704,9 @@ UMAP_pbmc_with_true_label <- UMAP_pbmc |>
 
 ### Reassign some labels
 
-UMAP_pbmc_with_true_label <- UMAP_pbmc_with_true_label |>
-  dplyr::mutate(true_class_label = if_else((ID %in% c(2619, 1158)), "cluster 3", true_class_label)) |>
-  dplyr::mutate(true_class_label = if_else((ID %in% c(948, 285, 158, 268, 731, 1152, 1372, 1651, 2010, 150, 2304, 2546, 487, 2176, 2157, 2451, 264, 63, 1234, 947, 1126, 1699, 1232, 1492, 1488, 2040, 2550, 1313, 361, 372, 1515, 1264, 1307, 1726, 517, 2568, 2274, 591, 1703, 1097, 430, 1556, 2133, 1232, 1194, 1888, 1796, 494, 1194)), "cluster 6", true_class_label))
+UMAP_pbmc_with_result1_label <- UMAP_pbmc_with_result1_label |>
+  dplyr::mutate(result1_class_label = if_else((ID %in% c(2619, 1158)), "cluster 3", result1_class_label)) |>
+  dplyr::mutate(result1_class_label = if_else((ID %in% c(948, 285, 158, 268, 731, 1152, 1372, 1651, 2010, 150, 2304, 2546, 487, 2176, 2157, 2451, 264, 63, 1234, 947, 1126, 1699, 1232, 1492, 1488, 2040, 2550, 1313, 361, 372, 1515, 1264, 1307, 1726, 517, 2568, 2274, 591, 1703, 1097, 430, 1556, 2133, 1232, 1194, 1888, 1796, 494, 1194)), "cluster 6", result1_class_label))
 
 ```
 
@@ -3714,9 +3714,31 @@ UMAP_pbmc_with_true_label <- UMAP_pbmc_with_true_label |>
 #| warning: false
 #| echo: false
 
-UMAP_pbmc_with_true_label |>
+## Import detour results
+detour_results8 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export8.csv")
+
+### Rename labels
+
+detour_results8 <- detour_results8 |>
+  dplyr::mutate(result2_class_label = case_when(
+    colour == "000000" ~ "cluster 4",
+    colour == "49df20" ~ "cluster 2",
+    colour == "619cff" ~ "cluster 3",
+    colour == "d82cd3" ~ "cluster 1",
+    colour == "df2020" ~ "cluster 5",
+    colour == "ffbd61" ~ "cluster 6",
+    .default = "no cluster"
+    
+  ))
+
+detour_results8 <- detour_results8 |>
+  dplyr::mutate(ID = training_data_pbmc$ID)
+
+df_res_1_2_label <- inner_join(UMAP_pbmc_with_result1_label, detour_results8, by = c("ID" = "ID"))
+
+result1_2d_layout <- df_res_1_2_label |>
     ggplot(aes(x = UMAP1,
-               y = UMAP2, color = true_class_label))+
+               y = UMAP2, color = result1_class_label))+
     geom_point(alpha=0.5) +
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
@@ -3734,13 +3756,34 @@ UMAP_pbmc_with_true_label |>
   # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
-## Import detour results
-detour_results8 <- read_csv("data/pbmc/pbmc_3k_festem/detourr_export8.csv")
-detour_results8 <- detour_results8 |>
-  dplyr::mutate(ID = training_data_pbmc$ID)
 
-table(UMAP_pbmc_with_true_label$true_class_label, detour_results8$colour)
 
+
+result2_2d_layout <- df_res_1_2_label |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = result2_class_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#d82cd3", "#49df20", "#619cff", "#000000", "#df2020", "#ffbd61", "yellow")) +
+  # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+
+table(df_res_1_2_label$result1_class_label, df_res_1_2_label$result2_class_label)
+
+result1_2d_layout + result2_2d_layout
 ```
 
 

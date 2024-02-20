@@ -385,10 +385,10 @@ langevitour(df |> dplyr::select(-type), lineFrom = append(point_connect_df$from,
 
 
 true_model <- true_model |>
-  dplyr::mutate(x4 = runif(NROW(true_model), -0.02, 0.02),
-                x5 = runif(NROW(true_model), -0.02, 0.02),
-                x6 = runif(NROW(true_model), -0.1, 0.1),
-                x7 = runif(NROW(true_model), -0.01, 0.01))
+  dplyr::mutate(x4 = mean(runif(NROW(true_model), -0.02, 0.02)),
+                x5 = mean(runif(NROW(true_model), -0.02, 0.02)),
+                x6 = mean(runif(NROW(true_model), -0.1, 0.1)),
+                x7 = mean(runif(NROW(true_model), -0.01, 0.01)))
 
 df <- dplyr::bind_rows(true_model, training_data)
 
