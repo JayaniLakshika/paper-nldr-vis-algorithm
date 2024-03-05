@@ -2664,4 +2664,919 @@ aic_plot_pbmc + mse_plot_pbmc +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='bottom', plot.tag = element_text(size = 8))
 ```
+
+### HARPS GTO sample dataset 
+
+@Anders2018
+
+- In 2D, there are two well-separated clusters, but the clusters are really close
+
+- One cluster have a sparse data space within the cluster
+
+- There is a line in right corner of the structure that is not connected any other trimesh points. This line create a long edge in high-D space.
+
+- In high-D view, the clusters having some non-linearity patter, which is also not captured in tSNE. Therefore, this is not a good choice. Also, the two clusters are really near to each other and can't see any separation. Also continuity of the structure. Long edges are presence also.
+
+- The parameter is, in a sense, a guess about the number of close neighbors each point has.
+
+- Num bins along the x-axis = 43, shape parameter = 0.4466309
+
+```{r}
+#| warning: false
+#| echo: false
+
+error_df <- read_csv("data/harps/error_harps_tsne.csv", col_names = FALSE)
+
+error_df <- error_df |>
+  mutate(X2 = round(X2/100, 2),
+         X1 = as.integer(X1)) |>
+  arrange(X2)
+
+colnames(error_df) <- c("perplexity", "error (x 100)")
+
+
+kable(error_df, caption = "errors for different parameter combinations", label = "tbl-errordiffcombharps") |>
+  #xtable2kable() |>
+  kable_styling(latex_options = c("striped", "HOLD_position"), position = "center", full_width = FALSE) |>
+  row_spec(0, bold = TRUE) |>
+  row_spec(3, bold=T, color = "red")
+```
+
+<!-- Author suggestion-->
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_40.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = cluster))+
+    geom_point(alpha=0.5) +
+    #coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+training_data_1 <- read_rds("data/harps/harps_data.rds")
+training_data_1 <- training_data_1 |>
+  mutate(ID = 1:NROW(training_data_1))
+
+clusters <- training_data_1$cluster
+select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+
+training_data_1 <- training_data_1 |> select(-cluster)
+names(training_data_1) <- append(paste0("x", 1:17), "ID")
+
+tSNE_data_harps <- tSNE_data_harps |>
+  select(tSNE1, tSNE2) |>
+  mutate(ID = 1:NROW(tSNE_data_harps))
+
+
+## tSNE
+## Prediction
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 120, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 120, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+
+### tSNE
+
+num_bins_tsne_harps <- calculate_effective_x_bins(.data = tSNE_data_harps, x = "tSNE1",
+                                                cell_area = 1) #43
+
+num_bins_tsne_harps <- 14
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = "tSNE1", y = "tSNE2")
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = "tSNE1", y = "tSNE2")
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+#num_non_empty_bins_harps <- df_bin_centroids_tsne_harps$hexID |> length()
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+# 
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 5
+
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  #coord_cartesian(xlim = c(-25, 25), ylim = c(-12, 12)) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 40) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/jxo_rPyGv9k>)"
+#| label: fig-nldervisharpstSNE
+#| fig-pos: h
+
+
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+
+<!-- param set 1-->
+
+- 5 clusters shows in 2D
+
+- 3 clusters which are really close shows in high_d data with the model
+
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_23.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = clusters))+
+    geom_point(alpha=0.5) +
+    coord_cartesian(xlim = c(-25, 20), ylim = c(-35, 25)) +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## tSNE
+## Prediction
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 160, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 160, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS2
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+# training_data_1 <- read_rds("data/harps/harps_data.rds")
+# training_data_1 <- training_data_1 |>
+#   mutate(ID = 1:NROW(training_data_1))
+# 
+# clusters <- training_data_1$cluster
+# select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+# 
+# training_data_1 <- training_data_1 |> select(-cluster)
+# names(training_data_1) <- append(paste0("x", 1:17), "ID")
+# 
+# tSNE_data_harps <- tSNE_data_harps |>
+#   select(tSNE1, tSNE2) |>
+#   mutate(ID = 1:NROW(tSNE_data_harps))
+
+### tSNE
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+# num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+
+num_bins_tsne_harps <- 9
+
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+# 
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
+
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 6
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  coord_cartesian(xlim = c(-25, 20), ylim = c(-35, 25)) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 23) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/VO_4SJEoAUA>)"
+#| label: fig-nldervisharpstSNE2
+#| fig-pos: h
+
+
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+<!-- param set 2-->
+
+
+```{r}
+#| warning: false
+#| echo: false
+
+tSNE_data_harps <- read_rds("data/harps/harps_tsne_91.rds") 
+
+plot_list2_harps <- tSNE_data_harps |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = clusters))+
+    geom_point(alpha=0.5) +
+    coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#cab2d6", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#bc80bd", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  guides(color = guide_legend(title = "cluster"),
+         color = guide_legend(nrow = 3)) +
+ annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## tSNE
+## Prediction
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+num_bins_vec <- 1:21 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_harps, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_val_tsne_harps,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  eval_df_training <- generate_eval_df(data = training_data_1, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_harps <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "tSNE")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 180, linetype="dashed", 
+                color = "black", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_harps <- ggplot(MSE_df_harps |> dplyr::filter(method == "tSNE"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 180, linetype="dashed", 
+                color = "black", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#e41a1c","#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltHARPS3
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_harps + mse_plot_harps +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+# training_data_1 <- read_rds("data/harps/harps_data.rds")
+# training_data_1 <- training_data_1 |>
+#   mutate(ID = 1:NROW(training_data_1))
+# 
+# clusters <- training_data_1$cluster
+# select_names <-  names(training_data_1)[-c(18, length(training_data_1))]
+# 
+# training_data_1 <- training_data_1 |> select(-cluster)
+# names(training_data_1) <- append(paste0("x", 1:17), "ID")
+# 
+# tSNE_data_harps <- tSNE_data_harps |>
+#   select(tSNE1, tSNE2) |>
+#   mutate(ID = 1:NROW(tSNE_data_harps))
+
+### tSNE
+
+shape_val_tsne_harps <- calculate_effective_shape_value(.data = tSNE_data_harps,
+                                                      x = tSNE1, y = tSNE2)
+
+# num_bins_tsne_harps <- find_non_empty_bins(nldr_df = tSNE_data_harps, x = "tSNE1", y = "tSNE2", shape_val = shape_val_tsne_harps, non_empty_bins = num_non_empty_bins_harps)
+num_bins_tsne_harps <- 9
+
+## To extract bin centroids
+hexbin_data_object_tsne_harps <- extract_hexbin_centroids(nldr_df = tSNE_data_harps, num_bins = num_bins_tsne_harps, shape_val = shape_val_tsne_harps, x = tSNE1, y = tSNE2)
+
+df_bin_centroids_tsne_harps <- hexbin_data_object_tsne_harps$hexdf_data
+
+## Identify bins with low-density
+# identify_rm_bins <- find_low_density_hexagons(df_bin_centroids_tsne_harps, num_bins_tsne_harps, benchmark_rm_hex = 0.01)
+# 
+# df_bin_centroids_tsne_harps <- df_bin_centroids_tsne_harps |>
+#   filter(!(hexID %in% identify_rm_bins))
+
+tSNE_data_with_hb_id_harps <- tSNE_data_harps |>
+  dplyr::mutate(hb_id = hexbin_data_object_tsne_harps$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_tsne_harps <- dplyr::bind_cols(training_data_1 |> dplyr::select(-ID), tSNE_data_with_hb_id_harps)
+
+## Averaged on high-D
+df_bin_tsne_harps <- avg_highD_data(.data = df_all_tsne_harps)
+
+## Triangulate bin centroids
+tr1_object_tsne_harps <- triangulate_bin_centroids(df_bin_centroids_tsne_harps, x, y)
+tr_from_to_df_tsne_harps <- generate_edge_info(triangular_object = tr1_object_tsne_harps)
+
+## Compute 2D distances
+distance_tsne_harps <- cal_2d_dist(.data = tr_from_to_df_tsne_harps)
+
+# distance_plot <- plot_dist(distance_tsne_harps) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+## To find the benchmark value
+benchmark_tsne_harps <- find_benchmark_value(.data = distance_tsne_harps, distance_col = "distance")
+benchmark_tsne_harps <- 2.5
+
+trimesh_removed_tsne_harps <- remove_long_edges(.data = distance_tsne_harps, benchmark_value = benchmark_tsne_harps,
+                                              triangular_object = tr1_object_tsne_harps, distance_col = distance)
+
+trimesh_removed_tsne_harps <- trimesh_removed_tsne_harps +
+  # xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  # theme(axis.text = element_text(size = 5),
+  #       axis.title = element_text(size = 7)) +
+  geom_point(colour = "#33a02c", size = 0.5) +
+  coord_cartesian(xlim = c(-8, 7), ylim = c(-10, 16)) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_bin_train <- df_bin_tsne_harps
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_tsne_harps |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "x", i)] <- abs(error_df[ , paste0("x", i)] - error_df[ , paste0("avg_", "x", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "x")))))
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 0, "no error",
+                        if_else(total <= 0.2, "error 0-0.2",
+                                if_else(total <= 0.3, "error 0.2-0.3",
+                                        if_else(total <= 0.5, "error 0.3-0.5",
+                                                if_else(total <= 1, "error 0.5-1",
+                                                        "error greter than 1"))))))
+
+plot_list2_harps_error <- error_df |>
+    mutate(type = factor(type , levels = c("no error", "error 0-0.2", "error 0.2-0.3", "error 0.3-0.5", "error 0.5-1", "error greter than 1"))) |>
+    ggplot(aes(x = tSNE1,
+               y = tSNE2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from tSNE (perplexity = 91) applied for the HARPS GTO dataset. Is this a best representation of the original data?, (b) Model in the 2D space with tSNE (<https://youtu.be/vLvRfcogft8>)"
+#| label: fig-nldervisharpstSNE3
+#| fig-pos: h
+
+
+plot_list2_harps + trimesh_removed_tsne_harps + plot_list2_harps_error +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom', plot.tag = element_text(size = 8))
+
+```
+
+-->
+
+<!--
+**(b) Determine the shape parameter** ($s$)
+          
+In this step, we determine the shape parameter ($s$) for the hexagonal bins, which significantly influences their shape and arrangement within the grid. The $s$ in the hexagonal binning algorithm is defined as the ratio of the height ($y$) to the width ($x$) of the plotting region as defined in @eq-equation1 [@Carr2013]. 
+          
+$$
+s = \frac{y}{x}
+$$ {#eq-equation1}
+            
+The shape parameter ($s$) of our algorithm is calculated as the ratio of the ranges of 2D embedding components, where $r_1$ and $r_2$ represent the ranges of 2D embedding components 1 and component 2, respectively (see @eq-equation2).
+            
+$$
+s = \frac{r_2}{r_1}
+$$ {#eq-equation2}
 -->
