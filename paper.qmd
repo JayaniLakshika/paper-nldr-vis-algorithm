@@ -2699,8 +2699,16 @@ for (i in 1:length(hex_size_vec)) {
 
 }
 
-## If same total number of bins ocurred only select ones with minimum error
-duplicate_df_list <- mse_df_pbmc[duplicated(mse_df_pbmc$num_bins), ] |>
+
+## If same total number of bins occurred only select ones with minimum error
+### Obtain duplicate bins
+dupli_bins <- mse_df_pbmc |> 
+  dplyr::count(num_bins) |> 
+  dplyr::filter(n > 1) |> 
+  dplyr::pull(num_bins)
+
+duplicate_df_list <- mse_df_pbmc |>
+  dplyr::filter(num_bins %in% dupli_bins) |>
   dplyr::arrange(num_bins) |>
   dplyr::group_split(num_bins)
 
@@ -2709,13 +2717,17 @@ duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
 for (i in 1:length(duplicate_df_list)) {
   
   dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse))
+    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
+    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
   
   duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
   
 }
 
-mse_df_pbmc <- dplyr::bind_rows(mse_df_pbmc[!duplicated(mse_df_pbmc$num_bins), ], duplicate_df)
+not_dupli_df <- mse_df_pbmc |>
+  dplyr::filter(!(num_bins %in% dupli_bins))
+
+mse_df_pbmc <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```
 
 ```{r}
