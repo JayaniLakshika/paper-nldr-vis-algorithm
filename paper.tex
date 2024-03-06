@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, frame hidden, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -521,7 +521,50 @@ are scaled accordingly.
 
 \textbf{Step 3: Obtaining bin centroids or bin means}
 
+The mathematical expression for the hexagonal bin centers can be defined
+based on the hexagonal grid coordinates. Let's denote the hexagonal grid
+coordinates as ( (q, r) ), where ( q ) and ( r ) are integers
+representing the coordinates of the hexagon in the grid.
+
+For a regular hexagonal grid, the coordinates of the hexagon centers can
+be calculated using the following formulas:
+
+Where: - ( s ) is the side length of the hexagon. - ( q ) represents the
+column index of the hexagon in the grid. - ( r ) represents the row
+index of the hexagon in the grid. - ( x ) and ( y ) are the Cartesian
+coordinates of the center of the hexagon.
+
+This formula calculates the ( x ) and ( y ) coordinates of the center of
+each hexagon based on its grid coordinates ( q ) and ( r ), allowing you
+to determine the position of each hexagon in the plane.
+
 \textbf{Step 4: Triangulating bin centroids or bin means}
+
+Delaunay triangulation is a geometric algorithm used to create a
+triangular mesh from a set of points in a plane. The key principle
+behind Delaunay triangulation is to connect points in such a way that no
+point falls within the circumcircle of any triangle formed by the
+points.
+
+Mathematically, given a set of points ( P ) in a plane, the Delaunay
+triangulation constructs a set of triangles such that:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Each triangle is formed by connecting three points from ( P ).
+\item
+  No point in ( P ) is inside the circumcircle of any triangle in the
+  triangulation.
+\end{enumerate}
+
+Formally, the Delaunay triangulation can be defined as follows:
+
+Let ( P = \{p\_1, p\_2, \ldots, p\_n\} ) be a set of ( n ) points in the
+plane. The Delaunay triangulation of ( P ), denoted as ( DT(P) ), is a
+triangulation of the convex hull of ( P ) such that the circumcircle of
+every triangle in the triangulation contains no other points from ( P ).
 
 \textbf{Step 1: Computing the hexagonal grid configuration}
 
