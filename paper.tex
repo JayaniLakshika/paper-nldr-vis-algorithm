@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, sharp corners, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, frame hidden, boxrule=0pt, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -464,19 +464,20 @@ of the data.
 \hypertarget{sec-methods}{%
 \section{Methodology}\label{sec-methods}}
 
-In this paper, we present a novel method that aims to determine the most
-effective way to represent high-D data by selecting the best method and
-hyperparameter choice. Our approach involves dividing the data set into
-two parts: a training set to construct the model and a test set to
-generate predictive values and residuals. To implement our approach, we
-first use a 2D embedding data set as the initial point. The output of
-our algorithm is a tour that displays the model and original data in the
-high-dimensional space. A flow chart of the proposed algorithm is shown
-in Figure~\ref{fig-meth}. Our algorithm comprises two main phases: (1)
-generate the model in the 2D space, and (2) generate the model in the
-high-D space. These two phases are described in detail in this section
-using UMAP 2D embedding of the S-curve data set, which has seven
-dimensions, including four noise dimensions.
+In this paper, we introduce a novel method to determine the most
+effective NLDR technique and the best hyperparameter choice that
+provides the most useful representation of high-D data. Our approach
+involves dividing the high-dimensional dataset into two parts: a
+training set for constructing the model and a test set for generating
+predictive values and residuals. Our algorithm takes a 2D embedding data
+as the input and generate a tour that displays the high-dimensional
+wireframe to overlay the data. The flow chart of the proposed algorithm
+is shown in Figure~\ref{fig-meth}. The algorithm consists of two main
+phases: (1) generating the model in the 2D space and (2) lifting the
+model into high-D space. The main steps of the algorithm are described
+in detail in this section using UMAP 2D embedding of the S-curve
+dataset. This dataset has seven dimensions, including four noise
+dimensions that were added to the original 3D data.
 
 \begin{figure}
 
@@ -484,10 +485,9 @@ dimensions, including four noise dimensions.
 
 }
 
-\caption{\label{fig-meth}A flow diagram detailing the steps taken to
-create the low-dimensional manifold in the high dimensional space. There
-are two basic phases, one to generate the model in the 2D space, and
-other to generate the model in the high-D space.}
+\caption{\label{fig-meth}The flow diagram shows the main steps of our
+algorithm. There are two basic phases, one to generate the model in the
+2D space, and other to map the model into the high-D space.}
 
 \end{figure}
 
@@ -501,8 +501,27 @@ noise reduction of high-D data, PCA \citep[\citet{article68},
 Subsequently, the identified principal components, representing
 directions of maximum variance, are used to construct the model.
 
+Then, after performing NLDR, to have regular hexagons, 2D embedding data
+are scaled accordingly.
+
 \hypertarget{sec-construct2d}{%
 \subsection{Constructing the 2D model}\label{sec-construct2d}}
+
+\textbf{Step 1: Scaling NLDR data}
+
+\textbf{Step 2: Hexagonating NLDR data}
+
+\textbf{(a) Determine the number of bins along the x axis} (\(b_1\))
+
+\textbf{(b) Determine the number of bins along the y axis} (\(b_2\))
+
+\textbf{(c) Determine the total number of bins} (\(b\))
+
+\textbf{(d) Assign NLDR data to hexagons}
+
+\textbf{Step 3: Obtaining bin centroids or bin means}
+
+\textbf{Step 4: Triangulating bin centroids or bin means}
 
 \textbf{Step 1: Computing the hexagonal grid configuration}
 
@@ -520,84 +539,58 @@ binning is used as the initial step of constructing the 2D model and the
 total number of bins (\(b\)) is the crucial parameter that defines the
 granularity of the hexagonal grid.
 
-\textbf{(a) Determine the number of bins along the x-axis} (\(b_1\))
+\textbf{(a) Determine the number of bins along the x axis} (\(b_1\))
 
 First, the number of bins along the x-axis (\(b_1\)) is computed using
 the relationship between the diameter (\(h\)) and the area (\(A\)) of
 regular hexagons (see Equation~\ref{eq-equation3}).
 
+In the process of computing hexagonal bin configurations, the first step
+involves determining the number of bins along the x-axis. This begins
+with the initialization of parameters such as the hexagonal size (\(s\))
+and the buffer along the x-axis. Subsequently, the range of the first 2D
+embedding component (\(r_1\)) is calculated to ensure comprehensive
+coverage of the data. This range is then adjusted by incorporating the
+buffer amount, effectively expanding the boundary to accommodate
+potential outliers or edge cases. The default buffer amount along the
+x-axis is \(\sqrt{3} * s * 1.5\). Next, the horizontal spacing (\(h\))
+between hexagons is computed based on the hexagon size. Finally, the
+number of bins along the x-axis is computed based on the adjusted range
+(\(r_1 + buffer_{x}\)) and the horizontal spacing (\(h\)).
+
 \begin{equation}\protect\hypertarget{eq-equation3}{}{
- \text{A} = \frac{\sqrt{3}}{2}h^2
+ h = \sqrt{3} * s
 }\label{eq-equation3}\end{equation}
 
-To construct regular hexagons, \(A = 1\) (see Figure~\ref{fig-binsize})
-use as the default setting. Then, the diameter (\(h\)) of the regular
-hexagons is calculated (see Equation~\ref{eq-equation4}).
-
 \begin{equation}\protect\hypertarget{eq-equation4}{}{
-  \text{h} = \sqrt{\frac{2}{\sqrt{3}}A}
+ b_1 = \frac{r_1 + buffer_{x}}{h}
 }\label{eq-equation4}\end{equation}
 
-\citet{Carr2013} mentioned about the relationship between the diameter
-(\(h\)) of regular hexagons and the height (\(y\)) of the plotting
-region. According to our algorithm, the height (\(y\)) of the plotting
-region is the the range of 2D embedding component 1 (\(r_1\)) (see
-Equation~\ref{eq-equation6}).
-
-\begin{equation}\protect\hypertarget{eq-equation6}{}{
-h = \frac{r_1}{b_1}
-}\label{eq-equation6}\end{equation}
-
-After rearranging the Equation~\ref{eq-equation6} as
-Equation~\ref{eq-equation5}, \(b_1\) is computed. The \(b_1\) value is
-rounded up to the nearest whole number to have an integer value.
-
-\begin{equation}\protect\hypertarget{eq-equation5}{}{
-b_1 = \frac{r_1}{h}
-}\label{eq-equation5}\end{equation}
-
-\textbf{(b) Determine the shape parameter} (\(s\))
-
-In this step, we determine the shape parameter (\(s\)) for the hexagonal
-bins, which significantly influences their shape and arrangement within
-the grid. The \(s\) in the hexagonal binning algorithm is defined as the
-ratio of the height (\(y\)) to the width (\(x\)) of the plotting region
-as defined in Equation~\ref{eq-equation1}.
-
-\begin{equation}\protect\hypertarget{eq-equation1}{}{
-s = \frac{y}{x}
-}\label{eq-equation1}\end{equation}
-
-The shape parameter (\(s\)) of our algorithm is calculated as the ratio
-of the ranges of 2D embedding components, where \(r_1\) and \(r_2\)
-represent the ranges of 2D embedding components 1 and component 2,
-respectively (see Equation~\ref{eq-equation2}).
-
-\begin{equation}\protect\hypertarget{eq-equation2}{}{
-s = \frac{r_2}{r_1}
-}\label{eq-equation2}\end{equation}
-
-\textbf{(c) Determine the number of bins along the y-axis} (\(b_2\))
+\textbf{(b) Determine the number of bins along the y-axis} (\(b_2\))
 
 Next, the number of bins along the y-axis is computed based on the
 number of bins along the x-axis (\(b_1\)) and the shape parameter
-(\(s\)) (see Equation~\ref{eq-equation12}) \citep{Carr2013}.
+(\(s\)) (see Equation~\ref{eq-equation4}) \citep{Carr2013}.
 
-\begin{equation}\protect\hypertarget{eq-equation12}{}{
-b_2 = 2 * \left(\frac{(b_1 \times s)}{\sqrt(3)} + 1.5001 \right)
-}\label{eq-equation12}\end{equation}
+\begin{equation}\protect\hypertarget{eq-equation5}{}{
+  v = 1.5 * s
+}\label{eq-equation5}\end{equation}
 
-\textbf{(d) Determine the total number of bins} (\(b\))
+\begin{equation}\protect\hypertarget{eq-equation6}{}{
+ b_2 = \frac{r_2 + buffer_{y}}{v}
+}\label{eq-equation6}\end{equation}
+
+\textbf{(c) Determine the total number of bins} (\(b\))
 
 The total number of bins is determined by multiplying the number of bins
 along the x-axis (\(b_1\)) with the number of bins along the y-axis
-(\(b_2\)) (see Equation~\ref{eq-equation13}).
+(\(b_2\)) (see Equation~\ref{eq-equation5}).
 
-\begin{equation}\protect\hypertarget{eq-equation13}{}{
+\begin{equation}\protect\hypertarget{eq-equation5}{}{
 b = b_1 \times b_2
-}\label{eq-equation13}\end{equation}
+}\label{eq-equation5}\end{equation}
 
-\textbf{Step 2: Obtain bin centroids}
+\textbf{Step 2: Obtain bin centroids or bin means}
 
 As a result of hexagonal binning for high-D data, all the high-D data
 are clustered into hexagons. In this step, the bin centroids
@@ -641,7 +634,7 @@ information with the hexagonal bin centroids
 (\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})\)) that obtained in Step 2 of
 the 2D model building (see Section~\ref{sec-construct2d}), we can find
 which 2D points are assigned to which data set (see
-Figure~\ref{fig-wkhighD} (a)).
+\textbf{?@fig-wkhighD} (a)).
 
 \textbf{Step2: Cluster high dimensional points to hexagons}
 
@@ -651,7 +644,7 @@ embedding point serves as a projection of a data point belonging to high
 dimensional space. By using this mapping between the high dimensional
 data and their corresponding projections, the high dimensional points
 allocated to each hexagons are determined (see video linked in
-Figure~\ref{fig-wkhighD}).
+\textbf{?@fig-wkhighD}).
 
 \textbf{Step3: Compute the mean within hexagon}
 
@@ -662,7 +655,7 @@ located within each hex bin. These averaged high-dimensional data
 points, denoted as \(C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})\), serve
 as the representative coordinates for the hex bin centroids within the
 expansive high-dimensional space (see video linked in
-Figure~\ref{fig-wkhighD}).
+\textbf{?@fig-wkhighD}).
 
 \hypertarget{lifting-the-2d-triangular-mesh-into-high-dimensions}{%
 \subsubsection{Lifting the 2D triangular mesh into high
@@ -673,21 +666,7 @@ where connected edges in the 2D triangular mesh were identified, this
 step involves lifting these connections into the high dimensions. Having
 the mappings of all 2D triangular mesh points into high dimensions, the
 points connected in 2D are also connected in high dimensional space (see
-video linked in Figure~\ref{fig-wkhighD}).
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-wkhighD-1.pdf}
-
-}
-
-\caption{\label{fig-wkhighD}How the 2D model lift into high dimensions?
-(a) visualize the points and the hexagonal bin centroids related 2nd and
-15th hexagons, (b) visualization of the edge connected the 2nd and 15th
-hexagons (colored in red) in the triangular mesh. A video of tour
-animation is available at \url{https://youtu.be/ffWFVK1UTIc}.}
-
-\end{figure}
+video linked in \textbf{?@fig-wkhighD}).
 
 \hypertarget{tuning-the-model}{%
 \subsection{Tuning the model}\label{tuning-the-model}}
@@ -710,13 +689,13 @@ initial step in building the 2D model. The hexagonal grid with the
 chosen total number of bins must be able to capture the structure of the
 NLDR data. If the number of bins is too low, the model may not be able
 to capture the structure of the NLDR data effectively (see
-Figure~\ref{fig-binsize} (a)), while if there are too many bins, it may
+\textbf{?@fig-binsize} (a)), while if there are too many bins, it may
 result in over-fitting the individual points of the NLDR data (see
-Figure~\ref{fig-binsize} (c)). Therefore, it is important to determine
-an appropriate number of bins to build an effective model.
+\textbf{?@fig-binsize} (c)). Therefore, it is important to determine an
+appropriate number of bins to build an effective model.
 
 Furthermore, the total number of bins is determined by the number of
-bins along the x-axis and y-axis (see Equation~\ref{eq-equation13}). To
+bins along the x-axis and y-axis (see \textbf{?@eq-equation13}). To
 calculate the effective total number of bins, the minimum and
 approximate maximum number of bins along the x-axis are used as
 candidate values. The minimum number of bins along the x-axis is \(1\).
@@ -732,52 +711,15 @@ indicating that a smaller number of bins causes a larger amount of
 error. Then, the slope will gradually decline or level off, indicating
 that a higher number of bins generates a smaller error. This MSE plot is
 useful in determining the effective number of bins required to construct
-the 2D model. Figure~\ref{fig-diagnosticpltScurve} (b) has created a
-graph that shows how the Mean Squared Error (MSE) changes depending on
-the number of bins assigned in the hexagonal grid for various NLDR
+the 2D model. \textbf{?@fig-diagnosticpltScurve} (b) has created a graph
+that shows how the Mean Squared Error (MSE) changes depending on the
+number of bins assigned in the hexagonal grid for various NLDR
 techniques applied to the S-curve data set. As per the rule of thumb
 mentioned earlier, the effective number of bins for each NLDR method is
 shown in the \textbf{?@tbl-msebinsnldr}. Furthermore,
 \textbf{?@fig-modelScurve} shows the 2D models constructed for each NLDR
 technique with the selected total number of bins and how the models look
 in high-D with original data.
-
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-binsize-1.pdf}
-
-}
-
-\caption{\label{fig-binsize}Hexbin plots from different number of bins
-for the \textbf{UMAP} projections of \textbf{S-curve} training data: (a)
-b = 32 (4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c)
-b = 840 (21, 40), s = 1.643542. The hexbins are colored based on the
-density of points, with darker colors indicating higher point density
-and yellow color representing lower point density within each bin. What
-is the number of bins that would be effective in representing
-low-dimensional data?}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
 
 \hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
 \subsubsection{Benchmark value to remove low-density
@@ -818,8 +760,8 @@ performance, it's important to observe the change in Mean Squared Error
 increase as the benchmark value progresses from \(0\) to \(1\).
 Assessing this rate of increase is crucial. If the increment is not
 substantial, the decision might lean towards retaining low-density
-hexagons. According to Figure~\ref{fig-diagnosticpltScurvelwd}, the
-change in MSE for NLDR techniques is relatively small across different
+hexagons. According to \textbf{?@fig-diagnosticpltScurvelwd}, the change
+in MSE for NLDR techniques is relatively small across different
 benchmark values, except for the PHATE method.
 
 Consequently, it is not necessary to remove low-density hexagons when
@@ -833,7 +775,7 @@ PHATE fluctuates when benchmark values range between 0 and 1. Therefore,
 it is necessary to explore the benchmark values surrounding the first
 local minimum to determine an effective benchmark value. There is no
 universal rule for selecting a process. As shown in
-Figure~\ref{fig-diagnosticpltScurvelwd}, the MSE values for PHATE
+\textbf{?@fig-diagnosticpltScurvelwd}, the MSE values for PHATE
 fluctuate, and the first local minimum is at \(0\). Therefore, nearby
 benchmark values such as \(0.01\), \(0.04\), and \(0.06\) were explored
 to identify the best value for preserving the data structure. In this
@@ -854,44 +796,13 @@ density hexagons:
   Take the first quartile
 \end{enumerate}
 
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-rmlowdenshex-1.pdf}
-
-}
-
-\caption{\label{fig-rmlowdenshex}Goodness of f}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltScurvelwd}Goodness of fit statistics
-from UMAP applied to training S-curve dataset with different benchmark
-values to remove the low-density heaxgons. What is the effective
-benchmark value to remove the low-density heaxgons? The MSE plot have a
-steep slope at the beginning, indicating that a smaller benchmark causes
-a small amount of error. Then, the slope gradually increases or level
-up, indicating that a higher number of benchmark values generates a
-higher error. Using the reverse elbow method, when the benchmark value
-is set to 0.2, the slope of the Mean Squared Error (MSE) plot
-experiences a sudden and noticeable change, resembling an elbow-like
-shape. This point indicates that higher benchmark values remove the
-necessary bins as well which lead to distruct the 2D structure.}
-
-\end{figure}
-
 \hypertarget{benchmark-value-to-remove-long-edges}{%
 \subsubsection{Benchmark value to remove long
 edges}\label{benchmark-value-to-remove-long-edges}}
 
 Achieving a smooth representation in 2D space is crucial, and one factor
 influencing this smoothness is the presence of long edges (see
-Figure~\ref{fig-modelScurvermlgimp}). These long edges occur when a line
+\textbf{?@fig-modelScurvermlgimp}). These long edges occur when a line
 connects points that are distant in the triangular mesh, impacting the
 overall smoothness of the mesh.
 
@@ -921,95 +832,26 @@ edges:
   Find a value which is greater than smallest value
 \end{enumerate}
 
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurverdistcount-1.pdf}
-
-}
-
-\caption{\label{fig-modelScurverdistcount}plots to identify benchmark
-values}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurvermlgimp-1.pdf}
-
-}
-
-\caption{\label{fig-modelScurvermlgimp}What does the 2D model,
-constructed using UMAP (applied to the S-curve dataset), look like in
-high dimensions with long edges? (\url{https://youtu.be/pSL_G_n7-fM})
-(a) 2D model without removing the long edges, and (b) 2D model with long
-edges coloured by red. The default benchmark value is used to identify
-long edges.}
-
-\end{figure}
-
-\hypertarget{hexagonal-grid-origin}{%
-\subsubsection{Hexagonal grid origin}\label{hexagonal-grid-origin}}
+\hypertarget{starting-point-of-the-hexagonal-grid}{%
+\subsubsection{Starting point of the hexagonal
+grid}\label{starting-point-of-the-hexagonal-grid}}
 
 According to \citet{Dan2023}, the hexagonal binning is done by
 tessellating the \(xy\) plane over the set (range(\(x\)), range(\(y\)))
-(see Figure~\ref{fig-scurveshifthexgridsexp} (b)). In that case, bin
-centroids are defined as shown in
-Figure~\ref{fig-scurveshifthexgridsexp} (a) with gray colour. Rather
-than sticking to the typical hexagonal grid, introducing a meaningful
-shift in both the x and y directions presents an opportunity for an
-improved 2D model. Therefore, investigating this shift in the hexagonal
-grid is an important parameter to consider.
+(see \textbf{?@fig-scurveshifthexgridsexp} (b)). In that case, bin
+centroids are defined as shown in \textbf{?@fig-scurveshifthexgridsexp}
+(a) with gray colour. Rather than sticking to the typical hexagonal
+grid, introducing a meaningful shift in both the x and y directions
+presents an opportunity for an improved 2D model. Therefore,
+investigating this shift in the hexagonal grid is an important parameter
+to consider.
 
-As shown in Figure~\ref{fig-scurveshifthexgrids}, the shifting
-influences the distribution of points and number of non-empty bins,
-impacting the resulting 2D model. According to
-Figure~\ref{fig-diagnosticpltScurvehexbins}, the 2D model with a total
-of \(144\) bins applied to S-curve UMAP data does not require any
-shifting because the lowest MSE occurs when no shift is introduced.
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgridsexp-1.pdf}
-
-}
-
-\caption{\label{fig-scurveshifthexgridsexp}(a) Visualization of bin
-centroids and (b) hexagonal grid, showcasing the configuration before
-(colored in gray) and after (colored in light orange) shifting the
-starting point by an identical amount applied in both x and y
-directions, with a shift value of \(0.537285\).}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgrids-1.pdf}
-
-}
-
-\caption{\label{fig-scurveshifthexgrids}Hexbin plots shows the
-distribution of points before and after shifting the starting point of
-the hexagonal grid generated for UMAP applied to the training S-curve
-dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after
-shifting (identical shift applied in both x and y directions, with a
-shift value of \(0.537285\)).}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvehexbins-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltScurvehexbins}Goodness of fit
-statistics from UMAP applied to training S-curve dataset with different
-shift values. In this illustration, an identical shift is applied in
-both the x and y directions. The Mean Squared Error (MSE) plot exhibits
-a global minimum at \(0\), indicating that no additional shifting is
-necessary for the current hexagonal grid to yield a well-fitted model.}
-
-\end{figure}
+As shown in \textbf{?@fig-scurveshifthexgrids}, the shifting influences
+the distribution of points and number of non-empty bins, impacting the
+resulting 2D model. According to
+\textbf{?@fig-diagnosticpltScurvehexbins}, the 2D model with a total of
+\(144\) bins applied to S-curve UMAP data does not require any shifting
+because the lowest MSE occurs when no shift is introduced.
 
 \hypertarget{sec-summary}{%
 \subsection{Model summaries}\label{sec-summary}}
@@ -1092,81 +934,35 @@ in 4-\(d\), with each cluster containing an equal number of points and
 consistent within variation.
 
 In the 2D representations created by all NLDR techniques, as shown in
-Figure~\ref{fig-nldervis5Gau}, except for PHATE, there are five distinct
+\textbf{?@fig-nldervis5Gau}, except for PHATE, there are five distinct
 clusters. In tSNE, these five clusters are closely located to each other
-(see Figure~\ref{fig-nldervis5Gau} (a)). However, in PHATE, two clusters
+(see \textbf{?@fig-nldervis5Gau} (a)). However, in PHATE, two clusters
 are closely positioned, while the other three are more distant (see
-Figure~\ref{fig-nldervis5Gau} (c)). In PaCMAP, one cluster is at the
+\textbf{?@fig-nldervis5Gau} (c)). In PaCMAP, one cluster is at the
 center, and the remaining four are positioned in four different
-directions (see Figure~\ref{fig-nldervis5Gau} (e)). In TriMAP, two
+directions (see \textbf{?@fig-nldervis5Gau} (e)). In TriMAP, two
 clusters are close, although not as close as in PHATE, and the other
-three are well-separated (see Figure~\ref{fig-nldervis5Gau} (d)). In
-UMAP, all clusters are arranged in a parallel manner, with three in one
-line and the other two in a separate line (see
-Figure~\ref{fig-nldervis5Gau} (b)).
+three are well-separated (see \textbf{?@fig-nldervis5Gau} (d)). In UMAP,
+all clusters are arranged in a parallel manner, with three in one line
+and the other two in a separate line (see \textbf{?@fig-nldervis5Gau}
+(b)).
 
 Visualizing the models alongside the original high-D data provides
 insights into how different techniques capture the underlying clustering
 structure. The tSNE model exhibits five well-separated clusters,
 effectively preserving both local and global structures (see video link
-of Figure~\ref{fig-modelfiveGau} (a)). UMAP, on the other hand, also
+of \textbf{?@fig-modelfiveGau} (a)). UMAP, on the other hand, also
 presents five distinct clusters but with a more flattened surface
-appearance (see video link of Figure~\ref{fig-modelfiveGau} (b)). The
+appearance (see video link of \textbf{?@fig-modelfiveGau} (b)). The
 PHATE model shows five separated clusters resembling triangles or
 partial triangles but struggles to capture local structures (see video
-link of Figure~\ref{fig-modelfiveGau} (c)). TriMAP and PaCMAP both
-display five well-separated clusters with flat surfaces, each capturing
+link of \textbf{?@fig-modelfiveGau} (c)). TriMAP and PaCMAP both display
+five well-separated clusters with flat surfaces, each capturing
 within-cluster variation to varying extents. Despite the various 2D
 representations, all NLDR techniques preserve the global structure (see
-video link of Figure~\ref{fig-modelfiveGau} (d), (e) respectively).
+video link of \textbf{?@fig-modelfiveGau} (d), (e) respectively).
 However, tSNE, effectively capture both local and global structures, as
-indicated by lower AIC values in Figure~\ref{fig-diagnosticpltGau} (a).
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5Gau-1.pdf}
-
-}
-
-\caption{\label{fig-nldervis5Gau}2D layouts from different NLDR
-techniques applied the same data: (a) tSNE (perplexity = 61), (b) UMAP
-(n\_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n\_inliers = 5,
-n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
-= random, MN\_ratio = 0.9, FP\_ratio = 2). Is there a best
-representation of the original data or are they all providing equivalent
-information?}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-modelfiveGau-1.pdf}
-
-}
-
-\caption{\label{fig-modelfiveGau}Is there a best model to represent the
-original data in 2D space or are they all providing equivalent
-information?, (a) Model in the 2D space with tSNE
-(\url{https://youtu.be/x5VPB-wOLm4}), (b) Model in the 2D space with
-UMAP (\url{https://youtu.be/Cm1dW6iLyHQ}), (c) Model in the 2D space
-with PHATE (\url{https://youtu.be/HB0Y3ilz6sI}), (d) Model in the 2D
-space with TriMAP (\url{https://youtu.be/iSVkXIrOrSA}), and (e) Model in
-the 2D space with PaCMAP (\url{https://youtu.be/O2QBctsc4uM}).}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltGau-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltGau}Goodness of fit statistics from
-different NLDR techniques applied to training five spherical Gaussian
-cluster dataset. What is the best NLDR technique to represent the
-original data in 2D?}
-
-\end{figure}
+indicated by lower AIC values in \textbf{?@fig-diagnosticpltGau} (a).
 
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
@@ -1367,7 +1163,13 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-56-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-1.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-2.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-3.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-4.pdf}
 
 \begin{figure}[h]
 
@@ -1379,39 +1181,6 @@ structure.}
 (n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
 this a best representation of the original data?, (b) Model in the 2D
 space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC2-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltPBMC2}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP2-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCUMAP2}(a) 2D layout from UMAP
-(n\_neighbors = 15, min\_dist = 0.99, metric = cosine) applied for the
-PBMC3k dataset. Is this a best representation of the original data?, (b)
-Model in the 2D space with UMAP (\textless\textgreater)}
 
 \end{figure}
 
@@ -1434,6 +1203,14 @@ indicates that adding less bins does not enough to capture the data
 structure.}
 
 \end{figure}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-1.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-2.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-3.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-4.pdf}
 
 \begin{figure}[h]
 
@@ -1459,158 +1236,7 @@ Model in the 2D space with UMAP (\textless\textgreater)}
   cluster 6         0         0         0         0        19       139
 \end{verbatim}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-71-1.pdf}
-
-\hypertarget{harps-gto-sample-dataset}{%
-\subsection{HARPS GTO sample dataset}\label{harps-gto-sample-dataset}}
-
-\citet{Anders2018}
-
-\begin{itemize}
-\item
-  In 2D, there are two well-separated clusters, but the clusters are
-  really close
-\item
-  One cluster have a sparse data space within the cluster
-\item
-  There is a line in right corner of the structure that is not connected
-  any other trimesh points. This line create a long edge in high-D
-  space.
-\item
-  In high-D view, the clusters having some non-linearity patter, which
-  is also not captured in tSNE. Therefore, this is not a good choice.
-  Also, the two clusters are really near to each other and can't see any
-  separation. Also continuity of the structure. Long edges are presence
-  also.
-\item
-  The parameter is, in a sense, a guess about the number of close
-  neighbors each point has.
-\item
-  Num bins along the x-axis = 43, shape parameter = 0.4466309
-\end{itemize}
-
-\begin{table}[H]
-
-\caption{errors for different parameter combinations}
-\centering
-\begin{tabular}[t]{r|r}
-\hline
-\textbf{perplexity} & \textbf{error (x 100)}\\
-\hline
-\cellcolor{gray!6}{23} & \cellcolor{gray!6}{0.02}\\
-\hline
-91 & 0.04\\
-\hline
-\textcolor{red}{\textbf{\cellcolor{gray!6}{40}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{1.05}}}\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltHARPS}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisharpstSNE}(a) 2D layout from tSNE
-(perplexity = 40) applied for the HARPS GTO dataset. Is this a best
-representation of the original data?, (b) Model in the 2D space with
-tSNE (\url{https://youtu.be/jxo_rPyGv9k})}
-
-\end{figure}
-
-\begin{itemize}
-\item
-  5 clusters shows in 2D
-\item
-  3 clusters which are really close shows in high\_d data with the model
-\end{itemize}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS2-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltHARPS2}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE2-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisharpstSNE2}(a) 2D layout from tSNE
-(perplexity = 23) applied for the HARPS GTO dataset. Is this a best
-representation of the original data?, (b) Model in the 2D space with
-tSNE (\url{https://youtu.be/VO_4SJEoAUA})}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltHARPS3-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltHARPS3}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisharpstSNE3-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisharpstSNE3}(a) 2D layout from tSNE
-(perplexity = 91) applied for the HARPS GTO dataset. Is this a best
-representation of the original data?, (b) Model in the 2D space with
-tSNE (\url{https://youtu.be/vLvRfcogft8})}
-
-\end{figure}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-64-1.pdf}
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}

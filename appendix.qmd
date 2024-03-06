@@ -3579,4 +3579,289 @@ The shape parameter ($s$) of our algorithm is calculated as the ratio of the ran
 $$
 s = \frac{r_2}{r_1}
 $$ {#eq-equation2}
+
+
+<!--UMAP parm 2-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data 
+training_data_pbmc <- read_rds("data/pbmc/pbmc_3k_festem/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:15] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+
+UMAP_pbmc <- read_rds("data/pbmc/pbmc_umap_15_min_dist_0.99_metric_cosine.rds")
+
+class_avg <- UMAP_pbmc |>
+  group_by(cell_label) |>
+  summarise(
+    UMAP1 = median(UMAP1),
+    UMAP2 = median(UMAP2)
+  ) |>
+  mutate(cell_label = as.numeric(cell_label)) |>
+  arrange(cell_label)
+
+class_avg$cell_label <- as.factor(class_avg$cell_label)
+
+levels(class_avg$cell_label) <- c("Memory \nCD4 T", "Naive CD4 T", "CD14+ Mono",  "B", "CD8 T", "FCGR3A+ \n Mono", "NK", "M-MDSC\n-like", "CD27-CD+ \n Memory T", "DC")
+
+plot_list2_pbmc <- UMAP_pbmc |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = cell_label))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## UMAP
+## Prediction
+
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2)
+
+num_bins_vec <- 1:35 ## Number of bins along the x-axis
+
+vec <- stats::setNames(rep("", 5), c("number_of_bins", "number_of_observations", "total_error", "total_mse", "num_bins_x"))  ## Define column names
+
+eval_data_training <- dplyr::bind_rows(vec)[0, ]
+eval_data_training <- eval_data_training |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(num_bins_vec)) {
+  
+  model_object <- fit_high_d_model(training_data = training_data_pbmc, nldr_df_with_id = UMAP_pbmc, x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_pbmc,
+                             is_bin_centroid = TRUE,
+                             is_rm_lwd_hex = FALSE,
+                             benchmark_to_rm_lwd_hex = NA,
+                             is_avg_high_d = TRUE, column_start_text = "PC_")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_df_training <- predict_2d_embeddings(test_data = training_data_pbmc, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  eval_df_training <- generate_eval_df(data = training_data_pbmc, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "PC_")
+  
+  eval_df_training <- eval_df_training |>
+    mutate(num_bins_x = num_bins_vec[i])
+  
+  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+  
+  
+}
+
+
+## Add new column with data types
+
+MSE_df_pbmc <- eval_data_training |>
+  dplyr::mutate(data_type = "training",
+                method = "UMAP")
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                                                                 y = total_error,
+                                                                                 color = method
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 192, linetype="dashed", 
+                color = "red", size=0.5) +
+  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_pbmc <- ggplot(MSE_df_pbmc |> dplyr::filter(method == "UMAP"), aes(x = number_of_bins,
+                                       y = total_mse,
+                                       color = method
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 192, linetype="dashed", 
+                color = "red", size=0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
+  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltPBMC2
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_pbmc + mse_plot_pbmc +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+shape_value_pbmc <- calculate_effective_shape_value(.data = UMAP_pbmc,
+                                                      x = UMAP1, y = UMAP2) ## 0.8772751
+
+# num_bins_pbmc <- find_non_empty_bins(nldr_df = UMAP_pbmc, x = "UMAP1", y = "UMAP2", shape_val = shape_value_pbmc, non_empty_bins = num_non_empty_bins_pbmc)
+num_bins_pbmc <-  11
+
+## To extract bin centroids
+hexbin_data_object_pbmc <- extract_hexbin_centroids(nldr_df = UMAP_pbmc,
+                                                      num_bins = num_bins_pbmc,
+                                                      shape_val = shape_value_pbmc, x = UMAP1, y = UMAP2)
+
+df_bin_centroids_pbmc <- hexbin_data_object_pbmc$hexdf_data
+
+
+UMAP_pbmc_with_hb_id <- UMAP_pbmc |>
+  dplyr::mutate(hb_id = hexbin_data_object_pbmc$hb_data@cID)
+
+## To generate a data set with high-D and 2D training data
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), UMAP_pbmc_with_hb_id)
+
+## Averaged on high-D
+df_bin_pbmc <- avg_highD_data(.data = df_all_pbmc, column_start_text = "PC")
+
+## Triangulate bin centroids
+tr1_object_pbmc <- triangulate_bin_centroids(df_bin_centroids_pbmc, x, y)
+tr_from_to_df_pbmc <- generate_edge_info(triangular_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2d_dist(.data = tr_from_to_df_pbmc)
+
+# distance_plot <- plot_dist(distance_pbmc) +
+#   #ggtitle("(b)" ) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+## To find the benchmark value
+benchmark_pbmc <- find_benchmark_value(.data = distance_pbmc, distance_col = distance)
+#benchmark_pbmc <- 1.049766 
+benchmark_pbmc <- 2.5
+
+trimesh_removed_pbmc_umap <- remove_long_edges(.data = distance_pbmc, benchmark_value = benchmark_pbmc,
+                                                 triangular_object = tr1_object_pbmc, distance_col = distance)
+
+trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
+  geom_point(size = 0.005, colour = "#33a02c") +
+  #ggtitle("(b)") +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+  
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+  
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+# library(ggbeeswarm)
+# error_df$group <- "1"
+# ggplot(error_df, aes(x = group, y = total)) +
+#   geom_quasirandom()+
+#   ylim(0, max(unlist(error_df$total))+ 0.5) + coord_flip()
+
+### The minimum error is 0 and the maximum is 42.17439
+### There is lot of points with error 0,
+
+error_df <- error_df |>
+  mutate(type = if_else(total <= 2, "error 2 or less",
+                        if_else(total <= 10, "error 2-10",
+                                if_else(total <= 15, "error 10-15",
+                                        if_else(total <= 20, "error 15-20",
+                                                if_else(total <= 25, "error 20-25",
+                                                        if_else(total <= 30, "error 25-30",
+                                                                if_else(total <= 35, "error 30-35", "error greter than 35"))))))))
+
+plot_list2_pbmc_error <- error_df |>
+    mutate(type = factor(type , levels = c("error 2 or less", "error 2-10", "error 10-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error greter than 35"))) |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d"))
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 15, min_dist = 0.99, metric = cosine) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<>)"
+#| label: fig-nldervisPBMCUMAP2
+#| out-width: 100%
+#| fig-pos: h
+
+plot_list2_pbmc + trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_layout(guides='collect', ncol=3) &
+  theme(legend.position='bottom')
+```
 -->
