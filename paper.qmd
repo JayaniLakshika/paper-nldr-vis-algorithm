@@ -3737,6 +3737,22 @@ result1_2d_layout + result2_2d_layout
 
 - Digit 1 (7877 images only)
 
+#### Preprocessing
+
+- Scale the pixel values to the range [0,1]
+
+- Reshape to have a 2-dimensional array
+
+-  reshaping pixel data is a fundamental preprocessing step in image analysis tasks, ensuring that the data is in a suitable format for further analysis, modeling, and interpretation. It helps preserve important spatial information, ensures compatibility with machine learning models, and facilitates feature extraction and visualization.
+
+-  Reshaping the pixel data allows us to preserve this spatial information, ensuring that the relationships between neighboring pixels are maintained.
+
+- Many machine learning algorithms, including neural networks, expect input data to be in a specific format. For image data, this typically means a two-dimensional array where each row represents a single sample (image), and each column represents a feature (pixel value). Reshaping ensures that all samples have consistent dimensions, making them suitable for feeding into these algorithms.
+
+- Reshaping the pixel data allows for easier extraction of relevant features from the images. Once reshaped, individual pixels can be treated as features, making it easier to apply techniques like dimensionality reduction (e.g., PCA) or feature engineering to extract meaningful information from the images.
+
+- PaCMAP parameters: n_components=2, n_neighbors=10, init="random", MN_ratio=0.9, FP_ratio=2.0
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -3912,7 +3928,7 @@ mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 80, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltMNIST
 ##| out-width: 100%
 #| fig-pos: H
@@ -3929,9 +3945,9 @@ aic_plot_mnist + mse_plot_mnist +
 #| message: false
 
 ## Decide by looking at MSE plot
-num_bins_x_mnist <- 6
-num_bins_y_mnist <- 13
-hex_size_mnist <- 0.14
+num_bins_x_mnist <- 8
+num_bins_y_mnist <- 10
+hex_size_mnist <- 0.1
 
 hb_obj_mnist <- hex_binning(data = pacmap_minst_scaled, x = "PaCMAP1", 
                       y = "PaCMAP2", num_bins_x = num_bins_x_mnist, 
@@ -3948,18 +3964,18 @@ hex_grid <- as.data.frame(do.call(cbind, hb_obj_mnist$hex_poly))
 counts_df <- as.data.frame(do.call(cbind, hb_obj_mnist$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
-ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
-  coord_fixed()
+# ggplot(data = hex_grid, aes(x = x, y = y)) + 
+#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+#   coord_fixed()
 
 hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
 
-ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-  coord_fixed()
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
 
 pacmap_data_with_hb_id_mnist <- as.data.frame(do.call(cbind, hb_obj_mnist$data_hb_id))
   
@@ -3990,18 +4006,18 @@ distance_mnist <- cal_2d_dist(tr_coord_df = tr_from_to_df_mnist,
                              select_vars = c("from", "to", "distance"))
 
 
-distance_plot <- plot_dist(distance_mnist) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-
-distance_plot
+# distance_plot <- plot_dist(distance_mnist) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
 ## To find the benchmark value
 benchmark_mnist <- find_lg_benchmark(distance_edges = distance_mnist, distance_col = "distance")
 
-ggplot() +
-geom_trimesh(data = df_bin_centroids_mnist, mapping = aes(x = c_x, y = c_y))
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_mnist, mapping = aes(x = c_x, y = c_y))
 
 trimesh_removed_mnist_pacmap <- vis_rmlg_mesh(distance_edges = distance_mnist, benchmark_value = benchmark_mnist, tr_coord_df = tr_from_to_df_mnist, distance_col = "distance")
 
@@ -4045,15 +4061,15 @@ error_df <- error_df |>
 
 error_df <- error_df |>
   mutate(type = if_else(total == 0, "no error",
-                        if_else(total <= 80, "error 1-50",
-                                if_else(total <= 100, "error 50-100",
-                                        if_else(total <= 200, "error 100-200",
-                                                if_else(total <= 300, "error 200-300",
-                                                        if_else(total <= 400, "error 300-400",
-                                                                if_else(total <= 500, "error 400-500", "error greter than 500"))))))))
+                        if_else(total <= 2, "error 0-2",
+                                if_else(total <= 4, "error 2-4",
+                                        if_else(total <= 6, "error 4-6",
+                                                if_else(total <= 8, "error 6-8",
+                                                        if_else(total <= 12, "error 8-10",
+                                                                if_else(total <= 14, "error 10-12", "error greter than 12"))))))))
 
 plot_list2_mnist_error <- error_df |>
-  mutate(type = factor(type , levels = c("no error", "error 1-50", "error 50-100", "error 100-200", "error 200-300", "error 300-400", "error 400-500", "error greter than 500"))) |>
+  mutate(type = factor(type , levels = c("no error", "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", "error 10-12", "error greter than 12"))) |>
     ggplot(aes(x = PaCMAP1,
                y = PaCMAP2, color = type))+
     geom_point(alpha=0.5, size = 0.1) +
@@ -4078,7 +4094,7 @@ plot_list2_mnist_error <- error_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/CNXjWZMyh_M>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with PaCMAP (<https://youtu.be/CNXjWZMyh_M>)"
 #| label: fig-nldervisMNISTPACMAP
 #| out-width: 100%
 #| fig-pos: h

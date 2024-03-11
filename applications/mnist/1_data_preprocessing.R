@@ -12,8 +12,8 @@ names(data_x_df) <- paste0(rep("x", ncol(data_x_df)), 1:ncol(data_x_df))
 
 # PCA
 
-data_x_df <- data_x_df |>
-  select(where(~ any(. != 0)))
+# data_x_df <- data_x_df |>
+#   select(where(~ any(. != 0)))
 
 dim(data_x_df)
 
@@ -21,7 +21,7 @@ dim(data_x_df)
 #Spectral decomposition which examines the covariances / correlations between variables
 #princomp(data, cor = FALSE)
 calculate_pca <- function(feature_dataset, num_pcs){
-  pcaY_cal <- prcomp(feature_dataset, center = TRUE, scale = TRUE)
+  pcaY_cal <- prcomp(feature_dataset, center = TRUE, scale = FALSE)
   PCAresults <- data.frame(pcaY_cal$x[, 1:num_pcs])
   summary_pca <- summary(pcaY_cal)
   var_explained_df <- data.frame(PC= paste0("PC",1:50),
