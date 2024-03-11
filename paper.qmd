@@ -452,6 +452,8 @@ To reduce computational complexity when applying NLDR techniques to high-D data 
 
 First, we prepare the 2D embedding data to fit within the bounds required for regular hexagonal binning. To achieve this, we implement two key scaling steps. Scale the first 2D embedding component to range between $0$ and $1$, ensuring that all data points fall within this normalized interval. Secondly, we scale the second 2D embedding component to range between $0$ and $y_{max}$ (see @eq-equation3).
 
+The calculation of $y_{max}$ involves several steps. First, the aspect ratio ($ar$) is computed by dividing the range of the second 2D embedding component ($r_2$) by the range of the first 2D embedding component ($r_1$) (see @eq-equation1). Then, the hexagon ratio ($hr$) is determined by dividing the height of the hexagon ($hb$) by its width ($wb$) (see @eq-equation2). Finally, $y_{max}$ is derived by taking the ceiling of $\frac{ar}{hr}$ and multiplying it by $hr$. This process ensures that $y_{max}$ is an integer multiple of $hr$, accommodating the grid layout of the hexagonal bins.
+
 $$
  ar = \frac{r_2}{r_1}
 $$ {#eq-equation1}
@@ -466,51 +468,46 @@ $$ {#eq-equation3}
 
 **Step 2: Hexagonating NLDR data**
 
+Hexagonating NLDR data (see @fig-meth Step 2) involves partitioning the 2D embedding data into hexagonal bins, a technique commonly referred to as hexagonal binning [@Carr1987, @article66]. This method use a hexagonal grid to create a bivariate histogram that effectively visualizes the structure of high-D data. Hexagons, one of only three regular polygons capable of tessellating a plane [@Carr2013], offer unique advantages due to their symmetry of nearest neighbors and maximal number of sides for such tessellations [@Dan2023]. This geometric property makes hexagons more efficient in covering the plane compared to other regular tessellations and reduces visual bias when displaying data densities [@Dan2023]. In our algorithm, we aim to conduct regular hexagonal binning (**cite quollr paper**), involving the computation of hexagonal grid configurations, the generation of the grid, and the assignment of the 2D embedding to hexagons.   
 
-
+<!--
 **(a) Determine the number of bins along the x axis** ($b_1$)
 
 **(b) Determine the number of bins along the y axis** ($b_2$)
 
 **(c) Determine the total number of bins** ($b$)
 
-**(d) Assign NLDR data to hexagons** 
+**(d) Assign NLDR data to hexagons**--> 
 
 **Step 3: Obtaining bin centroids or bin means**
 
-The mathematical expression for the hexagonal bin centers can be defined based on the hexagonal grid coordinates. Let's denote the hexagonal grid coordinates as \( (q, r) \), where \( q \) and \( r \) are integers representing the coordinates of the hexagon in the grid.
+In the previous step, the algorithm clusters the 2D embedding data into hexagons. Following this, in this step, the bin centroids or bin means (see @fig-meth Step 3) are obtained [@Carr2013].
 
-For a regular hexagonal grid, the coordinates of the hexagon centers can be calculated using the following formulas:
-<!--
-\[
-x = \frac{3}{2} \times q \times s
-\]
-\[
-y = \frac{\sqrt{3}}{2} \times q \times s + \sqrt{3} \times r \times s
-\]-->
+The bin centroid ($C_k^{(2)}$) for a $k^{th}$ hexagon with hexagonal grid coordinates $(h^{k}x_{i}, h^{k}y_{i})$, where $i = 1 \dots 6$ can be defined as:
 
-Where:
-- \( s \) is the side length of the hexagon.
-- \( q \) represents the column index of the hexagon in the grid.
-- \( r \) represents the row index of the hexagon in the grid.
-- \( x \) and \( y \) are the Cartesian coordinates of the center of the hexagon.
+$$
+C_k^{(2)} = (C_{ky_1}, C_{ky_2}) = \left(\frac{\sum_{i=1}^{6} h^{k}x_{i}}{6}, \frac{\sum_{i=1}^{6} h^{k}y_{i}}{6}\right).
+$$ {#eq-equation4}
 
-This formula calculates the \( x \) and \( y \) coordinates of the center of each hexagon based on its grid coordinates \( q \) and \( r \), allowing you to determine the position of each hexagon in the plane.
+Also, the bin mean ($C_k^{(2)}$) is defined as the mean of the data points within the $k^{th}$ hexagon (see @eq-equation5). 
+
+$$
+C_k^{(2)} = (C_{ky_1}, C_{ky_2}) = \left(\frac{1}{n_k} \sum_{i=1}^{n_k} y_{1i}, \frac{1}{n_k} \sum_{i=1}^{n_k} y_{2i}\right),
+$$ {#eq-equation5}
+
+where $n_k$ is the number of data points within the hexagon, $y_{1i}$ and $y_{2i}$ are the $x$ and $y$ coordinates of the $i^{th}$ data point within the hexagon.
 
 **Step 4: Triangulating bin centroids or bin means**
 
-Delaunay triangulation is a geometric algorithm used to create a triangular mesh from a set of points in a plane. The key principle behind Delaunay triangulation is to connect points in such a way that no point falls within the circumcircle of any triangle formed by the points.
+In this step, the algorithm proceeds to triangulate the hexagonal bin centroids or bin means (see @fig-meth Step 4). Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30]. One common algorithm used for triangulation is Delaunay triangulation [@article26, @article54], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation. 
 
-Mathematically, given a set of points \( P \) in a plane, the Delaunay triangulation constructs a set of triangles such that:
+Delaunay triangulation can be defined as follows:
 
-1. Each triangle is formed by connecting three points from \( P \).
-2. No point in \( P \) is inside the circumcircle of any triangle in the triangulation.
+Let $C^{(2)} = \{C_1^{(2)}, C_2^{(2)}, ..., C_m^{(2)}\}$ be a set of $m$ bin centroids or bin means in the plane. Delaunay triangulation of $C^{(2)}$, denoted as $DT(C^{(2)})$, is a triangulation of the convex hull of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
 
-Formally, the Delaunay triangulation can be defined as follows:
+Given that the hexagons are regular, the resulting triangles will mostly be equilateral.
 
-Let \( P = \{p_1, p_2, ..., p_n\} \) be a set of \( n \) points in the plane. The Delaunay triangulation of \( P \), denoted as \( DT(P) \), is a triangulation of the convex hull of \( P \) such that the circumcircle of every triangle in the triangulation contains no other points from \( P \).
-
-
+<!--
 
 **Step 1: Computing the hexagonal grid configuration**
 
@@ -550,16 +547,7 @@ The total number of bins is determined by multiplying the number of bins along t
 $$
 b = b_1 \times b_2
 $${#eq-equation5}
-                
-**Step 2: Obtain bin centroids or bin means**
-
-As a result of hexagonal binning for high-D data, all the high-D data are clustered into hexagons. In this step, the bin centroids ($C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$) (see @fig-meth Step 2) are obtained [@Carr2013].
-
-**Step 3: Triangulate bin centroids**
-  
-In this step, the algorithm proceeds to triangulate the hexagonal bin centroids (see @fig-meth Step 3). Triangulation is a fundamental process in computational geometry and computer graphics that involves dividing a set of points in a given space into interconnected triangles [@article30]. One common algorithm used for triangulation is Delaunay triangulation [@article26, @article54], where points are connected in a way that maximizes the minimum angles of the resulting triangles, leading to a more regular and well-conditioned triangulation. 
-
-Since we are working with the centroids of regular hexagonal bins, the resulting mesh will predominantly comprise equal-sized regular triangles. However, the triangulation also helps span any gaps that may exist between clusters of points, allowing for a more complete and interconnected representation of the data.
+-->                
 
 ### Lifting the model into high dimensions
 
@@ -4094,7 +4082,7 @@ plot_list2_mnist_error <- error_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with PaCMAP (<https://youtu.be/CNXjWZMyh_M>)"
+#| fig-cap: "(a) 2D layout from UMAP (n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with PaCMAP ()"
 #| label: fig-nldervisMNISTPACMAP
 #| out-width: 100%
 #| fig-pos: h
