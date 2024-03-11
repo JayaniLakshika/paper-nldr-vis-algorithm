@@ -1801,37 +1801,44 @@ aic_plot + mse_plot +
 
 #### Predicted values and residuals
 
-The prediction approach involves employing the K-nearest neighbors (KNN) algorithm. In this method, which operates as an unsupervised classification problem, the nearest high-D model point (averaged high-D point) is identified for the new high-D data point. Once the nearest high-D model point is identified, its coordinates are used as the predicted 2D embedding for the new high-D data point. This step is particularly valuable due to the limitations of certain NLDR techniques, like tSNE, which don't provide a straightforward method for predicting 2D embedding. As a result, our approach presents a solution that can generate predicted 2D embedding, irrespective of the NLDR technique employed, effectively addressing this gap in functionality. 
+The prediction approach involves performing the K-nearest neighbors (KNN) algorithm for an unsupervised classification problem. First, the nearest high-D model point is identified for a given new high-D point. Then, the corresponding 2D centroid mapping for the identified high-D model point is determined. Finally, the coordinates of this 2D centroid are used as the predicted 2D embedding for the new high-D data point. This step is particularly valuable due to the limitations of some NLDR techniques, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted 2D embedding regardless of the NLDR technique employed, effectively addressing this functional gap.
 
-The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
+Residuals are essential for evaluating the accuracy of representing high-D points by the high-D mapping of 2D bin centroids. To measure this accuracy, an error metric is introduced, quantifying the sum of squared differences between the high-D data ($x_{ij}$) and the high-D mapping of the 2D bin centroid data ($C_{x_ij}$) across all observations and dimensions (see @eq-equation11).
+
+$$
+\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
+$$ {#eq-equation11}
+
+Here, $n$ represents the number of observations, $p$ represents the dimensions of high-D data, $x_{ij}$ is the high-D data, and $C_{x_ij}$ is the high-D mapping of the 2D bin centroid.
+
+<!--
+The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high-D. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-D data ($x_{ij}$) and the predicted bin centroid data in high-D space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
 
 $$
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
 $$ {#eq-equation11}
 
 
-Here, $n$ represents the number of observations, $p$ represents the dimensions, $x_{ij}$ is the actual high-dimensional data, and $C_{x_ij}$ is the predicted bin centroid data in high dimensions.
+Here, $n$ represents the number of observations, $p$ represents the dimensions, $x_{ij}$ is the high-D data, and $C_{x_ij}$ is the predicted bin centroid data in high-D.
 
 The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
-
+-->
 
 #### Goodness of fit statistics {#sec-goodfit}
 
-Moving on to the assessment of prediction accuracy, we calculate the Mean Squared Error (MSE). The MSE helps measure the average squared differences between the actual high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-D ($C_{x_ij}$) values across all bins. Mathematically, this is expressed as:
+To assess how well our method captures and represents the underlying structure of the high-D data, Mean Squared Error (MSE) and Akaike Information Criterion (AIC) are used. When computing MSE, total model error (see @sec-summary) is divided by the number of observations to make it as a mean value (see @eq-equation9).  
 
 $$
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 $$ {#eq-equation9}
 
-Here, $b'$ signifies the total number of bins without empty bins, $p$ denotes the number of dimensions in the high-dimensional data, and $n$ represents the number of observations.
+Furthermore, to incorporate with the parameters in our model, which is the non-empty bins, and as a statistical measure used for model selection and comparison, AIC is used (see @eq-equation10).
 
-Additionally, we gauge the model's performance using the Akaike Information Criterion (AIC), calculated by the formula:
-                    
 $$
 \text{AIC} = 2b'p + np * log(\text{MSE})
 $$ {#eq-equation10}
-  
-These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
+
+Here, $b'$ signifies the number of bins non-empty bins, $p$ denotes the number of dimensions in the high-D data, and $n$ represents the number of observations.
 
 ### Simulated data example {#sec-simpleex}
 
@@ -4096,6 +4103,12 @@ plot_layout(guides='collect', ncol=3) &
 ```
 
 ## Conclusion {#sec-conclusion}
+
+In conclusion, our proposed model offers a novel approach for visualizing high-dimensional (high-D) data by leveraging non-linear dimension reduction (NLDR) techniques. Through a series of steps including hexagonating NLDR data, triangulating bin centroids, and lifting the 2D triangular mesh into high dimensions, our model effectively transforms complex high-D data into interpretable 2D representations. The model's performance is evaluated using goodness of fit statistics such as Mean Squared Error (MSE) and Akaike Information Criterion (AIC), providing insights into its accuracy and reliability. Overall, our model presents a valuable tool for researchers and practitioners in various fields to gain deeper insights from high-dimensional datasets.
+
+Our algorithm mainly consists... 
+
+These Goodness of fit statistics useful in encountering the prediction accuracy when we predict the 2D embedding for the new high-D data. Because, we try to find the nearest high-D mappings as the first step of prediction which will participate the prediction process. When we need to find which different NLDR technique and which parameter choices is giving the best representation of high-D data, MSE and AIC are also useful.  
 
 We introduce a new tool to help to determine which method, which parameter choice provide the most useful representation of high-D data.
 
