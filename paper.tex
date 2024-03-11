@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, sharp corners, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, boxrule=0pt, enhanced, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -610,49 +610,43 @@ dimensions}\label{lifting-the-model-into-high-dimensions}}
 \subsubsection{Lifting the triangular mesh points into high
 dimensions}\label{lifting-the-triangular-mesh-points-into-high-dimensions}}
 
-\textbf{Step1: Cluster 2D points to hexagons}
+Consider \(f: \mathbb{R}^p \rightarrow \mathbb{R}^2\) be a function that
+maps the high-D data (\(X_{n \times p}\)) to its NLDR equivalent
+(\(Y_{n \times d}\)). Then, let
+\(g: \mathbb{R}^2 \rightarrow \mathbb{R}^2\) be a function that maps
+each 2D embedding point to its closest centroid (\(C^{(2)}\)). It
+follows that \(f(g(x))\) maps the high-D points \(x\) to the centroid in
+2D (\(C_k^{(2)}\)). Also, define a function
+\(v: \mathbb{R}^2 \rightarrow \mathbb{R}^p\) maps the 2D centroid
+(\(C^{(2)}\)) to the high-D mean of the points (\(C^{(p)}\)) in the
+hexagon.
 
-Expanding upon the information regarding hexagonal binning discussed in
-Step 1 of Section~\ref{sec-construct2d}, the primary objective in this
-step is to determine the 2D embedding points associated with each
-hexagon. As the initial process of hexagonal binning, the 2D points are
-clustered into their respective hexagonal bins. By mapping this
-information with the hexagonal bin centroids
-(\(C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})\)) that obtained in Step 2 of
-the 2D model building (see Section~\ref{sec-construct2d}), we can find
-which 2D points are assigned to which data set (see
-\textbf{?@fig-wkhighD} (a)).
+The high-D mean of all the points in \(k^{th}\) hexagon by
 
-\textbf{Step2: Cluster high dimensional points to hexagons}
+\begin{equation}\protect\hypertarget{eq-equation6}{}{
+C_k^{(p)} = (C_{kx_1}, ..., C_{kx_p}) = \left(\frac{1}{n_k} \sum_{i=1}^{n_k} x_{1i}, \frac{1}{n_k} \sum_{i=1}^{n_k} x_{2i}, \dots ,\frac{1}{n_k} \sum_{i=1}^{n_k} x_{pi}\right).
+}\label{eq-equation6}\end{equation}
 
-Following the step 1, the main focus in this step to determine the
-corresponding high dimensional points for each hexagon. Every 2D
-embedding point serves as a projection of a data point belonging to high
-dimensional space. By using this mapping between the high dimensional
-data and their corresponding projections, the high dimensional points
-allocated to each hexagons are determined (see video linked in
-\textbf{?@fig-wkhighD}).
+Therefore,
 
-\textbf{Step3: Compute the mean within hexagon}
+\begin{equation}\protect\hypertarget{eq-equation7}{}{
+v(C_k^{(2)}) = C_k^{(p)}.
+}\label{eq-equation7}\end{equation}
 
-Having identified the high-dimensional points associated with hexagons,
-the final step involves computing the mean within each hexagonal bin.
-This implies calculating the average of the high-dimensional data points
-located within each hex bin. These averaged high-dimensional data
-points, denoted as \(C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})\), serve
-as the representative coordinates for the hex bin centroids within the
-expansive high-dimensional space (see video linked in
-\textbf{?@fig-wkhighD}).
+Therefore, \(f(g(x))\) gives the 2D centroid associated with high-D
+points \(x\), and \(v(C_k^{(2)})\) gives the high-D centroid associated
+with 2D point \(C_k^{(2)}\). Thus, \(v(f(g(x)))\) gives the high-D
+centroid (\(C_k^{(p)}\)) associated with the 2D embedding of the points
+\(x\).
 
 \hypertarget{lifting-the-2d-triangular-mesh-into-high-dimensions}{%
 \subsubsection{Lifting the 2D triangular mesh into high
 dimensions}\label{lifting-the-2d-triangular-mesh-into-high-dimensions}}
 
-Based on the insights gained in Step 3 of Section~\ref{sec-construct2d},
-where connected edges in the 2D triangular mesh were identified, this
-step involves lifting these connections into the high dimensions. Having
-the mappings of all 2D triangular mesh points into high dimensions, the
-points connected in 2D are also connected in high dimensional space (see
+As described in Step 4 of Section~\ref{sec-construct2d}, during the
+triangulation process in 2D space, vertices are identified to form
+edges. With the knowledge of the high-D mappings for the 2D hexagonal
+bins, the vertices connected in 2D are also connected in high-D (see
 video linked in \textbf{?@fig-wkhighD}).
 
 \hypertarget{tuning-the-model}{%
@@ -980,14 +974,6 @@ original data in 2D?}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-1.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-2.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-3.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-4.pdf}
-
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
 
@@ -1187,14 +1173,6 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-1.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-2.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-3.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-4.pdf}
-
 \begin{figure}[h]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
@@ -1227,14 +1205,6 @@ indicates that adding less bins does not enough to capture the data
 structure.}
 
 \end{figure}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-1.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-2.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-3.pdf}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-4.pdf}
 
 \begin{figure}[h]
 

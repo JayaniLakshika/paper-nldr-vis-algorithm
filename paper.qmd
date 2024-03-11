@@ -468,7 +468,7 @@ $$ {#eq-equation3}
 
 **Step 2: Hexagonating NLDR data**
 
-Hexagonating NLDR data (see @fig-meth Step 2) involves partitioning the 2D embedding data into hexagonal bins, a technique commonly referred to as hexagonal binning [@Carr1987, @article66]. This method use a hexagonal grid to create a bivariate histogram that effectively visualizes the structure of high-D data. Hexagons, one of only three regular polygons capable of tessellating a plane [@Carr2013], offer unique advantages due to their symmetry of nearest neighbors and maximal number of sides for such tessellations [@Dan2023]. This geometric property makes hexagons more efficient in covering the plane compared to other regular tessellations and reduces visual bias when displaying data densities [@Dan2023]. In our algorithm, we aim to conduct regular hexagonal binning (**cite quollr paper**), involving the computation of hexagonal grid configurations, the generation of the grid, and the assignment of the 2D embedding to hexagons.   
+Hexagonating NLDR data (see @fig-meth Step 2) involves partitioning the 2D embedding data into hexagonal bins, a technique commonly referred to as hexagonal binning [@Carr1987, @article66]. This method use a hexagonal grid to create a bivariate histogram that effectively visualizes the structure of high-D data. Hexagons, one of only three regular polygons capable of tessellating a plane [@Carr2013], offer unique advantages due to their symmetry of nearest neighbors and maximal number of sides for such tessellations [@Dan2023]. This geometric property makes hexagons more efficient in covering the plane compared to other regular tessellations and reduces visual bias when displaying data densities [@Dan2023]. In our algorithm, we aim to conduct regular hexagonal binning (**cite quollr paper**), involving the computation of hexagonal grid configurations, the generation of the grid, and the assignment of the 2D embedding to hexagons. 
 
 <!--
 **(a) Determine the number of bins along the x axis** ($b_1$)
@@ -553,22 +553,25 @@ $${#eq-equation5}
 
 #### Lifting the triangular mesh points into high dimensions
 
-**Step1: Cluster 2D points to hexagons**
+Consider $f: \mathbb{R}^p \rightarrow \mathbb{R}^2$ be a function that maps the high-D data ($X_{n \times p}$) to its NLDR equivalent ($Y_{n \times d}$). Then, let $g: \mathbb{R}^2 \rightarrow \mathbb{R}^2$ be a function that maps each 2D embedding point to its closest centroid ($C^{(2)}$). It follows that $f(g(x))$ maps the high-D points $x$ to the centroid in 2D ($C_k^{(2)}$). Also, define a function $v: \mathbb{R}^2 \rightarrow \mathbb{R}^p$ maps the 2D centroid ($C^{(2)}$) to the high-D mean of the points ($C^{(p)}$) in the hexagon.
 
-Expanding upon the information regarding hexagonal binning discussed in Step 1 of @sec-construct2d, the primary objective in this step is to determine the 2D embedding points associated with each hexagon. As the initial process of hexagonal binning, the 2D points are clustered into their respective hexagonal bins. By mapping this information with the hexagonal bin centroids ($C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$) that obtained in Step 2 of the 2D model building (see @sec-construct2d), we can find which 2D points are assigned to which data set (see @fig-wkhighD (a)).
+The high-D mean of all the points in $k^{th}$ hexagon by
 
-**Step2: Cluster high dimensional points to hexagons**
+$$
+C_k^{(p)} = (C_{kx_1}, ..., C_{kx_p}) = \left(\frac{1}{n_k} \sum_{i=1}^{n_k} x_{1i}, \frac{1}{n_k} \sum_{i=1}^{n_k} x_{2i}, \dots ,\frac{1}{n_k} \sum_{i=1}^{n_k} x_{pi}\right).
+$${#eq-equation6}
 
-Following the step 1, the main focus in this step to determine the corresponding high dimensional points for each hexagon. Every 2D embedding point serves as a projection of a data point belonging to high dimensional space. By using this mapping between the high dimensional data and their corresponding projections, the high dimensional points allocated to each hexagons are determined (see video linked in @fig-wkhighD).
+Therefore,
 
-**Step3: Compute the mean within hexagon**
+$$
+v(C_k^{(2)}) = C_k^{(p)}.
+$${#eq-equation7}
 
-Having identified the high-dimensional points associated with hexagons, the final step involves computing the mean within each hexagonal bin. This implies calculating the average of the high-dimensional data points located within each hex bin. These averaged high-dimensional data points, denoted as $C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$, serve as the representative coordinates for the hex bin centroids within the expansive high-dimensional space (see video linked in @fig-wkhighD).
+Therefore, $f(g(x))$ gives the 2D centroid associated with high-D points $x$, and $v(C_k^{(2)})$ gives the high-D centroid associated with 2D point $C_k^{(2)}$. Thus, $v(f(g(x)))$ gives the high-D centroid ($C_k^{(p)}$) associated with the 2D embedding of the points $x$. 
 
 #### Lifting the 2D triangular mesh into high dimensions
 
-Based on the insights gained in Step 3 of @sec-construct2d, where connected edges in the 2D triangular mesh were identified, this step involves lifting these connections into the high dimensions. Having the mappings of all 2D triangular mesh points into high dimensions, the points connected in 2D are also connected in high dimensional space (see video linked in @fig-wkhighD). 
-
+As described in Step 4 of @sec-construct2d, during the triangulation process in 2D space, vertices are identified to form edges. With the knowledge of the high-D mappings for the 2D hexagonal bins, the vertices connected in 2D are also connected in high-D (see video linked in @fig-wkhighD). 
 
 <!--
 ```{r}
@@ -2098,18 +2101,18 @@ hex_grid <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$hex_poly))
 counts_df <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
-ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
-  coord_fixed()
+# ggplot(data = hex_grid, aes(x = x, y = y)) + 
+#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+#   coord_fixed()
 
 hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
 
-ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-  coord_fixed()
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
 
 tsne_data_with_hb_id_gau <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$data_hb_id))
   
@@ -2140,18 +2143,18 @@ distance_tsne_gau <- cal_2d_dist(tr_coord_df = tr_from_to_df_tsne_gau,
                              select_vars = c("from", "to", "distance"))
 
 
-distance_plot <- plot_dist(distance_tsne_gau) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-
-distance_plot
+# distance_plot <- plot_dist(distance_tsne_gau) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
 ## To find the benchmark value
 benchmark_tsne_gau <- find_lg_benchmark(distance_edges = distance_tsne_gau, distance_col = "distance")
 
-ggplot() +
-geom_trimesh(data = df_bin_centroids_tsne_gau, mapping = aes(x = c_x, y = c_y))
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_tsne_gau, mapping = aes(x = c_x, y = c_y))
 
 trimesh_removed_tsne_gau <- vis_rmlg_mesh(distance_edges = distance_tsne_gau, benchmark_value = benchmark_tsne_gau, tr_coord_df = tr_from_to_df_tsne_gau, distance_col = "distance")
 
@@ -3122,18 +3125,18 @@ hex_grid <- as.data.frame(do.call(cbind, hb_obj_pbmc$hex_poly))
 counts_df <- as.data.frame(do.call(cbind, hb_obj_pbmc$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
-ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
-  coord_fixed()
+# ggplot(data = hex_grid, aes(x = x, y = y)) + 
+#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+#   coord_fixed()
 
 hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
 
-ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-  coord_fixed()
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
 
 umap_data_with_hb_id_pbmc <- as.data.frame(do.call(cbind, hb_obj_pbmc$data_hb_id))
   
@@ -3164,18 +3167,18 @@ distance_pbmc <- cal_2d_dist(tr_coord_df = tr_from_to_df_pbmc,
                              select_vars = c("from", "to", "distance"))
 
 
-distance_plot <- plot_dist(distance_pbmc) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-
-distance_plot
+# distance_plot <- plot_dist(distance_pbmc) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
 ## To find the benchmark value
 benchmark_pbmc <- find_lg_benchmark(distance_edges = distance_pbmc, distance_col = "distance")
 
-ggplot() +
-geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
 
 trimesh_removed_pbmc_umap <- vis_rmlg_mesh(distance_edges = distance_pbmc, benchmark_value = benchmark_pbmc, tr_coord_df = tr_from_to_df_pbmc, distance_col = "distance")
 
@@ -3488,18 +3491,18 @@ counts_df <- as.data.frame(do.call(cbind, hb_obj_pbmc$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
 
-ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
-  coord_fixed()
+# ggplot(data = hex_grid, aes(x = x, y = y)) + 
+#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+#   coord_fixed()
 
 hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
 
-ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-  coord_fixed()
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
 
 umap_data_with_hb_id_pbmc <- as.data.frame(do.call(cbind, hb_obj_pbmc$data_hb_id))
   
@@ -3530,18 +3533,18 @@ distance_pbmc <- cal_2d_dist(tr_coord_df = tr_from_to_df_pbmc,
                              select_vars = c("from", "to", "distance"))
 
 
-distance_plot <- plot_dist(distance_pbmc) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-
-distance_plot
+# distance_plot <- plot_dist(distance_pbmc) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
 
 ## To find the benchmark value
 benchmark_pbmc <- find_lg_benchmark(distance_edges = distance_pbmc, distance_col = "distance")
 
-ggplot() +
-geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
 
 trimesh_removed_pbmc_umap <- vis_rmlg_mesh(distance_edges = distance_pbmc, benchmark_value = benchmark_pbmc, tr_coord_df = tr_from_to_df_pbmc, distance_col = "distance")
 
