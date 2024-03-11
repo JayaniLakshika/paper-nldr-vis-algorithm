@@ -3865,3 +3865,44 @@ plot_layout(guides='collect', ncol=3) &
   theme(legend.position='bottom')
 ```
 -->
+
+<!--In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
+The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
+
+Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
+
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. 
+
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest high-D model point (averaged high-D point) for the new high-D data point. Also, the coordinates of the high-D model point serve as the predicted 2D embedings for the new high-D data point. 
+It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
+-->  
+
+<!--
+### Model interpretation
+
+The visualizations of NLDR techniques for the S-curve dataset shows different representations in 2D, as showcased in Figure @fig-nldervis. The question at hand is determining the best NLDR technique to represent the S-curve data. Examining the 2D layouts in @fig-nldervis suggests that TriMAP or PaCMAP may be best representations. However, the challenge is to decide the best representation with considerable evidence.
+
+After considering the models constructed from the algorithm for each NLDR techniques and visualizing them in high-D space with the original data, shows that all the NLDR techniques capture the non-linearity of the S-curve (see videos of the models linked in @fig-modelScurve). But thorough examination of each model in high-D space shows some surprising findings. The model of PHATE is flattened and lack of capturing the width of S-curve (see videos of the model with PHATE linked in @fig-modelScurve). This nature of PHATE is also evicted by the considerably higher AIC and MSE values for PHATE as shown in @fig-diagnosticpltScurve. Furthermore, there are two edges that are not connected to any points in the model of TriMAP (see see videos of the model with TriMAP linked in @fig-modelScurve). This model shows how the patterns in 2D representation of TriMAP capture by the model (see @fig-nldervis (d)). As shown in @fig-nldervis (b), UMAP have four clusters in a curvilinear structure. However, the model reveals that even though UMAP shows a curvilinear in 2D, UMAP actually capture the structure of the S-curve without any disjoint in the model (see see videos of the model with UMAP linked in @fig-modelScurve). In the 2D layouts of tSNE and PaCMAP (see @fig-nldervis (a), (e)), there are some sparse areas that are captured by the models effectively (see see videos of the model with tSNE and PaCMAP linked in @fig-modelScurve). -->
+
+<!--Different NLDR techniques perform differently on the S-curve data and tSNE provides the best representation in 2D according to AIC and MSE values (see @fig-diagnosticpltScurve). -->
+
+<!--### Model selection {#sec-selection}
+
+In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). -->
+
+<!--By visualizing the models with original data in high-D space, we are able to understand how various techniques capture the clustering data structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures. UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance. The PHATE model shows five clusters resembling triangles but struggles to capture local structures. TriMAP and PaCMAP both display five well-separated clusters with a flat surface appearance, capturing within-cluster variation to varying extents. As we can see, even though all NLDR techniques have different representations in 2D, all the NLDR techniques preserve the global structure, but some NLDR techniques fail to capture the local structure. According to the visualizations, we can see that tSNE preserve both local and global structure than other NLDR techniques that is also evident by the AIC plot shown in Figure 4.-->   
+
+<!--We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.-->
+
+<!--In all NLDR techniques, except for PHATE, there are five well separated clusters. In tSNE, the five clusters are close to each other. However, in PHATE, two clusters are really close to each other and other three clusters are far away from them. In PaCMAP, one cluster is at the center and other four positioned in four directions. In TriMAP also, there are two clusters close to each other and other three are well-separated from each other. In UMAP, four clusters are positioned parallel to each and remaining one far away from them.-->
+
+<!--The model with tSNE shows five well-separated clusters. Also, within cluster variation is captured by giving proof that with clustering tSNE preserve local and global structures of high-D data.
+
+The model with UMAP also shows five well-separated clusters. But now, the clusters are more flat surfaces.
+
+The model with PHATE also shows five well-separated clusters. The five clusters are more like triangles and couldn't able to capture local structure at all.
+
+In the model with TriMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.
+
+In the model with PaCMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.-->
+

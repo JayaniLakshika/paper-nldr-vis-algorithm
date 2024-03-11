@@ -96,7 +96,6 @@ library(kableExtra)
 library(grid)
 set.seed(20240110)
 
-#source("quollr_code.R", local = TRUE)
 source("nldr_code.R", local = TRUE)
 ```
 
@@ -439,21 +438,35 @@ Furthermore, software like **langevitour** can visualize both types of tours, pr
 
 ## Methodology {#sec-methods}
 
-In this paper, we introduce a novel method to determine the most effective NLDR technique and the best hyperparameter choice that provides the most useful representation of high-D data. Our approach involves dividing the high-dimensional dataset into two parts: a training set for constructing the model and a test set for generating predictive values and residuals. Our algorithm takes a 2D embedding data as the input and generate a tour that displays the high-dimensional wireframe to overlay the data. The flow chart of the proposed algorithm is shown in @fig-meth. The algorithm consists of two main phases: (1) generating the model in the 2D space and (2) lifting the model into high-D space. The main steps of the algorithm are described in detail in this section using UMAP 2D embedding of the S-curve dataset. This dataset has seven dimensions, including four noise dimensions that were added to the original 3D data. 
+In this paper, we introduce a novel method to determine the most effective NLDR technique and the best hyperparameter choice that provides the most useful representation of high-D data. Our approach involves dividing the high-D dataset into two parts: a training set for constructing the model and a test set for generating predictive values and residuals. Our algorithm takes a 2D embedding data as the input and generate a tour that displays the high-D wireframe to overlay the data. The flow chart of the proposed algorithm is shown in @fig-meth. The algorithm consists of two main phases: (1) generating the model in the 2D space and (2) lifting the model into high-D space. The main steps of the algorithm are described in detail in this section using UMAP 2D embedding of the S-curve dataset. This dataset has seven dimensions, including four noise dimensions that were added to the original 3D data. 
 
 ![The flow diagram shows the main steps of our algorithm. There are two basic phases, one to generate the model in the 2D space, and other to map the model into the high-D space.](figures/workflow.png){#fig-meth fig-align="center" width="100%" height="100%"}
 
 ### Preprocessing steps
 
-In order to reduce the computational complexity associated with performing NLDR techniques to high-D data, and as a initial step of noise reduction of high-D data, PCA [@article67, @article68, @article69] is applied as a preprocessing step. Subsequently, the identified principal components, representing directions of maximum variance, are used to construct the model.
-
-Then, after performing NLDR, to have regular hexagons, 2D embedding data are scaled accordingly.
+To reduce computational complexity when applying NLDR techniques to high-D data and to reduce noise presence, PCA [@article67, @article68, @article69] is used as a preprocessing step. PCA involves identifying principal components that maximize variance. These components are then used as the high-D data for the algorithm.
 
 ### Constructing the 2D model {#sec-construct2d}
 
 **Step 1: Scaling NLDR data**
 
+First, we prepare the 2D embedding data to fit within the bounds required for regular hexagonal binning. To achieve this, we implement two key scaling steps. Scale the first 2D embedding component to range between $0$ and $1$, ensuring that all data points fall within this normalized interval. Secondly, we scale the second 2D embedding component to range between $0$ and $y_{max}$ (see @eq-equation3).
+
+$$
+ ar = \frac{r_2}{r_1}
+$$ {#eq-equation1}
+
+$$
+ hr = \frac{hb}{wb}
+$$ {#eq-equation2}
+
+$$
+ y_{max} = \text{ceiling}(\frac{ar}{hr}) * hr
+$$ {#eq-equation3}
+
 **Step 2: Hexagonating NLDR data**
+
+
 
 **(a) Determine the number of bins along the x axis** ($b_1$)
 
@@ -1797,18 +1810,7 @@ aic_plot + mse_plot +
 
 #### Predicted values and residuals
 
-<!--In this context, "prediction" denotes the 2D embedding generated for the NLDR technique.
-The methodology encompasses identifying the nearest averaged high-D points in the high-D space for the test data, by computing high-D Euclidean distances. As the averaged high-D point corresponds to the lifting of the 2D model, determining its nearest counterpart allows us to map its hexagonal bin centroid coordinates. Consequently, these centroid coordinates serve as the assigned low-dimensional predicted values for the test data in the 2D space. 
-
-Some NLDR techniques, such as tSNE, often lack a direct prediction, making our approach valuable for generating predicted values in the absence of such functionalities.
-
-The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest hexagonal bin centroid in the 2D space. Subsequently, the coordinates of this centroid are assigned as the low-dimensional predicted values for the test data in 2D space. 
-
-The prediction approach involves employing the K-nearest neighbors (KNN) algorithm to identify the nearest high-D model point (averaged high-D point) for the new high-D data point. Also, the coordinates of the high-D model point serve as the predicted 2D embedings for the new high-D data point. 
-It is noteworthy that traditional NLDR methods, such as tSNE, often lack a direct predict function, making our approach valuable for generating predicted values in the absence of such functionalities.
--->  
-
-The prediction approach involves employing the K-nearest neighbors (KNN) algorithm. In this method, which operates as an unsupervised classification problem, the nearest high-D model point (averaged high-D point) is identified for the new high-D data point. Once the nearest high-D model point is identified, its coordinates are used as the predicted 2D embeddings for the new high-D data point. This step is particularly valuable due to the limitations of certain NLDR techniques, like tSNE, which don't provide a straightforward method for predicting 2D embeddings. As a result, our approach presents a solution that can generate predicted 2D embeddings, irrespective of the NLDR technique employed, effectively addressing this gap in functionality. 
+The prediction approach involves employing the K-nearest neighbors (KNN) algorithm. In this method, which operates as an unsupervised classification problem, the nearest high-D model point (averaged high-D point) is identified for the new high-D data point. Once the nearest high-D model point is identified, its coordinates are used as the predicted 2D embedding for the new high-D data point. This step is particularly valuable due to the limitations of certain NLDR techniques, like tSNE, which don't provide a straightforward method for predicting 2D embedding. As a result, our approach presents a solution that can generate predicted 2D embedding, irrespective of the NLDR technique employed, effectively addressing this gap in functionality. 
 
 The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high dimensions. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-dimensional data ($x_{ij}$) and the predicted bin centroid data in high-dimensional space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
 
@@ -1840,19 +1842,6 @@ $$ {#eq-equation10}
   
 These metrics, MSE and AIC, collectively offer valuable insights into the model's predictive performance, considering both accuracy and complexity in the predictions.
 
-<!--
-### Model interpretation
-
-The visualizations of NLDR techniques for the S-curve dataset shows different representations in 2D, as showcased in Figure @fig-nldervis. The question at hand is determining the best NLDR technique to represent the S-curve data. Examining the 2D layouts in @fig-nldervis suggests that TriMAP or PaCMAP may be best representations. However, the challenge is to decide the best representation with considerable evidence.
-
-After considering the models constructed from the algorithm for each NLDR techniques and visualizing them in high-D space with the original data, shows that all the NLDR techniques capture the non-linearity of the S-curve (see videos of the models linked in @fig-modelScurve). But thorough examination of each model in high-D space shows some surprising findings. The model of PHATE is flattened and lack of capturing the width of S-curve (see videos of the model with PHATE linked in @fig-modelScurve). This nature of PHATE is also evicted by the considerably higher AIC and MSE values for PHATE as shown in @fig-diagnosticpltScurve. Furthermore, there are two edges that are not connected to any points in the model of TriMAP (see see videos of the model with TriMAP linked in @fig-modelScurve). This model shows how the patterns in 2D representation of TriMAP capture by the model (see @fig-nldervis (d)). As shown in @fig-nldervis (b), UMAP have four clusters in a curvilinear structure. However, the model reveals that even though UMAP shows a curvilinear in 2D, UMAP actually capture the structure of the S-curve without any disjoint in the model (see see videos of the model with UMAP linked in @fig-modelScurve). In the 2D layouts of tSNE and PaCMAP (see @fig-nldervis (a), (e)), there are some sparse areas that are captured by the models effectively (see see videos of the model with tSNE and PaCMAP linked in @fig-modelScurve). -->
-
-<!--Different NLDR techniques perform differently on the S-curve data and tSNE provides the best representation in 2D according to AIC and MSE values (see @fig-diagnosticpltScurve). -->
-
-<!--### Model selection {#sec-selection}
-
-In the process of selecting the most suitable NLDR technique to represent high-D data, the Akaike Information Criterion (AIC) stands as a crucial tool for insightful comparisons. Once the effective number of bins has been determined for each method, AIC values can be compared to identify the best NLDR technique with the lowest AIC value. For example, as shown in @fig-diagnosticpltScurve (a), TriMAP is the most suitable NLDR technique to represent the S-curve data (see table 1). -->
-
 ### Simulated data example {#sec-simpleex}
 
 In this section, we showcase the effectiveness of our methodology using simulated data. The dataset comprises five spherical Gaussian clusters in 4-$d$, with each cluster containing an equal number of points and consistent within variation.  
@@ -1861,35 +1850,15 @@ In the 2D representations created by all NLDR techniques, as shown in @fig-nlder
 
 Visualizing the models alongside the original high-D data provides insights into how different techniques capture the underlying clustering structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures (see video link of @fig-modelfiveGau (a)). UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance (see video link of @fig-modelfiveGau (b)). The PHATE model shows five separated clusters resembling triangles or partial triangles but struggles to capture local structures (see video link of @fig-modelfiveGau (c)). TriMAP and PaCMAP both display five well-separated clusters with flat surfaces, each capturing within-cluster variation to varying extents. Despite the various 2D representations, all NLDR techniques preserve the global structure (see video link of @fig-modelfiveGau (d), (e) respectively). However, tSNE, effectively capture both local and global structures, as indicated by lower AIC values in @fig-diagnosticpltGau (a).
 
-
-
-<!--By visualizing the models with original data in high-D space, we are able to understand how various techniques capture the clustering data structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures. UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance. The PHATE model shows five clusters resembling triangles but struggles to capture local structures. TriMAP and PaCMAP both display five well-separated clusters with a flat surface appearance, capturing within-cluster variation to varying extents. As we can see, even though all NLDR techniques have different representations in 2D, all the NLDR techniques preserve the global structure, but some NLDR techniques fail to capture the local structure. According to the visualizations, we can see that tSNE preserve both local and global structure than other NLDR techniques that is also evident by the AIC plot shown in Figure 4.-->   
-
-<!--We *strongly* recommend viewing the linked videos for each study while reading. Links to the videos are available in the figures for each example. The videos show the visual appearance of the **langevitour** interface with low-dimensional view and how we can interact with the tour via the controls.-->
-
-<!--In all NLDR techniques, except for PHATE, there are five well separated clusters. In tSNE, the five clusters are close to each other. However, in PHATE, two clusters are really close to each other and other three clusters are far away from them. In PaCMAP, one cluster is at the center and other four positioned in four directions. In TriMAP also, there are two clusters close to each other and other three are well-separated from each other. In UMAP, four clusters are positioned parallel to each and remaining one far away from them.-->
-
-<!--The model with tSNE shows five well-separated clusters. Also, within cluster variation is captured by giving proof that with clustering tSNE preserve local and global structures of high-D data.
-
-The model with UMAP also shows five well-separated clusters. But now, the clusters are more flat surfaces.
-
-The model with PHATE also shows five well-separated clusters. The five clusters are more like triangles and couldn't able to capture local structure at all.
-
-In the model with TriMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.
-
-In the model with PaCMAP shows five well-separated clusters. Also, within cluster variation is captured but much like flat surfaces.-->
-
-
-<!--
+<!-- five Gaussian clusters with different NLDR techniques-->
 ```{r}
 #| warning: false
 #| echo: false
-#| eval: false
 
 ## Import data
 df_2 <- read_rds("data/five_gau_clusters/data_five_gau.rds")
-training_data_1 <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
-test_1 <- read_rds("data/five_gau_clusters/data_five_gau_test.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+test_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_test.rds")
 
 tSNE_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
 UMAP_data_gau <- read_rds("data/five_gau_clusters/umap_data_five_gau.rds")
@@ -1954,7 +1923,6 @@ plot_list5_gau <- plot_PaCMAP_2D(PaCMAP_data_gau) +
 ```
 
 ```{r}
-#| eval: false
 #| echo: false
 #| fig-cap: "2D layouts from different NLDR techniques applied the same data: (a) tSNE (perplexity = 61), (b) UMAP (n_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n_inliers = 5, n_outliers = 4, n_random = 3), and (e) PaCMAP (n_neighbors = 10, init = random, MN_ratio = 0.9, FP_ratio = 2). Is there a best representation of the original data or are they all providing  equivalent information?"
 #| label: fig-nldervis5Gau
@@ -1964,7 +1932,284 @@ plot_list1_gau + plot_list2_gau + plot_list3_gau + plot_list4_gau + plot_list5_g
   plot_layout(ncol=5)
 ```
 
+<!-- To find the number of bins should assign for the model in tSNE-->
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
 
+tsne_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = tSNE_data_gau, 
+                                    x = "tSNE1", y = "tSNE2"))) |>
+  dplyr::rename(c("tSNE1" = "scaled_tSNE1", 
+                  "tSNE2" = "scaled_tSNE2")) |>
+  dplyr::mutate(ID = 1:NROW(tSNE_data_gau))    
+
+
+## tSNE
+hex_size_vec <- seq(0.02, 2, by = 0.01)
+
+vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
+
+mse_df_gau <- dplyr::bind_rows(vec)[0, ]
+mse_df_gau <- mse_df_gau |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(hex_size_vec)) {
+  
+  num_bin_list <- calc_bins(data = tsne_gau_scaled, 
+            x = "tSNE1", y = "tSNE2", 
+            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
+  
+  num_bins_x <- num_bin_list$num_x
+  num_bins_y <- num_bin_list$num_y
+  
+  model_object <- fit_highd_model( training_data = training_data_gau, 
+                                   nldr_df_with_id = tsne_gau_scaled, 
+                                   x = "tSNE1", y = "tSNE2", 
+                                   num_bins_x = num_bins_x, 
+                                   num_bins_y = num_bins_y, 
+                                   x_start = NA, y_start = NA, 
+                                   buffer_x = NA, buffer_y = NA, 
+                                   hex_size = hex_size_vec[i],
+                                   is_rm_lwd_hex = FALSE, 
+                                   benchmark_to_rm_lwd_hex = NA, 
+                                   col_start_2d = "tSNE", 
+                                   col_start_highd = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_emb_list <- predict_emb(test_data = training_data_gau, 
+                                  df_bin_centroids = centroid_df_training, 
+                                  df_bin = avg_df_training, type_NLDR = "tSNE")
+  
+  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
+  
+  eval_list <- gen_summary(test_data = training_data_gau, 
+                                  prediction_df = pred_df_training, 
+                                  df_bin = avg_df_training, col_start = "x")
+  
+  mse_df_gau <- mse_df_gau |>
+    tibble::add_row(num_bins = num_bins_x * num_bins_y,
+                    aic = eval_list$aic,
+                    mse = eval_list$mse,
+                    num_bins_x = num_bins_x,
+                    num_bins_y = num_bins_y,
+                    hex_size = hex_size_vec[i])
+  
+
+}
+
+
+## If same total number of bins occurred only select ones with minimum error
+### Obtain duplicate bins
+dupli_bins <- mse_df_gau |> 
+  dplyr::count(num_bins) |> 
+  dplyr::filter(n > 1) |> 
+  dplyr::pull(num_bins)
+
+### Group split by duplicated bins
+duplicate_df_list <- mse_df_gau |>
+  dplyr::filter(num_bins %in% dupli_bins) |>
+  dplyr::arrange(num_bins) |>
+  dplyr::group_split(num_bins)
+
+### Obtain one row from duplicates which have lowest error and hexsize
+duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (i in 1:length(duplicate_df_list)) {
+  
+  dd <- duplicate_df_list[[i]] |>
+    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
+    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
+  
+  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
+  
+}
+
+### Obtain the mse_df with not duplicated bins
+not_dupli_df <- mse_df_gau |>
+  dplyr::filter(!(num_bins %in% dupli_bins))
+
+### Combine duplicated and not duplicated(corrected) bins dfs
+mse_df_gau <- dplyr::bind_rows(not_dupli_df, duplicate_df)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins, y = aic
+)) +
+  geom_point(size = 0.8) +
+  geom_line() +
+  geom_vline(xintercept = 42, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins,
+                                       y = mse
+)) +
+  geom_point(size = 0.8) +
+  geom_line() +
+   geom_vline(xintercept = 42, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?"
+#| label: fig-diagnosticpltGau
+#| out-width: 100%
+
+aic_plot_gau + mse_plot_gau +
+  plot_layout(nrow = 2) +
+  plot_annotation(tag_levels = 'a') +
+  #plot_layout(guides='collect', nrow = 2) & legend.position='bottom', 
+  theme(plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## Decide by looking at MSE plot
+num_bins_x_tsne_gau <- 8
+num_bins_y_tsne_gau <- 10
+hex_size_tsne_gau <- 0.1
+
+hb_obj_tsne_gau <- hex_binning(data = tsne_gau_scaled, x = "tSNE1", 
+                      y = "tSNE2", num_bins_x = num_bins_x_tsne_gau, 
+                      num_bins_y = num_bins_y_tsne_gau, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_tsne_gau, col_start = "tSNE")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+  coord_fixed()
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+  coord_fixed()
+
+tsne_data_with_hb_id_gau <- as.data.frame(do.call(cbind, hb_obj_tsne_gau$data_hb_id))
+  
+model_object_tsne_gau <- fit_highd_model( training_data = training_data_gau, 
+                                 nldr_df_with_id = tsne_gau_scaled, 
+                                 x = "tSNE1", y = "tSNE2", 
+                                 num_bins_x = num_bins_x_tsne_gau, 
+                                 num_bins_y = num_bins_y_tsne_gau, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size_tsne_gau,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "tSNE", 
+                                 col_start_highd = "x")
+
+df_bin_centroids_tsne_gau <- model_object_tsne_gau$df_bin_centroids
+df_bin_tsne_gau <- model_object_tsne_gau$df_bin
+
+## Triangulate bin centroids
+tr1_object_tsne_gau <- tri_bin_centroids(df_bin_centroids_tsne_gau, x = "c_x", y = "c_y")
+tr_from_to_df_tsne_gau <- gen_edges(tri_object = tr1_object_tsne_gau)
+
+## Compute 2D distances
+distance_tsne_gau <- cal_2d_dist(tr_coord_df = tr_from_to_df_tsne_gau, 
+                             start_x = "x_from", start_y = "y_from", 
+                             end_x = "x_to", end_y = "y_to", 
+                             select_vars = c("from", "to", "distance"))
+
+
+distance_plot <- plot_dist(distance_tsne_gau) +
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
+
+distance_plot
+
+## To find the benchmark value
+benchmark_tsne_gau <- find_lg_benchmark(distance_edges = distance_tsne_gau, distance_col = "distance")
+
+ggplot() +
+geom_trimesh(data = df_bin_centroids_tsne_gau, mapping = aes(x = c_x, y = c_y))
+
+trimesh_removed_tsne_gau <- vis_rmlg_mesh(distance_edges = distance_tsne_gau, benchmark_value = benchmark_tsne_gau, tr_coord_df = tr_from_to_df_tsne_gau, distance_col = "distance")
+
+trimesh_removed_tsne_gau <- trimesh_removed_tsne_gau +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_all_tsne_gau <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID), tsne_data_with_hb_id_gau)
+
+# show_langevitour(df = df_all_tsne_gau, df_b = df_bin_tsne_gau, df_b_with_center_data = df_bin_centroids_tsne_gau, col_start = "x", distance_df = distance_tsne_gau, distance_col = "distance", benchmark_value = benchmark_tsne_gau)
+```
+
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+umap_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = UMAP_data_gau, 
+                                    x = "UMAP1", y = "UMAP2"))) |>
+  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
+                  "UMAP2" = "scaled_UMAP2")) |>
+  dplyr::mutate(ID = 1:NROW(UMAP_data_gau)) 
+
+
+# hex_size_vec <- seq(0.02, 2, by = 0.01)
+# 
+# for (i in 1:length(hex_size_vec)) {
+#   
+#   find_non_empty_bins(data = umap_gau_scaled, x = "UMAP1", y = "UMAP2",
+#                     non_empty_bins = 34, x_start = NA, y_start = NA,
+#                     buffer_x = NA, buffer_y = NA, hex_size = hex_size_vec[i],
+#                     col_start = "UMAP")
+#   
+#   
+# }
+
+
+```
+
+<!---
 ```{r}
 #| warning: false
 #| echo: false
@@ -2564,19 +2809,11 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 
 ```
 
-```{r}
-#| eval: false
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?"
-#| label: fig-diagnosticpltGau
-#| out-width: 100%
 
-aic_gau_plot + mse_gau_plot +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', nrow = 2) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
 -->
+
+
+
 
 ## Applications {#sec-applications}
 
@@ -3494,6 +3731,361 @@ result2_2d_layout <- df_res_1_2_label |>
 table(df_res_1_2_label$result1_class_label, df_res_1_2_label$result2_class_label)
 
 result1_2d_layout + result2_2d_layout
+```
+
+### Handwritten digits
+
+- Digit 1 (7877 images only)
+
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
+training_data_mnist <- training_data_mnist |>
+  mutate(ID = 1:NROW(training_data_mnist))
+
+pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds")
+pacmap_minst_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = pacmap_minst, 
+                                    x = "PaCMAP1", y = "PaCMAP2"))) |>
+  dplyr::rename(c("PaCMAP1" = "scaled_PaCMAP1", 
+                  "PaCMAP2" = "scaled_PaCMAP2")) |>
+  dplyr::mutate(ID = 1:NROW(pacmap_minst))
+
+
+plot_list2_mnist <- pacmap_minst_scaled |>
+    ggplot(aes(x = PaCMAP1,
+               y = PaCMAP2))+
+    geom_point(alpha=0.5) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
+  # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## UMAP
+## Prediction
+
+#tot_num_bin_vec <- 2:51
+hex_size_vec <- seq(0.02, 2, by = 0.01)
+
+vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
+
+mse_df_mnist <- dplyr::bind_rows(vec)[0, ]
+mse_df_mnist <- mse_df_mnist |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(hex_size_vec)) {
+  
+  num_bin_list <- calc_bins(data = pacmap_minst_scaled, 
+            x = "PaCMAP1", y = "PaCMAP2", 
+            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
+  
+  num_bins_x <- num_bin_list$num_x
+  num_bins_y <- num_bin_list$num_y
+  
+  model_object <- fit_highd_model( training_data = training_data_mnist, 
+                                   nldr_df_with_id = pacmap_minst_scaled, 
+                                   x = "PaCMAP1", y = "PaCMAP2", 
+                                   num_bins_x = num_bins_x, 
+                                   num_bins_y = num_bins_y, 
+                                   x_start = NA, y_start = NA, 
+                                   buffer_x = NA, buffer_y = NA, 
+                                   hex_size = hex_size_vec[i],
+                                   is_rm_lwd_hex = FALSE, 
+                                   benchmark_to_rm_lwd_hex = NA, 
+                                   col_start_2d = "PaCMAP", 
+                                   col_start_highd = "PC")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_emb_list <- predict_emb(test_data = training_data_mnist, 
+                                  df_bin_centroids = centroid_df_training, 
+                                  df_bin = avg_df_training, type_NLDR = "PaCMAP")
+  
+  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
+  
+  eval_list <- gen_summary(test_data = training_data_mnist, 
+                                  prediction_df = pred_df_training, 
+                                  df_bin = avg_df_training, col_start = "PC")
+  
+  mse_df_mnist <- mse_df_mnist |>
+    tibble::add_row(num_bins = num_bins_x * num_bins_y,
+                    aic = eval_list$aic,
+                    mse = eval_list$mse,
+                    num_bins_x = num_bins_x,
+                    num_bins_y = num_bins_y,
+                    hex_size = hex_size_vec[i])
+  
+
+}
+
+
+## If same total number of bins occurred only select ones with minimum error
+### Obtain duplicate bins
+dupli_bins <- mse_df_mnist |> 
+  dplyr::count(num_bins) |> 
+  dplyr::filter(n > 1) |> 
+  dplyr::pull(num_bins)
+
+### Group split by duplicated bins
+duplicate_df_list <- mse_df_mnist |>
+  dplyr::filter(num_bins %in% dupli_bins) |>
+  dplyr::arrange(num_bins) |>
+  dplyr::group_split(num_bins)
+
+### Obtain one row from duplicates which have lowest error and hexsize
+duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (i in 1:length(duplicate_df_list)) {
+  
+  dd <- duplicate_df_list[[i]] |>
+    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
+    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
+  
+  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
+  
+}
+
+### Obtain the mse_df with not duplicated bins
+not_dupli_df <- mse_df_mnist |>
+  dplyr::filter(!(num_bins %in% dupli_bins))
+
+### Combine duplicated and not duplicated(corrected) bins dfs
+mse_df_mnist <- dplyr::bind_rows(not_dupli_df, duplicate_df)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins, y = aic
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 80, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
+                                       y = mse
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 80, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltMNIST
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot_mnist + mse_plot_mnist +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## Decide by looking at MSE plot
+num_bins_x_mnist <- 6
+num_bins_y_mnist <- 13
+hex_size_mnist <- 0.14
+
+hb_obj_mnist <- hex_binning(data = pacmap_minst_scaled, x = "PaCMAP1", 
+                      y = "PaCMAP2", num_bins_x = num_bins_x_mnist, 
+                      num_bins_y = num_bins_y_mnist, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_mnist, col_start = "PaCMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_mnist$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_mnist$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_mnist$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+  geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+  coord_fixed()
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+  coord_fixed()
+
+pacmap_data_with_hb_id_mnist <- as.data.frame(do.call(cbind, hb_obj_mnist$data_hb_id))
+  
+model_object <- fit_highd_model( training_data = training_data_mnist, 
+                                 nldr_df_with_id = pacmap_minst_scaled, 
+                                 x = "PaCMAP1", y = "PaCMAP2", 
+                                 num_bins_x = num_bins_x_mnist, 
+                                 num_bins_y = num_bins_y_mnist, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size_mnist,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "PaCMAP", 
+                                 col_start_highd = "PC")
+
+df_bin_centroids_mnist <- model_object$df_bin_centroids
+df_bin_mnist <- model_object$df_bin
+
+## Triangulate bin centroids
+tr1_object_mnist <- tri_bin_centroids(df_bin_centroids_mnist, x = "c_x", y = "c_y")
+tr_from_to_df_mnist <- gen_edges(tri_object = tr1_object_mnist)
+
+## Compute 2D distances
+distance_mnist <- cal_2d_dist(tr_coord_df = tr_from_to_df_mnist, 
+                             start_x = "x_from", start_y = "y_from", 
+                             end_x = "x_to", end_y = "y_to", 
+                             select_vars = c("from", "to", "distance"))
+
+
+distance_plot <- plot_dist(distance_mnist) +
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
+
+distance_plot
+
+## To find the benchmark value
+benchmark_mnist <- find_lg_benchmark(distance_edges = distance_mnist, distance_col = "distance")
+
+ggplot() +
+geom_trimesh(data = df_bin_centroids_mnist, mapping = aes(x = c_x, y = c_y))
+
+trimesh_removed_mnist_pacmap <- vis_rmlg_mesh(distance_edges = distance_mnist, benchmark_value = benchmark_mnist, tr_coord_df = tr_from_to_df_mnist, distance_col = "distance")
+
+trimesh_removed_mnist_pacmap <- trimesh_removed_mnist_pacmap +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+df_bin_train <- df_bin_mnist
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+df_all_mnist <- dplyr::bind_cols(training_data_mnist, pacmap_data_with_hb_id_mnist)
+
+error_df <- df_all_mnist |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+# prediction_df_join <- prediction_df_join |>
+#   dplyr::left_join(data, by = c("ID" = "ID")) ## Map high-D data
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+  
+  error_df[ , paste0("abs_residual_", "PC", i)] <- abs(error_df[ , paste0("PC", i)] - error_df[ , paste0("avg_", "PC", i)])
+  
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC")))))
+
+# library(ggbeeswarm)
+# error_df$group <- "1"
+# ggplot(error_df, aes(x = group, y = total)) +
+#   geom_quasirandom()+
+#   ylim(0, max(unlist(error_df$total))+ 0.5) + coord_flip()
+
+### The minimum error is 0 and the maximum is 42.17439
+### There is lot of points with error 0,
+
+error_df <- error_df |>
+  mutate(type = if_else(total == 0, "no error",
+                        if_else(total <= 80, "error 1-50",
+                                if_else(total <= 100, "error 50-100",
+                                        if_else(total <= 200, "error 100-200",
+                                                if_else(total <= 300, "error 200-300",
+                                                        if_else(total <= 400, "error 300-400",
+                                                                if_else(total <= 500, "error 400-500", "error greter than 500"))))))))
+
+plot_list2_mnist_error <- error_df |>
+  mutate(type = factor(type , levels = c("no error", "error 1-50", "error 50-100", "error 100-200", "error 200-300", "error 300-400", "error 400-500", "error greter than 500"))) |>
+    ggplot(aes(x = PaCMAP1,
+               y = PaCMAP2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d")) 
+
+# show_langevitour(df_all_mnist, df_bin_mnist, df_bin_centroids_mnist, benchmark_mnist, distance_mnist, "distance", col_start = "PC")
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?, (b)  Model in the 2D space with UMAP (<https://youtu.be/CNXjWZMyh_M>)"
+#| label: fig-nldervisMNISTPACMAP
+#| out-width: 100%
+#| fig-pos: h
+
+plot_list2_mnist + trimesh_removed_mnist_pacmap + plot_list2_mnist_error +
+plot_layout(guides='collect', ncol=3) &
+  theme(legend.position='bottom')
 ```
 
 ## Conclusion {#sec-conclusion}

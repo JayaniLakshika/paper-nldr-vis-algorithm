@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, frame hidden, enhanced, boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -467,17 +467,17 @@ of the data.
 In this paper, we introduce a novel method to determine the most
 effective NLDR technique and the best hyperparameter choice that
 provides the most useful representation of high-D data. Our approach
-involves dividing the high-dimensional dataset into two parts: a
-training set for constructing the model and a test set for generating
-predictive values and residuals. Our algorithm takes a 2D embedding data
-as the input and generate a tour that displays the high-dimensional
-wireframe to overlay the data. The flow chart of the proposed algorithm
-is shown in Figure~\ref{fig-meth}. The algorithm consists of two main
-phases: (1) generating the model in the 2D space and (2) lifting the
-model into high-D space. The main steps of the algorithm are described
-in detail in this section using UMAP 2D embedding of the S-curve
-dataset. This dataset has seven dimensions, including four noise
-dimensions that were added to the original 3D data.
+involves dividing the high-D dataset into two parts: a training set for
+constructing the model and a test set for generating predictive values
+and residuals. Our algorithm takes a 2D embedding data as the input and
+generate a tour that displays the high-D wireframe to overlay the data.
+The flow chart of the proposed algorithm is shown in
+Figure~\ref{fig-meth}. The algorithm consists of two main phases: (1)
+generating the model in the 2D space and (2) lifting the model into
+high-D space. The main steps of the algorithm are described in detail in
+this section using UMAP 2D embedding of the S-curve dataset. This
+dataset has seven dimensions, including four noise dimensions that were
+added to the original 3D data.
 
 \begin{figure}
 
@@ -494,20 +494,36 @@ algorithm. There are two basic phases, one to generate the model in the
 \hypertarget{preprocessing-steps}{%
 \subsection{Preprocessing steps}\label{preprocessing-steps}}
 
-In order to reduce the computational complexity associated with
-performing NLDR techniques to high-D data, and as a initial step of
-noise reduction of high-D data, PCA \citep[\citet{article68},
-\citet{article69}]{article67} is applied as a preprocessing step.
-Subsequently, the identified principal components, representing
-directions of maximum variance, are used to construct the model.
-
-Then, after performing NLDR, to have regular hexagons, 2D embedding data
-are scaled accordingly.
+To reduce computational complexity when applying NLDR techniques to
+high-D data and to reduce noise presence, PCA \citep[\citet{article68},
+\citet{article69}]{article67} is used as a preprocessing step. PCA
+involves identifying principal components that maximize variance. These
+components are then used as the high-D data for the algorithm.
 
 \hypertarget{sec-construct2d}{%
 \subsection{Constructing the 2D model}\label{sec-construct2d}}
 
 \textbf{Step 1: Scaling NLDR data}
+
+First, we prepare the 2D embedding data to fit within the bounds
+required for regular hexagonal binning. To achieve this, we implement
+two key scaling steps. Scale the first 2D embedding component to range
+between \(0\) and \(1\), ensuring that all data points fall within this
+normalized interval. Secondly, we scale the second 2D embedding
+component to range between \(0\) and \(y_{max}\) (see
+Equation~\ref{eq-equation3}).
+
+\begin{equation}\protect\hypertarget{eq-equation1}{}{
+ ar = \frac{r_2}{r_1}
+}\label{eq-equation1}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation2}{}{
+ hr = \frac{hb}{wb}
+}\label{eq-equation2}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation3}{}{
+ y_{max} = \text{ceiling}(\frac{ar}{hr}) * hr
+}\label{eq-equation3}\end{equation}
 
 \textbf{Step 2: Hexagonating NLDR data}
 
@@ -908,11 +924,11 @@ algorithm. In this method, which operates as an unsupervised
 classification problem, the nearest high-D model point (averaged high-D
 point) is identified for the new high-D data point. Once the nearest
 high-D model point is identified, its coordinates are used as the
-predicted 2D embeddings for the new high-D data point. This step is
+predicted 2D embedding for the new high-D data point. This step is
 particularly valuable due to the limitations of certain NLDR techniques,
 like tSNE, which don't provide a straightforward method for predicting
-2D embeddings. As a result, our approach presents a solution that can
-generate predicted 2D embeddings, irrespective of the NLDR technique
+2D embedding. As a result, our approach presents a solution that can
+generate predicted 2D embedding, irrespective of the NLDR technique
 employed, effectively addressing this gap in functionality.
 
 The concept of ``residuals'' is pivotal in evaluating the accuracy of
@@ -977,18 +993,18 @@ in 4-\(d\), with each cluster containing an equal number of points and
 consistent within variation.
 
 In the 2D representations created by all NLDR techniques, as shown in
-\textbf{?@fig-nldervis5Gau}, except for PHATE, there are five distinct
+Figure~\ref{fig-nldervis5Gau}, except for PHATE, there are five distinct
 clusters. In tSNE, these five clusters are closely located to each other
-(see \textbf{?@fig-nldervis5Gau} (a)). However, in PHATE, two clusters
+(see Figure~\ref{fig-nldervis5Gau} (a)). However, in PHATE, two clusters
 are closely positioned, while the other three are more distant (see
-\textbf{?@fig-nldervis5Gau} (c)). In PaCMAP, one cluster is at the
+Figure~\ref{fig-nldervis5Gau} (c)). In PaCMAP, one cluster is at the
 center, and the remaining four are positioned in four different
-directions (see \textbf{?@fig-nldervis5Gau} (e)). In TriMAP, two
+directions (see Figure~\ref{fig-nldervis5Gau} (e)). In TriMAP, two
 clusters are close, although not as close as in PHATE, and the other
-three are well-separated (see \textbf{?@fig-nldervis5Gau} (d)). In UMAP,
-all clusters are arranged in a parallel manner, with three in one line
-and the other two in a separate line (see \textbf{?@fig-nldervis5Gau}
-(b)).
+three are well-separated (see Figure~\ref{fig-nldervis5Gau} (d)). In
+UMAP, all clusters are arranged in a parallel manner, with three in one
+line and the other two in a separate line (see
+Figure~\ref{fig-nldervis5Gau} (b)).
 
 Visualizing the models alongside the original high-D data provides
 insights into how different techniques capture the underlying clustering
@@ -1005,7 +1021,44 @@ within-cluster variation to varying extents. Despite the various 2D
 representations, all NLDR techniques preserve the global structure (see
 video link of \textbf{?@fig-modelfiveGau} (d), (e) respectively).
 However, tSNE, effectively capture both local and global structures, as
-indicated by lower AIC values in \textbf{?@fig-diagnosticpltGau} (a).
+indicated by lower AIC values in Figure~\ref{fig-diagnosticpltGau} (a).
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervis5Gau-1.pdf}
+
+}
+
+\caption{\label{fig-nldervis5Gau}2D layouts from different NLDR
+techniques applied the same data: (a) tSNE (perplexity = 61), (b) UMAP
+(n\_neighbors = 15), (c) PHATE (knn = 5), (d) TriMAP (n\_inliers = 5,
+n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
+= random, MN\_ratio = 0.9, FP\_ratio = 2). Is there a best
+representation of the original data or are they all providing equivalent
+information?}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltGau-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltGau}Goodness of fit statistics from
+different NLDR techniques applied to training five spherical Gaussian
+cluster dataset. What is the best NLDR technique to represent the
+original data in 2D?}
+
+\end{figure}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-1.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-2.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-3.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-44-4.pdf}
 
 \hypertarget{sec-applications}{%
 \section{Applications}\label{sec-applications}}
@@ -1206,13 +1259,13 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-1.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-2.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-2.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-3.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-3.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-55-4.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-59-4.pdf}
 
 \begin{figure}[h]
 
@@ -1247,13 +1300,13 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-1.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-2.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-2.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-3.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-3.pdf}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-61-4.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-65-4.pdf}
 
 \begin{figure}[h]
 
@@ -1279,7 +1332,57 @@ Model in the 2D space with UMAP (\textless\textgreater)}
   cluster 6         0         0         0         0        19       139
 \end{verbatim}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-64-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-68-1.pdf}
+
+\hypertarget{handwritten-digits}{%
+\subsection{Handwritten digits}\label{handwritten-digits}}
+
+\begin{itemize}
+\tightlist
+\item
+  Digit 1 (7877 images only)
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltMNIST-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltMNIST}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-73-1.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-73-2.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-73-3.pdf}
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-73-4.pdf}
+
+\begin{figure}[h]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisMNISTPACMAP}(a) 2D layout from UMAP
+(n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
+this a best representation of the original data?, (b) Model in the 2D
+space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
+
+\end{figure}
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}
