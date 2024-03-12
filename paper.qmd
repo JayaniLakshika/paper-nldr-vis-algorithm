@@ -962,15 +962,180 @@ a2 + a1 +
 
 ### Tuning the model
 
-The performance and robustness of our model depend on three key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, and (iii) a benchmark value used to remove long edges. However, there is no analytical formula to calculate an appropriate value for these parameters (see Appendix for details on how default values are calculated). The selection of these parameter values depends on the model performance computed by Mean Squared Error (MSE) (see @sec-goodfit).  
+The performance and robustness of our model depend on four key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, (iii) a benchmark value used to remove long edges, and (iv) starting point of the hexagonal grid. However, there is no analytical formula to calculate an appropriate value for these parameters (the computation of default values can be find in *quollr* paper). The selection of these parameter values depends on the model performance computed by Mean Squared Error (MSE) (see @sec-goodfit).  
 
 #### Total number of bins
 
 The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the 2D model. This is because it is the initial step in building the 2D model. The hexagonal grid with the chosen total number of bins must be able to capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to build an effective model.
 
-Furthermore, the total number of bins is determined by the number of bins along the x-axis and y-axis (see @eq-equation13). To calculate the effective total number of bins, the minimum and approximate maximum number of bins along the x-axis are used as candidate values. The minimum number of bins along the x-axis is $1$. The maximum number of bins along the x-axis can be estimated by taking the square root of the number of NLDR data points. To investigate the impact of the number of bins on MSE, the analysis is focused on the MSE for different total numbers of bins. This range encompasses the total number of bins calculated for the minimum and maximum values of the number of bins along the x-axis.
+$$
+b = b_1 \times b_2
+$${#eq-equation8}
 
-Typically, the MSE plot will have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope will gradually decline or level off, indicating that a higher number of bins generates a smaller error. This MSE plot is useful in determining the effective number of bins required to construct the 2D model. @fig-diagnosticpltScurve (b) has created a graph that shows how the Mean Squared Error (MSE) changes depending on the number of bins assigned in the hexagonal grid for various NLDR techniques applied to the S-curve data set. As per the rule of thumb mentioned earlier, the effective number of bins for each NLDR method is shown in the @tbl-msebinsnldr. Furthermore, @fig-modelScurve shows the 2D models constructed for each NLDR technique with the selected total number of bins and how the models look in high-D with original data.   
+Furthermore, the total number of bins is determined by the number of bins along the x-axis and y-axis (see @eq-equation8). To calculate the effective total number of bins, candidate values are selected based on the range between the minimum and approximate maximum number of bins along the x and y axes. The minimum number of bins along each axis is set to $1$, while the maximum number is estimated by taking the square root of the NLDR data point count. The analysis evaluates the MSE across varying total bin counts within this range, covering the minimum to maximum values along both axes.
+
+The analysis focuses on exploring the effect of total number of bins on MSE. It considers MSE across different total number of bins, covering the range calculated from the minimum to maximum values along both x and y axes.
+
+Typically, the MSE plot tends to have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or levesl off, indicating that a higher number of bins generates a smaller error. This MSE plot is useful in determining the effective number of bins required to construct the 2D model. @fig-diagnosticpltScurve (b) has created a graph that shows how the Mean Squared Error (MSE) changes depending on the number of bins assigned in the hexagonal grid for UMAP applied to the S-curve dataset. As per the rule of thumb mentioned earlier, the effective number of bins is determined to be $84$, with $6$ bins along the x-axis and $14$ bins along the y-axis. Furthermore, @fig-modelScurve shows the 2D model constructed using UMAP with the selected total number of bins and how the model overlay on high-D data.
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+umap_s_curve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = UMAP_data, 
+                                    x = "UMAP1", y = "UMAP2"))) |>
+  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
+                  "UMAP2" = "scaled_UMAP2")) |>
+  dplyr::mutate(ID = 1:NROW(UMAP_data))
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## UMAP
+
+hex_size_vec <- seq(0.06, 2, by = 0.01)
+
+vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
+
+mse_df <- dplyr::bind_rows(vec)[0, ]
+mse_df <- mse_df |>
+  dplyr::mutate_if(is.character, as.numeric)
+
+for (i in 1:length(hex_size_vec)) {
+  
+  num_bin_list <- calc_bins(data = umap_s_curve_scaled, 
+            x = "UMAP1", y = "UMAP2", 
+            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
+  
+  num_bins_x <- num_bin_list$num_x
+  num_bins_y <- num_bin_list$num_y
+  
+  model_object <- fit_highd_model( training_data = training_data, 
+                                   nldr_df_with_id = umap_s_curve_scaled, 
+                                   x = "UMAP1", y = "UMAP2", 
+                                   num_bins_x = num_bins_x, 
+                                   num_bins_y = num_bins_y, 
+                                   x_start = NA, y_start = NA, 
+                                   buffer_x = NA, buffer_y = NA, 
+                                   hex_size = hex_size_vec[i],
+                                   is_rm_lwd_hex = FALSE, 
+                                   benchmark_to_rm_lwd_hex = NA, 
+                                   col_start_2d = "UMAP", 
+                                   col_start_highd = "x")
+  
+  centroid_df_training <- model_object$df_bin_centroids
+  avg_df_training <- model_object$df_bin
+  
+  pred_emb_list <- predict_emb(test_data = training_data, 
+                                  df_bin_centroids = centroid_df_training, 
+                                  df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
+  
+  eval_list <- gen_summary(test_data = training_data, 
+                                  prediction_df = pred_df_training, 
+                                  df_bin = avg_df_training, col_start = "x")
+  
+  mse_df <- mse_df |>
+    tibble::add_row(num_bins = num_bins_x * num_bins_y,
+                    aic = eval_list$aic,
+                    mse = eval_list$mse,
+                    num_bins_x = num_bins_x,
+                    num_bins_y = num_bins_y,
+                    hex_size = hex_size_vec[i])
+  
+
+}
+
+
+## If same total number of bins occurred only select ones with minimum error
+### Obtain duplicate bins
+dupli_bins <- mse_df |> 
+  dplyr::count(num_bins) |> 
+  dplyr::filter(n > 1) |> 
+  dplyr::pull(num_bins)
+
+### Group split by duplicated bins
+duplicate_df_list <- mse_df |>
+  dplyr::filter(num_bins %in% dupli_bins) |>
+  dplyr::arrange(num_bins) |>
+  dplyr::group_split(num_bins)
+
+### Obtain one row from duplicates which have lowest error and hexsize
+duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (i in 1:length(duplicate_df_list)) {
+  
+  dd <- duplicate_df_list[[i]] |>
+    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
+    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
+  
+  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
+  
+}
+
+### Obtain the mse_df with not duplicated bins
+not_dupli_df <- mse_df |>
+  dplyr::filter(!(num_bins %in% dupli_bins))
+
+### Combine duplicated and not duplicated(corrected) bins dfs
+mse_df <- dplyr::bind_rows(not_dupli_df, duplicate_df)
+```
+
+```{r}
+#| warning: false
+#| echo: false
+
+## To draw with AIC
+aic_plot <- ggplot(mse_df, aes(x = num_bins, y = aic
+)) +
+  geom_point() +
+  geom_line() +
+  geom_vline(xintercept = 84, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("AIC") +
+  xlab("total number of bins")
+## Effective number of bins along x-axis
+
+mse_plot <- ggplot(mse_df, aes(x = num_bins,
+                                       y = mse
+)) +
+  geom_point() +
+  geom_line() +
+   geom_vline(xintercept = 84, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  theme_light() +
+  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title = element_text(size = 7),
+        axis.text = element_text(size = 7)) +
+  #scale_colour_manual(values = c("#377eb8")) +
+  ylab("MSE") +
+  xlab("total number of bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to $84$, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| label: fig-diagnosticpltScurve
+##| out-width: 100%
+#| fig-pos: H
+
+aic_plot + mse_plot +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(guides='collect', ncol = 2) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
 
 ```{r msebinsnldr}
 #| echo: false
@@ -1206,19 +1371,6 @@ mse_plot <- ggplot(MSE_df_umap_s_curve |> dplyr::filter(method == "UMAP"), aes(x
 
 ```
 
-```{r}
-#| eval: false
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
-#| label: fig-diagnosticpltScurve
-##| out-width: 100%
-#| fig-pos: H
-
-aic_plot + mse_plot +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
 -->
 
 #### Benchmark value to remove low-density hexagons
@@ -1450,6 +1602,128 @@ aic_plot_lwd + mse_plot_lwd +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 -->
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## Decide by looking at MSE plot
+num_bins_x_s_curve <- 6
+num_bins_y_s_curve <- 14
+hex_size_s_curve <- 0.13
+
+hb_obj_s_curve <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x_s_curve, 
+                      num_bins_y = num_bins_y_s_curve, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_s_curve, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_s_curve$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_s_curve$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_s_curve$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+pcentroid_plot_s_curve <- ggplot(data = hex_grid, aes(x = x, y = y)) +
+  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+  geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
+  coord_fixed() +
+  theme_linedraw() +
+  theme(legend.position = "bottom", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
+
+umap_data_with_hb_id_pbmc <- as.data.frame(do.call(cbind, hb_obj_s_curve$data_hb_id))
+  
+model_object <- fit_highd_model( training_data = training_data, 
+                                 nldr_df_with_id = umap_s_curve_scaled, 
+                                 x = "UMAP1", y = "UMAP2", 
+                                 num_bins_x = num_bins_x_s_curve, 
+                                 num_bins_y = num_bins_y_s_curve, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size_s_curve,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "UMAP", 
+                                 col_start_highd = "x")
+
+df_bin_centroids_s_curve <- model_object$df_bin_centroids
+df_bin_s_curve <- model_object$df_bin
+
+## Triangulate bin centroids
+tr1_object_s_curve <- tri_bin_centroids(df_bin_centroids_s_curve, x = "c_x", y = "c_y")
+tr_from_to_df_s_curve <- gen_edges(tri_object = tr1_object_s_curve)
+
+## Compute 2D distances
+distance_s_curve <- cal_2d_dist(tr_coord_df = tr_from_to_df_s_curve, 
+                             start_x = "x_from", start_y = "y_from", 
+                             end_x = "x_to", end_y = "y_to", 
+                             select_vars = c("from", "to", "distance"))
+
+
+# distance_plot <- plot_dist(distance_pbmc) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+## To find the benchmark value
+benchmark_s_curve <- find_lg_benchmark(distance_edges = distance_s_curve, distance_col = "distance")
+
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
+
+trimesh_s_curve_umap <- vis_lg_mesh(distance_edges = distance_s_curve, benchmark_value = benchmark_s_curve, tr_coord_df = tr_from_to_df_s_curve, distance_col = "distance")
+
+trimesh_s_curve_umap <- trimesh_s_curve_umap +
+  theme_linedraw() +
+  theme(legend.position = "bottom", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) +
+  labs(colour = "")
+
+trimesh_removed_s_curve_umap <- vis_rmlg_mesh(distance_edges = distance_s_curve, benchmark_value = benchmark_s_curve, tr_coord_df = tr_from_to_df_s_curve, distance_col = "distance")
+
+trimesh_removed_s_curve_umap <- trimesh_removed_s_curve_umap +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a), (b) 2D model."
+#| label: fig-modelScurve
+
+pcentroid_plot_s_curve + trimesh_s_curve_umap + trimesh_removed_s_curve_umap +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom') 
+```
+
 
 #### Benchmark value to remove long edges
 
@@ -3096,7 +3370,7 @@ mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training PBMC3k dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 80, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltPBMC
 ##| out-width: 100%
 #| fig-pos: H
@@ -3704,7 +3978,8 @@ result1_2d_layout <- df_res_1_2_label |>
          legend.key.width = unit(0.25, 'cm')) +
   scale_color_manual(values=c("#d82cd3", "#49df20", "#619cff", "#000000", "#df2020", "#ffbd61", "yellow")) +
   # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) +
+  labs(colour = "cluster labels")
 
 result2_2d_layout <- df_res_1_2_label |>
     ggplot(aes(x = UMAP1,
@@ -3713,7 +3988,7 @@ result2_2d_layout <- df_res_1_2_label |>
     coord_equal() +
     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
   theme_linedraw() +
-    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+    theme(legend.position = "bottom", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
               axis.title.x = element_blank(), axis.title.y = element_blank(),
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
               axis.text.y = element_blank(), axis.ticks.y = element_blank(),
@@ -3724,11 +3999,23 @@ result2_2d_layout <- df_res_1_2_label |>
          legend.key.width = unit(0.25, 'cm')) +
   scale_color_manual(values=c("#d82cd3", "#49df20", "#619cff", "#000000", "#df2020", "#ffbd61", "yellow")) +
   # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
-  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) +
+  labs(colour = "cluster labels")
 
 table(df_res_1_2_label$result1_class_label, df_res_1_2_label$result2_class_label)
 
-result1_2d_layout + result2_2d_layout
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for PBMC3k dataset (a) colored by manualy identified clusters, (b) colored by `detour` results"
+#| label: fig-nldervisPBMCUMAP3Res
+#| out-width: 100%
+
+result1_2d_layout + result2_2d_layout +
+  plot_layout(guides='collect', ncol=2) &
+  theme(legend.position='bottom')
+
 ```
 
 ### Handwritten digits
@@ -4088,6 +4375,9 @@ plot_list2_mnist_error <- error_df |>
                                          "#cb181d", "#a50f15", "#99000d")) 
 
 # show_langevitour(df_all_mnist, df_bin_mnist, df_bin_centroids_mnist, benchmark_mnist, distance_mnist, "distance", col_start = "PC")
+
+predict_minst_df <- as.data.frame(do.call(cbind, predict_emb(training_data_mnist, df_bin_centroids_mnist, df_bin_mnist, "PaCMAP")))
+gen_summary(training_data_mnist, predict_minst_df, df_bin_mnist, col_start = "PC")
 ```
 
 ```{r}

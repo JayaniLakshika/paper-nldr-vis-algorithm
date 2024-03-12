@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, sharp corners, enhanced, frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -652,14 +652,15 @@ video linked in \textbf{?@fig-wkhighD}).
 \hypertarget{tuning-the-model}{%
 \subsection{Tuning the model}\label{tuning-the-model}}
 
-The performance and robustness of our model depend on three key
+The performance and robustness of our model depend on four key
 parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
-used to remove low-density hexagons, and (iii) a benchmark value used to
-remove long edges. However, there is no analytical formula to calculate
-an appropriate value for these parameters (see Appendix for details on
-how default values are calculated). The selection of these parameter
-values depends on the model performance computed by Mean Squared Error
-(MSE) (see Section~\ref{sec-goodfit}).
+used to remove low-density hexagons, (iii) a benchmark value used to
+remove long edges, and (iv) starting point of the hexagonal grid.
+However, there is no analytical formula to calculate an appropriate
+value for these parameters (the computation of default values can be
+find in \emph{quollr} paper). The selection of these parameter values
+depends on the model performance computed by Mean Squared Error (MSE)
+(see Section~\ref{sec-goodfit}).
 
 \hypertarget{total-number-of-bins}{%
 \subsubsection{Total number of bins}\label{total-number-of-bins}}
@@ -675,32 +676,59 @@ result in over-fitting the individual points of the NLDR data (see
 \textbf{?@fig-binsize} (c)). Therefore, it is important to determine an
 appropriate number of bins to build an effective model.
 
-Furthermore, the total number of bins is determined by the number of
-bins along the x-axis and y-axis (see \textbf{?@eq-equation13}). To
-calculate the effective total number of bins, the minimum and
-approximate maximum number of bins along the x-axis are used as
-candidate values. The minimum number of bins along the x-axis is \(1\).
-The maximum number of bins along the x-axis can be estimated by taking
-the square root of the number of NLDR data points. To investigate the
-impact of the number of bins on MSE, the analysis is focused on the MSE
-for different total numbers of bins. This range encompasses the total
-number of bins calculated for the minimum and maximum values of the
-number of bins along the x-axis.
+\begin{equation}\protect\hypertarget{eq-equation8}{}{
+b = b_1 \times b_2
+}\label{eq-equation8}\end{equation}
 
-Typically, the MSE plot will have a steep slope at the beginning,
+Furthermore, the total number of bins is determined by the number of
+bins along the x-axis and y-axis (see Equation~\ref{eq-equation8}). To
+calculate the effective total number of bins, candidate values are
+selected based on the range between the minimum and approximate maximum
+number of bins along the x and y axes. The minimum number of bins along
+each axis is set to \(1\), while the maximum number is estimated by
+taking the square root of the NLDR data point count. The analysis
+evaluates the MSE across varying total bin counts within this range,
+covering the minimum to maximum values along both axes.
+
+The analysis focuses on exploring the effect of total number of bins on
+MSE. It considers MSE across different total number of bins, covering
+the range calculated from the minimum to maximum values along both x and
+y axes.
+
+Typically, the MSE plot tends to have a steep slope at the beginning,
 indicating that a smaller number of bins causes a larger amount of
-error. Then, the slope will gradually decline or level off, indicating
-that a higher number of bins generates a smaller error. This MSE plot is
+error. Then, the slope gradually declines or levesl off, indicating that
+a higher number of bins generates a smaller error. This MSE plot is
 useful in determining the effective number of bins required to construct
-the 2D model. \textbf{?@fig-diagnosticpltScurve} (b) has created a graph
-that shows how the Mean Squared Error (MSE) changes depending on the
-number of bins assigned in the hexagonal grid for various NLDR
-techniques applied to the S-curve data set. As per the rule of thumb
-mentioned earlier, the effective number of bins for each NLDR method is
-shown in the \textbf{?@tbl-msebinsnldr}. Furthermore,
-\textbf{?@fig-modelScurve} shows the 2D models constructed for each NLDR
-technique with the selected total number of bins and how the models look
-in high-D with original data.
+the 2D model. Figure~\ref{fig-diagnosticpltScurve} (b) has created a
+graph that shows how the Mean Squared Error (MSE) changes depending on
+the number of bins assigned in the hexagonal grid for UMAP applied to
+the S-curve dataset. As per the rule of thumb mentioned earlier, the
+effective number of bins is determined to be \(84\), with \(6\) bins
+along the x-axis and \(14\) bins along the y-axis. Furthermore,
+Figure~\ref{fig-modelScurve} shows the 2D model constructed using UMAP
+with the selected total number of bins and how the model overlay on
+high-D data.
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltScurve}Goodness of fit statistics from
+UMAP applied to training S-curve dataset. What is the effective number
+of bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+\(84\), the slope of the Mean Squared Error (MSE) plot experiences a
+sudden and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
 
 \hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
 \subsubsection{Benchmark value to remove low-density
@@ -761,7 +789,7 @@ fluctuate, and the first local minimum is at \(0\). Therefore, nearby
 benchmark values such as \(0.01\), \(0.04\), and \(0.06\) were explored
 to identify the best value for preserving the data structure. In this
 case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
-is shown in \textbf{?@fig-modelScurve} (c), while the video link
+is shown in Figure~\ref{fig-modelScurve} (c), while the video link
 provides a visual representation of how the model appears in high-D.
 
 The following steps will help to find a suitable value to remove low
@@ -776,6 +804,16 @@ density hexagons:
 \item
   Take the first quartile
 \end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
+
+}
+
+\caption{\label{fig-modelScurve}(a), (b) 2D model.}
+
+\end{figure}
 
 \hypertarget{benchmark-value-to-remove-long-edges}{%
 \subsubsection{Benchmark value to remove long
@@ -1149,13 +1187,13 @@ selected by Festem method
 }
 
 \caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
+UMAP applied to training PBMC3k dataset. What is the effective number of
+bins in each NLDR technique to create a 2D model? The MSE plot have a
 steep slope at the beginning, indicating that a smaller number of bins
 causes a larger amount of error. Then, the slope gradually declines or
 level off, indicating that a higher number of bins generates a smaller
 error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+80, the slope of the Mean Squared Error (MSE) plot experiences a sudden
 and noticeable change, resembling an elbow-like shape. This point
 indicates that adding less bins does not enough to capture the data
 structure.}
@@ -1219,7 +1257,18 @@ Model in the 2D space with UMAP (\textless\textgreater)}
   cluster 6         0         0         0         0        19       139
 \end{verbatim}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-68-1.pdf}
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3Res-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCUMAP3Res}2D layout from UMAP
+(n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for PBMC3k
+dataset (a) colored by manualy identified clusters, (b) colored by
+\texttt{detour} results}
+
+\end{figure}
 
 \hypertarget{handwritten-digits}{%
 \subsection{Handwritten digits}\label{handwritten-digits}}
@@ -1285,6 +1334,14 @@ indicates that adding less bins does not enough to capture the data
 structure.}
 
 \end{figure}
+
+\begin{verbatim}
+$mse
+[1] 3.017065
+
+$aic
+[1] 87724.49
+\end{verbatim}
 
 \begin{figure}[h]
 
