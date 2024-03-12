@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, sharp corners, enhanced, frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -533,7 +533,7 @@ grid layout of the hexagonal bins.
 }\label{eq-equation2}\end{equation}
 
 \begin{equation}\protect\hypertarget{eq-equation3}{}{
- y_{max} = \text{ceiling}(\frac{ar}{hr}) * hr
+ y_{max} = \left\lceil\frac{ar}{hr}\right\rceil * hr
 }\label{eq-equation3}\end{equation}
 
 \textbf{Step 2: Hexagonating NLDR data}
@@ -1265,8 +1265,7 @@ Model in the 2D space with UMAP (\textless\textgreater)}
 
 \caption{\label{fig-nldervisPBMCUMAP3Res}2D layout from UMAP
 (n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for PBMC3k
-dataset (a) colored by manualy identified clusters, (b) colored by
-\texttt{detour} results}
+dataset (a) colored manually in 2D, (b) colored in high-D}
 
 \end{figure}
 
@@ -1311,8 +1310,28 @@ dataset (a) colored by manualy identified clusters, (b) colored by
   dimensionality reduction (e.g., PCA) or feature engineering to extract
   meaningful information from the images.
 \item
+  Selected 10 PCs based on scree plot
+\item
+  7877 images of digit 1
+\item
   PaCMAP parameters: n\_components=2, n\_neighbors=10, init=``random'',
   MN\_ratio=0.9, FP\_ratio=2.0
+\end{itemize}
+
+\hypertarget{model}{%
+\subsubsection{Model}\label{model}}
+
+\begin{itemize}
+\item
+  Total number of bins used: 180 (num\_x = 12, num\_y = 15, hex\_size =
+  0.06)
+\item
+  Learned from the model: There is a non-linear shape in 2D, but if look
+  at the model in high-D, the non-linear continuity is there but there
+  is a twist in the structure which didn't capture by PaCMAP.
+\item
+  Write about looking at images of digit 1 as well..how in 2D space
+  images are distributed, which images occur high-errors in high-D
 \end{itemize}
 
 \begin{figure}
@@ -1328,7 +1347,7 @@ steep slope at the beginning, indicating that a smaller number of bins
 causes a larger amount of error. Then, the slope gradually declines or
 level off, indicating that a higher number of bins generates a smaller
 error. Using the elbow method, when the total number of bins is set to
-80, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+180, the slope of the Mean Squared Error (MSE) plot experiences a sudden
 and noticeable change, resembling an elbow-like shape. This point
 indicates that adding less bins does not enough to capture the data
 structure.}
@@ -1337,10 +1356,10 @@ structure.}
 
 \begin{verbatim}
 $mse
-[1] 3.017065
+[1] 2.276023
 
 $aic
-[1] 87724.49
+[1] 66382.78
 \end{verbatim}
 
 \begin{figure}[h]
@@ -1354,6 +1373,17 @@ $aic
 FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a
 best representation of the original data?, (b) Model in the 2D space
 with PaCMAP ()}
+
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-sampleimg-1.pdf}
+
+}
+
+\caption{\label{fig-sampleimg}Images of handwritten digit 1 which occur
+large model error.}
 
 \end{figure}
 

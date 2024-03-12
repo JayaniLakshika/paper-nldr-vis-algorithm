@@ -85,6 +85,7 @@ library(DT)
 library(ggbeeswarm)
 library(ggplot2)
 library(readr)
+library(tidyr)
 
 library(Rtsne)
 library(umap)
@@ -463,7 +464,7 @@ $$
 $$ {#eq-equation2}
 
 $$
- y_{max} = \text{ceiling}(\frac{ar}{hr}) * hr
+ y_{max} = \left\lceil\frac{ar}{hr}\right\rceil * hr
 $$ {#eq-equation3}
 
 **Step 2: Hexagonating NLDR data**
@@ -4008,7 +4009,7 @@ table(df_res_1_2_label$result1_class_label, df_res_1_2_label$result2_class_label
 
 ```{r}
 #| echo: false
-#| fig-cap: "2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for PBMC3k dataset (a) colored by manualy identified clusters, (b) colored by `detour` results"
+#| fig-cap: "2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for PBMC3k dataset (a) colored manually in 2D, (b) colored in high-D"
 #| label: fig-nldervisPBMCUMAP3Res
 #| out-width: 100%
 
@@ -4036,7 +4037,21 @@ result1_2d_layout + result2_2d_layout +
 
 - Reshaping the pixel data allows for easier extraction of relevant features from the images. Once reshaped, individual pixels can be treated as features, making it easier to apply techniques like dimensionality reduction (e.g., PCA) or feature engineering to extract meaningful information from the images.
 
+- Selected 10 PCs based on scree plot
+
+- 7877 images of digit 1 
+
 - PaCMAP parameters: n_components=2, n_neighbors=10, init="random", MN_ratio=0.9, FP_ratio=2.0
+
+#### Model
+
+- Total number of bins used: 180 (num_x = 12, num_y = 15, hex_size = 0.06)
+
+- Learned from the model: There is a non-linear shape in 2D, but if look at the model in high-D, the non-linear continuity is there but there is a twist in the structure which didn't capture by PaCMAP.
+
+- Write about looking at images of digit 1 as well..how in 2D space images are distributed, which images occur high-errors in high-D
+
+
 
 ```{r}
 #| warning: false
@@ -4071,9 +4086,8 @@ plot_list2_mnist <- pacmap_minst_scaled |>
         legend.text = element_text(size=4),
          legend.key.height = unit(0.25, 'cm'),
          legend.key.width = unit(0.25, 'cm')) +
-  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
   # geom_text(aes(x=UMAP1,y = UMAP2,label = cell_label), data = class_avg,inherit.aes = F, color = "black",fontface = "bold",size = 2) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+  annotate(geom = 'text', label = 'a', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3) 
 ```
 
 ```{r}
@@ -4183,7 +4197,7 @@ aic_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins, y = aic
 )) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 80, linetype="solid",
+  geom_vline(xintercept = 180, linetype="solid",
                 color = "red", size=0.8, alpha = 0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -4199,7 +4213,7 @@ mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
 )) +
   geom_point() +
   geom_line() +
-   geom_vline(xintercept = 80, linetype="solid",
+   geom_vline(xintercept = 180, linetype="solid",
                 color = "red", size=0.8, alpha = 0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -4213,7 +4227,7 @@ mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 80, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 180, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltMNIST
 ##| out-width: 100%
 #| fig-pos: H
@@ -4230,9 +4244,9 @@ aic_plot_mnist + mse_plot_mnist +
 #| message: false
 
 ## Decide by looking at MSE plot
-num_bins_x_mnist <- 8
-num_bins_y_mnist <- 10
-hex_size_mnist <- 0.1
+num_bins_x_mnist <- 12
+num_bins_y_mnist <- 15
+hex_size_mnist <- 0.06
 
 hb_obj_mnist <- hex_binning(data = pacmap_minst_scaled, x = "PaCMAP1", 
                       y = "PaCMAP2", num_bins_x = num_bins_x_mnist, 
@@ -4249,7 +4263,7 @@ hex_grid <- as.data.frame(do.call(cbind, hb_obj_mnist$hex_poly))
 counts_df <- as.data.frame(do.call(cbind, hb_obj_mnist$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
-# ggplot(data = hex_grid, aes(x = x, y = y)) + 
+# ggplot(data = hex_grid, aes(x = x, y = y)) +
 #   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
 #   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
 #   coord_fixed()
@@ -4313,7 +4327,7 @@ trimesh_removed_mnist_pacmap <- trimesh_removed_mnist_pacmap +
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+  annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 df_bin_train <- df_bin_mnist
 names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
@@ -4349,12 +4363,12 @@ error_df <- error_df |>
                         if_else(total <= 2, "error 0-2",
                                 if_else(total <= 4, "error 2-4",
                                         if_else(total <= 6, "error 4-6",
-                                                if_else(total <= 8, "error 6-8",
-                                                        if_else(total <= 12, "error 8-10",
-                                                                if_else(total <= 14, "error 10-12", "error greter than 12"))))))))
+                                                if_else(total <= 10, "error 6-10",
+                                                        if_else(total <= 12, "error 10-12",
+                                                                if_else(total <= 14, "error 12-14", "error greter than 14"))))))))
 
 plot_list2_mnist_error <- error_df |>
-  mutate(type = factor(type , levels = c("no error", "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", "error 10-12", "error greter than 12"))) |>
+  mutate(type = factor(type , levels = c("no error", "error 0-2", "error 2-4", "error 4-6", "error 6-10", "error 10-12", "error 12-14", "error greter than 14"))) |>
     ggplot(aes(x = PaCMAP1,
                y = PaCMAP2, color = type))+
     geom_point(alpha=0.5, size = 0.1) +
@@ -4372,7 +4386,8 @@ plot_list2_mnist_error <- error_df |>
          legend.key.width = unit(0.25, 'cm')) +
   scale_color_manual(values=c("#fee0d2", "#fcbba1",
                                          "#fc9272", "#fb6a4a", "#ef3b2c",
-                                         "#cb181d", "#a50f15", "#99000d")) 
+                                         "#cb181d", "#a50f15", "#99000d")) +
+  annotate(geom = 'text', label = 'c', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 # show_langevitour(df_all_mnist, df_bin_mnist, df_bin_centroids_mnist, benchmark_mnist, distance_mnist, "distance", col_start = "PC")
 
@@ -4390,6 +4405,52 @@ gen_summary(training_data_mnist, predict_minst_df, df_bin_mnist, col_start = "PC
 plot_list2_mnist + trimesh_removed_mnist_pacmap + plot_list2_mnist_error +
 plot_layout(guides='collect', ncol=3) &
   theme(legend.position='bottom')
+```
+
+
+<!--images with large error in high-D-->
+
+```{r}
+#| warning: false
+#| echo: false
+
+img_error <- error_df |> 
+  dplyr::filter(total >= 10) |> 
+  dplyr::pull(ID)
+
+mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
+pixels_gathered <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% img_error) 
+
+theme_set(theme_light())
+imge_error_sample <- pixels_gathered |> 
+  ggplot(aes(x, y, fill = value)) +  
+  geom_tile() +  
+  facet_wrap(~ instance) +
+  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm'),
+        strip.text = element_blank())
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Images of handwritten digit 1 which occur large model error."
+#| label: fig-sampleimg
+#| out-width: 100%
+#| fig-pos: H
+
+imge_error_sample
 ```
 
 ## Conclusion {#sec-conclusion}
