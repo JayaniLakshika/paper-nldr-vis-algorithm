@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, sharp corners, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, boxrule=0pt, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1153,6 +1153,56 @@ selected by Festem method
 \item
   If it is completely a mess, then that is also further evidence that
   the fit is poor in high-dimensions.
+\end{itemize}
+
+\hypertarget{approach-followed}{%
+\subsection{Approach followed}\label{approach-followed}}
+
+\begin{itemize}
+\item
+  First, referred to \citet{Chen2023} paper which shows UMAP
+  representation of PBMC3k data with 15 PCs and parameter choice of
+  n:neighbor:30, min\_dist:0.1, metric:cosine.
+\item
+  Observed that there is three well-separated clusters.
+\item
+  Second, visualise the 15 PCs in high-dimensional space with our model
+  and investigate whether can I see the three well-separated clusters or
+  is it showing something different than what I saw in UMAP view
+  suggested by the author.
+\item
+  Learned from the model: Yes, it's different. There are three clusters
+  but they are really close to each other. Also, in the largest cluster,
+  observed non-linear continuity structure, which didn't captured by the
+  author's UMAP representation.
+\item
+  Learned from the data: Visualise with detour and colored the clusters
+  in high-D. Identified more than three clusters which is suprising.
+\item
+  In that case, need to suggest a better UMAP representation than
+  author's suggestion.
+\item
+  To find a better UMAP representation, I need to investigate different
+  parameter choices for UMAP (or need to try another NLDR technique, but
+  here my objective is to suggest the best parameter choice with UMAP).
+\item
+  Therefore, I fitted our model for different UMAP parameter choices,
+  record the error, and selected the parameter choice that gives the
+  lowest error which is n:neighbor:5, min\_dist:0.99, metric:cosine.
+\item
+  Then, construct our model for this UMAP data (n:neighbor:5,
+  min\_dist:0.99, metric:cosine).
+\item
+  In this representation, you can see that the clusters are closer, and
+  the continuity of clusters are there.
+\item
+  Also, what missed from looking at high-D data with detour, in this
+  UMAP representation I can see more than three clusters.
+\item
+  Then, need to check how correct am I identify the clusters in 2D and
+  is that matched that I identify in high-D.
+\item
+  Generate a confusion matrix.
 \end{itemize}
 
 \begin{table}[H]
