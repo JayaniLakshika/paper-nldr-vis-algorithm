@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, boxrule=0pt, frame hidden, sharp corners, breakable]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1213,7 +1213,8 @@ selected by Festem method
 \item
   UMAP representation of PBMC3k data with 15 PCs and parameter choice of
   n:neighbor:30, min\_dist:0.1, metric:cosine (author's suggestion)
-  shows three well-separated clusters. The question we need to answer
+  shows three well-separated clusters (see
+  Figure~\ref{fig-nldervisPBMCUMPview}). The question we need to answer
   is: Does this UMAP representation preserve the actual data structure,
   or is something missing or misidentified or misleading?
 \end{itemize}
@@ -1238,7 +1239,7 @@ this a best representation of the original data?}
 \item
   To fit the model, first we need to decide how many number bins should
   allocate along the x and y axes. To make an initial choice, we use MSE
-  plot.
+  plot (Figure~\ref{fig-diagnosticpltPBMC} (b)).
 \end{itemize}
 
 \begin{figure}
@@ -1274,23 +1275,92 @@ structure.}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP}Model in the 2D space with UMAP
-(\url{https://youtu.be/CNXjWZMyh_M})}
+\caption{\label{fig-nldervisPBMCUMAP}Model in the 2D space overlaid on
+UMAP data.}
+
+\end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  As shown in Figure~\ref{fig-nldervisPBMCUMAP}, there are three
+  well-separated clusters (according to the model in 2D space).
+\end{itemize}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc1_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model in high-D, a video of the tour
+animation is available at (\url{https://youtu.be/Gnhh4hfsbbg}).}
 
 \end{figure}
 
 \begin{itemize}
 \item
-  You will see three well-separated clusters in high-D as well which
-  gives evidence that UMAP preserves the global structure. Furthermore,
-  there is non-linearity within the clusters which was not identified by
-  the UMAP, which proves that local structure is not preserved.
+  According to Figure~\ref{fig-pbmc1_sc} (a), the model in high-D space
+  shows two well separated clusters. Also, two clusters are really close
+  to each other (see Figure~\ref{fig-pbmc1_sc} (b)). Furthermore, there
+  are three clusters shown by the model in 2D actually represented in
+  high-D as well (see Figure~\ref{fig-pbmc1_sc} (c)). Another important
+  thing to notice from the model in high-D space is that the non-linear
+  continuity structure in two well-separated clusters.
 \item
-  Can we find a better parameter choice for UMAP which preserve the
-  local structure as well?
+  Figure~\ref{fig-pbmc1_sc} (c) gives evidence that UMAP preserves the
+  global structure. Furthermore, the non-linearity within the clusters
+  shown in Figure~\ref{fig-pbmc1_sc} (a) proves that local structure is
+  also preserved but that's not visually shown by th UMAP layout in 2D.
+\item
+  Can we find a better parameter choice for UMAP which shows this
+  non-linear continuity of the big clusters in 2D space as well?
 \item
   To do that, we are going to fit models for different parameter choice
-  and select the one which have the lowest error.
+  and select the one which have the lowest model error in high-D (see
+  \textbf{?@tbl-errordiffcomb}).
 \end{itemize}
 
 \begin{table}[H]
@@ -1318,13 +1388,6 @@ structure.}
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-\item
-  Selected the one with n:neighbor:5, min\_dist:0.99, metric:cosine.
-\item
-  Now, we are going to fit the model for the new parameter choice.
-\end{itemize}
-
 \begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAPview2-1.pdf}
@@ -1336,6 +1399,19 @@ structure.}
 PBMC3k dataset. Is this a best representation of the original data?}
 
 \end{figure}
+
+\begin{itemize}
+\item
+  Selected the one with n:neighbor:5, min\_dist:0.99, metric:cosine (see
+  Figure~\ref{fig-nldervisPBMCUMAPview2}). As shown in
+  Figure~\ref{fig-nldervisPBMCUMAPview2}, the two big clusters have
+  non-linear continuity structures, two big clusters are well-separated
+  but close to each other, and the two cluster which exists in the one
+  big cluster are really close to each other (see
+  Figure~\ref{fig-nldervisPBMCUMAPview2}).
+\item
+  Now, we are going to fit the model for the new parameter choice.
+\end{itemize}
 
 \begin{figure}
 
@@ -1350,7 +1426,7 @@ steep slope at the beginning, indicating that a smaller number of bins
 causes a larger amount of error. Then, the slope gradually declines or
 level off, indicating that a higher number of bins generates a smaller
 error. Using the elbow method, when the total number of bins is set to
-144, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+588, the slope of the Mean Squared Error (MSE) plot experiences a sudden
 and noticeable change, resembling an elbow-like shape. This point
 indicates that adding less bins does not enough to capture the data
 structure.}
@@ -1363,10 +1439,92 @@ structure.}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP3}Model in the 2D space with UMAP
-(\textless\textgreater)}
+\caption{\label{fig-nldervisPBMCUMAP3}(a) Model in the 2D space overlaid
+with UMAP data, and (b) Error occurred by the high-D model for high-D
+data and the error mapped into 2D NLDR points.}
 
 \end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  According to Figure~\ref{fig-nldervisPBMCUMAP3} (a), the model
+  constructed in 2D space for the new parameter choice of UMAP shows 5
+  clusters which are really close to each other. The big cluster shows
+  the non-linear continuity structure with two sub clusters. Other three
+  clusters positioned in a structure of non-linearity but really close
+  to each other.
+\end{itemize}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_4.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_5.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_6.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc2_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model in high-D with new parameter choice
+for UMAP, a video of the tour animation is available at
+(\url{https://youtu.be/lc_6-rIuNHI}).}
+
+\end{figure}
+
+\begin{itemize}
+\item
+  As shown in Figure~\ref{fig-pbmc2_sc}, there are 5 clusters, three of
+  them are well-separated but close to each other as seen in
+  Figure~\ref{fig-nldervisPBMCUMAP3} (a). Also, other two clusters are
+  really close to each other but separated from the early mentioned
+  three clusters.
+\item
+  Next, we are going to investigate whether, the clusters we identified
+  in 2D UMAP layout, can also be identified in high-D as well.
+\item
+  First, I colored the clusters in 2D layout manually. Then, I used
+  spin-and-brush approach with \texttt{detour} to color the clusters in
+  high-D.
+\end{itemize}
 
 \begin{verbatim}
            
@@ -1387,16 +1545,98 @@ structure.}
 
 \caption{\label{fig-nldervisPBMCUMAP3Res}2D layout from UMAP
 (n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for PBMC3k
-dataset (a) colored manually in 2D, (b) colored in high-D}
+dataset (a) colored manually in 2D, (b) colored in high-D.}
 
 \end{figure}
+
+\begin{itemize}
+\item
+  Figure~\ref{fig-nldervisPBMCUMAP3Res} shows the 2D UMAP layout colored
+  with each method. As shown in Figure~\ref{fig-nldervisPBMCUMAP3Res}
+  (b) and the confusion matrix,there are some miss-classifications. What
+  is the reason for that?
+\item
+  For example, the point (ID: 1158) classified as \textbf{cluster 3} in
+  2D UMAP layout, classified as \textbf{cluster 6} when doing the
+  colouring in high-D (see Figure~\ref{fig-nldervisPBMCUMAP3Res}). Why?
+\end{itemize}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_7.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc7}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc2_appsc}Screen shots of app which shows 2D UMAP
+layout and comparison of distances related to the point classified as
+\textbf{cluster 6} in high-D (ID: 1158) and randomly selected point
+which is in \textbf{cluster 6} (ID: 2291).}
+
+\end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  If we compute the distance between these two points, you will see that
+  it preserves the pair-wise distance (see
+  Figure~\ref{fig-pbmc2_appsc}), which give us a evidence that even
+  though the point 1158, classified as \textbf{cluster 3} in 2D layout,
+  actually should be in \textbf{cluster 6}. This also evident that some
+  misleading can happens with UMAP.
+\end{itemize}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_8.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc8}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc2_appsc1}Screen shots of app which shows 2D UMAP
+layout and comparison of distances related to the point classified as
+\textbf{cluster 5} in high-D (ID: 3) and randomly selected point which
+is in \textbf{cluster 5} (ID: 2198).}
+
+\end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  For another example, if we compute the distance between these two
+  points, you will see that it preserves the pair-wise distance (see
+  Figure~\ref{fig-pbmc2_appsc1}), which give us a evidence that even
+  though the point 3, classified as \textbf{cluster 4} in 2D layout,
+  actually should be in \textbf{cluster 5}. This also evident that some
+  misleading can happens with UMAP.
+\end{itemize}
 
 \hypertarget{handwritten-digits}{%
 \subsection{Handwritten digits}\label{handwritten-digits}}
 
 \begin{itemize}
 \item
-  Why I choose this dataset? Because I need show that whatever NLDR
+  Why I choose this data set? Because I need show that whatever NLDR
   technique that we use, our model can capture the non-linear structure
   within clusters as well.
 \item
@@ -1498,7 +1738,7 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-84-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-85-1.pdf}
 
 \begin{figure}[H]
 
@@ -1521,7 +1761,7 @@ high-D model for high-D data and the error mapped into 2D NLDR points.}
   Figure~\ref{fig-mnist1_sc}).
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[H]
 
 \begin{minipage}[t]{0.33\linewidth}
 

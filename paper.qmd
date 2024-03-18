@@ -3602,7 +3602,7 @@ than their CD27+ counterparts.
 
 ### Story
 
-- UMAP representation of PBMC3k data with 15 PCs and parameter choice of n:neighbor:30, min_dist:0.1, metric:cosine (author's suggestion) shows three well-separated clusters. The question we need to answer is: Does this UMAP representation preserve the actual data structure, or is something missing or misidentified or misleading?
+- UMAP representation of PBMC3k data with 15 PCs and parameter choice of n:neighbor:30, min_dist:0.1, metric:cosine (author's suggestion) shows three well-separated clusters (see @fig-nldervisPBMCUMPview). The question we need to answer is: Does this UMAP representation preserve the actual data structure, or is something missing or misidentified or misleading?
 
 ```{r}
 #| warning: false
@@ -3654,7 +3654,7 @@ plot_list2_pbmc
 
 - To investigate this, we are going to visualise the model in the data space, which means that the model generated from UMAP is visualised in high-D with original data.
 
-- To fit the model, first we need to decide how many number bins should allocate along the x and y axes. To make an initial choice, we use MSE plot.
+- To fit the model, first we need to decide how many number bins should allocate along the x and y axes. To make an initial choice, we use MSE plot (@fig-diagnosticpltPBMC (b)).
 
 ```{r}
 #| warning: false
@@ -3953,20 +3953,32 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
 
 ```{r}
 #| echo: false
-#| fig-cap: " Model in the 2D space with UMAP (<https://youtu.be/CNXjWZMyh_M>)"
+#| fig-cap: "Model in the 2D space overlaid on UMAP data."
 #| label: fig-nldervisPBMCUMAP
 #| fig-pos: H
 
 trimesh_removed_pbmc_umap 
 ```
 
-<!--add screen shots of model in high-D-->
+- As shown in @fig-nldervisPBMCUMAP, there are three well-separated clusters (according to the model in 2D space).
 
-- You will see three well-separated clusters in high-D as well which gives evidence that UMAP preserves the global structure. Furthermore, there is non-linearity within the clusters which was not identified by the UMAP, which proves that local structure is not preserved.
+::: {#fig-pbmc1_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_1.png){#fig-pbmc1_sc1}
 
-- Can we find a better parameter choice for UMAP which preserve the local structure as well?
+![](figures/pbmc3k/sc_2.png){#fig-pbmc1_sc2}
 
-- To do that, we are going to fit models for different parameter choice and select the one which have the lowest error.  
+![](figures/pbmc3k/sc_3.png){#fig-pbmc1_sc3}
+
+Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/Gnhh4hfsbbg>).
+:::
+
+- According to @fig-pbmc1_sc (a), the model in high-D space shows two well separated clusters. Also, two clusters are really close to each other (see @fig-pbmc1_sc (b)). Furthermore, there are three clusters shown by the model in 2D actually represented in high-D as well (see @fig-pbmc1_sc (c)). Another important thing to notice from the model in high-D space is that the non-linear continuity structure in two well-separated clusters. 
+
+- @fig-pbmc1_sc (c) gives evidence that UMAP preserves the global structure. Furthermore, the non-linearity within the clusters shown in @fig-pbmc1_sc (a) proves that local structure is also preserved but that's not visually shown by th UMAP layout in 2D.
+
+- Can we find a better parameter choice for UMAP which shows this non-linear continuity of the big clusters in 2D space as well?
+
+- To do that, we are going to fit models for different parameter choice and select the one which have the lowest model error in high-D (see @tbl-errordiffcomb).  
 
 ```{r}
 #| warning: false
@@ -3988,10 +4000,6 @@ kable(error_df, caption = "errors for different parameter combinations", label =
   row_spec(0, bold = TRUE) |>
   row_spec(7, bold=T, color = "red")
 ```
-
-- Selected the one with n:neighbor:5, min_dist:0.99, metric:cosine.
-
-- Now, we are going to fit the model for the new parameter choice.
 
 <!--UMAP parm option 1-->
 
@@ -4040,6 +4048,9 @@ plot_list2_pbmc
 
 ```
 
+- Selected the one with n:neighbor:5, min_dist:0.99, metric:cosine (see @fig-nldervisPBMCUMAPview2). As shown in @fig-nldervisPBMCUMAPview2, the two big clusters have non-linear continuity structures, two big clusters are well-separated but close to each other, and the two cluster which exists in the one big cluster are really close to each other (see @fig-nldervisPBMCUMAPview2). 
+
+- Now, we are going to fit the model for the new parameter choice.
 
 ```{r}
 #| warning: false
@@ -4148,7 +4159,7 @@ aic_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins, y = aic
 )) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 88, linetype="solid",
+  geom_vline(xintercept = 588, linetype="solid",
                 color = "red", size=1, alpha = 0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -4164,7 +4175,7 @@ mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
 )) +
   geom_point() +
   geom_line() +
-   geom_vline(xintercept = 88, linetype="solid",
+   geom_vline(xintercept = 588, linetype="solid",
                 color = "red", size=1, alpha = 0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
@@ -4178,7 +4189,7 @@ mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 144, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset. What is the effective number of bins in each NLDR technique to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 588, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltPBMC3
 ##| out-width: 100%
 #| fig-pos: H
@@ -4246,6 +4257,20 @@ model_object <- fit_highd_model( training_data = training_data_pbmc,
 df_bin_centroids_pbmc <- model_object$df_bin_centroids
 df_bin_pbmc <- model_object$df_bin
 
+benchmark_value_rm_lwd <- stats::quantile(df_bin_centroids_pbmc$std_counts, 
+                probs = c(0,0.25,0.5,0.75,1), names = FALSE)[2]
+
+df_bin_centroids_low <- df_bin_centroids_pbmc |>
+  dplyr::filter(std_counts <= benchmark_value_rm_lwd)
+
+identify_rm_bins <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids_pbmc, 
+                                      num_bins_x = num_bins_x_pbmc, 
+                                      df_bin_centroids_low = df_bin_centroids_low)
+
+df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
+  dplyr::filter(!(hexID %in% identify_rm_bins))
+
+
 ## Triangulate bin centroids
 tr1_object_pbmc <- tri_bin_centroids(df_bin_centroids_pbmc, x = "c_x", y = "c_y")
 tr_from_to_df_pbmc <- gen_edges(tri_object = tr1_object_pbmc)
@@ -4266,6 +4291,7 @@ distance_pbmc <- cal_2d_dist(tr_coord_df = tr_from_to_df_pbmc,
 
 ## To find the benchmark value
 benchmark_pbmc <- find_lg_benchmark(distance_edges = distance_pbmc, distance_col = "distance")
+benchmark_pbmc <- 0.08
 
 # ggplot() +
 # geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
@@ -4347,7 +4373,7 @@ plot_list2_pbmc_error <- error_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in the 2D space with UMAP (<>)"
+#| fig-cap: "(a) Model in the 2D space overlaid with UMAP data, and (b) Error occurred by the high-D model for high-D data and the error mapped into 2D NLDR points."
 #| label: fig-nldervisPBMCUMAP3
 #| out-width: 100%
 #| fig-pos: H
@@ -4357,6 +4383,24 @@ plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom')
 
 ```
+
+- According to @fig-nldervisPBMCUMAP3 (a), the model constructed in 2D space for the new parameter choice of UMAP shows 5 clusters which are really close to each other. The big cluster shows the non-linear continuity structure with two sub clusters. Other three clusters positioned in a structure of non-linearity but really close to each other. 
+
+::: {#fig-pbmc2_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_4.png){#fig-pbmc2_sc1}
+
+![](figures/pbmc3k/sc_5.png){#fig-pbmc2_sc2}
+
+![](figures/pbmc3k/sc_6.png){#fig-pbmc2_sc3}
+
+Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D with new parameter choice for UMAP, a video of the tour animation is available at (<https://youtu.be/lc_6-rIuNHI>).
+:::
+
+- As shown in @fig-pbmc2_sc, there are 5 clusters, three of them are well-separated but close to each other as seen in @fig-nldervisPBMCUMAP3 (a). Also, other two clusters are really close to each other but separated from the early mentioned three clusters.
+
+- Next, we are going to investigate whether, the clusters we identified in 2D UMAP layout, can also be identified in high-D as well.
+
+- First, I colored the clusters in 2D layout manually. Then, I used spin-and-brush approach with `detour` to color the clusters in high-D. 
 
 <!--Generate true label for PBMC3k-->
 
@@ -4455,7 +4499,7 @@ table(df_res_1_2_label$result1_class_label, df_res_1_2_label$result2_class_label
 
 ```{r}
 #| echo: false
-#| fig-cap: "2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for PBMC3k dataset (a) colored manually in 2D, (b) colored in high-D"
+#| fig-cap: "2D layout from UMAP (n_neighbors = 5, min_dist = 0.99, metric = cosine) applied for PBMC3k dataset (a) colored manually in 2D, (b) colored in high-D."
 #| label: fig-nldervisPBMCUMAP3Res
 #| out-width: 100%
 #| fig-pos: H
@@ -4466,9 +4510,66 @@ result1_2d_layout + result2_2d_layout +
 
 ```
 
+- @fig-nldervisPBMCUMAP3Res shows the 2D UMAP layout colored with each method. As shown in @fig-nldervisPBMCUMAP3Res (b) and the confusion matrix,there are some miss-classifications. What is the reason for that?
+
+- For example, the point (ID: 1158) classified as **cluster 3** in 2D UMAP layout, classified as **cluster 6** when doing the colouring in high-D (see @fig-nldervisPBMCUMAP3Res). Why?
+
+::: {#fig-pbmc2_appsc layout-ncol="1" fig-pos="H"}
+![](figures/pbmc3k/sc_7.png){#fig-pbmc2_sc7}
+
+Screen shots of app which shows 2D UMAP layout and comparison of distances related to the point classified as **cluster 6** in high-D (ID: 1158) and randomly selected point which is in **cluster 6** (ID: 2291).
+:::
+
+- If we compute the distance between these two points, you will see that it preserves the pair-wise distance (see @fig-pbmc2_appsc), which give us a evidence that even though the point 1158, classified as **cluster 3** in 2D layout, actually should be in **cluster 6**. This also evident that some misleading can happens with UMAP.
+
+::: {#fig-pbmc2_appsc1 layout-ncol="1" fig-pos="H"}
+![](figures/pbmc3k/sc_8.png){#fig-pbmc2_sc8}
+
+Screen shots of app which shows 2D UMAP layout and comparison of distances related to the point classified as **cluster 5** in high-D (ID: 3) and randomly selected point which is in **cluster 5** (ID: 2198).
+:::
+
+- For another example, if we compute the distance between these two points, you will see that it preserves the pair-wise distance (see @fig-pbmc2_appsc1), which give us a evidence that even though the point 3, classified as **cluster 4** in 2D layout, actually should be in **cluster 5**. This also evident that some misleading can happens with UMAP.
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc, umap_data_with_hb_id_pbmc)
+
+df_all_pbmc <- inner_join(df_all_pbmc, detour_results8, by = c("ID" = "ID"))
+
+### Define type column
+df <- df_all_pbmc |>
+  dplyr::select(tidyselect::starts_with("PC_"), result2_class_label) |>
+  dplyr::rename("type" = "result2_class_label") ## original dataset
+
+df_b <- df_bin_pbmc |>
+  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_pbmc$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id)
+
+df_exe <- dplyr::bind_rows(df_b, df)
+
+ ## Set the maximum difference as the criteria
+distance_df_small_edges <- distance_pbmc |>
+  dplyr::filter(distance < benchmark_pbmc)
+## Since erase brushing is considerd.
+
+# langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
+#                          lineFrom = distance_df_small_edges$from,
+#                            lineTo = distance_df_small_edges$to,
+#                          group = df_exe$type, pointSize = 3,
+#                          levelColors = c("#d82cd3", "#49df20", "#619cff", "#000000", "#df2020", "#ffbd61", "#33a02c"))
+
+```
+
 ### Handwritten digits
 
-- Why I choose this dataset? Because I need show that whatever NLDR technique that we use, our model can capture the non-linear structure within clusters as well. 
+- Why I choose this data set? Because I need show that whatever NLDR technique that we use, our model can capture the non-linear structure within clusters as well. 
 
 - Digit 1 (7877 images only)
 
@@ -4862,7 +4963,7 @@ plot_layout(guides='collect', ncol=3) &
 
 - Next, the constructed 2D model lifts into high-dimensions (see @fig-mnist1_sc).
 
-::: {#fig-mnist1_sc layout-ncol="3"}
+::: {#fig-mnist1_sc layout-ncol="3" fig-pos="H"}
 ![](figures/mnist/sc_1.png){#fig-mnist1_sc1}
 
 ![](figures/mnist/sc_2.png){#fig-mnist1_sc2}
