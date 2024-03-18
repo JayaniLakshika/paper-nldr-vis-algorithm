@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, boxrule=0pt, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -1205,6 +1205,94 @@ selected by Festem method
   Generate a confusion matrix.
 \end{itemize}
 
+\hypertarget{story}{%
+\subsection{Story}\label{story}}
+
+\begin{itemize}
+\tightlist
+\item
+  UMAP representation of PBMC3k data with 15 PCs and parameter choice of
+  n:neighbor:30, min\_dist:0.1, metric:cosine (author's suggestion)
+  shows three well-separated clusters. The question we need to answer
+  is: Does this UMAP representation preserve the actual data structure,
+  or is something missing or misidentified or misleading?
+\end{itemize}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMPview-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCUMPview}(a) 2D layout from UMAP
+(n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
+this a best representation of the original data?}
+
+\end{figure}
+
+\begin{itemize}
+\item
+  To investigate this, we are going to visualise the model in the data
+  space, which means that the model generated from UMAP is visualised in
+  high-D with original data.
+\item
+  To fit the model, first we need to decide how many number bins should
+  allocate along the x and y axes. To make an initial choice, we use MSE
+  plot.
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
+UMAP applied to training PBMC3k dataset. What is the effective number of
+bins in each NLDR technique to create a 2D model? The MSE plot have a
+steep slope at the beginning, indicating that a smaller number of bins
+causes a larger amount of error. Then, the slope gradually declines or
+level off, indicating that a higher number of bins generates a smaller
+error. Using the elbow method, when the total number of bins is set to
+588, the slope of the Mean Squared Error (MSE) plot experiences a sudden
+and noticeable change, resembling an elbow-like shape. This point
+indicates that adding less bins does not enough to capture the data
+structure.}
+
+\end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  Then, the model is constructed by following all the steps in 2D and
+  lifts the model into high-D.
+\end{itemize}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCUMAP}Model in the 2D space with UMAP
+(\url{https://youtu.be/CNXjWZMyh_M})}
+
+\end{figure}
+
+\begin{itemize}
+\item
+  You will see three well-separated clusters in high-D as well which
+  gives evidence that UMAP preserves the global structure. Furthermore,
+  there is non-linearity within the clusters which was not identified by
+  the UMAP, which proves that local structure is not preserved.
+\item
+  Can we find a better parameter choice for UMAP which preserve the
+  local structure as well?
+\item
+  To do that, we are going to fit models for different parameter choice
+  and select the one which have the lowest error.
+\end{itemize}
+
 \begin{table}[H]
 
 \caption{errors for different parameter combinations}
@@ -1230,36 +1318,22 @@ selected by Festem method
 \end{tabular}
 \end{table}
 
-\begin{figure}
+\begin{itemize}
+\item
+  Selected the one with n:neighbor:5, min\_dist:0.99, metric:cosine.
+\item
+  Now, we are going to fit the model for the new parameter choice.
+\end{itemize}
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
+\begin{figure}[H]
 
-}
-
-\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
-UMAP applied to training PBMC3k dataset. What is the effective number of
-bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-80, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[h]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAPview2-1.pdf}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP}(a) 2D layout from UMAP
-(n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
-this a best representation of the original data?, (b) Model in the 2D
-space with UMAP (\url{https://youtu.be/CNXjWZMyh_M})}
+\caption{\label{fig-nldervisPBMCUMAPview2}(a) 2D layout from UMAP
+(n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for the
+PBMC3k dataset. Is this a best representation of the original data?}
 
 \end{figure}
 
@@ -1283,16 +1357,14 @@ structure.}
 
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3-1.pdf}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP3}(a) 2D layout from UMAP
-(n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for the
-PBMC3k dataset. Is this a best representation of the original data?, (b)
-Model in the 2D space with UMAP (\textless\textgreater)}
+\caption{\label{fig-nldervisPBMCUMAP3}Model in the 2D space with UMAP
+(\textless\textgreater)}
 
 \end{figure}
 
@@ -1307,7 +1379,7 @@ Model in the 2D space with UMAP (\textless\textgreater)}
   cluster 6         0         0         0         0        19       139
 \end{verbatim}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3Res-1.pdf}
 
@@ -1323,7 +1395,10 @@ dataset (a) colored manually in 2D, (b) colored in high-D}
 \subsection{Handwritten digits}\label{handwritten-digits}}
 
 \begin{itemize}
-\tightlist
+\item
+  Why I choose this dataset? Because I need show that whatever NLDR
+  technique that we use, our model can capture the non-linear structure
+  within clusters as well.
 \item
   Digit 1 (7877 images only)
 \end{itemize}
@@ -1378,10 +1453,29 @@ dataset (a) colored manually in 2D, (b) colored in high-D}
 \item
   Learned from the model: There is a non-linear shape in 2D, but if look
   at the model in high-D, the non-linear continuity is there but there
-  is a twist in the structure which didn't capture by PaCMAP.
+  is a twist in the structure which didn't capture by PaCMAP in 2D
+  layout.
+\end{itemize}
+
+\hypertarget{story-1}{%
+\subsubsection{Story}\label{story-1}}
+
+\begin{itemize}
 \item
-  Write about looking at images of digit 1 as well..how in 2D space
-  images are distributed, which images occur high-errors in high-D
+  PaCMAP representation of MNIST digit 1 data with 10PCs and parameter
+  choice of n\_components=2, n\_neighbors=10, init=``random'',
+  MN\_ratio=0.9, FP\_ratio=2.0 shows a non-linear structure (see
+  Figure~\ref{fig-nldervisMNISTPACMAP} (a)). I selected this parameter
+  choice because this the default parameter setting for PaCMAP and
+  selected PaCMAP because when I observed the 5 NLDR techniques applied
+  for the data PaCMAP showed the non-linear structure effectively in 2D.
+\item
+  By looking at MSE plot, I selected the 180 bins, which associated with
+  12 bins along the x-axis, 15 bins along the y-axis, and hex size as
+  0.06 (Figure~\ref{fig-diagnosticpltMNIST} (b)). Then, fitted the model
+  in 2D (see Figure~\ref{fig-nldervisMNISTPACMAP} (b)). As you can see
+  in Figure~\ref{fig-nldervisMNISTPACMAP} (b), the fitted model capture
+  the non-linear structure of the 2D data.
 \end{itemize}
 
 \begin{figure}
@@ -1404,27 +1498,103 @@ structure.}
 
 \end{figure}
 
-\begin{verbatim}
-$mse
-[1] 2.276023
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-84-1.pdf}
 
-$aic
-[1] 66382.78
-\end{verbatim}
-
-\begin{figure}[h]
+\begin{figure}[H]
 
 {\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
 
 }
 
-\caption{\label{fig-nldervisMNISTPACMAP}(a) 2D layout from UMAP
+\caption{\label{fig-nldervisMNISTPACMAP}(a) 2D layout from PaCMAP
 (n\_components=2, n\_neighbors=10, init=random, MN\_ratio=0.9,
-FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a
-best representation of the original data?, (b) Model in the 2D space
-with PaCMAP ()}
+FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset, (b) Model
+in the 2D space overlaid on PaCMAP data, and (c) Error occurred by the
+high-D model for high-D data and the error mapped into 2D NLDR points.}
 
 \end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  Next, the constructed 2D model lifts into high-dimensions (see
+  Figure~\ref{fig-mnist1_sc}).
+\end{itemize}
+
+\begin{figure}
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-mnist1_sc}Screen shots of the \textbf{langevitour}
+of the MNIST digit 1 data set, shows the model in high-D, a video of the
+tour animation is available at (\url{https://youtu.be/zq2GM9qvUNA}).}
+
+\end{figure}
+
+\begin{itemize}
+\item
+  As shown in Figure~\ref{fig-mnist1_sc} (a), the non-linear continuity
+  structure that you have seen in 2D representation of PaCMAP, also can
+  be seen in the model in high-D space as well. This gives us an
+  evidence that our model capture the non-linear structure of the data
+  effectively.
+\item
+  Furthermore, our model shows some addition pattern of data which
+  couldn't be seen in the 2D layout.
+\item
+  One is the twisted structure within the non-linear structure (see
+  Figure~\ref{fig-mnist1_sc} (c)).
+\item
+  Another thing is the connected corners of the non-linear structure
+  (see Figure~\ref{fig-mnist1_sc} (b)). The non-linear curve is bended.
+\item
+  To gives the evidence that PaCMAP preserve the local structure
+  (non-linear pattern), our model helps by computing the model errors
+  (Figure~\ref{fig-diagnosticpltMNIST} (c)).
+\end{itemize}
 
 \begin{figure}[H]
 
@@ -1436,6 +1606,17 @@ with PaCMAP ()}
 large model error.}
 
 \end{figure}
+
+\begin{itemize}
+\tightlist
+\item
+  As you can see in Figure~\ref{fig-diagnosticpltMNIST} (c), the largest
+  model error shows in the upper right side of the 2D layout. A sample
+  of the images that shows the largest error can be seen in
+  Figure~\ref{fig-sampleimg}. The reason for the large model error is
+  that the high-D points related to this largest error located away from
+  the high-D model points.
+\end{itemize}
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}
