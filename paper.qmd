@@ -3895,69 +3895,72 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
         axis.title.x = element_blank(), axis.title.y = element_blank(),
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) #+
-  #annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
 # df_all_mnist <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
 # 
 # show_langevitour(df_all_pbmc, df_bin_pbmc, df_bin_centroids_pbmc, benchmark_pbmc, distance_pbmc, "distance", col_start = "PC_")
 
-# df_bin_train <- df_bin_pbmc
-# names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
-# 
-# df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
-# 
-# error_df <- df_all_pbmc |>
-#   dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
-# 
-# for (i in 1:(NCOL(df_bin_train) - 1)) {
-#   
-#   error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
-#   
-# }
-# 
-# error_df <- error_df |>
-#   dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
-# 
-# 
-# error_df <- error_df |>
-#   mutate(type = if_else(total == 0, "no error",
-#                         if_else(total <= 15, "error 1-15",
-#                                 if_else(total <= 20, "error 15-20",
-#                                         if_else(total <= 25, "error 20-25",
-#                                                 if_else(total <= 30, "error 25-30",
-#                                                         if_else(total <= 35, "error 30-35",
-#                                                                 if_else(total <= 40, "error 35-40", "error greter than 40"))))))))
-# 
-# plot_list2_pbmc_error <- error_df |>
-#   mutate(type = factor(type , levels = c("no error", "error 1-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error 35-40", "error greter than 40"))) |>
-#     ggplot(aes(x = UMAP1,
-#                y = UMAP2, color = type))+
-#     geom_point(alpha=0.5, size = 0.1) +
-#     coord_equal() +
-#     theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
-#   theme_linedraw() +
-#     theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-#               axis.title.x = element_blank(), axis.title.y = element_blank(),
-#               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-#               axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-#               panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-#         legend.title = element_text(size=5), #change legend title font size
-#         legend.text = element_text(size=4),
-#          legend.key.height = unit(0.25, 'cm'),
-#          legend.key.width = unit(0.25, 'cm')) +
-#   scale_color_manual(values=c("#fee0d2", "#fcbba1",
-#                                          "#fc9272", "#fb6a4a", "#ef3b2c",
-#                                          "#cb181d", "#a50f15", "#99000d")) 
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+
+error_df <- error_df |>
+  mutate(type = if_else(total == 0, "no error",
+                        if_else(total <= 15, "error 1-15",
+                                if_else(total <= 20, "error 15-20",
+                                        if_else(total <= 25, "error 20-25",
+                                                if_else(total <= 30, "error 25-30",
+                                                        if_else(total <= 35, "error 30-35",
+                                                                if_else(total <= 40, "error 35-40", "error greter than 40"))))))))
+
+plot_list2_pbmc_error <- error_df |>
+  mutate(type = factor(type , levels = c("no error", "error 1-15", "error 15-20", "error 20-25", "error 25-30", "error 30-35", "error 35-40", "error greter than 40"))) |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=c("#fee0d2", "#fcbba1",
+                                         "#fc9272", "#fb6a4a", "#ef3b2c",
+                                         "#cb181d", "#a50f15", "#99000d")) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 ```
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in the 2D space overlaid on UMAP data."
+#| fig-cap: "(a) Model in the 2D space overlaid on UMAP data, and (b) Error occurred by the high-D model for high-D data and the error mapped into 2D NLDR points."
 #| label: fig-nldervisPBMCUMAP
 #| fig-pos: H
 
-trimesh_removed_pbmc_umap 
+trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_layout(guides='collect', ncol=2) &
+  theme(legend.position='bottom') 
 ```
 
 - As shown in @fig-nldervisPBMCUMAP, there are three well-separated clusters (according to the model in 2D space).
