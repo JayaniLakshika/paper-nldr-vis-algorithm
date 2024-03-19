@@ -574,6 +574,218 @@ Therefore, $f(g(x))$ gives the 2D centroid associated with high-D points $x$, an
 
 As described in Step 4 of @sec-construct2d, during the triangulation process in 2D space, vertices are identified to form edges. With the knowledge of the high-D mappings for the 2D hexagonal bins, the vertices connected in 2D are also connected in high-D (see video linked in @fig-wkhighD). 
 
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+umap_s_curve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = UMAP_data, 
+                                    x = "UMAP1", y = "UMAP2"))) |>
+  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
+                  "UMAP2" = "scaled_UMAP2")) |>
+  dplyr::mutate(ID = 1:NROW(UMAP_data))
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+num_bins_x <- 5
+num_bins_y <- 10
+hex_size <- 0.19
+
+
+hb_obj <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                              y = "UMAP2", num_bins_x = num_bins_x, 
+                              num_bins_y = num_bins_y, x_start = NA, y_start = NA, 
+                              buffer_x = NA, buffer_y = NA, hex_size = hex_size, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+
+UMAP_data_with_hb_id <- as.data.frame(do.call(cbind, hb_obj$data_hb_id))
+
+model_object <- fit_highd_model( training_data = training_data, 
+                                 nldr_df_with_id = umap_s_curve_scaled, 
+                                 x = "UMAP1", y = "UMAP2", 
+                                 num_bins_x = num_bins_x, 
+                                 num_bins_y = num_bins_y, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "UMAP", 
+                                 col_start_highd = "x")
+
+df_bin_centroids <- model_object$df_bin_centroids
+df_bin <- model_object$df_bin
+
+## Triangulate bin centroids
+tr1_object <- tri_bin_centroids(df_bin_centroids, x = "c_x", y = "c_y")
+tr_from_to_df <- gen_edges(tri_object = tr1_object)
+
+# Create the tibble with x and y coordinates
+tr_df <- tibble::tibble(x = tr1_object$x, y = tr1_object$y)
+
+
+## Compute 2D distances
+distance <- cal_2d_dist(tr_coord_df = tr_from_to_df, 
+                                start_x = "x_from", start_y = "y_from", 
+                                end_x = "x_to", end_y = "y_to", 
+                                select_vars = c("from", "to", "distance"))
+
+
+## Map hb_id
+
+df_bin_centroids_n <- df_bin_centroids |>
+  select(hexID) |>
+  mutate(ID = 1:NROW(df_bin_centroids))
+
+tr_from_to_df_n <- left_join(tr_from_to_df, df_bin_centroids_n, by = c("from" = "ID")) |>
+  rename("from_hb_id" = "hexID")
+
+tr_from_to_df_n <- left_join(tr_from_to_df_n, df_bin_centroids_n, by = c("to" = "ID")) |>
+  rename("to_hb_id" = "hexID")
+
+hb_id_selected <- tr_from_to_df_n |>
+  dplyr::filter((from == 1) & (to == 3)) 
+
+# Filter and label small and long edges
+distance_df_small_edges <- distance |>
+  dplyr::filter((from != 1) | (to != 3)) |>
+  dplyr::mutate(type = "small_edges")
+
+distance_df_long_edges <- distance |>
+  dplyr::filter((from == 1) & (to == 3)) |>
+  dplyr::mutate(type = "long_edges")
+
+# Combine small and long edges
+distance_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
+
+tr_from_to_df_coord_with_group <- inner_join(tr_from_to_df, distance_edges, by = c("from" = "from", "to" = "to"))
+
+## To generate a data set with high-D and 2D training data
+df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
+
+UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)) |>
+  dplyr::mutate(select_point = if_else(hb_id == hb_id_selected$from_hb_id, "data1", "data2"))
+
+UMAP_data_with_hb_id_selected_no <- UMAP_data_with_hb_id |> dplyr::filter(!(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)))
+
+bin_coord_1 <- tr_df |>
+  dplyr::filter((x == hb_id_selected$x_from)) |>
+  dplyr::filter((y == hb_id_selected$y_from))
+
+# bin_coord_1 <- tr_df |>
+#   head(1)
+
+
+bin_coord_2 <- tr_df |>
+  dplyr::filter((x == hb_id_selected$x_to)) |>
+  dplyr::filter((y == hb_id_selected$y_to))
+
+# bin_coord_2 <- tr_df |>
+#   dplyr::filter(row_number() == 2)
+
+
+bin_coord <- dplyr::bind_rows(bin_coord_1, bin_coord_2)
+
+a1 <- ggplot(bin_coord, aes(x = x, y = y)) +
+  geom_segment(
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to, colour = type),
+    data = tr_from_to_df_coord_with_group) +
+  geom_point() +
+  #coord_equal() +
+  coord_cartesian(xlim =c(-0.5, 1.5), ylim = c(-0.5, 2.7)) +
+  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5, size = 1) +
+  scale_color_manual(values=c("#e6550d", "#000000", "#e31a1c", "#f6e8c3")) +
+  geom_point(size = 3, colour = "#33a02c") + 
+  #ggtitle("(b)") + 
+  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
+  theme_light() +
+  #coord_equal() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
+
+
+a2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(color = "#deebf7", aes(group = hex_poly_id), fill = "#ffffff") +
+  geom_segment(
+    aes(x = x_from, y = y_from, xend = x_to, yend = y_to), colour = "#f6e8c3",
+    data = tr_from_to_df_coord_with_group
+  ) +
+  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), size = 1, alpha = 0.5) +
+  scale_color_manual(values=c("#e6550d", "#000000")) +
+  geom_point(data = df_bin_centroids |> dplyr::filter(hexID %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)), aes(x = c_x, y = c_y), colour = "#33a02c", size = 3) +
+  geom_point(data = UMAP_data_with_hb_id_selected_no, aes(x = UMAP1, y = UMAP2), colour = "#6a3d9a", size = 1, alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  coord_equal() +
+  theme_light() +
+  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
+  ) 
+
+
+## Script to make coloring data points with a line
+
+df1 <- df_all |> 
+  dplyr::filter(hb_id == as.character(hb_id_selected$from_hb_id)) |>
+  dplyr::select(tidyselect::starts_with("x")) |>
+  dplyr::mutate(type = "data1") ## original dataset
+
+df2 <- df_all |> 
+  dplyr::filter(hb_id == as.character(hb_id_selected$to_hb_id)) |>
+  dplyr::select(tidyselect::starts_with("x")) |>
+  dplyr::mutate(type = "data2") ## original dataset
+
+df3 <- df_all |> 
+  dplyr::filter(!(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id)))) |>
+  dplyr::select(tidyselect::starts_with("x")) |>
+  dplyr::mutate(type = "data") ## original dataset
+
+df_b <- df_bin |> 
+  dplyr::filter(hb_id %in% df_bin_centroids$hexID) |>
+  dplyr::filter(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id))) |>
+  dplyr::select(-hb_id) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+df_exe <- dplyr::bind_rows(df_b, df1, df2, df3)
+
+lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe$type, pointSize = append(rep(4, NROW(df_b)), rep(2, NROW(df1) + NROW(df2) + NROW(df3))), levelColors = c("#6a3d9a", "#e6550d", "#000000", "#33a02c"), lineFrom = 1, lineTo = 2, lineColors = "#e31a1c")
+
+```
+
+```{r}
+#| warning: false
+#| echo: false
+#| label: fig-wkhighD
+#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related $7^{th}$ and $12^{th}$ hexagons, (b) visualization of the edge connected the $7^{th}$ and $12^{th}$ hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/hxU91xNTJL0>.
+
+a2 + a1 +
+  plot_annotation(tag_levels = 'a') +
+  plot_layout(ncol = 3) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
+
+
 <!--
 ```{r}
 #| echo: false
@@ -951,7 +1163,7 @@ lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe
 #| eval: false
 #| warning: false
 #| echo: false
-#| label: fig-wkhighD
+#| label: fig-wkhighD1
 #| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/ffWFVK1UTIc>.
 
 a2 + a1 +
@@ -979,18 +1191,6 @@ The analysis focuses on exploring the effect of total number of bins on MSE. It 
 
 Typically, the MSE plot tends to have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or levesl off, indicating that a higher number of bins generates a smaller error. This MSE plot is useful in determining the effective number of bins required to construct the 2D model. @fig-diagnosticpltScurve (b) has created a graph that shows how the Mean Squared Error (MSE) changes depending on the number of bins assigned in the hexagonal grid for UMAP applied to the S-curve dataset. As per the rule of thumb mentioned earlier, the effective number of bins is determined to be $84$, with $6$ bins along the x-axis and $14$ bins along the y-axis. Furthermore, @fig-modelScurve shows the 2D model constructed using UMAP with the selected total number of bins and how the model overlay on high-D data.
 
-```{r}
-#| warning: false
-#| echo: false
-#| message: false
-
-umap_s_curve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = UMAP_data, 
-                                    x = "UMAP1", y = "UMAP2"))) |>
-  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
-                  "UMAP2" = "scaled_UMAP2")) |>
-  dplyr::mutate(ID = 1:NROW(UMAP_data))
-
-```
 
 ```{r}
 #| warning: false
