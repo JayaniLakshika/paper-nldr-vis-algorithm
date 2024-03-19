@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, enhanced, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, boxrule=0pt, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -686,10 +686,27 @@ initial step in building the 2D model. The hexagonal grid with the
 chosen total number of bins must be able to capture the structure of the
 NLDR data. If the number of bins is too low, the model may not be able
 to capture the structure of the NLDR data effectively (see
-\textbf{?@fig-binsize} (a)), while if there are too many bins, it may
+Figure~\ref{fig-binsize} (a)), while if there are too many bins, it may
 result in over-fitting the individual points of the NLDR data (see
-\textbf{?@fig-binsize} (c)). Therefore, it is important to determine an
-appropriate number of bins to build an effective model.
+Figure~\ref{fig-binsize} (c)). Therefore, it is important to determine
+an appropriate number of bins to build an effective model.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-binsize-1.pdf}
+
+}
+
+\caption{\label{fig-binsize}Hexbin plots from different number of bins
+for the \textbf{UMAP} embeddings of \textbf{S-curve} training data: (a)
+b = 12 (3, 4), h = 0.62, (b) b = 84 (6, 14), h = 0.13, and (c) b = 336
+(12, 28), h = 0.06. The hexbins are colored based on the density of
+points, with darker colors indicating higher point density and yellow
+color representing lower point density within each bin. What is the
+number of bins that would be effective in representing low-dimensional
+data?}
+
+\end{figure}
 
 \begin{equation}\protect\hypertarget{eq-equation8}{}{
 b = b_1 \times b_2
@@ -1754,7 +1771,7 @@ structure.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-87-1.pdf}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-91-1.pdf}
 
 \begin{figure}[H]
 

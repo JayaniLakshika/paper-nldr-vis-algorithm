@@ -1181,6 +1181,146 @@ The performance and robustness of our model depend on four key parameters: (i) t
 
 The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the 2D model. This is because it is the initial step in building the 2D model. The hexagonal grid with the chosen total number of bins must be able to capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to build an effective model.
 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+num_bins_x <- 3
+num_bins_y <- 4
+hex_size <- 0.62
+
+
+hb_obj <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x, 
+                      num_bins_y = num_bins_y, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
+counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj$hex_poly))
+
+hex_full_count_df_loop1 <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+p1 <-  ggplot(data = hex_full_count_df_loop1, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_point(data = umap_s_curve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_equal() +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+num_bins_x <- 6
+num_bins_y <- 14
+hex_size <- 0.13
+
+
+hb_obj <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x, 
+                      num_bins_y = num_bins_y, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
+counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
+
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj$hex_poly))
+
+hex_full_count_df_loop2 <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+p2 <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_point(data = umap_s_curve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_equal() +
+  #coord_cartesian(xlim =c(-1, 2.7), ylim = c(-2, 12.2)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+num_bins_x <- 12
+num_bins_y <- 28
+hex_size <- 0.06
+
+
+hb_obj <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x, 
+                      num_bins_y = num_bins_y, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj$centroids))
+counts_df <- as.data.frame(do.call(cbind, hb_obj$std_cts))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj$hex_poly))
+
+hex_full_count_df_loop3 <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_point(data = umap_s_curve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_equal() +
+  #coord_cartesian(xlim =c(-1, 2.7), ylim = c(-2, 12.2)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "c", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+```
+
+```{r}
+#| echo: false
+#| label: fig-binsize
+#| fig-pos: H
+#| fig-cap: "Hexbin plots from different number of bins for the **UMAP** embeddings of **S-curve** training data: (a) b = 12 (3, 4), h = 0.62, (b) b = 84 (6, 14), h = 0.13, and (c) b = 336 (12, 28), h = 0.06. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
+
+p1 + p2 + p3
+``` 
+
 $$
 b = b_1 \times b_2
 $${#eq-equation8}
@@ -1465,7 +1605,7 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
 ```{r}
 #| eval: false
 #| echo: false
-#| label: fig-binsize
+#| label: fig-binsize1
 #| fig-pos: H
 #| fig-cap: "Hexbin plots from different number of bins for the **UMAP** projections of **S-curve** training data: (a) b = 32 (4, 8), s = 1.643542, (b) b = 264 (12, 22), s = 1.643542, and (c) b = 840 (21, 40), s = 1.643542. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
 
@@ -1849,7 +1989,7 @@ hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_i
 #   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
 #   coord_fixed()
 
-umap_data_with_hb_id_pbmc <- as.data.frame(do.call(cbind, hb_obj_s_curve$data_hb_id))
+umap_data_with_hb_id <- as.data.frame(do.call(cbind, hb_obj_s_curve$data_hb_id))
   
 model_object <- fit_highd_model( training_data = training_data, 
                                  nldr_df_with_id = umap_s_curve_scaled, 
