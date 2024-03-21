@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, frame hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced, boxrule=0pt, sharp corners]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -375,7 +375,7 @@ space.
 
 In this article, mainly focus on five NLDR techniques. They are tSNE,
 UMAP, PHATE, TriMAP \citep{article02}, and Pairwise Controlled Manifold
-Approximation (PaCMAP) \citep{article01}.
+Approximation (PaCMAP) \citep{Yingfan2021}.
 
 Among these, tSNE \citep{Laurens2008} stands out for its ability to
 preserve pairwise distances. By minimizing the divergence between
@@ -409,7 +409,7 @@ data as a network of triangles. TriMAP is powerful in capturing
 complicated structures, but it's important to choose parameters
 carefully, like deciding how many neighbors to consider.
 
-PaCMAP \citep{article01} is different because it adds supervised
+PaCMAP \citep{Yingfan2021} is different because it adds supervised
 learning to make a 2D representation while keeping the relationships
 between pairs of points. It builds a graph using distances between pairs
 and then makes the 2D representation better using a customizable loss
@@ -732,10 +732,10 @@ indicating that a smaller number of bins causes a larger amount of
 error. Then, the slope gradually declines or levesl off, indicating that
 a higher number of bins generates a smaller error. This MSE plot is
 useful in determining the effective number of bins required to construct
-the 2D model. Figure~\ref{fig-diagnosticpltScurve} (b) has created a
-graph that shows how the Mean Squared Error (MSE) changes depending on
-the number of bins assigned in the hexagonal grid for UMAP applied to
-the S-curve dataset. As per the rule of thumb mentioned earlier, the
+the 2D model. Figure~\ref{fig-diagnosticpltScurve} has created a graph
+that shows how the Mean Squared Error (MSE) changes depending on the
+number of bins assigned in the hexagonal grid for UMAP applied to the
+S-curve dataset. As per the rule of thumb mentioned earlier, the
 effective number of bins is determined to be \(84\), with \(6\) bins
 along the x-axis and \(14\) bins along the y-axis. Furthermore,
 Figure~\ref{fig-modelScurve} shows the 2D model constructed using UMAP
@@ -770,15 +770,14 @@ After setting up the hexagonal grid with an appropriate number of bins,
 it is possible that some hexagonal bins may have very few or no data
 points within them. To ensure comprehensive coverage of the NLDR data,
 it is necessary to select hexagonal bins that have a considerable number
-of data points within their hexagons. To achieve this, the standard
-number of points within each hexagon is first calculated. This standard
-count is obtained by dividing the number of points within each hexagon
-by the maximum number of points in the grid (see
-Equation~\ref{eq-equationp2}). Next, the bins that have a standard
-number of points less than a certain benchmark value are removed. After
-removing the hexagons that have insufficient data density, the hexagons
-with more substantial data representation are used to construct the 2D
-model.
+of data points within their hexagons. To achieve this, the number of
+points within each hexagon is first calculated. Then, the standard count
+is computed by dividing the number of points within each hexagon by the
+maximum number of points in the grid (see Equation~\ref{eq-equationp2}).
+Next, the bins that have a standard number of points less than a certain
+benchmark value are removed. After removing the hexagons that have
+insufficient data density, the hexagons with more substantial data
+representation are used to construct the 2D model.
 
 \begin{equation}\protect\hypertarget{eq-equationp2}{}{
 \text{standard count} = \frac{\text{count}}{\text{max count}} 
@@ -791,8 +790,7 @@ removing hexagons only identified by the benchmark value, we examine the
 standard number of points in the neighboring hexagons of the identified
 low-density hexagons. If the neighboring bins also have low counts, then
 only those bins will be removed. The other identified bins will be kept
-and used for constructing the 2D model along with the high-density bins
-(see Appendix for more details).
+and used for constructing the 2D model along with the high-density bins.
 
 The benchmark value for removing low-density hexagons has a range of
 \(0\) and \(1\). When analyzing how these benchmark values affect model
@@ -801,49 +799,47 @@ performance, it's important to observe the change in Mean Squared Error
 increase as the benchmark value progresses from \(0\) to \(1\).
 Assessing this rate of increase is crucial. If the increment is not
 substantial, the decision might lean towards retaining low-density
-hexagons. According to \textbf{?@fig-diagnosticpltScurvelwd}, the change
-in MSE for NLDR techniques is relatively small across different
-benchmark values, except for the PHATE method.
-
-Consequently, it is not necessary to remove low-density hexagons when
-constructing the 2D model for the S-curve dataset in NLDR techniques,
-except for PHATE. While there may be some fluctuations in MSE between
-benchmark values of 0 to 1, the absence of significant changes suggests
-that maintaining low-density hexagons is preferable. However, to choose
-the best selection, it's recommended to examine the benchmark values
-around the first local minimum in the MSE curve. However, the MSE for
-PHATE fluctuates when benchmark values range between 0 and 1. Therefore,
-it is necessary to explore the benchmark values surrounding the first
-local minimum to determine an effective benchmark value. There is no
-universal rule for selecting a process. As shown in
-\textbf{?@fig-diagnosticpltScurvelwd}, the MSE values for PHATE
-fluctuate, and the first local minimum is at \(0\). Therefore, nearby
-benchmark values such as \(0.01\), \(0.04\), and \(0.06\) were explored
-to identify the best value for preserving the data structure. In this
-case, a benchmark value of \(0.06\) was chosen. The resulting 2D model
-is shown in Figure~\ref{fig-modelScurve} (c), while the video link
-provides a visual representation of how the model appears in high-D.
+hexagons.
 
 The following steps will help to find a suitable value to remove low
 density hexagons:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
+\tightlist
 \item
   Plot the distribution of the standardized counts
+\end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-stdctsScurve-1.pdf}
+
+}
+
+\caption{\label{fig-stdctsScurve}Distribution of 2D Euclidean
+distances.}
+
+\end{figure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
 \item
   See the distribution of counts
 \item
   Take the first quartile
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
 
 }
 
-\caption{\label{fig-modelScurve}(a), (b) 2D model.}
+\caption{\label{fig-modelScurve}(a) Full hexagonal grid with bin
+centroids, (b) Model constructed in 2D with long edges, and (c) Model
+constructed in 2D after removing the long edges.}
 
 \end{figure}
 
@@ -877,8 +873,25 @@ edges:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
+\tightlist
 \item
   Plot the distribution of the 2D distances
+\end{enumerate}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-distScurve-1.pdf}
+
+}
+
+\caption{\label{fig-distScurve}Distribution of 2D Euclidean distances.}
+
+\end{figure}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
 \item
   Find a value which is greater than smallest value
 \end{enumerate}
@@ -942,28 +955,14 @@ dimensions of high-D data, \(x_{ij}\) is the high-D data, and
 \subsubsection{Goodness of fit statistics}\label{sec-goodfit}}
 
 To assess how well our method captures and represents the underlying
-structure of the high-D data, Mean Squared Error (MSE) and Akaike
-Information Criterion (AIC) are used. When computing MSE, total model
-error (see Section~\ref{sec-summary}) is divided by the number of
-observations to make it as a mean value (see
+structure of the high-D data, Mean Squared Error (MSE) is used. When
+computing MSE, total model error (see Section~\ref{sec-summary}) is
+divided by the number of observations to make it as a mean value (see
 Equation~\ref{eq-equation9}).
 
 \begin{equation}\protect\hypertarget{eq-equation9}{}{
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 }\label{eq-equation9}\end{equation}
-
-Furthermore, to incorporate with the parameters in our model, which is
-the non-empty bins, and as a statistical measure used for model
-selection and comparison, AIC is used (see
-Equation~\ref{eq-equation10}).
-
-\begin{equation}\protect\hypertarget{eq-equation10}{}{
-\text{AIC} = 2b'p + np * log(\text{MSE})
-}\label{eq-equation10}\end{equation}
-
-Here, \(b'\) signifies the number of bins non-empty bins, \(p\) denotes
-the number of dimensions in the high-D data, and \(n\) represents the
-number of observations.
 
 \hypertarget{sec-simpleex}{%
 \subsection{Simulated data example}\label{sec-simpleex}}
@@ -1040,266 +1039,36 @@ original data in 2D?}
 \subsection{Single-cell RNA-seq data of
 human}\label{single-cell-rna-seq-data-of-human}}
 
-In the field of single-cell studies, a common analysis task involves
-clustering to identify groups of cells with similar expression profiles.
-Analysts often turn to NLDR techniques to verify and identify these
-clusters and explore developmental trajectories. In clustering
-workflows, the main objective is to verify the existence of clusters and
-subsequently identify them as specific cell types by examining the
-expression of ``known'' marker genes. Marker genes are specific genes or
-transcripts that are uniquely or highly expressed in particular cell
-types. Marker genes are identified through differential gene expression
-(DEG) analysis, comparing the expression levels of genes across
-different cell types. In this context, a ``faithful'' embedding should
-ideally preserve the topology of the data, ensuring that cells
-corresponding to the same cell type are situated close to the
-high-dimensional space.
+\begin{figure}[H]
 
-\hypertarget{processing-steps}{%
-\subsection{Processing steps}\label{processing-steps}}
+{\centering \includegraphics{paper_files/figure-pdf/fig-umapauthor-1.pdf}
 
-To begin our analysis, we installed the Peripheral Blood Mononuclear
-Cells (pbmc) data set obtained from 10x Genomics using the
-\texttt{SeuratData} R package \citep{Rahul2019}, which facilitates the
-distribution of data sets in the form of Seurat objects
-\citep{Yuhan2021}. This data set contains 13,714 features (genes) across
-2,700 samples (cells) within a single assay. The active assay is RNA,
-with 13,714 features representing different gene expressions. Then, the
-cells that have unique feature counts over 2,500 or less than 200 and
-cells that have \textgreater{} 5\% mitochondrial counts are filtered.
-After removing unwanted cells from the dataset, the next step is to
-normalize the data. By default, we employ a global-scaling normalization
-method ``LogNormalize'' that normalizes the feature expression
-measurements for each cell by the total expression, multiplies this by a
-scale factor (10,000 by default), and log-transforms the result.
+}
 
-Next, top 1000 genes are selected by Festem \citep{Chen2023} DEG method.
-Then, scale the data. Then, perform PCA on the scaled data. Louvain
-algorithm is used to cluster the single cells based on the genes
-selected by Festem. Using the Festem-selected genes and 15 PCs,
-identified 10 clusters in the PBMC3k data and annotated them based on
-the expression of canonical markers. The 10 clusters included immune
-cells such as naive CD4 T cells, memory CD4 T cells, CD8 T cells, CD14
-monocytes, FCGR3A monocytes, Natural Killer (NK) cells, B cells and
-Dendritic Cells (DC). In addition to these common cell types, Festem
-identified a fine cell type, CD27− CD4+ memory T cells, which were often
-missed by other methods.
+\caption{\label{fig-umapauthor}(a) 2D layout from UMAP (n\_neighbors =
+30, min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
+representation of the original data?}
 
-\begin{itemize}
-\item
-  Human peripheral blood mononclear cells (PBMCs) data
-\item
-  Intro to the data set
-\end{itemize}
-
-Used Louvain algorithm to cluster the single cells based on the genes
-selected by Festem method
-
-\begin{itemize}
-\item
-  Explain what ``Evaluate Festem on DEG detection'' means, in terms of
-  this data
-\item
-  How did they ``identified 10 clusters''? What were the variables used,
-  PCs or full data or 2D representation, spell this out.
-\item
-  Used top 1000 genes selected by Festem to run PCA, top 15 PCs
-  (original paper mentioned)
-\item
-  The ``10 clusters included immune cells such as naive CD4 T \ldots{}''
-  does this mean that every cluster had all of these, or one cluster was
-  mostly ``CD4 T cells'', another mostly ``memory CD4 T'', \ldots?
-\item
-  How is your use of this data different from the original application.
-\item
-  Original paper used this data set to compare different DEG methods,
-  but we need to look how the performance of UMAP with the author's
-  selected parameter choice.
-\item
-  Why 15 PCs? Is that from the original paper? YES
-\end{itemize}
-
-\citet{Chen2023}
-
-\begin{itemize}
-\item
-  Intro to the data set (This data set contains 13,714 features across
-  2,700 samples within a single assay. The active assay is RNA, with
-  13,714 features representing different gene expressions.)
-\item
-  2622 cells
-\item
-  Evaluate Festem on DEG detection (Festem enabled identification of
-  often-missed fine cell types)
-\item
-  Using the Festem-selected genes, identified 10 clusters in the PBMCsk
-  data and annotated them based on the expression of canonical markers
-\item
-  The 10 clusters included immune cells such as naive CD4 T cells,
-  memory CD4 T cells, CD8 T cells, CD14 monocytes, FCGR3A monocytes,
-  Natural Killer (NK) cells, B cells and Dendritic Cells (DC).
-\item
-  In addition to these common cell types, Festem identified a fine cell
-  type, CD27− CD4+ memory T cells, which were often missed by other
-  methods.
-\item
-  The CD27. CD4+ memory T cells identified by Festem expressed common
-  marker genes (IL7R and S100A4) of memory T cells, but did not express
-  CD27. These cells also had downregulated expression of SELL, CCR7, MAL
-  and LEF1, and upregulated expression of CCL5 (Fig. 4B) and thus were
-  the CD27- CD4+ memory T cells in the literature (36). The CD27- CD4+
-  memory T cells were known to be at a more differentiated state and
-  have stronger antigen-recall responses than their CD27+ counterparts.
-\item
-  15 PCs
-\item
-  Num bins along the x-axis = 23, shape parameter = 0.8772751
-\item
-  learned from the model: There are 3 well-separated clusters in 2D, but
-  if look at the model in high-D space, the three clusters are much
-  closer. Also, there is some continuity within the clustering structure
-  and it didn't capture well. Therefore UMAP with n:neighbour 30 is not
-  a good representation for this data set.
-\item
-  The most important parameter is n\_neighbors - the number of
-  approximate nearest neighbors used to construct the initial
-  high-dimensional graph. It effectively controls how UMAP balances
-  local versus global structure - low values will push UMAP to focus
-  more on local structure by constraining the number of neighboring
-  points considered when analyzing the data in high dimensions, while
-  high values will push UMAP towards representing the big-picture
-  structure while losing fine detail.
-\item
-  The second parameter we'll investigate is min\_dist, or the minimum
-  distance between points in low-dimensional space. This parameter
-  controls how tightly UMAP clumps points together, with low values
-  leading to more tightly packed embeddings. Larger values of min\_dist
-  will make UMAP pack points together more loosely, focusing instead on
-  the preservation of the broad topological structure.
-\item
-  The third parameter is metric. This parameter plays a crucial role in
-  determining how distances are computed within the ambient space of the
-  input data (The term ``ambient space'' refers to the original or
-  initial space in which the data exists before any transformation or
-  dimensionality reduction).
-\item
-  If it is completely a mess, then that is also further evidence that
-  the fit is poor in high-dimensions.
-\end{itemize}
-
-\hypertarget{approach-followed}{%
-\subsection{Approach followed}\label{approach-followed}}
-
-\begin{itemize}
-\item
-  First, referred to \citet{Chen2023} paper which shows UMAP
-  representation of PBMC3k data with 15 PCs and parameter choice of
-  n:neighbor:30, min\_dist:0.1, metric:cosine.
-\item
-  Observed that there is three well-separated clusters.
-\item
-  Second, visualise the 15 PCs in high-dimensional space with our model
-  and investigate whether can I see the three well-separated clusters or
-  is it showing something different than what I saw in UMAP view
-  suggested by the author.
-\item
-  Learned from the model: Yes, it's different. There are three clusters
-  but they are really close to each other. Also, in the largest cluster,
-  observed non-linear continuity structure, which didn't captured by the
-  author's UMAP representation.
-\item
-  Learned from the data: Visualise with detour and colored the clusters
-  in high-D. Identified more than three clusters which is suprising.
-\item
-  In that case, need to suggest a better UMAP representation than
-  author's suggestion.
-\item
-  To find a better UMAP representation, I need to investigate different
-  parameter choices for UMAP (or need to try another NLDR technique, but
-  here my objective is to suggest the best parameter choice with UMAP).
-\item
-  Therefore, I fitted our model for different UMAP parameter choices,
-  record the error, and selected the parameter choice that gives the
-  lowest error which is n:neighbor:5, min\_dist:0.99, metric:cosine.
-\item
-  Then, construct our model for this UMAP data (n:neighbor:5,
-  min\_dist:0.99, metric:cosine).
-\item
-  In this representation, you can see that the clusters are closer, and
-  the continuity of clusters are there.
-\item
-  Also, what missed from looking at high-D data with detour, in this
-  UMAP representation I can see more than three clusters.
-\item
-  Then, need to check how correct am I identify the clusters in 2D and
-  is that matched that I identify in high-D.
-\item
-  Generate a confusion matrix.
-\end{itemize}
-
-\hypertarget{story}{%
-\subsection{Story}\label{story}}
-
-\begin{itemize}
-\tightlist
-\item
-  UMAP representation of PBMC3k data with 15 PCs and parameter choice of
-  n:neighbor:30, min\_dist:0.1, metric:cosine (author's suggestion)
-  shows three well-separated clusters (see
-  Figure~\ref{fig-nldervisPBMCUMPview}). The question we need to answer
-  is: Does this UMAP representation preserve the actual data structure,
-  or is something missing or misidentified or misleading?
-\end{itemize}
+\end{figure}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMPview-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-msepltpbmc-1.pdf}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMPview}(a) 2D layout from UMAP
-(n\_neighbors = 30, min\_dist = 0.3) applied for the PBMC3k dataset. Is
-this a best representation of the original data?}
+\caption{\label{fig-msepltpbmc}Goodness of fit statistics from UMAP
+applied to training PBMC3k dataset. What is the effective number of bins
+in UMAP to create a 2D model? The MSE plot have a steep slope at the
+beginning, indicating that a smaller number of bins causes a larger
+amount of error. Then, the slope gradually declines or level off,
+indicating that a higher number of bins generates a smaller error. Using
+the elbow method, when the total number of bins is set to 588, the slope
+of the MSE plot experiences a sudden and noticeable change, resembling
+an elbow-like shape. This point indicates that adding less bins does not
+enough to capture the data structure.}
 
 \end{figure}
-
-\begin{itemize}
-\item
-  To investigate this, we are going to visualise the model in the data
-  space, which means that the model generated from UMAP is visualised in
-  high-D with original data.
-\item
-  To fit the model, first we need to decide how many number bins should
-  allocate along the x and y axes. To make an initial choice, we use MSE
-  plot (Figure~\ref{fig-diagnosticpltPBMC} (b)).
-\end{itemize}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltPBMC}Goodness of fit statistics from
-UMAP applied to training PBMC3k dataset. What is the effective number of
-bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-588, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{itemize}
-\tightlist
-\item
-  Then, the model is constructed by following all the steps in 2D and
-  lifts the model into high-D.
-\end{itemize}
 
 \begin{figure}[H]
 
@@ -1313,561 +1082,44 @@ and the error mapped into 2D NLDR points.}
 
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  As shown in Figure~\ref{fig-nldervisPBMCUMAP}, there are three
-  well-separated clusters (according to the model in 2D space).
-\end{itemize}
-
-\begin{figure}[H]
-
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_1.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc1_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_2.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc1_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_3.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc1_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc1_sc}Screen shots of the \textbf{langevitour} of
-the PBMC3k data set, shows the model in high-D, a video of the tour
-animation is available at (\url{https://youtu.be/Gnhh4hfsbbg}).}
-
-\end{figure}
-
-\begin{itemize}
-\item
-  According to Figure~\ref{fig-pbmc1_sc} (a), the model in high-D space
-  shows two well separated clusters. Also, two clusters are really close
-  to each other (see Figure~\ref{fig-pbmc1_sc} (b)). Furthermore, there
-  are three clusters shown by the model in 2D actually represented in
-  high-D as well (see Figure~\ref{fig-pbmc1_sc} (c)). Another important
-  thing to notice from the model in high-D space is that the non-linear
-  continuity structure in two well-separated clusters.
-\item
-  Figure~\ref{fig-pbmc1_sc} (c) gives evidence that UMAP preserves the
-  global structure. Furthermore, the non-linearity within the clusters
-  shown in Figure~\ref{fig-pbmc1_sc} (a) proves that local structure is
-  also preserved but that's not visually shown by th UMAP layout in 2D.
-\item
-  Can we find a better parameter choice for UMAP which shows this
-  non-linear continuity of the big clusters in 2D space as well?
-\item
-  To do that, we are going to fit models for different parameter choice
-  and select the one which have the lowest model error in high-D (see
-  \textbf{?@tbl-errordiffcomb}).
-\end{itemize}
-
-\begin{table}[H]
-
-\caption{errors for different parameter combinations}
-\centering
-\begin{tabular}[t]{r|r|l|r}
-\hline
-\textbf{n\_neighbors} & \textbf{min\_dist} & \textbf{metric} & \textbf{error (x 100)}\\
-\hline
-\cellcolor{gray!6}{5} & \cellcolor{gray!6}{0.99} & \cellcolor{gray!6}{cosine} & \cellcolor{gray!6}{262.18}\\
-\hline
-15 & 0.99 & cosine & 279.49\\
-\hline
-\cellcolor{gray!6}{84} & \cellcolor{gray!6}{0.99} & \cellcolor{gray!6}{cosine} & \cellcolor{gray!6}{295.64}\\
-\hline
-5 & 0.30 & cosine & 303.90\\
-\hline
-\cellcolor{gray!6}{15} & \cellcolor{gray!6}{0.30} & \cellcolor{gray!6}{cosine} & \cellcolor{gray!6}{308.97}\\
-\hline
-84 & 0.30 & cosine & 319.59\\
-\hline
-\textcolor{red}{\textbf{\cellcolor{gray!6}{30}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{0.30}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{cosine}}} & \textcolor{red}{\textbf{\cellcolor{gray!6}{386.35}}}\\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCUMAPview2-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCUMAPview2}(a) 2D layout from UMAP
-(n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for the
-PBMC3k dataset. Is this a best representation of the original data?}
-
-\end{figure}
-
-\begin{itemize}
-\item
-  Selected the one with n:neighbor:5, min\_dist:0.99, metric:cosine (see
-  Figure~\ref{fig-nldervisPBMCUMAPview2}). As shown in
-  Figure~\ref{fig-nldervisPBMCUMAPview2}, the two big clusters have
-  non-linear continuity structures, two big clusters are well-separated
-  but close to each other, and the two cluster which exists in the one
-  big cluster are really close to each other (see
-  Figure~\ref{fig-nldervisPBMCUMAPview2}).
-\item
-  Now, we are going to fit the model for the new parameter choice.
-\end{itemize}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltPBMC3-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltPBMC3}Goodness of fit statistics from
-UMAP applied to training S-curve dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-588, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCUMAP3}(a) Model in the 2D space overlaid
-with UMAP data, and (b) Error occurred by the high-D model for high-D
-data and the error mapped into 2D NLDR points.}
-
-\end{figure}
-
-\begin{itemize}
-\tightlist
-\item
-  According to Figure~\ref{fig-nldervisPBMCUMAP3} (a), the model
-  constructed in 2D space for the new parameter choice of UMAP shows 5
-  clusters which are really close to each other. The big cluster shows
-  the non-linear continuity structure with two sub clusters. Other three
-  clusters positioned in a structure of non-linearity but really close
-  to each other.
-\end{itemize}
-
-\begin{figure}[H]
-
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_4.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc2_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_5.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc2_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_6.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc2_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc2_sc}Screen shots of the \textbf{langevitour} of
-the PBMC3k data set, shows the model in high-D with new parameter choice
-for UMAP, a video of the tour animation is available at
-(\url{https://youtu.be/lc_6-rIuNHI}).}
-
-\end{figure}
-
-\begin{itemize}
-\item
-  As shown in Figure~\ref{fig-pbmc2_sc}, there are 5 clusters, three of
-  them are well-separated but close to each other as seen in
-  Figure~\ref{fig-nldervisPBMCUMAP3} (a). Also, other two clusters are
-  really close to each other but separated from the early mentioned
-  three clusters.
-\item
-  Next, we are going to investigate whether, the clusters we identified
-  in 2D UMAP layout, can also be identified in high-D as well.
-\item
-  First, I colored the clusters in 2D layout manually. Then, I used
-  spin-and-brush approach with \texttt{detour} to color the clusters in
-  high-D.
-\end{itemize}
-
-\begin{verbatim}
-           
-            cluster 1 cluster 2 cluster 3 cluster 4 cluster 5 cluster 6
-  cluster 1       138        13         0         0         0         0
-  cluster 2        11       509         0         1         0         0
-  cluster 3         1         0       348         1         0         1
-  cluster 4         0         0         3      1029        64         2
-  cluster 5         0         0         0        85       226        32
-  cluster 6         0         0         0         0        19       139
-\end{verbatim}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisPBMCUMAP3Res-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisPBMCUMAP3Res}2D layout from UMAP
-(n\_neighbors = 5, min\_dist = 0.99, metric = cosine) applied for PBMC3k
-dataset (a) colored manually in 2D, (b) colored in high-D.}
-
-\end{figure}
-
-\begin{itemize}
-\item
-  Figure~\ref{fig-nldervisPBMCUMAP3Res} shows the 2D UMAP layout colored
-  with each method. As shown in Figure~\ref{fig-nldervisPBMCUMAP3Res}
-  (b) and the confusion matrix,there are some miss-classifications. What
-  is the reason for that?
-\item
-  For example, the point (ID: 1158) classified as \textbf{cluster 3} in
-  2D UMAP layout, classified as \textbf{cluster 6} when doing the
-  colouring in high-D (see Figure~\ref{fig-nldervisPBMCUMAP3Res}). Why?
-\end{itemize}
-
-\begin{figure}[H]
-
-\begin{minipage}[t]{\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_7.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc2_sc7}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc2_appsc}Screen shots of app which shows 2D UMAP
-layout and comparison of distances related to the point classified as
-\textbf{cluster 6} in high-D (ID: 1158) and randomly selected point
-which is in \textbf{cluster 6} (ID: 2291).}
-
-\end{figure}
-
-\begin{itemize}
-\tightlist
-\item
-  If we compute the distance between these two points, you will see that
-  it preserves the pair-wise distance (see
-  Figure~\ref{fig-pbmc2_appsc}), which give us a evidence that even
-  though the point 1158, classified as \textbf{cluster 3} in 2D layout,
-  actually should be in \textbf{cluster 6}. This also evident that some
-  misleading can happens with UMAP.
-\end{itemize}
-
-\begin{figure}[H]
-
-\begin{minipage}[t]{\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/pbmc3k/sc_8.png}
-
-}
-
-}
-
-\subcaption{\label{fig-pbmc2_sc8}}
-\end{minipage}%
-
-\caption{\label{fig-pbmc2_appsc1}Screen shots of app which shows 2D UMAP
-layout and comparison of distances related to the point classified as
-\textbf{cluster 5} in high-D (ID: 3) and randomly selected point which
-is in \textbf{cluster 5} (ID: 2198).}
-
-\end{figure}
-
-\begin{itemize}
-\tightlist
-\item
-  For another example, if we compute the distance between these two
-  points, you will see that it preserves the pair-wise distance (see
-  Figure~\ref{fig-pbmc2_appsc1}), which give us a evidence that even
-  though the point 3, classified as \textbf{cluster 4} in 2D layout,
-  actually should be in \textbf{cluster 5}. This also evident that some
-  misleading can happens with UMAP.
-\end{itemize}
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-72-1.pdf}
 
 \hypertarget{handwritten-digits}{%
 \subsection{Handwritten digits}\label{handwritten-digits}}
 
-\begin{itemize}
-\item
-  Why I choose this data set? Because I need show that whatever NLDR
-  technique that we use, our model can capture the non-linear structure
-  within clusters as well.
-\item
-  Digit 1 (7877 images only)
-\end{itemize}
-
-\hypertarget{preprocessing}{%
-\subsubsection{Preprocessing}\label{preprocessing}}
-
-\begin{itemize}
-\item
-  Scale the pixel values to the range {[}0,1{]}
-\item
-  Reshape to have a 2-dimensional array
-\item
-  reshaping pixel data is a fundamental preprocessing step in image
-  analysis tasks, ensuring that the data is in a suitable format for
-  further analysis, modeling, and interpretation. It helps preserve
-  important spatial information, ensures compatibility with machine
-  learning models, and facilitates feature extraction and visualization.
-\item
-  Reshaping the pixel data allows us to preserve this spatial
-  information, ensuring that the relationships between neighboring
-  pixels are maintained.
-\item
-  Many machine learning algorithms, including neural networks, expect
-  input data to be in a specific format. For image data, this typically
-  means a two-dimensional array where each row represents a single
-  sample (image), and each column represents a feature (pixel value).
-  Reshaping ensures that all samples have consistent dimensions, making
-  them suitable for feeding into these algorithms.
-\item
-  Reshaping the pixel data allows for easier extraction of relevant
-  features from the images. Once reshaped, individual pixels can be
-  treated as features, making it easier to apply techniques like
-  dimensionality reduction (e.g., PCA) or feature engineering to extract
-  meaningful information from the images.
-\item
-  Selected 10 PCs based on scree plot
-\item
-  7877 images of digit 1
-\item
-  PaCMAP parameters: n\_components=2, n\_neighbors=10, init=``random'',
-  MN\_ratio=0.9, FP\_ratio=2.0
-\end{itemize}
-
-\hypertarget{model}{%
-\subsubsection{Model}\label{model}}
-
-\begin{itemize}
-\item
-  Total number of bins used: 180 (num\_x = 12, num\_y = 15, hex\_size =
-  0.06)
-\item
-  Learned from the model: There is a non-linear shape in 2D, but if look
-  at the model in high-D, the non-linear continuity is there but there
-  is a twist in the structure which didn't capture by PaCMAP in 2D
-  layout.
-\end{itemize}
-
-\hypertarget{story-1}{%
-\subsubsection{Story}\label{story-1}}
-
-\begin{itemize}
-\item
-  PaCMAP representation of MNIST digit 1 data with 10PCs and parameter
-  choice of n\_components=2, n\_neighbors=10, init=``random'',
-  MN\_ratio=0.9, FP\_ratio=2.0 shows a non-linear structure (see
-  Figure~\ref{fig-nldervisMNISTPACMAP} (a)). I selected this parameter
-  choice because this the default parameter setting for PaCMAP and
-  selected PaCMAP because when I observed the 5 NLDR techniques applied
-  for the data PaCMAP showed the non-linear structure effectively in 2D.
-\item
-  By looking at MSE plot, I selected the 180 bins, which associated with
-  12 bins along the x-axis, 15 bins along the y-axis, and hex size as
-  0.06 (Figure~\ref{fig-diagnosticpltMNIST} (b)). Then, fitted the model
-  in 2D (see Figure~\ref{fig-nldervisMNISTPACMAP} (b)). As you can see
-  in Figure~\ref{fig-nldervisMNISTPACMAP} (b), the fitted model capture
-  the non-linear structure of the 2D data.
-\end{itemize}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltMNIST-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltMNIST}Goodness of fit statistics from
-PaCMAP applied to training MNIST dataset. What is the effective number
-of bins in each NLDR technique to create a 2D model? The MSE plot have a
-steep slope at the beginning, indicating that a smaller number of bins
-causes a larger amount of error. Then, the slope gradually declines or
-level off, indicating that a higher number of bins generates a smaller
-error. Using the elbow method, when the total number of bins is set to
-180, the slope of the Mean Squared Error (MSE) plot experiences a sudden
-and noticeable change, resembling an elbow-like shape. This point
-indicates that adding less bins does not enough to capture the data
-structure.}
-
-\end{figure}
-
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-91-1.pdf}
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
-
-}
-
-\caption{\label{fig-nldervisMNISTPACMAP}(a) 2D layout from PaCMAP
-(n\_components=2, n\_neighbors=10, init=random, MN\_ratio=0.9,
-FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset, (b) Model
-in the 2D space overlaid on PaCMAP data, and (c) Error occurred by the
-high-D model for high-D data and the error mapped into 2D NLDR points.}
-
-\end{figure}
+The MNIST dataset consists of grayscale images of handwritten digits
+\citep{lecun2010}. \citet{Yingfan2021} used this dataset to demonstrate
+how the PaCMAP preserves local structure. We select the 2D embedding of
+PaCMAP for the handwritten digit 1. As shown in
+Figure~\ref{fig-pacmapauthor}, we observe a nonlinear structure present
+in 2D space. To answer the following questions,
 
 \begin{itemize}
 \tightlist
 \item
-  Next, the constructed 2D model lifts into high-dimensions (see
-  Figure~\ref{fig-mnist1_sc}).
+  Is the original data structure of the handwritten digit 1 dataset
+  nonlinear?
+\item
+  Where does PaCMAP preserve the original data structure?
+\item
+  Where does PaCMAP show quirks?
 \end{itemize}
+
+we visualize the model constructed with PaCMAP overlaid on data in
+high-D space (model-in-data space).
 
 \begin{figure}[H]
 
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/mnist/sc_1.png}
+{\centering \includegraphics{paper_files/figure-pdf/fig-pacmapauthor-1.pdf}
 
 }
 
-}
-
-\subcaption{\label{fig-mnist1_sc1}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/mnist/sc_2.png}
-
-}
-
-}
-
-\subcaption{\label{fig-mnist1_sc2}}
-\end{minipage}%
-%
-\begin{minipage}[t]{0.33\linewidth}
-
-{\centering 
-
-\raisebox{-\height}{
-
-\includegraphics{figures/mnist/sc_3.png}
-
-}
-
-}
-
-\subcaption{\label{fig-mnist1_sc3}}
-\end{minipage}%
-
-\caption{\label{fig-mnist1_sc}Screen shots of the \textbf{langevitour}
-of the MNIST digit 1 data set, shows the model in high-D, a video of the
-tour animation is available at (\url{https://youtu.be/zq2GM9qvUNA}).}
+\caption{\label{fig-pacmapauthor}(a) 2D layout from PaCMAP
+(n\_components=2, n\_neighbors=10, init=random, MN\_ratio=0.9,
+FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a
+best representation of the original data?}
 
 \end{figure}
-
-\begin{itemize}
-\item
-  As shown in Figure~\ref{fig-mnist1_sc} (a), the non-linear continuity
-  structure that you have seen in 2D representation of PaCMAP, also can
-  be seen in the model in high-D space as well. This gives us an
-  evidence that our model capture the non-linear structure of the data
-  effectively.
-\item
-  Furthermore, our model shows some addition pattern of data which
-  couldn't be seen in the 2D layout.
-\item
-  One is the twisted structure within the non-linear structure (see
-  Figure~\ref{fig-mnist1_sc} (c)).
-\item
-  Another thing is the connected corners of the non-linear structure
-  (see Figure~\ref{fig-mnist1_sc} (b)). The non-linear curve is bended.
-\item
-  To gives the evidence that PaCMAP preserve the local structure
-  (non-linear pattern), our model helps by computing the model errors
-  (Figure~\ref{fig-diagnosticpltMNIST} (c)).
-\end{itemize}
 
 \begin{figure}[H]
 
@@ -1875,21 +1127,41 @@ tour animation is available at (\url{https://youtu.be/zq2GM9qvUNA}).}
 
 }
 
-\caption{\label{fig-sampleimg}Images of handwritten digit 1 which occur
-large model error.}
+\caption{\label{fig-sampleimg}Images of the handwritten digit 1 are
+distributed along the left-to-right of first embedding axis of the
+PaCMAP nonlinear structure.}
 
 \end{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  As you can see in Figure~\ref{fig-diagnosticpltMNIST} (c), the largest
-  model error shows in the upper right side of the 2D layout. A sample
-  of the images that shows the largest error can be seen in
-  Figure~\ref{fig-sampleimg}. The reason for the large model error is
-  that the high-D points related to this largest error located away from
-  the high-D model points.
-\end{itemize}
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltMNIST-1.pdf}
+
+}
+
+\caption{\label{fig-diagnosticpltMNIST}Goodness of fit statistics from
+PaCMAP applied to training MNIST dataset. What is the effective number
+of bins in PaCMAP to create a 2D model? The MSE plot have a steep slope
+at the beginning, indicating that a smaller number of bins causes a
+larger amount of error. Then, the slope gradually declines or level off,
+indicating that a higher number of bins generates a smaller error. Using
+the elbow method, when the total number of bins is set to 180, the slope
+of the Mean Squared Error (MSE) plot experiences a sudden and noticeable
+change, resembling an elbow-like shape. This point indicates that adding
+less bins does not enough to capture the data structure.}
+
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisMNISTPACMAP}(a) Model in the 2D space
+overlaid on PaCMAP data, and (b) high-D model error in model space.}
+
+\end{figure}
 
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}
