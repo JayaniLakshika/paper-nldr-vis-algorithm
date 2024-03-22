@@ -3736,6 +3736,8 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 
 ### Single-cell RNA-seq data of human
 
+@chen2023
+
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
 #| warning: false
@@ -4004,7 +4006,7 @@ trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 
-# df_all_mnist <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
+# df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
 # 
 # show_langevitour(df_all_pbmc, df_bin_pbmc, df_bin_centroids_pbmc, benchmark_pbmc, distance_pbmc, "distance", col_start = "PC_")
 
@@ -4077,26 +4079,235 @@ error_df <- read_csv("data/pbmc3k/error_df.csv", col_names = FALSE)
 names(error_df) <- c("num_bins", "error", "mse", "num_bins_x", "num_bins_y", "hex_size", "num_non_empty_bins", "n_neighbors", "min_dist")
 
 error_df <- error_df |>
-  dplyr::mutate(type = paste0(n_neighbors, "_", min_dist))
+  dplyr::mutate(type = paste0("n_neighbors: ", n_neighbors, ", min_dist: ", min_dist))
 
 abs_error_plot_pbmc <- ggplot(error_df, aes(x = num_non_empty_bins,
-                                       y = error, group = type,
+                                       y = log(error), group = type,
 colour = type)) +
   geom_point() +
   geom_line() +
-   # geom_vline(xintercept = 588, linetype="solid",
-   #              color = "red", size=0.8, alpha = 0.5) +
+   geom_vline(xintercept = 278, linetype="solid",
+                color = "black", size=0.8, alpha = 0.5) +
   theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.position = "bottom", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_color_manual(values=c("#b15928", "#1f78b4", "#cab2d6", "#ccebc5", "#fb9a99", "#e31a1c", "#6a3d9a", "#ff7f00", "#ffed6f", "#fdbf6f", "#ffff99", "#a6cee3", "#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#fdb462", "#b3de69", "#fccde5", "#d9d9d9", "#b2df8a", "#bc80bd", "#33a02c", "#ccebc5", "#ffed6f", "#000000", "#bdbdbd")) +
-  ylab("absolute error") +
+        axis.text = element_text(size = 7),
+        legend.text = element_text(size = 3)) +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a')) +
+  ylab("log(absolute error)") +
   xlab("number of non-empty bins")
+
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Absolute error from UMAP applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to 278, the lowest error occurred with the parameters n_neighbors: 5 and min_dist: 0.3."
+#| label: fig-abserrorPBMC
+#| fig-pos: H
+#| out-width: 100%
 
 abs_error_plot_pbmc
 ```
 
+```{r}
+#| warning: false
+#| echo: false
+
+## Import data
+training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:9] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.3.rds")
+umap_pbmc_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_pbmc, 
+                                                                 x = "UMAP1", y = "UMAP2"))) |>
+  dplyr::mutate(cell_label = umap_pbmc$cell_label) |>
+  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
+                  "UMAP2" = "scaled_UMAP2")) |>
+  dplyr::mutate(ID = 1:NROW(umap_pbmc))
+
+umap_plot_pbmc <- umap_pbmc_scaled |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.5) +
+  coord_equal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+        legend.key.height = unit(0.25, 'cm'),
+        legend.key.width = unit(0.25, 'cm')) 
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 5, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?"
+#| label: fig-umapsuggest
+#| fig-pos: H
+
+umap_plot_pbmc 
+```
+
+<!--Fit the model-->
+
+```{r}
+#| warning: false
+#| echo: false
+#| message: false
+
+## Decide by looking at MSE plot
+num_bins_x_pbmc <- 21
+num_bins_y_pbmc <- 53
+hex_size_pbmc <- 0.03
+
+hb_obj_pbmc <- hex_binning(data = umap_pbmc_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x_pbmc, 
+                      num_bins_y = num_bins_y_pbmc, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_pbmc, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_pbmc$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_pbmc$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_pbmc$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+# ggplot(data = hex_grid, aes(x = x, y = y)) +
+#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red") +
+#   coord_fixed()
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+#   coord_fixed()
+
+umap_data_with_hb_id_pbmc <- as.data.frame(do.call(cbind, hb_obj_pbmc$data_hb_id))
+  
+model_object <- fit_highd_model( training_data = training_data_pbmc, 
+                                 nldr_df_with_id = umap_pbmc_scaled, 
+                                 x = "UMAP1", y = "UMAP2", 
+                                 num_bins_x = num_bins_x_pbmc, 
+                                 num_bins_y = num_bins_y_pbmc, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size_pbmc,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "UMAP", 
+                                 col_start_highd = "PC_")
+
+df_bin_centroids_pbmc <- model_object$df_bin_centroids
+df_bin_pbmc <- model_object$df_bin
+
+## Triangulate bin centroids
+tr1_object_pbmc <- tri_bin_centroids(df_bin_centroids_pbmc, x = "c_x", y = "c_y")
+tr_from_to_df_pbmc <- gen_edges(tri_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2d_dist(tr_coord_df = tr_from_to_df_pbmc, 
+                             start_x = "x_from", start_y = "y_from", 
+                             end_x = "x_to", end_y = "y_to", 
+                             select_vars = c("from", "to", "distance"))
+
+
+# distance_plot <- plot_dist(distance_pbmc) +
+#   ylab(expression(d^{(2)})) +
+#   theme(axis.text = element_text(size = 5),
+#         axis.title = element_text(size = 12))
+# 
+# distance_plot
+
+## To find the benchmark value
+benchmark_pbmc <- find_lg_benchmark(distance_edges = distance_pbmc, distance_col = "distance")
+
+# ggplot() +
+# geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
+
+trimesh_removed_pbmc_umap <- vis_rmlg_mesh(distance_edges = distance_pbmc, benchmark_value = benchmark_pbmc, tr_coord_df = tr_from_to_df_pbmc, distance_col = "distance")
+
+trimesh_removed_pbmc_umap <- trimesh_removed_pbmc_umap +
+  geom_point(data = umap_pbmc_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.05) +
+  theme_linedraw() +
+  theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+# df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
+# 
+# show_langevitour(df_all_pbmc, df_bin_pbmc, df_bin_centroids_pbmc, benchmark_pbmc, distance_pbmc, "distance", col_start = "PC_")
+
+df_bin_train <- df_bin_pbmc
+names(df_bin_train)[-1] <- paste0("avg_", names(df_bin_train)[-1])
+
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID), umap_data_with_hb_id_pbmc)
+
+error_df <- df_all_pbmc |>
+  dplyr::left_join(df_bin_train, by = c("hb_id" = "hb_id")) ## Map high-D averaged/weighted mean coordinates
+
+for (i in 1:(NCOL(df_bin_train) - 1)) {
+
+  error_df[ , paste0("abs_residual_", "PC_", i)] <- abs(error_df[ , paste0("PC_", i)] - error_df[ , paste0("avg_", "PC_", i)])
+
+}
+
+error_df <- error_df |>
+  dplyr::mutate(total = rowSums(dplyr::pick(tidyselect::starts_with(paste0("abs_residual_", "PC_")))))
+
+
+error_df <- error_df |>
+  mutate(type = if_else(total == 0, "no error",
+                        if_else(total <= 5, "error 0-5",
+                                if_else(total <= 10, "error 5-10",
+                                        if_else(total <= 15, "error 10-15",
+                                                if_else(total <= 20, "error 15-20",
+                                                        "error greter than 20"))))))
+
+plot_list2_pbmc_error <- error_df |>
+  mutate(type = factor(type , levels = c("no error", "error 0-5", "error 5-10", "error 10-15", "error 15-20", "error greter than 20"))) |>
+    ggplot(aes(x = UMAP1,
+               y = UMAP2, color = type))+
+    geom_point(alpha=0.5, size = 0.1) +
+    coord_equal() +
+    theme(plot.title = element_text(hjust = 0.5, size = 18, face = "bold")) + #ggtitle("(a)") +
+  theme_linedraw() +
+    theme(plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm')) +
+  scale_color_manual(values=rainbow_hcl(6)) +
+  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) Model in the 2D space overlaid on UMAP data, and (b) Error occurred by the high-D model for high-D data and the error mapped into 2D NLDR points."
+#| label: fig-nldervisPBMCUMAP2
+#| fig-pos: H
+
+trimesh_removed_pbmc_umap + plot_list2_pbmc_error +
+plot_layout(guides='collect', ncol=2) &
+  theme(legend.position='bottom') 
+```
 
 ### Handwritten digits
 
