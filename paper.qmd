@@ -4052,9 +4052,7 @@ plot_list2_pbmc_error <- error_df |>
         legend.text = element_text(size=4),
          legend.key.height = unit(0.25, 'cm'),
          legend.key.width = unit(0.25, 'cm')) +
-  scale_color_manual(values=c("#fee0d2", "#fcbba1",
-                                         "#fc9272", "#fb6a4a", "#ef3b2c",
-                                         "#cb181d", "#a50f15")) +
+  scale_color_manual(values=rainbow_hcl(7)) +
   annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
 ```
 
@@ -4102,13 +4100,17 @@ abs_error_plot_pbmc
 
 ### Handwritten digits
 
-The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010]. @Yingfan2021 used this dataset to demonstrate how the PaCMAP preserves local structure. We select the 2D embedding of PaCMAP for the handwritten digit 1. As shown in @fig-pacmapauthor, we observe a nonlinear structure present in 2D space. To answer the following questions,
+The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010]. @Yingfan2021 used this dataset to demonstrate how the PaCMAP preserves local structure. We selected the 2D embedding of PaCMAP for the handwritten digit 1. As shown in @fig-pacmapauthor, we observe a nonlinear structure present in 2D space. Furthermore, the angle of digit 1 images varies along the nonlinear structure (see @fig-sampleimg). To answer the following questions,
 
 - Is the original data structure of the handwritten digit 1 dataset nonlinear?
 - Where does PaCMAP preserve the original data structure?
 - Where does PaCMAP show quirks?
 
 we visualize the model constructed with PaCMAP overlaid on data in high-D space (model-in-data space).    
+
+According to @fig-mnist1_sc1, the nonlinear continuity structure observed in the 2D representation of PaCMAP is also visible when visualizing the model overlaid on the data space. This provides evidence that the model accurately captures the structure of the high-D data. Also, the model has a twisted pattern within the nonlinear structure, which is an addition pattern of data that cannot be seen in the 2D representation (see @fig-mnist1_sc2).
+
+In order to visually assess the preservation of local structure, it's important to consider the edges in the model. In a model that effectively preserves local structure, there shouldn't be any long edges in high-D space. However, as shown in @fig-mnist1_sc3, some long edges exist in high-D space that are not identified as long edges in the 2D representation.
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -4166,7 +4168,7 @@ pacmap_plot_mnist
 mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 ```
 
-<!--images with position 1-->
+<!--images with positions-->
 ```{r}
 #| warning: false
 #| echo: false
@@ -4176,13 +4178,36 @@ pixels_gathered <-  mnist_data |>
   gather(pixel, value, -Label, -instance) |>
   tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
   mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(3710, 2391, 2385, 5030, 6475)) 
+  filter(instance %in% c(3710, 2391, 2385, 5030, 6475,
+                         7679, 3568, 1312, 3311, 1097,
+                         3552, 7853, 6489, 7689, 6690,
+                        1380, 6057, 2347, 5946, 3355,
+                        4175, 3997, 5378, 387, 1854,
+                        614, 3079, 1762, 5239, 3723,
+                        5748, 728, 7419, 7794, 6233,
+                        33, 2485, 5998, 318, 1761,
+                        5690, 165, 517, 6935, 2682,
+                        4962, 2264, 5563, 6369, 559,
+                        5188, 4849, 2666, 3448, 3055,
+                        3120, 6869, 6345, 4470, 7147)) |>
+  mutate(instance = as.character(instance))
 
 theme_set(theme_light())
-imge_error_sample1 <- pixels_gathered |> 
+img_sample <- pixels_gathered |> 
   ggplot(aes(x, y, fill = value)) +  
   geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
+  facet_wrap(~ factor(instance, levels = c(3710, 2391, 2385, 5030, 6475,
+                         7679, 3568, 1312, 3311, 1097,
+                         3552, 7853, 6489, 7689, 6690,
+                        1380, 6057, 2347, 5946, 3355,
+                        4175, 3997, 5378, 387, 1854,
+                        614, 3079, 1762, 5239, 3723,
+                        5748, 728, 7419, 7794, 6233,
+                        33, 2485, 5998, 318, 1761,
+                        5690, 165, 517, 6935, 2682,
+                        4962, 2264, 5563, 6369, 559,
+                        5188, 4849, 2666, 3448, 3055,
+                        3120, 6869, 6345, 4470, 7147)), ncol = 10) +
   theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
               axis.title.x = element_blank(), axis.title.y = element_blank(),
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
@@ -4192,469 +4217,19 @@ imge_error_sample1 <- pixels_gathered |>
         legend.text = element_text(size=4),
          legend.key.height = unit(0.25, 'cm'),
          legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
+        strip.text = element_blank(),
+        aspect.ratio = 1)
 ```
 
 
-<!--images with position 2-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(7679, 3568, 1312, 3311, 1097)) 
-
-theme_set(theme_light())
-imge_error_sample2 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 3-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(3552, 7853, 6489, 7689, 6690)) 
-
-theme_set(theme_light())
-imge_error_sample3 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 4-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(1380, 6057, 2347, 5946, 3355)) 
-
-theme_set(theme_light())
-imge_error_sample4 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 5-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(4175, 3997, 5378, 387, 1854)) 
-
-theme_set(theme_light())
-imge_error_sample5 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 6-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(614, 3079, 1762, 5239, 3723)) 
-
-theme_set(theme_light())
-imge_error_sample6 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 7-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(5748, 728, 7419, 7794, 6233)) 
-
-theme_set(theme_light())
-imge_error_sample7 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 8-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(33, 2485, 5998, 318, 1761)) 
-
-theme_set(theme_light())
-imge_error_sample8 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 9-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(5690, 165, 517, 6935, 2682)) 
-
-theme_set(theme_light())
-imge_error_sample9 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 10-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(4962, 2264, 5563, 6369, 559)) 
-
-theme_set(theme_light())
-imge_error_sample10 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 11-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(5188, 4849, 2666, 3448, 3055)) 
-
-theme_set(theme_light())
-imge_error_sample11 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
-<!--images with position 12-->
-```{r}
-#| warning: false
-#| echo: false
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(3120, 6869, 6345, 4470, 7147)) 
-
-theme_set(theme_light())
-imge_error_sample12 <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
-  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-              axis.title.x = element_blank(), axis.title.y = element_blank(),
-              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=5), #change legend title font size
-        legend.text = element_text(size=4),
-         legend.key.height = unit(0.25, 'cm'),
-         legend.key.width = unit(0.25, 'cm'),
-        strip.text = element_blank())
-```
-
 ```{r}
 #| echo: false
-#| fig-cap: "Images of the handwritten digit 1 are distributed along the left-to-right of first embedding axis of the PaCMAP nonlinear structure."
+#| fig-cap: "Images of the handwritten digit 1 are distributed along the right-to-left of first embedding axis of the PaCMAP nonlinear structure."
 #| label: fig-sampleimg
 #| out-width: 100%
 #| fig-pos: H
 
-imge_error_sample1 + imge_error_sample2 + imge_error_sample3 + imge_error_sample4 + imge_error_sample5 + imge_error_sample6 + imge_error_sample7 + imge_error_sample8 + imge_error_sample9 + imge_error_sample10 + imge_error_sample11 + imge_error_sample12 +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(ncol = 2, nrow = 6) &
-  theme(plot.tag = element_text(size = 8))
-```
-
-<!-- MSE plot to find which is the effective number of bins to use-->
-```{r}
-#| warning: false
-#| echo: false
-#| message: false
-
-## UMAP
-## Prediction
-
-#tot_num_bin_vec <- 2:51
-hex_size_vec <- seq(0.02, 2, by = 0.01)
-
-vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
-
-mse_df_mnist <- dplyr::bind_rows(vec)[0, ]
-mse_df_mnist <- mse_df_mnist |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(hex_size_vec)) {
-  
-  num_bin_list <- calc_bins(data = pacmap_minst_scaled, 
-            x = "PaCMAP1", y = "PaCMAP2", 
-            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
-  
-  num_bins_x <- num_bin_list$num_x
-  num_bins_y <- num_bin_list$num_y
-  
-  model_object <- fit_highd_model( training_data = training_data_mnist, 
-                                   nldr_df_with_id = pacmap_minst_scaled, 
-                                   x = "PaCMAP1", y = "PaCMAP2", 
-                                   num_bins_x = num_bins_x, 
-                                   num_bins_y = num_bins_y, 
-                                   x_start = NA, y_start = NA, 
-                                   buffer_x = NA, buffer_y = NA, 
-                                   hex_size = hex_size_vec[i],
-                                   is_rm_lwd_hex = FALSE, 
-                                   benchmark_to_rm_lwd_hex = NA, 
-                                   col_start_2d = "PaCMAP", 
-                                   col_start_highd = "PC")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_emb_list <- predict_emb(test_data = training_data_mnist, 
-                                  df_bin_centroids = centroid_df_training, 
-                                  df_bin = avg_df_training, type_NLDR = "PaCMAP")
-  
-  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
-  
-  eval_list <- gen_summary(test_data = training_data_mnist, 
-                                  prediction_df = pred_df_training, 
-                                  df_bin = avg_df_training, col_start = "PC")
-  
-  mse_df_mnist <- mse_df_mnist |>
-    tibble::add_row(num_bins = num_bins_x * num_bins_y,
-                    aic = eval_list$aic,
-                    mse = eval_list$mse,
-                    num_bins_x = num_bins_x,
-                    num_bins_y = num_bins_y,
-                    hex_size = hex_size_vec[i])
-  
-
-}
-
-
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df_mnist |> 
-  dplyr::count(num_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_bins)
-
-### Group split by duplicated bins
-duplicate_df_list <- mse_df_mnist |>
-  dplyr::filter(num_bins %in% dupli_bins) |>
-  dplyr::arrange(num_bins) |>
-  dplyr::group_split(num_bins)
-
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
-    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
-
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df_mnist |>
-  dplyr::filter(!(num_bins %in% dupli_bins))
-
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df_mnist <- dplyr::bind_rows(not_dupli_df, duplicate_df)
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
-                                       y = mse
-)) +
-  geom_point() +
-  geom_line() +
-   geom_vline(xintercept = 180, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("MSE") +
-  xlab("total number of bins")
-
-```
-
-```{r}
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in PaCMAP to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 180, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
-#| label: fig-diagnosticpltMNIST
-#| fig-pos: H
-
-mse_plot_mnist
+img_sample
 ```
 
 <!-- Fit the model and compute error-->
@@ -4780,16 +4355,16 @@ error_df <- error_df |>
 ### There is lot of points with error 0,
 
 error_df <- error_df |>
-  mutate(type = if_else(total == 0, "no error",
-                        if_else(total <= 2, "error 0-2",
-                                if_else(total <= 4, "error 2-4",
-                                        if_else(total <= 6, "error 4-6",
-                                                if_else(total <= 10, "error 6-10",
+  mutate(type = if_else(total <= 2, "error 0-2",
+                        if_else(total <= 4, "error 2-4",
+                                if_else(total <= 6, "error 4-6",
+                                        if_else(total <= 8, "error 6-8",
+                                                if_else(total <= 10, "error 8-10",
                                                         if_else(total <= 12, "error 10-12",
                                                                 if_else(total <= 14, "error 12-14", "error greter than 14"))))))))
 
 plot_list2_mnist_error <- error_df |>
-  mutate(type = factor(type , levels = c("no error", "error 0-2", "error 2-4", "error 4-6", "error 6-10", "error 10-12", "error 12-14", "error greter than 14"))) |>
+  mutate(type = factor(type , levels = c("error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", "error 10-12", "error 12-14", "error greter than 14"))) |>
     ggplot(aes(x = PaCMAP1,
                y = PaCMAP2, color = type, group = ID))+
     geom_point(alpha=0.5, size = 0.1) +
@@ -4805,9 +4380,7 @@ plot_list2_mnist_error <- error_df |>
         legend.text = element_text(size=4),
          legend.key.height = unit(0.25, 'cm'),
          legend.key.width = unit(0.25, 'cm')) +
-  scale_color_manual(values=c("#fee0d2", "#fcbba1",
-                                         "#fc9272", "#fb6a4a", "#ef3b2c",
-                                         "#cb181d", "#a50f15", "#99000d")) +
+  scale_color_manual(values=rainbow_hcl(8)) +
   annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 # show_langevitour(df_all_mnist, df_bin_mnist, df_bin_centroids_mnist, benchmark_mnist, distance_mnist, "distance", col_start = "PC")
@@ -4818,13 +4391,70 @@ plot_list2_mnist_error <- error_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Model in the 2D space overlaid on PaCMAP data, and (b) high-D model error in model space."
+#| fig-cap: "(a) Model generated with 12 and 15 bins along x and y axes with hexagonal size 0.06 in the 2D space overlaid on PaCMAP data, and (b) high-D model error in model space."
 #| label: fig-nldervisMNISTPACMAP
 #| fig-pos: H
 
 trimesh_removed_mnist_pacmap + plot_list2_mnist_error +
-plot_layout(guides='collect', ncol=3) &
+plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom')
+```
+
+::: {#fig-mnist1_sc layout-ncol="3" fig-pos="H"}
+![](figures/mnist/sc_1.png){#fig-mnist1_sc1}
+
+![](figures/mnist/sc_2.png){#fig-mnist1_sc2}
+
+![](figures/mnist/sc_3.png){#fig-mnist1_sc3}
+
+Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/zq2GM9qvUNA>).
+:::
+
+In terms of model error, some data points show high error (see @fig-nldervisMNISTPACMAP) due to their deviation from the typical high-D data structure, acting as outliers. This is evident when comparing the images associated with these high model error points (see @fig-sampleimgerror) to others (see @fig-sampleimg).
+
+<!--images that occur large error-->
+```{r}
+#| warning: false
+#| echo: false
+
+img_error <- error_df |> 
+  dplyr::filter(total >= 10) |> 
+  dplyr::pull(ID)
+
+mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
+pixels_gathered <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% img_error) 
+
+theme_set(theme_light())
+imge_error_sample <- pixels_gathered |> 
+  ggplot(aes(x, y, fill = value)) +  
+  geom_tile() +  
+  facet_wrap(~ instance, ncol = 11) +
+  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm'),
+        strip.text = element_blank(),
+        aspect.ratio = 1)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Images of handwritten digit 1 which occur large model error."
+#| label: fig-sampleimgerror
+#| out-width: 100%
+#| fig-pos: H
+
+imge_error_sample
 ```
 
 ## Conclusion {#sec-conclusion}
