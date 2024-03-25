@@ -475,7 +475,11 @@ In our algorithm, we aim to conduct regular hexagonal binning, involving the com
 
 **(a) Computation of hexagonal grid configurations**
 
-In the process of computing hexagonal bin configurations, the first step is to determine the number of bins along the x-axis. This begins with the initialization of parameters such as the hexagonal size ($s$) and the buffer along the x-axis ($buffer_{x}$). The hexagonal size ($s$) is the radius of outer circle surrounded by the hexagon. Subsequently, the range of the first 2D embedding component ($r_1$) is calculated to ensure comprehensive coverage of the data. This range is then adjusted by incorporating the buffer amount, effectively expanding the boundary to accommodate potential outliers or edge cases. The default buffer amount along the x-axis is $\sqrt{3} * s * 1.5$. Next, the horizontal spacing ($h$) between hexagons is computed based on $s$ (see @eq-equation11). Finally, the number of bins along the x-axis is computed based on the adjusted range ($r_1 + buffer_{x}$) and the horizontal spacing ($h$) (see @eq-equation12).
+In the computation of hexagonal bin configurations, there are mainly two configurations to consider: the number of bins along the x and y axes. The first step involves in determining the hexagonal size ($s$) and the buffer along the x and y axes ($buffer_{x}$ and $buffer_{y}$). Here, the hexagonal size ($s$) represents the radius of the outer circle surrounding the hexagon. The buffer is important in expanding the boundary to accommodate potential outliers or edge cases.
+
+When computing the number of bins along the x and y axes ($b_1$ and $b_2$), the process begins by calculating the range of the respective 2D embedding component. After that, the range is adjusted to accommodate the buffer amount. Then, the spacing between hexagons is determined based on $s$. Finally, the number of bins along the axis is computed by dividing the adjusted range by the spacing. 
+
+For the computation of the number of bins along the x-axis ($b_1$) (see @eq-equation12), the range of the first embedding component is defined as $r_1$, while the buffer amount along the x-axis is denoted as $buffer_{x}$, and the horizontal spacing is represented by $h$ (see @eq-equation11). On the other hand, the number of bins along the y-axis ($b_2$) (see @eq-equation14) is computed based on the range of the second embedding component ($r_2$), the buffer amount along the y-axis ($buffer_{y}$), and the vertical spacing ($v$) (see @eq-equation13). 
 
 $$
  h = \sqrt{3} * s
@@ -484,8 +488,6 @@ $$ {#eq-equation11}
 $$
  b_1 = \frac{r_1 + buffer_{x}}{h}
 $$ {#eq-equation12}
-
-Next, the number of bins along the y-axis is computed using hexagonal size ($s$) and the buffer along the y-axis ($buffer_{y}$). Subsequently, the range of the second 2D embedding component ($r_2$) is calculated to ensure comprehensive coverage of the data. This range is then adjusted by incorporating the buffer amount, effectively expanding the boundary to accommodate potential outliers or edge cases. The default buffer amount along the y-axis is $1.5 * s * 1.5$. The horizontal spacing ($v$) between hexagons is computed based on $s$ (see @eq-equation13). Finally, the number of bins along the y-axis is computed based on the adjusted range ($r_2 + buffer_{y}$) and the horizontal spacing ($v$) (see @eq-equation14).
 
 $$
   v = 1.5 * s
@@ -497,13 +499,31 @@ $$ {#eq-equation14}
    
 **(b) Generation of the hexagonal grid**
 
-In this process, first involves the generation of centroids in the hexagonal grid. The hexagonal starting coordinates are defined. We already computed the number of bins along the x and y axes and have the horizontal and vertical spacing. By starting with hexagonal starting coordinates, iteratively compute the centroids by incorporating the number of bins and spacing along each axes.
+In this process, the first step involves generating centroids within the hexagonal grid. This begins by defining the starting coordinates for the hexagons. With the number of bins computed along the x and y axes, along with the horizontal and vertical spacing, the centroids are iteratively computed starting from the hexagonal starting coordinates.
 
-Once, we have the centroids for the hexagonal grid, the next step is to compute the hexgaonal coordinates. For example, as shown in Figure, the hexagonal coordinates can be computed.
+Once the centroids for the hexagonal grid are obtained, the next step is to compute the hexagonal coordinates. For example, if the centroid of a hexagonal bin is defined as $(C_x, C_y)$, the hexagonal coordinates can be computed using $d_x$ (see @eq-equation15) and $d_y$ (see @eq-equation16) (see @fig-hexcoord).
+
+$$
+d_x = \frac{h}{2}
+$$ {#eq-equation15}
+
+$$
+d_y = \frac{2* v * 1.15}{\sqrt{3}} 
+$$ {#eq-equation16}
+
+```{r}
+#| echo: false
+#| fig-pos: H
+#| fig-cap: "The hexagonal coordinates computed for the centroid $(C_x, C_y)$."
+#| label: fig-hexcoord
+#| out-width: 100%
+#| out-height: 100%
+knitr::include_graphics("figures/hex_coord.png")
+```
 
 **(c) Assignment of the NLDR data points to hexagons**
 
-Once, we have the hexagonal bin centroids of the full grid, by using the 2D Euclidean distance find the nearest hexagonal bin for each NLDR point. Then assign that bin for the NLDR point.
+After obtaining the centroids of the hexagonal bins for the entire grid, the process of assigning NLDR points to hexagons involves determining the nearest hexagonal bin for each NLDR point using the 2D Euclidean distance. Then, the hexagonal ID of the nearest hexagon is assigned to the corresponding NLDR points.
 
 **Step 3: Obtaining bin centroids or bin means**
 
@@ -767,394 +787,6 @@ a2 + a1 +
   plot_layout(ncol = 3) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
-
-
-<!--
-```{r}
-#| echo: false
-#| eval: false
-
-num_bins_x <- calculate_effective_x_bins(.data = UMAP_data, x = UMAP1,
-                                         cell_area = 1)
-
-shape_value <- calculate_effective_shape_value(.data = UMAP_data, 
-                                               x = UMAP1, y = UMAP2)
-
-## To extract bin centroids
-hexbin_data_object <-extract_hexbin_centroids(nldr_df = UMAP_data, num_bins = num_bins_x, shape_val = shape_value)
-
-df_bin_centroids <- hexbin_data_object$hexdf_data
-
-# ##########
-# 
-# ## Data set with all possible centroids in the hexagonal grid
-# 
-# full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
-# 
-# ## To map hexID to hexbin centroids in the full grid
-# 
-# vec1 <- stats::setNames(rep("", 2), c("x", "y"))  ## Define column names
-# 
-# full_grid_with_hexbin_id <- dplyr::bind_rows(vec1)[0, ]
-# full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
-#   dplyr::mutate_if(is.character, as.numeric)
-# 
-# for(i in 1:length(sort(unique(full_centroid_df$y)))){
-#   
-#   ## Filter the data set with specific y value
-#   specific_y_val_df <- full_centroid_df |>
-#     dplyr::filter(y == sort(unique(full_centroid_df$y))[i])
-#   
-#   ordered_x_df <- specific_y_val_df |>
-#     dplyr::arrange(x) 
-#   
-#   full_grid_with_hexbin_id <- dplyr::bind_rows(full_grid_with_hexbin_id, ordered_x_df)
-#   
-# }
-# 
-# 
-# full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
-#   dplyr::mutate(hexID = row_number())
-# 
-# full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
-#   dplyr::rename("c_x" = "x",
-#          "c_y" = "y") 
-# 
-# full_grid_with_hexbin_id <- dplyr::full_join(full_grid_with_hexbin_id, df_bin_centroids, by = c("hexID" = "hexID")) |>
-#   dplyr::select(-c(x, y)) #|> 
-#   #dplyr::mutate(counts = tidyr::replace_na(counts, 0))
-# 
-# full_grid_with_hexbin_id <- full_grid_with_hexbin_id |>
-#     dplyr::mutate(std_counts = counts/max(counts, na.rm = TRUE))
-# 
-# ## Generate all coordinates of hexagons
-# hex_grid <- full_hex_grid(full_centroid_df)
-# 
-# full_grid_with_polygon_id_df <- map_polygon_id(full_grid_with_hexbin_id, hex_grid)
-# 
-# full_grid_with_hexbin_id_rep <- full_grid_with_polygon_id_df |>
-#   dplyr::slice(rep(1:n(), each = 6)) |>
-#   dplyr::arrange(polygon_id)
-
-hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_11.rds") 
-
-##########
-
-min_std_cell_threshold <- 0.05
-
-df_bin_centroids_all <- hexbin_data_object$hexdf_data ## All the centroids without removing low-density hexagons
-
-
-df_bin_centroids <- df_bin_centroids |>
-  dplyr::mutate(stand_cell_count = counts/max(counts)) |>
-  dplyr::filter(stand_cell_count > min_std_cell_threshold)
-
-UMAP_data_with_hb_id <- UMAP_data |> 
-  dplyr::mutate(hb_id = hexbin_data_object$hb_data@cID)
-
-## To generate a data set with high-D and 2D training data
-df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
-
-## Averaged on high-D
-df_bin <- avg_highD_data(.data = df_all)
-
-## Triangulate bin centroids
-tr1_object <- triangulate_bin_centroids(df_bin_centroids, x, y)
-tr_from_to_df <- generate_edge_info(triangular_object = tr1_object)
-
-## Compute 2D distances
-distance <- cal_2d_dist(.data = tr_from_to_df)
-
-## To find the benchmark value
-benchmark <- find_benchmark_value(.data = distance, distance_col = distance)
-
-
-trimesh <- ggplot(df_bin_centroids, aes(x = x, y = y)) + 
-  geom_segment(data = tr_from_to_df, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
-
-# ggplot(df_bin_centroids, aes(x = x, y = y)) + 
-# geom_point(size = 1, colour = "#33a02c") + 
-# geom_trimesh() + 
-# coord_equal() 
-
-trimesh <- trimesh +
-  #ggtitle("(a)") + 
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) 
-# theme(axis.text = element_text(size = 5),
-#       axis.title = element_text(size = 7))
-
-trimesh_gr <- colour_long_edges(.data = distance, benchmark_value = benchmark, 
-                                triangular_object = tr1_object, distance_col = distance) 
-
-trimesh_gr <- trimesh_gr + 
-  geom_point(size = 2, colour = "#33a02c") + 
-  #ggtitle("(b)") + 
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  #coord_equal() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) 
-
-trimesh_removed <- remove_long_edges(.data = distance, benchmark_value = benchmark, 
-                                     triangular_object = tr1_object, distance_col = distance)
-
-trimesh_removed <- trimesh_removed + 
-  geom_point(size = 2, colour = "#33a02c") + 
-  #ggtitle("(b)") + 
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  #coord_equal() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) 
-
-
-
-tour1 <- show_langevitour(df_all, df_bin, df_bin_centroids, benchmark_value = benchmark, distance = distance, distance_col = distance)
-```
-
-```{r}
-#| echo: false
-#| eval: false
-
-## To plot the distribution of distance
-plot_dist <- function(distance_df){
-  distance_df$group <- "1"
-  dist_plot <- ggplot(distance_df, aes(x = group, y = distance)) +
-    geom_quasirandom()+
-    ylim(0, max(unlist(distance_df$distance))+ 0.5) + coord_flip()
-  return(dist_plot)
-}
-```
-
-```{r}
-#| echo: false
-#| eval: false
-
-distance_plot <- plot_dist(distance) +
-  #ggtitle("(b)" ) + 
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-```
-
-
-
-```{r}
-#| echo: false
-#| warning: false
-#| eval: false
-
-data <- read_rds("data/s_curve/s_curve.rds")
-training_data <- read_rds("data/s_curve/s_curve_training.rds")
-UMAP_data <- read_rds(file = "data/s_curve/s_curve_umap.rds")
-
-num_bins_x <- 2
-
-shape_value <- calculate_effective_shape_value(.data = UMAP_data, 
-                                               x = UMAP1, y = UMAP2)
-
-## To extract bin centroids
-hexbin_data_object <-extract_hexbin_centroids(nldr_df = UMAP_data, num_bins = num_bins_x, shape_val = shape_value)
-
-df_bin_centroids <- hexbin_data_object$hexdf_data
-
-# ## Data set with all possible centroids in the hexagonal grid
-# 
-# full_centroid_df <- generate_full_grid_centroids(df_bin_centroids)
-# 
-# ## Generate all coordinates of hexagons
-# hex_grid <- full_hex_grid(full_centroid_df)
-# 
-# hex_full_count_df <- generate_full_grid_info(df_bin_centroids)
-# 
-# write_rds(hex_full_count_df, "data/s_curve/s_curve_hex_2.rds")
-
-min_std_cell_threshold <- 0.05
-
-df_bin_centroids_all <- hexbin_data_object$hexdf_data ## All the centroids without removing low-density hexagons
-
-
-hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_2.rds") 
-
-df_bin_centroids <- df_bin_centroids |>
-  dplyr::mutate(stand_cell_count = counts/max(counts)) |>
-  dplyr::filter(stand_cell_count > min_std_cell_threshold)
-
-UMAP_data_with_hb_id <- UMAP_data |> 
-  dplyr::mutate(hb_id = hexbin_data_object$hb_data@cID)
-
-## To generate a data set with high-D and 2D training data
-df_all <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id)
-
-## Averaged on high-D
-df_bin <- avg_highD_data(.data = df_all)
-
-## Triangulate bin centroids
-tr1_object <- triangulate_bin_centroids(df_bin_centroids, x, y)
-tr_from_to_df <- generate_edge_info(triangular_object = tr1_object)
-
-# Create the tibble with x and y coordinates
-tr_df <- tibble::tibble(x = tr1_object$x, y = tr1_object$y)
-
-## Compute 2D distances
-distance <- cal_2d_dist(.data = tr_from_to_df)
-
-## Map hb_id
-
-df_bin_centroids_n <- df_bin_centroids |>
-  select(hexID) |>
-  mutate(ID = 1:NROW(df_bin_centroids))
-
-tr_from_to_df_n <- left_join(tr_from_to_df, df_bin_centroids_n, by = c("from" = "ID")) |>
-  rename("from_hb_id" = "hexID")
-
-tr_from_to_df_n <- left_join(tr_from_to_df_n, df_bin_centroids_n, by = c("to" = "ID")) |>
-  rename("to_hb_id" = "hexID")
-
-hb_id_selected <- tr_from_to_df_n |>
-  dplyr::filter((from == 2) & (to == 3)) 
-
-
-# benchmark_value <- 19.4
-
-# Filter and label small and long edges
-distance_df_small_edges <- distance |>
-  dplyr::filter((from != 2) | (to != 3)) |>
-  dplyr::mutate(type = "small_edges")
-
-distance_df_long_edges <- distance |>
-  dplyr::filter((from == 2) & (to == 3)) |>
-  dplyr::mutate(type = "long_edges")
-
-# Combine small and long edges
-distance_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
-
-tr_from_to_df_coord_with_group <- inner_join(tr_from_to_df, distance_edges, by = c("from" = "from", "to" = "to"))
-
-UMAP_data_with_hb_id_selected <- UMAP_data_with_hb_id |> dplyr::filter(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)) |>
-  dplyr::mutate(select_point = if_else(hb_id == hb_id_selected$from_hb_id, "data1", "data2"))
-
-UMAP_data_with_hb_id_selected_no <- UMAP_data_with_hb_id |> dplyr::filter(!(hb_id %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)))
-
-bin_coord_1 <- tr_df |>
-  dplyr::filter((x == hb_id_selected$x_from)) |>
-  dplyr::filter((y == hb_id_selected$y_from))
-
-# bin_coord_1 <- tr_df |>
-#   head(1)
-
-
-bin_coord_2 <- tr_df |>
-  dplyr::filter((x == hb_id_selected$x_to)) |>
-  dplyr::filter((y == hb_id_selected$y_to))
-
-# bin_coord_2 <- tr_df |>
-#   dplyr::filter(row_number() == 2)
-  
-
-bin_coord <- dplyr::bind_rows(bin_coord_1, bin_coord_2)
-
-a1 <- ggplot(bin_coord, aes(x = x, y = y)) +
-  geom_segment(
-    aes(x = x_from, y = y_from, xend = x_to, yend = y_to, colour = type),
-    data = tr_from_to_df_coord_with_group) +
-  geom_point() +
-  coord_equal() +
-  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), alpha = 0.5, size = 1) +
-  scale_color_manual(values=c("#e6550d", "#000000", "#e31a1c", "#f6e8c3")) +
-  geom_point(size = 3, colour = "#33a02c") + 
-  #ggtitle("(b)") + 
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  #coord_equal() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) 
-
-
-a2 <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) + 
-  geom_polygon(color = "#deebf7", aes(group = polygon_id), fill = "#ffffff") +
-  geom_segment(
-    aes(x = x_from, y = y_from, xend = x_to, yend = y_to), colour = "#f6e8c3",
-    data = tr_from_to_df_coord_with_group
-  ) +
-  geom_point(data = UMAP_data_with_hb_id_selected, aes(x = UMAP1, y = UMAP2, colour = select_point), size = 1, alpha = 0.5) +
-  scale_color_manual(values=c("#e6550d", "#000000")) +
-  geom_point(data = df_bin_centroids_all |> dplyr::filter(hexID %in% c(hb_id_selected$from_hb_id, hb_id_selected$to_hb_id)), aes(x = x, y = y), colour = "#33a02c", size = 3) +
-    geom_point(data = UMAP_data_with_hb_id_selected_no, aes(x = UMAP1, y = UMAP2), colour = "#6a3d9a", size = 1, alpha = 0.5) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  coord_cartesian(xlim =c(-5, 8), ylim = c(-10, 10)) +
-  theme_light() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) 
-
-
-## Script to make coloring data points with a line
-
-df1 <- df_all |> 
-  dplyr::filter(hb_id == as.character(hb_id_selected$from_hb_id)) |>
-  dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = "data1") ## original dataset
-
-df2 <- df_all |> 
-  dplyr::filter(hb_id == as.character(hb_id_selected$to_hb_id)) |>
-  dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = "data2") ## original dataset
-
-df3 <- df_all |> 
-  dplyr::filter(!(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id)))) |>
-  dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = "data") ## original dataset
-
-df_b <- df_bin |> 
-  dplyr::filter(hb_id %in% df_bin_centroids$hexID) |>
-  dplyr::filter(hb_id %in% c(as.character(hb_id_selected$from_hb_id), as.character(hb_id_selected$to_hb_id))) |>
-  dplyr::select(-hb_id) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-df_exe <- dplyr::bind_rows(df_b, df1, df2, df3)
-
-lg_high <- langevitour::langevitour(df_exe[1:(length(df_exe)-1)], group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#e6550d", "#000000", "#33a02c"), lineFrom = 1, lineTo = 2, lineColors = "#e31a1c")
-
-```
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-#| label: fig-wkhighD1
-#| fig-cap: How the 2D model lift into high dimensions? (a) visualize the points and the hexagonal bin centroids related 2nd and 15th hexagons, (b) visualization of the edge connected the 2nd and 15th hexagons (colored in red) in the triangular mesh. A video of tour animation is available at <https://youtu.be/ffWFVK1UTIc>.
-
-a2 + a1 +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(ncol = 3) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
--->
 
 ### Tuning the model
 
