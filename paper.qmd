@@ -2319,7 +2319,7 @@ $$
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 $$ {#eq-equation9}
 
-7### Simulated data example {#sec-simpleex}
+### Simulated data example {#sec-simpleex}
 
 In this section, we showcase the effectiveness of our methodology using simulated data. The dataset comprises five spherical Gaussian clusters in 4-$d$, with each cluster containing an equal number of points and consistent within variation.  
 
@@ -3560,7 +3560,7 @@ mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
 
 ### Single-cell RNA-seq data of human
 
-@chen2023
+In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories. To illustrate the importance of NLDR techniques and parameter selection in identifying clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset [@chen2023] is used. In a study by @chen2023, this dataset was used to demonstrate how UMAP represents clusters (see @fig-umapauthor). As shown in @fig-umapauthor, there are three distinct and well-separated clusters. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3599,15 +3599,14 @@ umap_plot_pbmc <- umap_pbmc_scaled |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?"
+#| fig-cap: "2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?"
 #| label: fig-umapauthor
 #| fig-pos: H
 
 umap_plot_pbmc 
 ```
 
-
-
+To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the high-D data (model-in-data space). The figures in @fig-pbmc1_sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umapauthor). However, as shown in @fig-pbmc1_sc, these clusters are close to each other in high-D space. Also, nonlinear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1_sc). Therefore, the suggested UMAP representation (see @fig-umapauthor) does not accurately preserve the local structure of the PBMC3k dataset.     
 
 <!-- Fit the model and compute error-->
 ```{r}
@@ -3765,6 +3764,18 @@ plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom') 
 ```
 
+::: {#fig-pbmc1_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_1.png){#fig-pbmc1_sc1}
+
+![](figures/pbmc3k/sc_2.png){#fig-pbmc1_sc2}
+
+![](figures/pbmc3k/sc_3.png){#fig-pbmc1_sc3}
+
+Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/Gnhh4hfsbbg>).
+:::
+
+To find the best NLDR representation for PBMC3k dataset, we observe the absolute error for different number of non-empty bins and select the one with the lowest error. As shown in @fig-abserrorPBMC, tSNE with a perplexity set to $51$, has the lowest error. Therefore, tSNE with a perplexity of $51$ is used as the best representation for PBMC3k dataset.  
+
 <!--compute absolute error for different parameter choices-->
 
 ```{r}
@@ -3812,6 +3823,8 @@ colour = type)) +
 abs_error_plot_pbmc
 ```
 
+As shown in @fig-tsnesuggest, there are three well-separated clusters, although they are located close to each other. Additionally, nonlinear structures can be observed within the clusters (see @fig-tsnesuggest). Hence, the data structure that UMAP failed to capture for the PBMC3k dataset is successfully captured by tSNE.
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -3848,15 +3861,16 @@ tsne_plot_pbmc <- tsne_pbmc_scaled |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) 2D layout from tSNE (perplexity = 51) applied for the PBMC3k dataset. Is this a best representation of the original data?"
+#| fig-cap: "2D layout from tSNE (perplexity = 51) applied for the PBMC3k dataset. Is this a best representation of the original data?"
 #| label: fig-tsnesuggest
 #| fig-pos: H
 
 tsne_plot_pbmc 
 ```
 
-<!--Fit the model-->
+Next, the model is fitted for tSNE, and the resulting model is visualized in the data space. The model shows some quirks, as shown in @fig-pbmc2_sc. The large cluster is divided into three subclusters, which are in close to each other.
 
+<!--Fit the model-->
 ```{r}
 #| warning: false
 #| echo: false
@@ -4025,6 +4039,17 @@ trimesh_removed_pbmc_tsne + plot_list2_pbmc_error +
 plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom') 
 ```
+
+::: {#fig-pbmc2_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_4.png){#fig-pbmc2_sc4}
+
+![](figures/pbmc3k/sc_5.png){#fig-pbmc2_sc5}
+
+![](figures/pbmc3k/sc_6.png){#fig-pbmc2_sc6}
+
+Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/R0EroJcGbas>).
+:::
+
 
 ### Handwritten digits
 
