@@ -469,16 +469,41 @@ $$ {#eq-equation3}
 
 **Step 2: Hexagonating NLDR data**
 
-Hexagonating NLDR data (see @fig-meth Step 2) involves partitioning the 2D embedding data into hexagonal bins, a technique commonly referred to as hexagonal binning [@Carr1987, @article66]. This method use a hexagonal grid to create a bivariate histogram that effectively visualizes the structure of high-D data. Hexagons, one of only three regular polygons capable of tessellating a plane [@Carr2013], offer unique advantages due to their symmetry of nearest neighbors and maximal number of sides for such tessellations [@Dan2023]. This geometric property makes hexagons more efficient in covering the plane compared to other regular tessellations and reduces visual bias when displaying data densities [@Dan2023]. In our algorithm, we aim to conduct regular hexagonal binning (**cite quollr paper**), involving the computation of hexagonal grid configurations, the generation of the grid, and the assignment of the 2D embedding to hexagons. 
+Hexagonating NLDR data (see @fig-meth Step 2) involves partitioning the NLDR data into hexagonal bins, a technique commonly referred to as hexagonal binning [@Carr1987, @article66]. This method use a hexagonal grid to create a bivariate histogram that effectively visualizes the structure of high-D data. Hexagons, one of only three regular polygons capable of tessellating a plane [@Carr2013], offer unique advantages due to their symmetry of nearest neighbors and maximal number of sides for such tessellations [@Dan2023]. This geometric property makes hexagons more efficient in covering the plane compared to other regular tessellations and reduces visual bias when displaying data densities [@Dan2023]. 
 
-<!--
-**(a) Determine the number of bins along the x axis** ($b_1$)
+In our algorithm, we aim to conduct regular hexagonal binning, involving the computation of hexagonal grid configurations, the generation of the grid, and the assignment of the NLDR data points to hexagons. 
 
-**(b) Determine the number of bins along the y axis** ($b_2$)
+**(a) Computation of hexagonal grid configurations**
 
-**(c) Determine the total number of bins** ($b$)
+In the process of computing hexagonal bin configurations, the first step is to determine the number of bins along the x-axis. This begins with the initialization of parameters such as the hexagonal size ($s$) and the buffer along the x-axis ($buffer_{x}$). The hexagonal size ($s$) is the radius of outer circle surrounded by the hexagon. Subsequently, the range of the first 2D embedding component ($r_1$) is calculated to ensure comprehensive coverage of the data. This range is then adjusted by incorporating the buffer amount, effectively expanding the boundary to accommodate potential outliers or edge cases. The default buffer amount along the x-axis is $\sqrt{3} * s * 1.5$. Next, the horizontal spacing ($h$) between hexagons is computed based on $s$ (see @eq-equation11). Finally, the number of bins along the x-axis is computed based on the adjusted range ($r_1 + buffer_{x}$) and the horizontal spacing ($h$) (see @eq-equation12).
 
-**(d) Assign NLDR data to hexagons**--> 
+$$
+ h = \sqrt{3} * s
+$$ {#eq-equation11}
+
+$$
+ b_1 = \frac{r_1 + buffer_{x}}{h}
+$$ {#eq-equation12}
+
+Next, the number of bins along the y-axis is computed using hexagonal size ($s$) and the buffer along the y-axis ($buffer_{y}$). Subsequently, the range of the second 2D embedding component ($r_2$) is calculated to ensure comprehensive coverage of the data. This range is then adjusted by incorporating the buffer amount, effectively expanding the boundary to accommodate potential outliers or edge cases. The default buffer amount along the y-axis is $1.5 * s * 1.5$. The horizontal spacing ($v$) between hexagons is computed based on $s$ (see @eq-equation13). Finally, the number of bins along the y-axis is computed based on the adjusted range ($r_2 + buffer_{y}$) and the horizontal spacing ($v$) (see @eq-equation14).
+
+$$
+  v = 1.5 * s
+$$ {#eq-equation13}
+
+$$
+ b_2 = \frac{r_2 + buffer_{y}}{v}
+$$ {#eq-equation14}
+   
+**(b) Generation of the hexagonal grid**
+
+In this process, first involves the generation of centroids in the hexagonal grid. The hexagonal starting coordinates are defined. We already computed the number of bins along the x and y axes and have the horizontal and vertical spacing. By starting with hexagonal starting coordinates, iteratively compute the centroids by incorporating the number of bins and spacing along each axes.
+
+Once, we have the centroids for the hexagonal grid, the next step is to compute the hexgaonal coordinates. For example, as shown in Figure, the hexagonal coordinates can be computed.
+
+**(c) Assignment of the NLDR data points to hexagons**
+
+Once, we have the hexagonal bin centroids of the full grid, by using the 2D Euclidean distance find the nearest hexagonal bin for each NLDR point. Then assign that bin for the NLDR point.
 
 **Step 3: Obtaining bin centroids or bin means**
 
@@ -507,48 +532,6 @@ Delaunay triangulation can be defined as follows:
 Let $C^{(2)} = \{C_1^{(2)}, C_2^{(2)}, ..., C_m^{(2)}\}$ be a set of $m$ bin centroids or bin means in the plane. Delaunay triangulation of $C^{(2)}$, denoted as $DT(C^{(2)})$, is a triangulation of the convex hull of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
 
 Given that the hexagons are regular, the resulting triangles will mostly be equilateral.
-
-<!--
-
-**Step 1: Computing the hexagonal grid configuration**
-
-The hexagonal grid, formed through hexagonal binning [@Carr1987, @article66], serves as a type of bivariate histogram employed to visualize the structure of high-D data. Hexagons, being one of only three regular polygons capable of tessellating a plane [@Carr2013], possess both symmetry of nearest neighbors and the maximum number of sides for a regular tessellation of the plane. This unique combination makes hexagons more efficient in covering the plane compared to other regular tessellations. Additionally, hexagons exhibit lower visual bias when displaying densities, setting them apart from other regular tessellations [@Dan2023]. In our algorithm, hexagonal binning is used as the initial step of constructing the 2D model and the total number of bins ($b$) is the crucial parameter that defines the granularity of the hexagonal grid. 
-
-**(a) Determine the number of bins along the x axis** ($b_1$)
-
-First, the number of bins along the x-axis ($b_1$) is computed using the relationship between the diameter ($h$) and the area ($A$) of regular hexagons (see @eq-equation3).
-
-In the process of computing hexagonal bin configurations, the first step involves determining the number of bins along the x-axis. This begins with the initialization of parameters such as the hexagonal size ($s$) and the buffer along the x-axis. Subsequently, the range of the first 2D embedding component ($r_1$) is calculated to ensure comprehensive coverage of the data. This range is then adjusted by incorporating the buffer amount, effectively expanding the boundary to accommodate potential outliers or edge cases. The default buffer amount along the x-axis is $\sqrt{3} * s * 1.5$. Next, the horizontal spacing ($h$) between hexagons is computed based on the hexagon size. Finally, the number of bins along the x-axis is computed based on the adjusted range ($r_1 + buffer_{x}$) and the horizontal spacing ($h$).
-
-
-$$
- h = \sqrt{3} * s
-$$ {#eq-equation3}
-
-$$
- b_1 = \frac{r_1 + buffer_{x}}{h}
-$$ {#eq-equation4}
-
-**(b) Determine the number of bins along the y-axis** ($b_2$)
-
-Next, the number of bins along the y-axis is computed based on the number of bins along the x-axis ($b_1$) and the shape parameter ($s$) (see @eq-equation4) [@Carr2013].
-
-$$
-  v = 1.5 * s
-$$ {#eq-equation5}
-
-$$
- b_2 = \frac{r_2 + buffer_{y}}{v}
-$$ {#eq-equation6}
-   
-**(c) Determine the total number of bins** ($b$)
-
-The total number of bins is determined by multiplying the number of bins along the x-axis ($b_1$) with the number of bins along the y-axis ($b_2$) (see @eq-equation5).
-  
-$$
-b = b_1 \times b_2
-$${#eq-equation5}
--->                
 
 ### Lifting the model into high dimensions
 
@@ -1316,7 +1299,7 @@ p3 <-  ggplot(data = hex_full_count_df_loop3, aes(x = x, y = y)) +
 #| echo: false
 #| label: fig-binsize
 #| fig-pos: H
-#| fig-cap: "Hexbin plots from different number of bins for the **UMAP** embeddings of **S-curve** training data: (a) b = 12 (3, 4), h = 0.62, (b) b = 84 (6, 14), h = 0.13, and (c) b = 336 (12, 28), h = 0.06. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
+#| fig-cap: "Hexbin plots from different number of bins for the **UMAP** embeddings of **S-curve** training data: (a) b = 12 (3, 4), s = 0.62, (b) b = 84 (6, 14), s = 0.13, and (c) b = 336 (12, 28), s = 0.06. The hexbins are colored based on the density of points, with darker colors indicating higher point density and yellow color representing lower point density within each bin. What is the number of bins that would be effective in representing low-dimensional data?"
 
 p1 + p2 + p3
 ``` 
@@ -2320,26 +2303,13 @@ aic_plot + mse_plot +
 
 The prediction approach involves performing the K-nearest neighbors (KNN) algorithm for an unsupervised classification problem. First, the nearest high-D model point is identified for a given new high-D point. Then, the corresponding 2D centroid mapping for the identified high-D model point is determined. Finally, the coordinates of this 2D centroid are used as the predicted 2D embedding for the new high-D data point. This step is particularly valuable due to the limitations of some NLDR techniques, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted 2D embedding regardless of the NLDR technique employed, effectively addressing this functional gap.
 
-Residuals are essential for evaluating the accuracy of representing high-D points by the high-D mapping of 2D bin centroids. To measure this accuracy, an error metric is introduced, quantifying the sum of squared differences between the high-D data ($x_{ij}$) and the high-D mapping of the 2D bin centroid data ($C_{x_ij}$) across all observations and dimensions (see @eq-equation11).
+Residuals are essential for evaluating the accuracy of representing high-D points by the high-D mapping of 2D bin centroids. To measure this accuracy, an error metric is introduced, quantifying the sum of squared differences between the high-D data ($x_{ij}$) and the high-D mapping of the 2D bin centroid data ($C_{x_ij}$) across all observations and dimensions (see @eq-equation10).
 
 $$
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-$$ {#eq-equation11}
+$$ {#eq-equation10}
 
 Here, $n$ represents the number of observations, $p$ represents the dimensions of high-D data, $x_{ij}$ is the high-D data, and $C_{x_ij}$ is the high-D mapping of the 2D bin centroid.
-
-<!--
-The concept of "residuals" is pivotal in evaluating the accuracy of representing bin centroids in high-D. To quantify this accuracy, we introduce an error metric, which measures the sum of squared differences between the high-D data ($x_{ij}$) and the predicted bin centroid data in high-D space ($C_{x_ij}$) across all bins and dimensions. Mathematically, this error is expressed as:
-
-$$
-\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-$$ {#eq-equation11}
-
-
-Here, $n$ represents the number of observations, $p$ represents the dimensions, $x_{ij}$ is the high-D data, and $C_{x_ij}$ is the predicted bin centroid data in high-D.
-
-The error metric outlined above provides valuable insights into the overall accuracy of our predictive model. By quantifying the squared deviations between the actual and predicted values across all bins and dimensions, we gain a comprehensive understanding of how well our method captures and represents the underlying structure of the data in the reduced 2D space. This assessment is crucial for evaluating the efficacy of our NLDR technique in preserving the essential information present in the original high-dimensional data.
--->
 
 #### Goodness of fit statistics {#sec-goodfit}
 
@@ -2349,7 +2319,7 @@ $$
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
 $$ {#eq-equation9}
 
-### Simulated data example {#sec-simpleex}
+7### Simulated data example {#sec-simpleex}
 
 In this section, we showcase the effectiveness of our methodology using simulated data. The dataset comprises five spherical Gaussian clusters in 4-$d$, with each cluster containing an equal number of points and consistent within variation.  
 
@@ -2439,7 +2409,7 @@ plot_list1_gau + plot_list2_gau + plot_list3_gau + plot_list4_gau + plot_list5_g
   plot_layout(ncol=5)
 ```
 
-<!-- To find the number of bins should assign for the model in tSNE-->
+
 ```{r}
 #| warning: false
 #| echo: false
@@ -2449,153 +2419,7 @@ tsne_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = tSNE_data
                                     x = "tSNE1", y = "tSNE2"))) |>
   dplyr::rename(c("tSNE1" = "scaled_tSNE1", 
                   "tSNE2" = "scaled_tSNE2")) |>
-  dplyr::mutate(ID = 1:NROW(tSNE_data_gau))    
-
-
-## tSNE
-hex_size_vec <- seq(0.02, 2, by = 0.01)
-
-vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
-
-mse_df_gau <- dplyr::bind_rows(vec)[0, ]
-mse_df_gau <- mse_df_gau |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(hex_size_vec)) {
-  
-  num_bin_list <- calc_bins(data = tsne_gau_scaled, 
-            x = "tSNE1", y = "tSNE2", 
-            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
-  
-  num_bins_x <- num_bin_list$num_x
-  num_bins_y <- num_bin_list$num_y
-  
-  model_object <- fit_highd_model( training_data = training_data_gau, 
-                                   nldr_df_with_id = tsne_gau_scaled, 
-                                   x = "tSNE1", y = "tSNE2", 
-                                   num_bins_x = num_bins_x, 
-                                   num_bins_y = num_bins_y, 
-                                   x_start = NA, y_start = NA, 
-                                   buffer_x = NA, buffer_y = NA, 
-                                   hex_size = hex_size_vec[i],
-                                   is_rm_lwd_hex = FALSE, 
-                                   benchmark_to_rm_lwd_hex = NA, 
-                                   col_start_2d = "tSNE", 
-                                   col_start_highd = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_emb_list <- predict_emb(test_data = training_data_gau, 
-                                  df_bin_centroids = centroid_df_training, 
-                                  df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
-  
-  eval_list <- gen_summary(test_data = training_data_gau, 
-                                  prediction_df = pred_df_training, 
-                                  df_bin = avg_df_training, col_start = "x")
-  
-  mse_df_gau <- mse_df_gau |>
-    tibble::add_row(num_bins = num_bins_x * num_bins_y,
-                    aic = eval_list$aic,
-                    mse = eval_list$mse,
-                    num_bins_x = num_bins_x,
-                    num_bins_y = num_bins_y,
-                    hex_size = hex_size_vec[i])
-  
-
-}
-
-
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df_gau |> 
-  dplyr::count(num_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_bins)
-
-### Group split by duplicated bins
-duplicate_df_list <- mse_df_gau |>
-  dplyr::filter(num_bins %in% dupli_bins) |>
-  dplyr::arrange(num_bins) |>
-  dplyr::group_split(num_bins)
-
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
-    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
-
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df_gau |>
-  dplyr::filter(!(num_bins %in% dupli_bins))
-
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df_gau <- dplyr::bind_rows(not_dupli_df, duplicate_df)
-```
-
-```{r}
-#| warning: false
-#| echo: false
-
-## To draw with AIC
-aic_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins, y = aic
-)) +
-  geom_point(size = 0.8) +
-  geom_line() +
-  geom_vline(xintercept = 42, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("AIC") +
-  xlab("total number of bins")
-## Effective number of bins along x-axis
-
-mse_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins,
-                                       y = mse
-)) +
-  geom_point(size = 0.8) +
-  geom_line() +
-   geom_vline(xintercept = 42, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("MSE") +
-  xlab("total number of bins")
-
-```
-
-```{r}
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?"
-#| label: fig-diagnosticpltGau
-#| out-width: 100%
-
-aic_plot_gau + mse_plot_gau +
-  plot_layout(nrow = 2) +
-  plot_annotation(tag_levels = 'a') +
-  #plot_layout(guides='collect', nrow = 2) & legend.position='bottom', 
-  theme(plot.tag = element_text(size = 8))
-```
-
-```{r}
-#| warning: false
-#| echo: false
-#| message: false
+  dplyr::mutate(ID = 1:NROW(tSNE_data_gau))
 
 ## Decide by looking at MSE plot
 num_bins_x_tsne_gau <- 21
