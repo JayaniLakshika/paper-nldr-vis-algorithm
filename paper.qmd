@@ -1116,19 +1116,53 @@ hex_grid <- as.data.frame(do.call(cbind, hb_obj_s_curve$hex_poly))
 counts_df <- as.data.frame(do.call(cbind, hb_obj_s_curve$std_cts))
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
-pcentroid_plot_s_curve <- ggplot(data = hex_grid, aes(x = x, y = y)) +
-  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-  geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
-  coord_equal() +
-  theme_linedraw() +
-  theme(legend.position = "bottom", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+
+## remove low-density hexagons
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+hex_full_count_df_loop2 <- hex_grid_with_counts |>
+  dplyr::mutate(type = if_else(std_counts <= 0.1, "low", "high"))
+
+hex_full_count_df_filtered <- df_bin_centroids |>
+  dplyr::mutate(type = if_else(std_counts <= 0.2, "low", "high")) |>
+  dplyr::filter(type == "low")
+
+
+p2_n <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title.x = element_blank(), axis.title.y = element_blank(),
         axis.text.x = element_blank(), axis.ticks.x = element_blank(),
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) #+
+  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
-hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+p2_n_rm <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = hex_full_count_df_filtered, color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X", size = 0.5)) +
+  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) #+
+  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
 
 # ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
 #   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
@@ -1156,10 +1190,54 @@ df_bin_s_curve <- model_object$df_bin
 
 cell_count_plot <- ggplot(df_bin_centroids_s_curve, aes(x = reorder(as.factor(hexID), -std_counts), y = std_counts)) +
   geom_quasirandom() + xlab("hexagonal id") + ylab("Standardized cell count") +
-  geom_hline(yintercept = 0.255, colour = "#de2d26") +
+  geom_hline(yintercept = 0.2, colour = "#de2d26") +
   theme(axis.text = element_text(size = 5),
         axis.title = element_text(size = 7),
         axis.text.x = element_text(angle = 90))
+
+benchmark_value_rm_lwd <- stats::quantile(df_bin_centroids_s_curve$std_counts, 
+                probs = c(0,0.25,0.5,0.75,1), names = FALSE)[2]
+
+df_bin_centroids_low <- df_bin_centroids_s_curve |>
+  dplyr::filter(std_counts <= benchmark_value_rm_lwd)
+
+identify_rm_bins <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids_s_curve, 
+                                      num_bins_x = num_bins_x_s_curve, 
+                                      df_bin_centroids_low = df_bin_centroids_low)
+
+df_bin_centroids_s_curve <- df_bin_centroids_s_curve |>
+  dplyr::filter(!(hexID %in% identify_rm_bins))
+
+pcentroid_plot_s_curve <- ggplot(data = hex_grid, aes(x = x, y = y)) +
+  geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+  geom_point(data = df_bin_centroids_s_curve, aes(x = c_x, y = c_y), color = "#33a02c") +
+  coord_equal() +
+  theme_linedraw() +
+  theme(legend.position = "bottom", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
+
+
+p2_n_rm_correct <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = df_bin_centroids_low |> dplyr::filter(hexID %in% identify_rm_bins), color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X"), size = 0.5) +
+  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) #+
+  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
 
 ## Triangulate bin centroids
 tr1_object_s_curve <- tri_bin_centroids(df_bin_centroids_s_curve, x = "c_x", y = "c_y")
@@ -1172,15 +1250,19 @@ distance_s_curve <- cal_2d_dist(tr_coord_df = tr_from_to_df_s_curve,
                              select_vars = c("from", "to", "distance"))
 
 
-distance_plot <- plot_dist(distance_s_curve) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
+
 # 
 # distance_plot
 
 ## To find the benchmark value
 benchmark_s_curve <- find_lg_benchmark(distance_edges = distance_s_curve, distance_col = "distance")
+
+distance_plot <- plot_dist(distance_s_curve) +
+   geom_hline(yintercept = benchmark_s_curve, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
+  ylab(expression(d^{(2)})) +
+  theme(axis.text = element_text(size = 5),
+        axis.title = element_text(size = 12))
 
 # ggplot() +
 # geom_trimesh(data = df_bin_centroids_pbmc, mapping = aes(x = c_x, y = c_y))
@@ -1207,6 +1289,10 @@ trimesh_removed_s_curve_umap <- trimesh_removed_s_curve_umap +
         axis.text.y = element_blank(), axis.ticks.y = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)
+
+# df_all_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), umap_data_with_hb_id)
+# 
+# show_langevitour(df_all_s_curve, df_bin_s_curve, df_bin_centroids_s_curve, benchmark_s_curve, distance_s_curve, "distance", col_start = "x")
 ```
 
 #### Benchmark value to remove low-density hexagons
@@ -1229,6 +1315,7 @@ The following steps will help to find a suitable value to remove low density hex
 #| echo: false
 #| fig-cap: "Distribution of 2D Euclidean distances."
 #| label: fig-stdctsScurve
+#| fig-pos: H
 
 cell_count_plot
 ```
@@ -1237,200 +1324,83 @@ cell_count_plot
 
 3. Take the first quartile 
 
-<!--
 ```{r}
+#| warning: false
 #| echo: false
 #| message: false
-#| warning: false
-#| eval: false
+num_bins_x_s_curve <- 6
+num_bins_y_s_curve <- 14
+hex_size_s_curve <- 0.13
 
-hex_full_count_df_loop2 <- read_rds("data/s_curve/s_curve_hex_8.rds") 
+vec <- stats::setNames(rep("", 2), c("benchmark_val_lwd", "mse"))  ## Define column names
 
-hex_full_count_df_loop2 <- hex_full_count_df_loop2 |>
-  dplyr::mutate(type = if_else(std_counts <= 0.20, "low", "high"))
+mse_df <- dplyr::bind_rows(vec)[0, ]
+mse_df <- mse_df |>
+  dplyr::mutate_if(is.character, as.numeric)
 
-hex_full_count_df_filtered <- hex_full_count_df_loop2 |>
-  dplyr::filter(type == "low")
+model_object <- fit_highd_model( training_data = training_data, 
+                                 nldr_df_with_id = umap_s_curve_scaled, 
+                                 x = "UMAP1", y = "UMAP2", 
+                                 num_bins_x = num_bins_x_s_curve, 
+                                 num_bins_y = num_bins_y_s_curve, 
+                                 x_start = NA, y_start = NA, 
+                                 buffer_x = NA, buffer_y = NA, 
+                                 hex_size = hex_size_s_curve,
+                                 is_rm_lwd_hex = FALSE, 
+                                 benchmark_to_rm_lwd_hex = NA, 
+                                 col_start_2d = "UMAP", 
+                                 col_start_highd = "x")
 
+centroid_df_training_all <- model_object$df_bin_centroids
+avg_df_training_all <- model_object$df_bin
 
-p2_n <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
-  theme_void() +
-  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=8), #change legend title font size
-        legend.text = element_text(size=6)) +
-  guides(fill = guide_colourbar(title = "Standardized count")) #+
-  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
-
-
-p2_n_rm <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  geom_text(data = hex_full_count_df_filtered, color = "red", aes(x = c_x, y = c_y, group = polygon_id, label = "X", size = 0.5)) +
-  #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
-  theme_void() +
-  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=8), #change legend title font size
-        legend.text = element_text(size=6)) +
-  guides(fill = guide_colourbar(title = "Standardized count")) #+
-  #annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
-
-## Import data
-
-UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
-
-## UMAP
-
-num_bins_umap_s_curve <- 8
-shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
-                                                          x = UMAP1, y = UMAP2) ## 1.259938
-## To extract bin centroids
-hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
-
-df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
-
-cell_count_plot_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = reorder(as.factor(hexID), -std_counts), y = std_counts)) +
-  geom_quasirandom() + xlab("hexagonal id") + ylab("Standardized cell count") +
-  geom_hline(yintercept = 0.20, colour = "#de2d26") +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 7),
-        axis.text.x = element_text(angle = 90))
-
-df_bin_centroids_umap_s_curve <- df_bin_centroids_umap_s_curve |>
-  dplyr::filter(std_counts > 0.20)
-
-## Triangulate bin centroids
-tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
-tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
-
-## Compute 2D distances
-distance_umap_s_curve <- cal_2d_dist(.data = tr_from_to_df_umap_s_curve)
-
-## To find the benchmark value
-benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
+benchmark_rm_hex_vec <- seq(0, 1, by=0.1)
+benchmark_rm_hex_vec <- append(benchmark_rm_hex_vec[1:10],0.99)
 
 
+for (i in 1:length(benchmark_rm_hex_vec)) {
+  
+  centroid_df_training <- centroid_df_training_all |>
+    dplyr::filter(std_counts > benchmark_rm_hex_vec[i])
+  
+  avg_df_training <- avg_df_training_all |>
+    dplyr::filter(hb_id %in% centroid_df_training$hexID)
+  
+  pred_emb_list <- predict_emb(test_data = training_data, 
+                               df_bin_centroids = centroid_df_training, 
+                               df_bin = avg_df_training, type_NLDR = "UMAP")
+  
+  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
+  
+  eval_list <- gen_summary(test_data = training_data, 
+                           prediction_df = pred_df_training, 
+                           df_bin = avg_df_training, col_start = "x")
+  
+  mse_df <- mse_df |>
+    tibble::add_row(benchmark_val_lwd = benchmark_rm_hex_vec[i],
+                    mse = eval_list$mse)
+  
+  
+}
 
-trimesh_umap_s_curve_rm_low <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
-
-trimesh_umap_s_curve_rm_low <- trimesh_umap_s_curve_rm_low +
-  coord_cartesian(xlim =c(-5, 7.5), ylim = c(-10, 10)) +
-  #ggtitle("(a)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) #+
-  #annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
-
-```
-
-```{r}
-#| eval: false
-#| echo: false
-#| warning: false
-#| fig-cap: Goodness of f
-#| label: fig-rmlowdenshex
-#| fig-pos: H
-##| out-width: 100%
-
-p2_n + p2_n_rm + trimesh_umap_s_curve_rm_low +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 3) &
-  theme(legend.position='bottom', plot.tag = element_text(size = 8))
-```
-
--->
-
-<!--Addressing low-density hexagons is a systematic process to handle sparsely represented data in certain regions. For each hex bin, we identify the six nearest hex bins using an equal 2D distance metric. Then, we calculate the mean density, as outlined in the equations:
-
-$$
-\text{standard count} = \frac{\text{count}}{\text{max count}} 
-$${#eq-equationp2}
-
-$$
-\text{mean density} = \frac{\text{standard count}}{6} 
-$${#eq-equationp3}
-
-The standard count is derived from the number of observations in the hex bins. By examining the distribution of mean densities and designating the first quartile as the benchmark value, hex bins with mean densities below this benchmark are removed. This process ensures the elimination of regions with insufficient data density, focusing on areas with more significant data representation and preserving the overall structure in the low-dimensional space.-->
-
-<!--lwd smoothing criteria 1 with s-curve-->
-<!--
-```{r}
-#| warning: false
-#| echo: false
-#| eval: false
-
-MSE_df_1_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_tsne.rds")
-MSE_df_2_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_umap.rds")
-MSE_df_3_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_phate.rds")
-MSE_df_4_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_trimap.rds")
-MSE_df_5_lwd <- read_rds("data/s_curve/s_curve_summary_lwd_pacmap.rds")
-
-MSE_df_lwd <- dplyr::bind_rows(MSE_df_1_lwd, MSE_df_2_lwd, MSE_df_3_lwd, MSE_df_4_lwd, MSE_df_5_lwd)
-
-MSE_df_lwd$method <- factor(MSE_df_lwd$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-## To draw with AIC
-aic_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_hex,
-                                                                                 y = total_error,
-                                                                                 color = method
+mse_plot_lwd <- ggplot(mse_df, aes(x = benchmark_val_lwd,
+                                       y = mse
 )) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 0.2, linetype="dashed", 
-                color = "red", size=0.5) +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
+   geom_vline(xintercept = 0.2, linetype="solid",
+                color = "red", size=0.8, alpha = 0.5) +
   theme_light() +
   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("AIC") +
-  xlab("benchmark value")
-## Effective number of bins along x-axis
-
-mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = benchmark_rm_hex,
-                                       y = total_mse,
-                                       color = method
-)) +
-  geom_point() +
-  geom_line() +
-  geom_vline(xintercept = 0.2, linetype="dashed", 
-                color = "red", size=0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
+  #scale_colour_manual(values = c("#377eb8")) +
   ylab("MSE") +
-  xlab("benchmark value")
+  xlab("benchmark value to remove low-density hexagons")
 
 ```
 
 ```{r}
-#| eval: false
 #| echo: false
 #| warning: false
 #| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons? The MSE plot have a steep slope at the beginning, indicating that a smaller benchmark causes a small amount of error. Then, the slope gradually increases or level up, indicating that a higher number of benchmark values generates a higher error. Using the reverse elbow method, when the benchmark value is set to 0.2, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that higher benchmark values remove the necessary bins as well which lead to distruct the 2D structure."
@@ -1438,25 +1408,24 @@ mse_plot_lwd <- ggplot(MSE_df_lwd |> dplyr::filter(method == "UMAP"), aes(x = be
 ##| out-width: 100%
 #| fig-pos: H
 
-aic_plot_lwd + mse_plot_lwd +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
+mse_plot_lwd
 ```
--->
-
-
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Full hexagonal grid with bin centroids, (b) Model constructed in 2D with long edges, and (c) Model constructed in 2D after removing the long edges."
-#| label: fig-modelScurve
+#| warning: false
+#| fig-cap: Goodness of f
+#| label: fig-rmlowdenshex
 #| fig-pos: H
+##| out-width: 100%
 
-pcentroid_plot_s_curve + trimesh_s_curve_umap + trimesh_removed_s_curve_umap +
+p2_n + p2_n_rm + p2_n_rm_correct +
+  plot_annotation(tag_levels = 'a') +
   plot_layout(guides='collect', ncol = 3) &
-  theme(legend.position='bottom') 
+  theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
+
+
 
 
 #### Benchmark value to remove long edges
@@ -1475,11 +1444,23 @@ The following steps will help to find a suitable value to remove long edges:
 #| echo: false
 #| fig-cap: "Distribution of 2D Euclidean distances."
 #| label: fig-distScurve
+#| fig-pos: H
 
 distance_plot
 ```
 
 2. Find a value which is greater than smallest value
+
+```{r}
+#| echo: false
+#| fig-cap: "(a) Full hexagonal grid with bin centroids, (b) Model constructed in 2D with long edges, and (c) Model constructed in 2D after removing the long edges."
+#| label: fig-modelScurve
+#| fig-pos: H
+
+pcentroid_plot_s_curve + trimesh_s_curve_umap + trimesh_removed_s_curve_umap +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='bottom') 
+```
 
 
 <!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.-->
@@ -1957,7 +1938,7 @@ In this section, we showcase the effectiveness of our methodology using simulate
 
 In the 2D representations created by all NLDR techniques, as shown in @fig-nldervis5Gau, except for PHATE, there are five distinct clusters. In tSNE, these five clusters are closely located to each other (see @fig-nldervis5Gau (a)). However, in PHATE, two clusters are closely positioned, while the other three are more distant (see @fig-nldervis5Gau (c)). In PaCMAP, one cluster is at the center, and the remaining four are positioned in four different directions (see @fig-nldervis5Gau (e)). In TriMAP, two clusters are close, although not as close as in PHATE, and the other three are well-separated (see @fig-nldervis5Gau (d)). In UMAP, all clusters are arranged in a parallel manner, with three in one line and the other two in a separate line (see @fig-nldervis5Gau (b)).
 
-Visualizing the models alongside the original high-D data provides insights into how different techniques capture the underlying clustering structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures (see video link of @fig-modelfiveGau (a)). UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance (see video link of @fig-modelfiveGau (b)). The PHATE model shows five separated clusters resembling triangles or partial triangles but struggles to capture local structures (see video link of @fig-modelfiveGau (c)). TriMAP and PaCMAP both display five well-separated clusters with flat surfaces, each capturing within-cluster variation to varying extents. Despite the various 2D representations, all NLDR techniques preserve the global structure (see video link of @fig-modelfiveGau (d), (e) respectively). However, tSNE, effectively capture both local and global structures, as indicated by lower AIC values in @fig-diagnosticpltGau (a).
+Visualizing the models alongside the original high-D data provides insights into how different techniques capture the underlying clustering structure. The tSNE model exhibits five well-separated clusters, effectively preserving both local and global structures (see video link of @fig-modelfiveGau (a)). UMAP, on the other hand, also presents five distinct clusters but with a more flattened surface appearance (see video link of @fig-modelfiveGau (b)). The PHATE model shows five separated clusters resembling triangles or partial triangles but struggles to capture local structures (see video link of @fig-modelfiveGau (c)). TriMAP and PaCMAP both display five well-separated clusters with flat surfaces, each capturing within-cluster variation to varying extents. Despite the various 2D representations, all NLDR techniques preserve the global structure (see video link of @fig-modelfiveGau (d), (e) respectively). However, tSNE, effectively capture both local and global structures.
 
 <!-- five Gaussian clusters with different NLDR techniques-->
 ```{r}
@@ -2569,7 +2550,7 @@ df_all_pacmap_gau <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID), p
 #| warning: false
 #| echo: false
 #| label: fig-modelfiveGau
-#| fig-cap: "Is there a best model to represent the original data in 2D space or are they all providing equivalent information?, (a) Model in the 2D space with tSNE (<https://youtu.be/x5VPB-wOLm4>), (b) Model in the 2D space with UMAP (<https://youtu.be/Cm1dW6iLyHQ>), (c) Model in the 2D space with PHATE (<https://youtu.be/HB0Y3ilz6sI>), (d) Model in the 2D space with TriMAP (<https://youtu.be/iSVkXIrOrSA>), and (e) Model in the 2D space with PaCMAP (<https://youtu.be/O2QBctsc4uM>)."
+#| fig-cap: "Is there a best model to represent the original data in 2D space or are they all providing equivalent information?, (a) Model generated with 21 and 28 bins along the x and y axes, respectively, using a hexagonal size of 0.03 in the 2D space with tSNE, (b) Model generated with 60 and 79 bins along the x and y axes, respectively, using a hexagonal size of 0.01 in the 2D space with UMAP, (c) Model generated with 60 and 1927 bins along the x and y axes, respectively, using a hexagonal size of 0.01 in the 2D space with PHATE, (d) Model generated with 46 and 61 bins along the x and y axes, respectively, using a hexagonal size of 0.013 in the 2D space with TriMAP, and (e) Model generated with 31 and 40 bins along the x and y axes, respectively, using a hexagonal size of 0.02 in the 2D space with PaCMAP."
 #| out-width: 100%
 
 trimesh_removed_tsne_gau + trimesh_removed_umap_gau + trimesh_removed_phate_gau + trimesh_removed_trimap_gau + trimesh_removed_pacmap_gau +
@@ -2579,323 +2560,56 @@ trimesh_removed_tsne_gau + trimesh_removed_umap_gau + trimesh_removed_phate_gau 
 ```
 
 
-<!---
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-
-## tSNE
-
-shape_value_gau <- calculate_effective_shape_value(.data = tSNE_data_gau,
-                                                   x = tSNE1, y = tSNE2)
-
-num_bins_vec <- 1:20 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
+::: {#fig-gau1_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_tsne_1.png){#fig-gau1_sc1}
 
-for (i in 1:length(num_bins_vec)) {
-  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = tSNE_data_gau, x = "tSNE1", y = "tSNE2", num_bins_x = num_bins_vec[i], shape_val = shape_value_gau,
-                                 is_bin_centroid = TRUE,
-                                 is_rm_lwd_hex = FALSE,
-                                 benchmark_to_rm_lwd_hex = NA,
-                                 is_avg_high_d = TRUE, column_start_text = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_1_gau <- eval_data_training |>
-  dplyr::mutate(method = "tSNE")
-```
-
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-
-## UMAP
-## Prediction
-
-shape_value_gau <- calculate_effective_shape_value(.data = UMAP_data_gau,
-                                                   x = UMAP1, y = UMAP2)
-
-num_bins_vec <- 1:20 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
+![](figures/five_gau_clusters/sc_tsne_2.png){#fig-gau1_sc2}
 
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = UMAP_data_gau, x = "UMAP1", y = "UMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_gau,
-                                 is_bin_centroid = TRUE,
-                                 is_rm_lwd_hex = FALSE,
-                                 benchmark_to_rm_lwd_hex = NA,
-                                 is_avg_high_d = TRUE, column_start_text = "x")
+![](figures/five_gau_clusters/sc_tsne_3.png){#fig-gau1_sc3}
 
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "UMAP")
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_2_gau <- eval_data_training |>
-  dplyr::mutate(method = "UMAP")
-```
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-## PAHTE
-## Prediction
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with tSNE in high-D, a video of the tour animation is available at (<https://youtu.be/oQxEb4wRdHI>).
+:::
 
-shape_value_gau <- calculate_effective_shape_value(.data = PHATE_data_gau,
-                                                   x = PHATE1, y = PHATE2)
+::: {#fig-gau2_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_umap_1.png){#fig-gau2_sc1}
 
-num_bins_vec <- 1:20 ## Number of bins along the x-axis
+![](figures/five_gau_clusters/sc_umap_2.png){#fig-gau2_sc2}
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+![](figures/five_gau_clusters/sc_umap_3.png){#fig-gau2_sc3}
 
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with UMAP in high-D, a video of the tour animation is available at (<https://youtu.be/JW49csPpDx4>).
+:::
 
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = PHATE_data_gau, x = "PHATE1", y = "PHATE2", num_bins_x = num_bins_vec[i], shape_val = shape_value_gau,
-                                 is_bin_centroid = TRUE,
-                                 is_rm_lwd_hex = FALSE,
-                                 benchmark_to_rm_lwd_hex = NA,
-                                 is_avg_high_d = TRUE, column_start_text = "x")
+::: {#fig-gau3_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_phate_1.png){#fig-gau3_sc1}
 
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PHATE")
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
+![](figures/five_gau_clusters/sc_phate_2.png){#fig-gau3_sc2}
 
-  
-  
-}
+![](figures/five_gau_clusters/sc_phate_3.png){#fig-gau3_sc3}
 
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PHATE in high-D, a video of the tour animation is available at (<https://youtu.be/xqhRODt8Z-o>).
+:::
 
-## Add new column with data types
+::: {#fig-gau4_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_trimap_1.png){#fig-gau4_sc1}
 
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_3_gau <- eval_data_training |>
-  dplyr::mutate(method = "PHATE")
-
-```
+![](figures/five_gau_clusters/sc_trimap_2.png){#fig-gau4_sc2}
 
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
+![](figures/five_gau_clusters/sc_trimap_3.png){#fig-gau4_sc3}
 
-## TriMAP
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with TriMAP in high-D, a video of the tour animation is available at (<https://youtu.be/X-uHSB4VoZ0>).
+:::
 
-## Prediction
+::: {#fig-gau5_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_pacmap_1.png){#fig-gau5_sc1}
 
-shape_value_gau <- calculate_effective_shape_value(.data = TriMAP_data_gau,
-                                                   x = TriMAP1, y = TriMAP2)
+![](figures/five_gau_clusters/sc_pacmap_2.png){#fig-gau5_sc2}
 
-num_bins_vec <- 1:20 ## Number of bins along the x-axis
+![](figures/five_gau_clusters/sc_pacmap_3.png){#fig-gau5_sc3}
 
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PaCMAP in high-D, a video of the tour animation is available at (<https://youtu.be/UxvU8HQd7JM>).
+:::
 
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = TriMAP_data_gau, x = "TriMAP1", y = "TriMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_gau,
-                                 is_bin_centroid = TRUE,
-                                 is_rm_lwd_hex = FALSE,
-                                 benchmark_to_rm_lwd_hex = NA,
-                                 is_avg_high_d = TRUE, column_start_text = "x")
-
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "TriMAP")
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_4_gau <- eval_data_training |>
-  dplyr::mutate(method = "TriMAP")
-
-```
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-
-## PaCMAP
-
-## Prediction
-
-shape_value_gau <- calculate_effective_shape_value(.data = PaCMAP_data_gau,
-                                                   x = PaCMAP1, y = PaCMAP2)
-
-num_bins_vec <- 1:20 ## Number of bins along the x-axis
-
-vec <- stats::setNames(rep("", 4), c("number_of_bins", "number_of_observations", "total_error", "total_mse"))  ## Define column names
-
-eval_data_training <- dplyr::bind_rows(vec)[0, ]
-eval_data_training <- eval_data_training |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(num_bins_vec)) {
-  
-  model_object <- fit_high_d_model(training_data = training_data_1, nldr_df_with_id = PaCMAP_data_gau, x = "PaCMAP1", y = "PaCMAP2", num_bins_x = num_bins_vec[i], shape_val = shape_value_gau,
-                                 is_bin_centroid = TRUE,
-                                 is_rm_lwd_hex = FALSE,
-                                 benchmark_to_rm_lwd_hex = NA,
-                                 is_avg_high_d = TRUE, column_start_text = "x")
-
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_df_training <- predict_2d_embeddings(test_data = training_data_1, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, type_NLDR = "PaCMAP")
-  
-  eval_df_training <- generate_eval_df(data = df_2, prediction_df = pred_df_training, df_bin_centroids = centroid_df_training, df_bin = avg_df_training, col_start = "x")
-  
-  eval_df_training <- eval_df_training |>
-    mutate(num_bins_x = num_bins_vec[i])
-  
-  eval_data_training <- dplyr::bind_rows(eval_data_training, eval_df_training)
-
-  
-  
-}
-
-
-## Add new column with data types
-
-eval_data_training <- eval_data_training |>
-  mutate(data_type = "training")
-
-MSE_df_5_gau <- eval_data_training |>
-  dplyr::mutate(method = "PaCMAP")
-
-```
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-
-MSE_df_gau <- dplyr::bind_rows(MSE_df_1_gau, MSE_df_2_gau, MSE_df_3_gau, MSE_df_4_gau, MSE_df_5_gau)
-
-MSE_df_gau$method <- factor(MSE_df_gau$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-
-## To draw with AIC
-aic_gau_plot <- ggplot(MSE_df_gau |> dplyr::filter(data_type == "training"), aes(x = number_of_bins,
-                                                             y = total_error,
-                   color = method
-)) +
-  geom_point() +
-  geom_line() +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("AIC") +
-  xlab("total number of bins") + 
-  facet_wrap(vars(method), ncol = 5)
-## Effective number of bins along x-axis
-
-mse_gau_plot <- ggplot(MSE_df_gau, aes(x = number_of_bins,
-                   y = total_mse,
-                   color = method
-)) +
-  geom_point() +
-  geom_line() +
-  theme_light() +
-  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("MSE") +
-  xlab("total number of bins") + 
-  facet_wrap(vars(method), ncol = 5)
-
-```
-
-
--->
 
 ## Applications {#sec-applications}
 
