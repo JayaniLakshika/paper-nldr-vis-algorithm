@@ -1122,7 +1122,7 @@ df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df,
 hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
 
 hex_full_count_df_loop2 <- hex_grid_with_counts |>
-  dplyr::mutate(type = if_else(std_counts <= 0.1, "low", "high"))
+  dplyr::mutate(type = if_else(std_counts <= 0.2, "low", "high"))
 
 hex_full_count_df_filtered <- df_bin_centroids |>
   dplyr::mutate(type = if_else(std_counts <= 0.2, "low", "high")) |>
@@ -1220,10 +1220,12 @@ pcentroid_plot_s_curve <- ggplot(data = hex_grid, aes(x = x, y = y)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
 
+rm_centroid_df <- df_bin_centroids_low |> 
+  dplyr::filter(hexID %in% identify_rm_bins)
 
-p2_n_rm_correct <-  ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
+p2_n_rm_correct <- ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = df_bin_centroids_low |> dplyr::filter(hexID %in% identify_rm_bins), color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X"), size = 0.5) +
+  geom_text(data = rm_centroid_df, color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X"), size = 0.5) +
   #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
@@ -1425,31 +1427,22 @@ p2_n + p2_n_rm + p2_n_rm_correct +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
+#### Benchmark value for removing long edges
 
+Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing edges that connect distant bin centroids within the triangular mesh (see @fig-modelScurve (b)). These edges only exist in the 2D model and do not extend into higher dimensions, ensuring that their removal does not impact the model in higher dimensions. While specific criteria for determining the benchmark value to remove long edges do not exist, the following steps provide an approach to identifying a suitable threshold:
 
-
-#### Benchmark value to remove long edges
-
-Achieving a smooth representation in 2D space is crucial, and one factor influencing this smoothness is the presence of long edges (see @fig-modelScurvermlgimp). These long edges occur when a line connects points that are distant in the triangular mesh, impacting the overall smoothness of the mesh.
-
-To investigate the effect of removing long edges on the MSE, we analyzed the MSE for various benchmark values. Surprisingly, the results indicated that the MSE remained consistent across different benchmark values, as shown in @fig-diagnosticpltScurvelgrm. It's important to note that edges are defined only in the 2D model and do not extend to higher dimensions. Consequently, removing edges does not affect the model in higher dimensions.
-
-There is no definitive rule for determining the benchmark value to remove long edges. However, we have a method to find a default value (see Appendix). Adjusting values around this default can help to find benchmark value to remove long edges, contributing to the construction of a smoother 2D representation (see @fig-diagnosticpltScurvelgrm).
-
-The following steps will help to find a suitable value to remove long edges:
-
-1. Plot the distribution of the 2D distances
+1. Plot the distribution of the 2D Euclidean distances.
+2. Identify the largest difference between consecutive distance values.
+3. Take the largest distance value corresponding to this difference as the benchmark value.
 
 ```{r}
 #| echo: false
-#| fig-cap: "Distribution of 2D Euclidean distances."
+#| fig-cap: "Distribution of 2D Euclidean distances between bin centroids of the triangular mesh generated with S-curve UMAP data."
 #| label: fig-distScurve
 #| fig-pos: H
 
 distance_plot
 ```
-
-2. Find a value which is greater than smallest value
 
 ```{r}
 #| echo: false
@@ -1461,160 +1454,6 @@ pcentroid_plot_s_curve + trimesh_s_curve_umap + trimesh_removed_s_curve_umap +
   plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='bottom') 
 ```
-
-
-<!--The removal of long edges is a critical step to create a smoother representation  by iteratively eliminating hexagons with excessive distances between centroids. This process eliminates outliers and noise while preserving essential local relationships within the data. To achieve this, distances between vertices are sorted, and unique distance values are extracted. By setting a threshold based on the largest difference between consecutive distance values, long edges are identified and removed. This refinement step contributes to enhancing the quality of the triangular mesh, ensuring a more accurate representation of the data structure.-->
-<!--
-```{r}
-#| warning: false
-#| echo: false
-#| eval: false
-
-## Import data
-
-UMAP_s_curve <- read_rds("data/s_curve/s_curve_umap.rds")
-
-## UMAP
-
-num_bins_umap_s_curve <- 8
-shape_val_umap_s_curve <- calculate_effective_shape_value(.data = UMAP_s_curve,
-                                                          x = UMAP1, y = UMAP2) ## 1.259938
-## To extract bin centroids
-hexbin_data_object_umap_s_curve <- extract_hexbin_centroids(nldr_df = UMAP_s_curve, num_bins = num_bins_umap_s_curve, shape_val = shape_val_umap_s_curve, x = UMAP1, y = UMAP2)
-
-df_bin_centroids_umap_s_curve <- hexbin_data_object_umap_s_curve$hexdf_data
-
-UMAP_data_with_hb_id_s_curve <- UMAP_s_curve |>
-  dplyr::mutate(hb_id = hexbin_data_object_umap_s_curve$hb_data@cID)
-
-## To generate a data set with high-D and 2D training data
-df_all_umap_s_curve <- dplyr::bind_cols(training_data |> dplyr::select(-ID), UMAP_data_with_hb_id_s_curve)
-
-## Averaged on high-D
-df_bin_umap_s_curve <- avg_highD_data(.data = df_all_umap_s_curve)
-
-## Triangulate bin centroids
-tr1_object_umap_s_curve <- triangulate_bin_centroids(df_bin_centroids_umap_s_curve, x, y)
-tr_from_to_df_umap_s_curve <- generate_edge_info(triangular_object = tr1_object_umap_s_curve)
-
-# ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
-#   geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-#   geom_point(size = 2, colour = "#33a02c") +
-#   coord_equal()
-
-
-## Compute 2D distances
-distance_umap_s_curve <- cal_2d_dist(.data = tr_from_to_df_umap_s_curve)
-
-distance_plot_s_curve <- plot_dist(distance_umap_s_curve) +
-  #ggtitle("(b)" ) +
-  ylab(expression(d^{(2)})) +
-  theme(axis.text = element_text(size = 5),
-        axis.title = element_text(size = 12))
-
-## To find the benchmark value
-benchmark_umap_s_curve <- find_benchmark_value(.data = distance_umap_s_curve, distance_col = distance)
-benchmark_umap_s_curve <- 1.346694
-
-
-# colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve,
-#                   triangular_object = tr1_object_umap_s_curve, distance_col = distance)
-
-
-
-trimesh_umap_s_curve <- ggplot(df_bin_centroids_umap_s_curve, aes(x = x, y = y)) +
-  geom_segment(data = tr_from_to_df_umap_s_curve, aes(x = x_from, y = y_from, xend = x_to, yend = y_to)) +
-  geom_point(size = 2, colour = "#33a02c") +
-  coord_equal()
-
-trimesh_umap_s_curve <- trimesh_umap_s_curve +
-  #ggtitle("(a)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) +
-  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
-# theme(axis.text = element_text(size = 5),
-#       axis.title = element_text(size = 7))
-
-trimesh_gr_umap_s_curve <- colour_long_edges(.data = distance_umap_s_curve, benchmark_value = benchmark_umap_s_curve, triangular_object = tr1_object_umap_s_curve, distance_col = distance)
-
-trimesh_gr_umap_s_curve <- trimesh_gr_umap_s_curve +
-  geom_point(size = 2, colour = "#33a02c") +
-  #ggtitle("(b)") +
-  xlab(expression(C[x]^{(2)})) + ylab(expression(C[y]^{(2)})) +
-  theme_light() +
-  #coord_equal() +
-  theme(legend.position = "none", plot.title = element_text(size = 5, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank()#change legend key width
-  ) +
-  annotate(geom = 'text', label = 'b', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
-
-
-# ### Define type column
-# df <- df_all_umap_s_curve |>
-#   dplyr::select(tidyselect::starts_with("x")) |>
-#   dplyr::mutate(type = "data") ## original dataset
-# 
-# df_b <- df_bin_umap_s_curve |>
-#   dplyr::filter(hb_id %in% df_bin_centroids_umap_s_curve$hexID) |>
-#   dplyr::select(-hb_id) |>
-#   dplyr::mutate(type = "model") ## Data with summarized mean
-# 
-# df_exe <- dplyr::bind_rows(df_b, df)
-# 
-# distance_df_small_edges <- distance_umap_s_curve %>%
-#   dplyr::filter(distance < benchmark_umap_s_curve)
-# 
-# distance_df_long_edges <- distance_umap_s_curve %>%
-#   dplyr::filter(distance >= benchmark_umap_s_curve)
-# 
-# distance_df_edges <- dplyr::bind_rows(distance_df_small_edges, distance_df_long_edges)
-# 
-# langevitour::langevitour(df_exe[1:(length(df_exe)-1)], lineFrom = distance_df_edges$from , lineTo = distance_df_edges$to, group = df_exe$type, pointSize = 3, levelColors = c("#6a3d9a", "#33a02c"), lineColors = append(rep("black", length(distance_df_small_edges$from)), rep("red", length(distance_df_long_edges$from))))
-# 
-
-```
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-#| label: fig-modelScurverdistcount
-#| fig-cap: "plots to identify benchmark values"
-##| out-width: 100%
-#| fig-pos: H
-
-cell_count_plot_s_curve + distance_plot_s_curve +
-  #plot_annotation(tag_levels = 'a') +
-  plot_layout(ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
-
-
-
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-#| label: fig-modelScurvermlgimp
-#| fig-cap: "What does the 2D model, constructed using UMAP (applied to the S-curve dataset), look like in high dimensions with long edges? (<https://youtu.be/pSL_G_n7-fM>) (a) 2D model without removing the long edges, and (b) 2D model with long edges coloured by red. The default benchmark value is used to identify long edges."
-##| out-width: 100%
-#| fig-pos: H
-
-trimesh_umap_s_curve + trimesh_gr_umap_s_curve +
-  #plot_annotation(tag_levels = 'a') +
-  plot_layout(ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
--->
 
 #### Starting point of the hexagonal grid
 
@@ -1641,8 +1480,10 @@ min_x_start <- min(umap_s_curve_scaled[["UMAP1"]]) - (sqrt(3) * hex_size_s_curve
 max_y_start <- min(umap_s_curve_scaled[["UMAP2"]]) + (1.5 * hex_size_s_curve)
 min_y_start <- min(umap_s_curve_scaled[["UMAP2"]]) - (1.5 * hex_size_s_curve)
 
-diff_start_df <- expand.grid(x_start = seq(min_x_start, max_x_start, by = 0.01), 
-                             y_start = seq(min_y_start, max_y_start, by = 0.01))
+diff_start_df <- expand.grid(x_start = seq(min_x_start, max_x_start, length.out = 10), 
+                             y_start = seq(min_y_start, max_y_start, length.out = 10)) |>
+  add_row(x_start = min(umap_s_curve_scaled[["UMAP1"]]) - (sqrt(3) * hex_size_s_curve/2),
+          y_start = min(umap_s_curve_scaled[["UMAP2"]]) - (1.5 * hex_size_s_curve/2))
 
 vec <- stats::setNames(rep("", 4), c("x_start", "y_start", "num_non_empty_bins", "mse"))  ## Define column names
 
@@ -1650,7 +1491,9 @@ mse_df <- dplyr::bind_rows(vec)[0, ]
 mse_df <- mse_df |>
   dplyr::mutate_if(is.character, as.numeric)
 
-for (i in 1:23) { #NROW(diff_start_df)
+diff_start_df <- diff_start_df[c(1:5, 11:15,21:25, 101),]
+
+for (i in 1:NROW(diff_start_df)) { #NROW(diff_start_df)
   
   model_object <- fit_highd_model( training_data = training_data, 
                                    nldr_df_with_id = umap_s_curve_scaled, 
@@ -1687,54 +1530,61 @@ for (i in 1:23) { #NROW(diff_start_df)
   
 }
 
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df |> 
-  dplyr::count(num_non_empty_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_non_empty_bins)
+# ## If same total number of bins occurred only select ones with minimum error
+# ### Obtain duplicate bins
+# dupli_bins <- mse_df |> 
+#   dplyr::count(num_non_empty_bins) |> 
+#   dplyr::filter(n > 1) |> 
+#   dplyr::pull(num_non_empty_bins)
+# 
+# ### Group split by duplicated bins
+# duplicate_df_list <- mse_df |>
+#   dplyr::filter(num_non_empty_bins %in% dupli_bins) |>
+#   dplyr::arrange(num_non_empty_bins) |>
+#   dplyr::group_split(num_non_empty_bins)
+# 
+# ### Obtain one row from duplicates which have lowest error and hexsize
+# duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
+# 
+# for (i in 1:length(duplicate_df_list)) {
+#   
+#   dd <- duplicate_df_list[[i]] |>
+#     dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) 
+#   
+#   duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
+#   
+# }
+# 
+# ### Obtain the mse_df with not duplicated bins
+# not_dupli_df <- mse_df |>
+#   dplyr::filter(!(num_non_empty_bins %in% dupli_bins))
+# 
+# ### Combine duplicated and not duplicated(corrected) bins dfs
+# mse_df <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 
-### Group split by duplicated bins
-duplicate_df_list <- mse_df |>
-  dplyr::filter(num_non_empty_bins %in% dupli_bins) |>
-  dplyr::arrange(num_non_empty_bins) |>
-  dplyr::group_split(num_non_empty_bins)
-
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) 
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
-
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df |>
-  dplyr::filter(!(num_non_empty_bins %in% dupli_bins))
-
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df <- dplyr::bind_rows(not_dupli_df, duplicate_df)
-
-mse_plot <- ggplot(mse_df, aes(x = num_non_empty_bins,
-                               y = mse
+mse_plot_start_point <- ggplot(mse_df, aes(x = x_start,
+                               y = y_start, colour = mse
 )) +
   geom_point() +
-  geom_line() +
+  #geom_line() +
   # geom_vline(xintercept = 84, linetype="solid",
   #            color = "red", linewidth=0.8, alpha = 0.5) +
   theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+  theme(legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
         axis.title = element_text(size = 7),
         axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("MSE") +
-  xlab("number of non-empty bins")
+  viridis::scale_color_viridis(option = "D") +
+  labs(x = "x start", y = "y start", color = "MSE") 
+```
 
-mse_plot
+```{r}
+#| echo: false
+#| warning: false
+#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different benchmark values to remove the low-density heaxgons. What is the effective benchmark value to remove the low-density heaxgons? The MSE plot have a steep slope at the beginning, indicating that a smaller benchmark causes a small amount of error. Then, the slope gradually increases or level up, indicating that a higher number of benchmark values generates a higher error. Using the reverse elbow method, when the benchmark value is set to 0.2, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that higher benchmark values remove the necessary bins as well which lead to distruct the 2D structure."
+#| label: fig-mseScurvestartpoint
+#| fig-pos: H
+
+mse_plot_start_point
 ```
 
 ```{r}
@@ -1840,7 +1690,6 @@ bin_centroids_ch_plot <- ggplot(data = all_centroids_df, aes(x = c_x, y = c_y)) 
 #| echo: false
 #| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration before (colored in gray) and after (colored in light orange) shifting the starting point by an identical amount applied in both x and y directions, with a shift value of $0.537285$."
 #| label: fig-scurveshifthexgridsexp
-##| out-width: 100%
 #| fig-pos: H
 
 bin_centroids_ch_plot + hex_grid_ch_plot +
@@ -1852,7 +1701,6 @@ bin_centroids_ch_plot + hex_grid_ch_plot +
 #| echo: false
 #| fig-cap: "Hexbin plots shows the distribution of points before and after shifting the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after shifting (identical shift applied in both x and y directions, with a shift value of $0.537285$)."
 #| label: fig-scurveshifthexgrids
-##| out-width: 100%
 #| fig-pos: H
 
 initial_start_plot + new_start_plot +
@@ -2828,6 +2676,7 @@ colour = type)) +
 #| label: fig-abserrorPBMC
 #| fig-pos: H
 #| out-width: 100%
+#| out-height: 100%
 
 abs_error_plot_pbmc
 ```
