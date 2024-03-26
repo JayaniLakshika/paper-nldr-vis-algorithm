@@ -224,7 +224,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, enhanced, frame hidden, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, frame hidden, breakable, enhanced, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -983,22 +983,17 @@ constructed in 2D after removing the long edges.}
 \subsubsection{Starting point of the hexagonal
 grid}\label{starting-point-of-the-hexagonal-grid}}
 
-According to \citet{Dan2023}, the hexagonal binning is done by
-tessellating the \(xy\) plane over the set (range(\(x\)), range(\(y\)))
-(see Figure~\ref{fig-scurveshifthexgridsexp} (b)). In that case, bin
-centroids are defined as shown in
-Figure~\ref{fig-scurveshifthexgridsexp} (a) with gray colour. Rather
-than sticking to the typical hexagonal grid, introducing a meaningful
-shift in both the x and y directions presents an opportunity for an
-improved 2D model. Therefore, investigating this shift in the hexagonal
-grid is an important parameter to consider.
-
-As shown in Figure~\ref{fig-scurveshifthexgrids}, the shifting
-influences the distribution of points and number of non-empty bins,
-impacting the resulting 2D model. According to
-\textbf{?@fig-diagnosticpltScurvehexbins}, the 2D model with a total of
-\(144\) bins applied to S-curve UMAP data does not require any shifting
-because the lowest MSE occurs when no shift is introduced.
+Hexagonal binning involves tessellating the \(xy\) plane over the set
+defined by the range of \(x\) and \(y\) \citep{Dan2023}. Therefore, the
+starting point of the hexagonal grid is important parameter to consider.
+Having different starting point results in shifting the hexagonal grid
+and bin centroids (see Figure~\ref{fig-scurveshifthexgridsexp}). With a
+specific total number of bins (which corresponds to a specific range
+along the x and y axes), it's essential to explore how different
+starting points affect the model's performance (see
+Figure~\ref{fig-mseScurvestartpoint}). This is because different
+starting points result in varying distributions of non-empty bins (see
+Figure~\ref{fig-scurveshifthexgrids}), impacting the model.
 
 \begin{figure}[H]
 

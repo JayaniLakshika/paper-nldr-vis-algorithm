@@ -1404,9 +1404,7 @@ pcentroid_plot_s_curve + trimesh_s_curve_umap + trimesh_removed_s_curve_umap +
 
 #### Starting point of the hexagonal grid
 
-According to @Dan2023, the hexagonal binning is done by tessellating the $xy$ plane over the set (range($x$), range($y$)) (see @fig-scurveshifthexgridsexp (b)). In that case, bin centroids are defined as shown in @fig-scurveshifthexgridsexp (a) with gray colour. Rather than sticking to the typical hexagonal grid, introducing a meaningful shift in both the x and y directions presents an opportunity for an improved 2D model. Therefore, investigating this shift in the hexagonal grid is an important parameter to consider.
-
-As shown in @fig-scurveshifthexgrids, the shifting influences the distribution of points and number of non-empty bins, impacting the resulting 2D model. According to @fig-diagnosticpltScurvehexbins, the 2D model with a total of $144$ bins applied to S-curve UMAP data does not require any shifting because the lowest MSE occurs when no shift is introduced.
+Hexagonal binning involves tessellating the $xy$ plane over the set defined by the range of $x$ and $y$ [@Dan2023]. Therefore, the starting point of the hexagonal grid is important parameter to consider. Having different starting point results in shifting the hexagonal grid and bin centroids (see @fig-scurveshifthexgridsexp). With a specific total number of bins (which corresponds to a specific range along the x and y axes), it's essential to explore how different starting points affect the model's performance (see @fig-mseScurvestartpoint). This is because different starting points result in varying distributions of non-empty bins (see @fig-scurveshifthexgrids), impacting the model.
 
 ```{r}
 #| warning: false
