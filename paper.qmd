@@ -1626,7 +1626,6 @@ As shown in @fig-scurveshifthexgrids, the shifting influences the distribution o
 #| warning: false
 #| echo: false
 #| message: false
-#| eval: false
 
 ## UMAP
 ## Decide by looking at MSE plot
@@ -1651,7 +1650,7 @@ mse_df <- dplyr::bind_rows(vec)[0, ]
 mse_df <- mse_df |>
   dplyr::mutate_if(is.character, as.numeric)
 
-for (i in 1:NROW(diff_start_df)) {
+for (i in 1:23) { #NROW(diff_start_df)
   
   model_object <- fit_highd_model( training_data = training_data, 
                                    nldr_df_with_id = umap_s_curve_scaled, 
@@ -1680,7 +1679,8 @@ for (i in 1:NROW(diff_start_df)) {
                            df_bin = avg_df_training, col_start = "x")
   
   mse_df <- mse_df |>
-    tibble::add_row(x_start = diff_start_df[i, 1], y_start = diff_start_df[i, 2],
+    tibble::add_row(x_start = diff_start_df[i, 1], 
+                    y_start = diff_start_df[i, 2],
                     num_non_empty_bins = NROW(centroid_df_training), 
                     mse = eval_list$mse)
   
@@ -1737,53 +1737,14 @@ mse_plot <- ggplot(mse_df, aes(x = num_non_empty_bins,
 mse_plot
 ```
 
-
-<!--
-
 ```{r}
-#| eval: false
 #| echo: false
 #| warning: false
 
-hex_full_count_df <- read_rds("data/s_curve/s_curve_hex_8.rds")
-
-shifted_hex_coord_df <- read_rds("data/s_curve/s_curve_hex_8_shifted_hex_coord_df.rds")
-
-bin_centroids_shift <- ggplot(data = hex_full_count_df, aes(x = c_x, y = c_y)) +
-  geom_point(color = "#bdbdbd") +
-  geom_point(data = shifted_hex_coord_df, aes(x = c_x, y = c_y), color = "#feb24c") +
-  coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
-  theme_void() +
-  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=8), #change legend title font size
-        legend.text = element_text(size=6)) +
-  guides(fill = guide_colourbar(title = "Standardized count")) +
-  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
-
-hex_grid_shift <- ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
-  geom_polygon(fill = NA, color = "#feb24c", aes(group = polygon_id)) +
-  geom_polygon(data = hex_full_count_df, aes(x = x, y = y, group = polygon_id),
-               fill = NA, color = "#bdbdbd") +
-  coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
-  theme_void() +
-  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title.x = element_blank(), axis.title.y = element_blank(),
-        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
-        legend.title = element_text(size=8), #change legend title font size
-        legend.text = element_text(size=6)) +
-  guides(fill = guide_colourbar(title = "Standardized count")) +
-  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
-
-## Before shift
-before_shift_plot <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  geom_text(aes(x = c_x, y = c_y, label = hexID), size = 2) +
+## Initial x and y start
+initial_start_plot <- ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = df_bin_centroids, aes(x = c_x, y = c_y, label = hexID), size = 2) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   coord_equal() +
   theme_void() +
@@ -1797,11 +1758,38 @@ before_shift_plot <- ggplot(data = hex_full_count_df, aes(x = x, y = y)) +
   guides(fill = guide_colourbar(title = "Standardized count")) +
   annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
+## x and y start selected by MSE
 
-## After shift
-after_shift_plot <- ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = polygon_id, fill = std_counts)) +
-  geom_text(aes(x = c_x, y = c_y, label = hexID), size = 2) +
+## UMAP
+## Decide by looking at MSE plot
+num_bins_x_s_curve <- 6
+num_bins_y_s_curve <- 14
+hex_size_s_curve <- 0.13
+
+hb_obj_s_curve_n <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x_s_curve, 
+                      num_bins_y = num_bins_y_s_curve, x_start = -0.0652, y_start = -0.195, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_s_curve, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df_n <- as.data.frame(do.call(cbind, hb_obj_s_curve_n$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid_n <- as.data.frame(do.call(cbind, hb_obj_s_curve_n$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df_n <- as.data.frame(do.call(cbind, hb_obj_s_curve_n$std_cts))
+df_bin_centroids_n <- extract_hexbin_centroids(centroids_df = all_centroids_df_n, 
+                                             counts_df = counts_df_n)
+
+## remove low-density hexagons
+
+hex_grid_with_counts_n <- dplyr::left_join(hex_grid_n, counts_df_n, by = c("hex_poly_id" = "hb_id"))
+
+
+new_start_plot <- ggplot(data = hex_grid_with_counts_n, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data= df_bin_centroids_n, aes(x = c_x, y = c_y, label = hexID), size = 2) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   coord_equal() +
   theme_void() +
@@ -1815,100 +1803,63 @@ after_shift_plot <- ggplot(data = shifted_hex_coord_df, aes(x = x, y = y)) +
   guides(fill = guide_colourbar(title = "Standardized count")) +
   annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 
+
+hex_grid_ch_plot <- ggplot(data = hex_grid_with_counts_n, aes(x = x, y = y)) +
+  geom_polygon(fill = NA, color = "#feb24c", aes(group = hex_poly_id)) +
+  geom_polygon(data = hex_grid_with_counts, aes(x = x, y = y, group = hex_poly_id),
+               fill = NA, color = "#bdbdbd") +
+  #coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "b", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
+
+bin_centroids_ch_plot <- ggplot(data = all_centroids_df, aes(x = c_x, y = c_y)) +
+  geom_point(color = "#bdbdbd") +
+  geom_point(data = all_centroids_df_n, aes(x = c_x, y = c_y), color = "#feb24c") +
+  #coord_cartesian(xlim = c(-5, 8), ylim = c(-10, 10)) +
+  theme_void() +
+  theme(legend.position="none", legend.direction="horizontal", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+        axis.title.x = element_blank(), axis.title.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+        axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=8), #change legend title font size
+        legend.text = element_text(size=6)) +
+  guides(fill = guide_colourbar(title = "Standardized count")) +
+  annotate(geom = 'text', label = "a", x = -Inf, y = Inf, hjust = -0.3, vjust = 1, size = 3) 
 ```
 
 ```{r}
-#| eval: false
 #| echo: false
 #| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration before (colored in gray) and after (colored in light orange) shifting the starting point by an identical amount applied in both x and y directions, with a shift value of $0.537285$."
 #| label: fig-scurveshifthexgridsexp
 ##| out-width: 100%
 #| fig-pos: H
 
-bin_centroids_shift + hex_grid_shift +
+bin_centroids_ch_plot + hex_grid_ch_plot +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
 ```{r}
-#| eval: false
 #| echo: false
 #| fig-cap: "Hexbin plots shows the distribution of points before and after shifting the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after shifting (identical shift applied in both x and y directions, with a shift value of $0.537285$)."
 #| label: fig-scurveshifthexgrids
 ##| out-width: 100%
 #| fig-pos: H
 
-before_shift_plot + after_shift_plot +
+initial_start_plot + new_start_plot +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
-```{r}
-#| eval: false
-#| warning: false
-#| echo: false
-
-#MSE_df <- dplyr::bind_rows(MSE_df_1, MSE_df_2, MSE_df_3, MSE_df_4, MSE_df_5)
-
-#MSE_df$method <- factor(MSE_df$method, levels = c("tSNE", "UMAP", "PHATE", "TriMAP", "PaCMAP"))
-
-MSE_df <- read_rds("data/s_curve/s_curve_umap_shift_summary.rds") 
-MSE_df$method <- factor(MSE_df$method, levels = c("UMAP"))
-
-## To draw with AIC
-aic_plot <- ggplot(MSE_df |> dplyr::filter(data_type == "training") |> dplyr::filter(method == "UMAP"), aes(x = shift,
-                                                                                 y = total_error,
-                                                                                 color = method
-)) +
-  geom_point() +
-  geom_line() +
-  geom_vline(xintercept = MSE_df |> dplyr::filter(total_mse == min(total_mse)) |> dplyr::pull(shift), linetype="dashed",
-                color = "red", size=0.5) +
-  #geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  #annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=-5000, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("AIC") +
-  xlab("shift value")
-## Effective number of bins along x-axis
-
-mse_plot <- ggplot(MSE_df |> dplyr::filter(method == "UMAP"), aes(x = shift,
-                                       y = total_mse,
-                                       color = method
-)) +
-  geom_point() +
-  geom_line() +
-   geom_vline(xintercept = MSE_df |> dplyr::filter(total_mse == min(total_mse)) |> dplyr::pull(shift), linetype="dashed",
-                color = "red", size=0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  # geom_vline(xintercept = NROW(full_grid_with_hexbin_id)) +
-  # annotate("text", x= (NROW(full_grid_with_hexbin_id) - 10), y=0.25, label=paste0("effective number of bins = ", as.character(NROW(full_grid_with_hexbin_id))), angle=90) +
-  scale_colour_manual(values = c("#377eb8", "#e41a1c", "#4daf4a", "#984ea3", "#ff7f00")) +
-  ylab("MSE") +
-  xlab("shift value")
-
-```
-
-```{r}
-#| eval: false
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training S-curve dataset with different shift values. In this illustration, an identical shift is applied in both the x and y directions. The Mean Squared Error (MSE) plot exhibits a global minimum at $0$, indicating that no additional shifting is necessary for the current hexagonal grid to yield a well-fitted model."
-#| label: fig-diagnosticpltScurvehexbins
-##| out-width: 100%
-#| fig-pos: H
-
-aic_plot + mse_plot +
-  plot_annotation(tag_levels = 'a') +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
--->
 
 ### Model summaries {#sec-summary}
 
@@ -2236,62 +2187,65 @@ df_all_umap_gau <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID), uma
 #| message: false
 
 
-phate_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = tibble::as_tibble(PHATE_data_gau), x = "PHATE1", y = "PHATE2", hex_ratio = 50/sqrt(3)))) |>
-  dplyr::rename(c("PHATE1" = "scaled_PHATE1",
-                  "PHATE2" = "scaled_PHATE2")) |>
-  dplyr::mutate(ID = 1:NROW(PHATE_data_gau))
+# phate_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = tibble::as_tibble(PHATE_data_gau), x = "PHATE1", y = "PHATE2", hex_ratio = 50/sqrt(3)))) |>
+#   dplyr::rename(c("PHATE1" = "scaled_PHATE1",
+#                   "PHATE2" = "scaled_PHATE2")) |>
+#   dplyr::mutate(ID = 1:NROW(PHATE_data_gau))
+# 
+# ## Decide by looking at MSE plot
+# num_bins_x_phate_gau <- 60
+# num_bins_y_phate_gau <- 1927
+# hex_size_phate_gau <- 0.01
+# ### non-empty 187
+# 
+# hb_obj_phate_gau <- hex_binning(data = phate_gau_scaled, x = "PHATE1", 
+#                                y = "PHATE2", num_bins_x = num_bins_x_phate_gau, 
+#                                num_bins_y = num_bins_y_phate_gau, x_start = NA, y_start = NA, 
+#                                buffer_x = NA, buffer_y = NA, hex_size = hex_size_phate_gau, col_start = "PHATE")
+# 
+# ## Data set with all possible centroids in the hexagonal grid
+# all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_phate_gau$centroids))
+# 
+# ## Generate all coordinates of hexagons
+# hex_grid <- as.data.frame(do.call(cbind, hb_obj_phate_gau$hex_poly))
+# 
+# ## To obtain the standardise counts within hexbins
+# counts_df <- as.data.frame(do.call(cbind, hb_obj_phate_gau$std_cts))
+# df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+#                                              counts_df = counts_df)
+# # ggplot(data = hex_grid, aes(x = x, y = y)) +
+# #   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
+# #   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red", size = 0.1) +
+# #   coord_fixed()
+# 
+# hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+# 
+# # ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+# #   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+# #   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+# #   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+# #   coord_fixed()
+# 
+# phate_data_with_hb_id_gau <- as.data.frame(do.call(cbind, hb_obj_phate_gau$data_hb_id))
+# 
+# model_object_phate_gau <- fit_highd_model( training_data = training_data_gau, 
+#                                           nldr_df_with_id = phate_gau_scaled, 
+#                                           x = "PHATE1", y = "PHATE2", 
+#                                           num_bins_x = num_bins_x_phate_gau, 
+#                                           num_bins_y = num_bins_y_phate_gau, 
+#                                           x_start = NA, y_start = NA, 
+#                                           buffer_x = NA, buffer_y = NA, 
+#                                           hex_size = hex_size_phate_gau,
+#                                           is_rm_lwd_hex = FALSE, 
+#                                           benchmark_to_rm_lwd_hex = NA, 
+#                                           col_start_2d = "PHATE", 
+#                                           col_start_highd = "x")
+# 
+# df_bin_centroids_phate_gau <- model_object_phate_gau$df_bin_centroids
+# df_bin_phate_gau <- model_object_phate_gau$df_bin
 
-## Decide by looking at MSE plot
-num_bins_x_phate_gau <- 60
-num_bins_y_phate_gau <- 1927
-hex_size_phate_gau <- 0.01
-### non-empty 187
-
-hb_obj_phate_gau <- hex_binning(data = phate_gau_scaled, x = "PHATE1", 
-                               y = "PHATE2", num_bins_x = num_bins_x_phate_gau, 
-                               num_bins_y = num_bins_y_phate_gau, x_start = NA, y_start = NA, 
-                               buffer_x = NA, buffer_y = NA, hex_size = hex_size_phate_gau, col_start = "PHATE")
-
-## Data set with all possible centroids in the hexagonal grid
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_phate_gau$centroids))
-
-## Generate all coordinates of hexagons
-hex_grid <- as.data.frame(do.call(cbind, hb_obj_phate_gau$hex_poly))
-
-## To obtain the standardise counts within hexbins
-counts_df <- as.data.frame(do.call(cbind, hb_obj_phate_gau$std_cts))
-df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
-                                             counts_df = counts_df)
-# ggplot(data = hex_grid, aes(x = x, y = y)) +
-#   geom_polygon(fill = "white", color = "black", aes(group = hex_poly_id)) +
-#   geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "red", size = 0.1) +
-#   coord_fixed()
-
-hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
-
-# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-#   coord_fixed()
-
-phate_data_with_hb_id_gau <- as.data.frame(do.call(cbind, hb_obj_phate_gau$data_hb_id))
-
-model_object_phate_gau <- fit_highd_model( training_data = training_data_gau, 
-                                          nldr_df_with_id = phate_gau_scaled, 
-                                          x = "PHATE1", y = "PHATE2", 
-                                          num_bins_x = num_bins_x_phate_gau, 
-                                          num_bins_y = num_bins_y_phate_gau, 
-                                          x_start = NA, y_start = NA, 
-                                          buffer_x = NA, buffer_y = NA, 
-                                          hex_size = hex_size_phate_gau,
-                                          is_rm_lwd_hex = FALSE, 
-                                          benchmark_to_rm_lwd_hex = NA, 
-                                          col_start_2d = "PHATE", 
-                                          col_start_highd = "x")
-
-df_bin_centroids_phate_gau <- model_object_phate_gau$df_bin_centroids
-df_bin_phate_gau <- model_object_phate_gau$df_bin
+df_bin_centroids_phate_gau <- read_rds("data/five_gau_clusters/df_bin_centroids_phate_gau.rds")
+df_bin_phate_gau <- read_rds("data/five_gau_clusters/df_bin_phate_gau.rds")
 
 ## Triangulate bin centroids
 tr1_object_phate_gau <- tri_bin_centroids(df_bin_centroids_phate_gau, x = "c_x", y = "c_y")
@@ -2328,7 +2282,7 @@ trimesh_removed_phate_gau <- trimesh_removed_phate_gau +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank()) +
   annotate(geom = 'text', label = 'c', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
-df_all_phate_gau <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID), phate_data_with_hb_id_gau)
+# df_all_phate_gau <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID), phate_data_with_hb_id_gau)
 
 # show_langevitour(df = df_all_phate_gau, df_b = df_bin_phate_gau, df_b_with_center_data = df_bin_centroids_phate_gau, col_start = "x", distance_df = distance_phate_gau, distance_col = "distance", benchmark_value = benchmark_phate_gau)
 

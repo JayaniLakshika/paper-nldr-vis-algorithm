@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, interior hidden, breakable, enhanced, boxrule=0pt, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, enhanced, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, frame hidden]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -539,20 +539,106 @@ grid layout of the hexagonal bins.
 \textbf{Step 2: Hexagonating NLDR data}
 
 Hexagonating NLDR data (see Figure~\ref{fig-meth} Step 2) involves
-partitioning the 2D embedding data into hexagonal bins, a technique
-commonly referred to as hexagonal binning
-\citep[\citet{article66}]{Carr1987}. This method use a hexagonal grid to
-create a bivariate histogram that effectively visualizes the structure
-of high-D data. Hexagons, one of only three regular polygons capable of
-tessellating a plane \citep{Carr2013}, offer unique advantages due to
-their symmetry of nearest neighbors and maximal number of sides for such
-tessellations \citep{Dan2023}. This geometric property makes hexagons
-more efficient in covering the plane compared to other regular
-tessellations and reduces visual bias when displaying data densities
-\citep{Dan2023}. In our algorithm, we aim to conduct regular hexagonal
-binning (\textbf{cite quollr paper}), involving the computation of
-hexagonal grid configurations, the generation of the grid, and the
-assignment of the 2D embedding to hexagons.
+partitioning the NLDR data into hexagonal bins, a technique commonly
+referred to as hexagonal binning \citep[\citet{article66}]{Carr1987}.
+This method use a hexagonal grid to create a bivariate histogram that
+effectively visualizes the structure of high-D data. Hexagons, one of
+only three regular polygons capable of tessellating a plane
+\citep{Carr2013}, offer unique advantages due to their symmetry of
+nearest neighbors and maximal number of sides for such tessellations
+\citep{Dan2023}. This geometric property makes hexagons more efficient
+in covering the plane compared to other regular tessellations and
+reduces visual bias when displaying data densities \citep{Dan2023}.
+
+In our algorithm, we aim to conduct regular hexagonal binning, involving
+the computation of hexagonal grid configurations, the generation of the
+grid, and the assignment of the NLDR data points to hexagons.
+
+\textbf{(a) Computation of hexagonal grid configurations}
+
+In the computation of hexagonal bin configurations, there are mainly two
+configurations to consider: the number of bins along the x and y axes.
+The first step involves in determining the hexagonal size (\(s\)) and
+the buffer along the x and y axes (\(buffer_{x}\) and \(buffer_{y}\)).
+Here, the hexagonal size (\(s\)) represents the radius of the outer
+circle surrounding the hexagon. The buffer is important in expanding the
+boundary to accommodate potential outliers or edge cases.
+
+When computing the number of bins along the x and y axes (\(b_1\) and
+\(b_2\)), the process begins by calculating the range of the respective
+2D embedding component. After that, the range is adjusted to accommodate
+the buffer amount. Then, the spacing between hexagons is determined
+based on \(s\). Finally, the number of bins along the axis is computed
+by dividing the adjusted range by the spacing.
+
+For the computation of the number of bins along the x-axis (\(b_1\))
+(see Equation~\ref{eq-equation12}), the range of the first embedding
+component is defined as \(r_1\), while the buffer amount along the
+x-axis is denoted as \(buffer_{x}\), and the horizontal spacing is
+represented by \(h\) (see Equation~\ref{eq-equation11}). On the other
+hand, the number of bins along the y-axis (\(b_2\)) (see
+Equation~\ref{eq-equation14}) is computed based on the range of the
+second embedding component (\(r_2\)), the buffer amount along the y-axis
+(\(buffer_{y}\)), and the vertical spacing (\(v\)) (see
+Equation~\ref{eq-equation13}).
+
+\begin{equation}\protect\hypertarget{eq-equation11}{}{
+ h = \sqrt{3} * s
+}\label{eq-equation11}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation12}{}{
+ b_1 = \frac{r_1 + buffer_{x}}{h}
+}\label{eq-equation12}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation13}{}{
+  v = 1.5 * s
+}\label{eq-equation13}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation14}{}{
+ b_2 = \frac{r_2 + buffer_{y}}{v}
+}\label{eq-equation14}\end{equation}
+
+\textbf{(b) Generation of the hexagonal grid}
+
+In this process, the first step involves generating centroids within the
+hexagonal grid. This begins by defining the starting coordinates for the
+hexagons. With the number of bins computed along the x and y axes, along
+with the horizontal and vertical spacing, the centroids are iteratively
+computed starting from the hexagonal starting coordinates.
+
+Once the centroids for the hexagonal grid are obtained, the next step is
+to compute the hexagonal coordinates. For example, if the centroid of a
+hexagonal bin is defined as \((C_x, C_y)\), the hexagonal coordinates
+can be computed using \(d_x\) (see Equation~\ref{eq-equation15}) and
+\(d_y\) (see Equation~\ref{eq-equation16}) (see
+Figure~\ref{fig-hexcoord}).
+
+\begin{equation}\protect\hypertarget{eq-equation15}{}{
+d_x = \frac{h}{2}
+}\label{eq-equation15}\end{equation}
+
+\begin{equation}\protect\hypertarget{eq-equation16}{}{
+d_y = \frac{2* v * 1.15}{\sqrt{3}} 
+}\label{eq-equation16}\end{equation}
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\textwidth,height=1\textheight]{figures/hex_coord.png}
+
+}
+
+\caption{\label{fig-hexcoord}The hexagonal coordinates computed for the
+centroid \((C_x, C_y)\).}
+
+\end{figure}
+
+\textbf{(c) Assignment of the NLDR data points to hexagons}
+
+After obtaining the centroids of the hexagonal bins for the entire grid,
+the process of assigning NLDR points to hexagons involves determining
+the nearest hexagonal bin for each NLDR point using the 2D Euclidean
+distance. Then, the hexagonal ID of the nearest hexagon is assigned to
+the corresponding NLDR points.
 
 \textbf{Step 3: Obtaining bin centroids or bin means}
 
@@ -699,8 +785,8 @@ an appropriate number of bins to build an effective model.
 
 \caption{\label{fig-binsize}Hexbin plots from different number of bins
 for the \textbf{UMAP} embeddings of \textbf{S-curve} training data: (a)
-b = 12 (3, 4), h = 0.62, (b) b = 84 (6, 14), h = 0.13, and (c) b = 336
-(12, 28), h = 0.06. The hexbins are colored based on the density of
+b = 12 (3, 4), s = 0.62, (b) b = 84 (6, 14), s = 0.13, and (c) b = 336
+(12, 28), s = 0.06. The hexbins are colored based on the density of
 points, with darker colors indicating higher point density and yellow
 color representing lower point density within each bin. What is the
 number of bins that would be effective in representing low-dimensional
@@ -811,7 +897,7 @@ density hexagons:
   Plot the distribution of the standardized counts
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-stdctsScurve-1.pdf}
 
@@ -831,15 +917,34 @@ distances.}
   Take the first quartile
 \end{enumerate}
 
-\begin{figure}[H]
+\begin{figure}
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
+{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
 
 }
 
-\caption{\label{fig-modelScurve}(a) Full hexagonal grid with bin
-centroids, (b) Model constructed in 2D with long edges, and (c) Model
-constructed in 2D after removing the long edges.}
+\caption{\label{fig-diagnosticpltScurvelwd}Goodness of fit statistics
+from UMAP applied to training S-curve dataset with different benchmark
+values to remove the low-density heaxgons. What is the effective
+benchmark value to remove the low-density heaxgons? The MSE plot have a
+steep slope at the beginning, indicating that a smaller benchmark causes
+a small amount of error. Then, the slope gradually increases or level
+up, indicating that a higher number of benchmark values generates a
+higher error. Using the reverse elbow method, when the benchmark value
+is set to 0.2, the slope of the Mean Squared Error (MSE) plot
+experiences a sudden and noticeable change, resembling an elbow-like
+shape. This point indicates that higher benchmark values remove the
+necessary bins as well which lead to distruct the 2D structure.}
+
+\end{figure}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-rmlowdenshex-1.pdf}
+
+}
+
+\caption{\label{fig-rmlowdenshex}Goodness of f}
 
 \end{figure}
 
@@ -878,7 +983,7 @@ edges:
   Plot the distribution of the 2D distances
 \end{enumerate}
 
-\begin{figure}
+\begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-distScurve-1.pdf}
 
@@ -896,26 +1001,69 @@ edges:
   Find a value which is greater than smallest value
 \end{enumerate}
 
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-modelScurve-1.pdf}
+
+}
+
+\caption{\label{fig-modelScurve}(a) Full hexagonal grid with bin
+centroids, (b) Model constructed in 2D with long edges, and (c) Model
+constructed in 2D after removing the long edges.}
+
+\end{figure}
+
 \hypertarget{starting-point-of-the-hexagonal-grid}{%
 \subsubsection{Starting point of the hexagonal
 grid}\label{starting-point-of-the-hexagonal-grid}}
 
 According to \citet{Dan2023}, the hexagonal binning is done by
 tessellating the \(xy\) plane over the set (range(\(x\)), range(\(y\)))
-(see \textbf{?@fig-scurveshifthexgridsexp} (b)). In that case, bin
-centroids are defined as shown in \textbf{?@fig-scurveshifthexgridsexp}
-(a) with gray colour. Rather than sticking to the typical hexagonal
-grid, introducing a meaningful shift in both the x and y directions
-presents an opportunity for an improved 2D model. Therefore,
-investigating this shift in the hexagonal grid is an important parameter
-to consider.
+(see Figure~\ref{fig-scurveshifthexgridsexp} (b)). In that case, bin
+centroids are defined as shown in
+Figure~\ref{fig-scurveshifthexgridsexp} (a) with gray colour. Rather
+than sticking to the typical hexagonal grid, introducing a meaningful
+shift in both the x and y directions presents an opportunity for an
+improved 2D model. Therefore, investigating this shift in the hexagonal
+grid is an important parameter to consider.
 
-As shown in \textbf{?@fig-scurveshifthexgrids}, the shifting influences
-the distribution of points and number of non-empty bins, impacting the
-resulting 2D model. According to
+As shown in Figure~\ref{fig-scurveshifthexgrids}, the shifting
+influences the distribution of points and number of non-empty bins,
+impacting the resulting 2D model. According to
 \textbf{?@fig-diagnosticpltScurvehexbins}, the 2D model with a total of
 \(144\) bins applied to S-curve UMAP data does not require any shifting
 because the lowest MSE occurs when no shift is introduced.
+
+\includegraphics{paper_files/figure-pdf/unnamed-chunk-36-1.pdf}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgridsexp-1.pdf}
+
+}
+
+\caption{\label{fig-scurveshifthexgridsexp}(a) Visualization of bin
+centroids and (b) hexagonal grid, showcasing the configuration before
+(colored in gray) and after (colored in light orange) shifting the
+starting point by an identical amount applied in both x and y
+directions, with a shift value of \(0.537285\).}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-scurveshifthexgrids-1.pdf}
+
+}
+
+\caption{\label{fig-scurveshifthexgrids}Hexbin plots shows the
+distribution of points before and after shifting the starting point of
+the hexagonal grid generated for UMAP applied to the training S-curve
+dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after
+shifting (identical shift applied in both x and y directions, with a
+shift value of \(0.537285\)).}
+
+\end{figure}
 
 \hypertarget{sec-summary}{%
 \subsection{Model summaries}\label{sec-summary}}
@@ -941,11 +1089,11 @@ high-D points by the high-D mapping of 2D bin centroids. To measure this
 accuracy, an error metric is introduced, quantifying the sum of squared
 differences between the high-D data (\(x_{ij}\)) and the high-D mapping
 of the 2D bin centroid data (\(C_{x_ij}\)) across all observations and
-dimensions (see Equation~\ref{eq-equation11}).
+dimensions (see Equation~\ref{eq-equation10}).
 
-\begin{equation}\protect\hypertarget{eq-equation11}{}{
+\begin{equation}\protect\hypertarget{eq-equation10}{}{
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-}\label{eq-equation11}\end{equation}
+}\label{eq-equation10}\end{equation}
 
 Here, \(n\) represents the number of observations, \(p\) represents the
 dimensions of high-D data, \(x_{ij}\) is the high-D data, and
@@ -990,18 +1138,17 @@ Visualizing the models alongside the original high-D data provides
 insights into how different techniques capture the underlying clustering
 structure. The tSNE model exhibits five well-separated clusters,
 effectively preserving both local and global structures (see video link
-of \textbf{?@fig-modelfiveGau} (a)). UMAP, on the other hand, also
+of Figure~\ref{fig-modelfiveGau} (a)). UMAP, on the other hand, also
 presents five distinct clusters but with a more flattened surface
-appearance (see video link of \textbf{?@fig-modelfiveGau} (b)). The
+appearance (see video link of Figure~\ref{fig-modelfiveGau} (b)). The
 PHATE model shows five separated clusters resembling triangles or
 partial triangles but struggles to capture local structures (see video
-link of \textbf{?@fig-modelfiveGau} (c)). TriMAP and PaCMAP both display
-five well-separated clusters with flat surfaces, each capturing
+link of Figure~\ref{fig-modelfiveGau} (c)). TriMAP and PaCMAP both
+display five well-separated clusters with flat surfaces, each capturing
 within-cluster variation to varying extents. Despite the various 2D
 representations, all NLDR techniques preserve the global structure (see
-video link of \textbf{?@fig-modelfiveGau} (d), (e) respectively).
-However, tSNE, effectively capture both local and global structures, as
-indicated by lower AIC values in Figure~\ref{fig-diagnosticpltGau} (a).
+video link of Figure~\ref{fig-modelfiveGau} (d), (e) respectively).
+However, tSNE, effectively capture both local and global structures.
 
 \begin{figure}
 
@@ -1021,14 +1168,293 @@ information?}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-diagnosticpltGau-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-modelfiveGau-1.pdf}
 
 }
 
-\caption{\label{fig-diagnosticpltGau}Goodness of fit statistics from
-different NLDR techniques applied to training five spherical Gaussian
-cluster dataset. What is the best NLDR technique to represent the
-original data in 2D?}
+\caption{\label{fig-modelfiveGau}Is there a best model to represent the
+original data in 2D space or are they all providing equivalent
+information?, (a) Model generated with 21 and 28 bins along the x and y
+axes, respectively, using a hexagonal size of 0.03 in the 2D space with
+tSNE, (b) Model generated with 60 and 79 bins along the x and y axes,
+respectively, using a hexagonal size of 0.01 in the 2D space with UMAP,
+(c) Model generated with 60 and 1927 bins along the x and y axes,
+respectively, using a hexagonal size of 0.01 in the 2D space with PHATE,
+(d) Model generated with 46 and 61 bins along the x and y axes,
+respectively, using a hexagonal size of 0.013 in the 2D space with
+TriMAP, and (e) Model generated with 31 and 40 bins along the x and y
+axes, respectively, using a hexagonal size of 0.02 in the 2D space with
+PaCMAP.}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau1_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau1_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau1_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-gau1_sc}Screen shots of the \textbf{langevitour} of
+the five Gaussian clusters dataset, shows the model with tSNE in high-D,
+a video of the tour animation is available at
+(\url{https://youtu.be/oQxEb4wRdHI}).}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau2_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau2_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau2_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-gau2_sc}Screen shots of the \textbf{langevitour} of
+the five Gaussian clusters dataset, shows the model with UMAP in high-D,
+a video of the tour animation is available at
+(\url{https://youtu.be/JW49csPpDx4}).}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau3_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau3_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau3_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-gau3_sc}Screen shots of the \textbf{langevitour} of
+the five Gaussian clusters dataset, shows the model with PHATE in
+high-D, a video of the tour animation is available at
+(\url{https://youtu.be/xqhRODt8Z-o}).}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau4_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau4_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau4_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-gau4_sc}Screen shots of the \textbf{langevitour} of
+the five Gaussian clusters dataset, shows the model with TriMAP in
+high-D, a video of the tour animation is available at
+(\url{https://youtu.be/X-uHSB4VoZ0}).}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau5_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau5_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-gau5_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-gau5_sc}Screen shots of the \textbf{langevitour} of
+the five Gaussian clusters dataset, shows the model with PaCMAP in
+high-D, a video of the tour animation is available at
+(\url{https://youtu.be/UxvU8HQd7JM}).}
 
 \end{figure}
 
@@ -1039,36 +1465,42 @@ original data in 2D?}
 \subsection{Single-cell RNA-seq data of
 human}\label{single-cell-rna-seq-data-of-human}}
 
+In the field of single-cell studies, a common analytical task involves
+clustering to identify groups of cells with similar expression profiles.
+Analysts often turn to NLDR techniques to verify and identify these
+clusters and explore developmental trajectories. To illustrate the
+importance of NLDR techniques and parameter selection in identifying
+clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset
+\citep{chen2023} is used. In a study by \citet{chen2023}, this dataset
+was used to demonstrate how UMAP represents clusters (see
+Figure~\ref{fig-umapauthor}). As shown in Figure~\ref{fig-umapauthor},
+there are three distinct and well-separated clusters.
+
 \begin{figure}[H]
 
 {\centering \includegraphics{paper_files/figure-pdf/fig-umapauthor-1.pdf}
 
 }
 
-\caption{\label{fig-umapauthor}(a) 2D layout from UMAP (n\_neighbors =
-30, min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
+\caption{\label{fig-umapauthor}2D layout from UMAP (n\_neighbors = 30,
+min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
 representation of the original data?}
 
 \end{figure}
 
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-msepltpbmc-1.pdf}
-
-}
-
-\caption{\label{fig-msepltpbmc}Goodness of fit statistics from UMAP
-applied to training PBMC3k dataset. What is the effective number of bins
-in UMAP to create a 2D model? The MSE plot have a steep slope at the
-beginning, indicating that a smaller number of bins causes a larger
-amount of error. Then, the slope gradually declines or level off,
-indicating that a higher number of bins generates a smaller error. Using
-the elbow method, when the total number of bins is set to 588, the slope
-of the MSE plot experiences a sudden and noticeable change, resembling
-an elbow-like shape. This point indicates that adding less bins does not
-enough to capture the data structure.}
-
-\end{figure}
+To determine whether the UMAP representation with the parameter choice
+suggested by \citet{chen2023} preserves the original data structure, we
+visualize the model constructed with UMAP overlaid on the high-D data
+(model-in-data space). The figures in Figure~\ref{fig-pbmc1_sc} show
+three well-separated clusters, indicating that the suggested UMAP
+representation preserves the global structure (see
+Figure~\ref{fig-umapauthor}). However, as shown in
+Figure~\ref{fig-pbmc1_sc}, these clusters are close to each other in
+high-D space. Also, nonlinear continuity patterns and high-density
+patches within the clusters are observed (see
+Figure~\ref{fig-pbmc1_sc}). Therefore, the suggested UMAP representation
+(see Figure~\ref{fig-umapauthor}) does not accurately preserve the local
+structure of the PBMC3k dataset.
 
 \begin{figure}[H]
 
@@ -1076,23 +1508,190 @@ enough to capture the data structure.}
 
 }
 
-\caption{\label{fig-nldervisPBMCUMAP}(a) Model in the 2D space overlaid
-on UMAP data, and (b) Error occurred by the high-D model for high-D data
-and the error mapped into 2D NLDR points.}
+\caption{\label{fig-nldervisPBMCUMAP}(a) Model generated with 21 and 28
+bins along x and y axes with hexagonal size 0.03 in the 2D space
+overlaid on UMAP data, and (b) high-D model error in model space.}
 
 \end{figure}
 
-\includegraphics{paper_files/figure-pdf/unnamed-chunk-72-1.pdf}
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc1_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model in high-D, a video of the tour
+animation is available at (\url{https://youtu.be/Gnhh4hfsbbg}).}
+
+\end{figure}
+
+To find the best NLDR representation for PBMC3k dataset, we observe the
+absolute error for different number of non-empty bins and select the one
+with the lowest error. As shown in Figure~\ref{fig-abserrorPBMC}, tSNE
+with a perplexity set to \(51\), has the lowest error. Therefore, tSNE
+with a perplexity of \(51\) is used as the best representation for
+PBMC3k dataset.
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-abserrorPBMC-1.pdf}
+
+}
+
+\caption{\label{fig-abserrorPBMC}Absolute error from UMAP and tSNE
+applied to training PBMC3k dataset with diffferent parameter choices.
+What is the best parameter choice to create the model? The residual plot
+have a steep slope at the beginning, indicating that a smaller number of
+non-empty bins causes a larger amount of error. Then, the slope
+gradually declines or level off, indicating that a higher number of
+non-empty bins generates a smaller error. Using the elbow method, it was
+observed that when the number of non-empty bins is set to 439, the
+lowest error occurred with the parameters perplexity: 51.}
+
+\end{figure}
+
+As shown in Figure~\ref{fig-tsnesuggest}, there are three well-separated
+clusters, although they are located close to each other. Additionally,
+nonlinear structures can be observed within the clusters (see
+Figure~\ref{fig-tsnesuggest}). Hence, the data structure that UMAP
+failed to capture for the PBMC3k dataset is successfully captured by
+tSNE.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-tsnesuggest-1.pdf}
+
+}
+
+\caption{\label{fig-tsnesuggest}2D layout from tSNE (perplexity = 51)
+applied for the PBMC3k dataset. Is this a best representation of the
+original data?}
+
+\end{figure}
+
+Next, the model is fitted for tSNE, and the resulting model is
+visualized in the data space. The model shows some quirks, as shown in
+Figure~\ref{fig-pbmc2_sc}. The large cluster is divided into three
+subclusters, which are in close to each other.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{paper_files/figure-pdf/fig-nldervisPBMCtSNE-1.pdf}
+
+}
+
+\caption{\label{fig-nldervisPBMCtSNE}(a) Model generated with 31 and 40
+bins along x and y axes with hexagonal size 0.02 in the 2D space
+overlaid on tSNE data, and (b) high-D model error in model space.}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_4.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc4}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_5.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc5}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_6.png}
+
+}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc6}}
+\end{minipage}%
+
+\caption{\label{fig-pbmc2_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model in high-D, a video of the tour
+animation is available at (\url{https://youtu.be/R0EroJcGbas}).}
+
+\end{figure}
 
 \hypertarget{handwritten-digits}{%
 \subsection{Handwritten digits}\label{handwritten-digits}}
 
 The MNIST dataset consists of grayscale images of handwritten digits
 \citep{lecun2010}. \citet{Yingfan2021} used this dataset to demonstrate
-how the PaCMAP preserves local structure. We select the 2D embedding of
-PaCMAP for the handwritten digit 1. As shown in
+how the PaCMAP preserves local structure. We selected the 2D embedding
+of PaCMAP for the handwritten digit 1. As shown in
 Figure~\ref{fig-pacmapauthor}, we observe a nonlinear structure present
-in 2D space. To answer the following questions,
+in 2D space. Furthermore, the angle of digit 1 images varies along the
+nonlinear structure (see Figure~\ref{fig-sampleimg}). To answer the
+following questions,
 
 \begin{itemize}
 \tightlist
@@ -1107,6 +1706,21 @@ in 2D space. To answer the following questions,
 
 we visualize the model constructed with PaCMAP overlaid on data in
 high-D space (model-in-data space).
+
+According to Figure~\ref{fig-mnist1_sc1}, the nonlinear continuity
+structure observed in the 2D representation of PaCMAP is also visible
+when visualizing the model overlaid on the data space. This provides
+evidence that the model accurately captures the structure of the high-D
+data. Also, the model has a twisted pattern within the nonlinear
+structure, which is an addition pattern of data that cannot be seen in
+the 2D representation (see Figure~\ref{fig-mnist1_sc2}).
+
+In order to visually assess the preservation of local structure, it's
+important to consider the edges in the model. In a model that
+effectively preserves local structure, there shouldn't be any long edges
+in high-D space. However, as shown in Figure~\ref{fig-mnist1_sc3}, some
+long edges exist in high-D space that are not identified as long edges
+in the 2D representation.
 
 \begin{figure}[H]
 
@@ -1128,27 +1742,8 @@ best representation of the original data?}
 }
 
 \caption{\label{fig-sampleimg}Images of the handwritten digit 1 are
-distributed along the left-to-right of first embedding axis of the
+distributed along the right-to-left of first embedding axis of the
 PaCMAP nonlinear structure.}
-
-\end{figure}
-
-\begin{figure}[H]
-
-{\centering \includegraphics{paper_files/figure-pdf/fig-diagnosticpltMNIST-1.pdf}
-
-}
-
-\caption{\label{fig-diagnosticpltMNIST}Goodness of fit statistics from
-PaCMAP applied to training MNIST dataset. What is the effective number
-of bins in PaCMAP to create a 2D model? The MSE plot have a steep slope
-at the beginning, indicating that a smaller number of bins causes a
-larger amount of error. Then, the slope gradually declines or level off,
-indicating that a higher number of bins generates a smaller error. Using
-the elbow method, when the total number of bins is set to 180, the slope
-of the Mean Squared Error (MSE) plot experiences a sudden and noticeable
-change, resembling an elbow-like shape. This point indicates that adding
-less bins does not enough to capture the data structure.}
 
 \end{figure}
 
@@ -1158,8 +1753,81 @@ less bins does not enough to capture the data structure.}
 
 }
 
-\caption{\label{fig-nldervisMNISTPACMAP}(a) Model in the 2D space
+\caption{\label{fig-nldervisMNISTPACMAP}(a) Model generated with 12 and
+15 bins along x and y axes with hexagonal size 0.06 in the 2D space
 overlaid on PaCMAP data, and (b) high-D model error in model space.}
+
+\end{figure}
+
+\begin{figure}[H]
+
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_1.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc1}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_2.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc2}}
+\end{minipage}%
+%
+\begin{minipage}[t]{0.33\linewidth}
+
+{\centering 
+
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_3.png}
+
+}
+
+}
+
+\subcaption{\label{fig-mnist1_sc3}}
+\end{minipage}%
+
+\caption{\label{fig-mnist1_sc}Screen shots of the \textbf{langevitour}
+of the MNIST digit 1 data set, shows the model-in-data space, a video of
+the tour animation is available at
+(\url{https://youtu.be/zq2GM9qvUNA}).}
+
+\end{figure}
+
+In terms of model error, some data points show high error (see
+Figure~\ref{fig-nldervisMNISTPACMAP}) due to their deviation from the
+typical high-D data structure, acting as outliers. This is evident when
+comparing the images associated with these high model error points (see
+Figure~\ref{fig-sampleimgerror}) to others (see
+Figure~\ref{fig-sampleimg}).
+
+\begin{figure}[H]
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-sampleimgerror-1.pdf}
+
+}
+
+\caption{\label{fig-sampleimgerror}Images of handwritten digit 1 which
+occur large model error.}
 
 \end{figure}
 
