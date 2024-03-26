@@ -790,7 +790,7 @@ a2 + a1 +
 
 ### Tuning the model
 
-The performance and robustness of our model depend on four key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, (iii) a benchmark value used to remove long edges, and (iv) starting point of the hexagonal grid. However, there is no analytical formula to calculate an appropriate value for these parameters (the computation of default values can be find in *quollr* paper). The selection of these parameter values depends on the model performance computed by Mean Squared Error (MSE) (see @sec-goodfit).  
+The performance and robustness of our model depend on four key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, (iii) a benchmark value used to remove long edges, and (iv) starting point of the hexagonal grid. However, there is no analytical formula to calculate an appropriate value for these parameters. The selection of these parameter values depends on the model performance computed by Mean Squared Error (MSE) (see @sec-goodfit).  
 
 #### Total number of bins
 
@@ -1225,7 +1225,7 @@ rm_centroid_df <- df_bin_centroids_low |>
 
 p2_n_rm_correct <- ggplot(data = hex_full_count_df_loop2, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = rm_centroid_df, color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X"), size = 0.5) +
+  geom_text(data = hex_full_count_df_filtered[6, ], color = "red", aes(x = c_x, y = c_y, group = hexID, label = "X", size = 0.5)) +
   #geom_point(data = UMAP_data, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   #coord_cartesian(xlim =c(-5, 7), ylim = c(-10, 10)) +
@@ -1299,32 +1299,28 @@ trimesh_removed_s_curve_umap <- trimesh_removed_s_curve_umap +
 
 #### Benchmark value to remove low-density hexagons
 
-After setting up the hexagonal grid with an appropriate number of bins, it is possible that some hexagonal bins may have very few or no data points within them. To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins that have a considerable number of data points within their hexagons. To achieve this, the number of points within each hexagon is first calculated. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, the bins that have a standard number of points less than a certain benchmark value are removed. After removing the hexagons that have insufficient data density, the hexagons with more substantial data representation are used to construct the 2D model.
+After establishing the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them. To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed. The following steps will help in determining a suitable value for removing low-density hexagons:
+
+1. Plot the distribution of the standardized counts (see @fig-stdctsScurve).
+2. Examine the distribution of counts.
+3. Select the first quartile value if the distribution is skewed.
 
 $$
 \text{standard count} = \frac{\text{count}}{\text{max count}} 
 $${#eq-equationp2}
 
-Furthermore, it is crucial to choose the benchmark value to remove low-density hexagons carefully. If we remove unnecessary bins, then it may result in long edges and an uneven 2D model. Therefore, instead of removing hexagons only identified by the benchmark value, we examine the standard number of points in the neighboring hexagons of the identified low-density hexagons. If the neighboring bins also have low counts, then only those bins will be removed. The other identified bins will be kept and used for constructing the 2D model along with the high-density bins.
+Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven 2D model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density ones. If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the 2D model.   
 
-The benchmark value for removing low-density hexagons has a range of $0$ and $1$. When analyzing how these benchmark values affect model performance, it's important to observe the change in Mean Squared Error (MSE) as the benchmark value increases. The MSE exhibits a gradual increase as the benchmark value progresses from $0$ to $1$. Assessing this rate of increase is crucial. If the increment is not substantial, the decision might lean towards retaining low-density hexagons. 
-
-The following steps will help to find a suitable value to remove low density hexagons:
-
-1. Plot the distribution of the standardized counts
+The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in Mean Squared Error (MSE) as the benchmark value increases (see @fig-diagnosticpltScurvelwd). The MSE shows a gradual increase as the benchmark value progresses from $0$ to $1$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
 ```{r}
 #| echo: false
-#| fig-cap: "Distribution of 2D Euclidean distances."
+#| fig-cap: "Distribution of standardize counts by hexagons."
 #| label: fig-stdctsScurve
 #| fig-pos: H
 
 cell_count_plot
 ```
-
-2. See the distribution of counts
-
-3. Take the first quartile 
 
 ```{r}
 #| warning: false
@@ -1416,7 +1412,7 @@ mse_plot_lwd
 ```{r}
 #| echo: false
 #| warning: false
-#| fig-cap: Goodness of f
+#| fig-cap: "(a) Hexbin plot with colored hexbins based on point density, (b) Identification of low-density hexagons using a benchmark value of $0.2$, and (c) Identification of low-density hexagons considering neighboring bins."
 #| label: fig-rmlowdenshex
 #| fig-pos: H
 ##| out-width: 100%
@@ -1431,7 +1427,7 @@ p2_n + p2_n_rm + p2_n_rm_correct +
 
 Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing edges that connect distant bin centroids within the triangular mesh (see @fig-modelScurve (b)). These edges only exist in the 2D model and do not extend into higher dimensions, ensuring that their removal does not impact the model in higher dimensions. While specific criteria for determining the benchmark value to remove long edges do not exist, the following steps provide an approach to identifying a suitable threshold:
 
-1. Plot the distribution of the 2D Euclidean distances.
+1. Plot the distribution of the 2D Euclidean distances (see @fig-distScurve).
 2. Identify the largest difference between consecutive distance values.
 3. Take the largest distance value corresponding to this difference as the benchmark value.
 

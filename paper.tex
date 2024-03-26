@@ -221,7 +221,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, frame hidden, sharp corners]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, sharp corners, interior hidden, frame hidden, breakable, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -758,8 +758,7 @@ parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
 used to remove low-density hexagons, (iii) a benchmark value used to
 remove long edges, and (iv) starting point of the hexagonal grid.
 However, there is no analytical formula to calculate an appropriate
-value for these parameters (the computation of default values can be
-find in \emph{quollr} paper). The selection of these parameter values
+value for these parameters. The selection of these parameter values
 depends on the model performance computed by Mean Squared Error (MSE)
 (see Section~\ref{sec-goodfit}).
 
@@ -852,50 +851,51 @@ structure.}
 \subsubsection{Benchmark value to remove low-density
 hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
 
-After setting up the hexagonal grid with an appropriate number of bins,
-it is possible that some hexagonal bins may have very few or no data
-points within them. To ensure comprehensive coverage of the NLDR data,
-it is necessary to select hexagonal bins that have a considerable number
-of data points within their hexagons. To achieve this, the number of
-points within each hexagon is first calculated. Then, the standard count
-is computed by dividing the number of points within each hexagon by the
-maximum number of points in the grid (see Equation~\ref{eq-equationp2}).
-Next, the bins that have a standard number of points less than a certain
-benchmark value are removed. After removing the hexagons that have
-insufficient data density, the hexagons with more substantial data
-representation are used to construct the 2D model.
-
-\begin{equation}\protect\hypertarget{eq-equationp2}{}{
-\text{standard count} = \frac{\text{count}}{\text{max count}} 
-}\label{eq-equationp2}\end{equation}
-
-Furthermore, it is crucial to choose the benchmark value to remove
-low-density hexagons carefully. If we remove unnecessary bins, then it
-may result in long edges and an uneven 2D model. Therefore, instead of
-removing hexagons only identified by the benchmark value, we examine the
-standard number of points in the neighboring hexagons of the identified
-low-density hexagons. If the neighboring bins also have low counts, then
-only those bins will be removed. The other identified bins will be kept
-and used for constructing the 2D model along with the high-density bins.
-
-The benchmark value for removing low-density hexagons has a range of
-\(0\) and \(1\). When analyzing how these benchmark values affect model
-performance, it's important to observe the change in Mean Squared Error
-(MSE) as the benchmark value increases. The MSE exhibits a gradual
-increase as the benchmark value progresses from \(0\) to \(1\).
-Assessing this rate of increase is crucial. If the increment is not
-substantial, the decision might lean towards retaining low-density
-hexagons.
-
-The following steps will help to find a suitable value to remove low
-density hexagons:
+After establishing the hexagonal grid with an appropriate number of
+bins, some hexagonal bins may have few or no data points within them. To
+ensure comprehensive coverage of the NLDR data, it is necessary to
+select hexagonal bins with a considerable number of data points. This
+involves calculating the number of points within each hexagon. Then, the
+standard count is computed by dividing the number of points within each
+hexagon by the maximum number of points in the grid (see
+Equation~\ref{eq-equationp2}). Next, bins with a standard count less
+than a certain benchmark value are removed. The following steps will
+help in determining a suitable value for removing low-density hexagons:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the standardized counts
+  Plot the distribution of the standardized counts (see
+  Figure~\ref{fig-stdctsScurve}).
+\item
+  Examine the distribution of counts.
+\item
+  Select the first quartile value if the distribution is skewed.
 \end{enumerate}
+
+\begin{equation}\protect\hypertarget{eq-equationp2}{}{
+\text{standard count} = \frac{\text{count}}{\text{max count}} 
+}\label{eq-equationp2}\end{equation}
+
+Furthermore, selecting the benchmark value for removing low-density
+hexagons is important. Removing unnecessary bins may lead to the
+formation of long edges and an uneven 2D model. Hence, rather than
+solely relying on the benchmark value to identify hexagons for removal,
+it's essential to consider the standard number of points in the
+neighboring hexagons of the identified low-density ones. If neighboring
+bins also show low counts, only those bins will be removed. The
+remaining bins are used to construct the 2D model.
+
+The benchmark value for removing low-density hexagons ranges between
+\(0\) and \(1\). When analyzing how these benchmark values influence
+model performance, it's essential to observe the change in Mean Squared
+Error (MSE) as the benchmark value increases (see
+Figure~\ref{fig-diagnosticpltScurvelwd}). The MSE shows a gradual
+increase as the benchmark value progresses from \(0\) to \(1\).
+Evaluating this rate of increase is important. If the increment is not
+considerable, the decision might lean towards retaining low-density
+hexagons.
 
 \begin{figure}[H]
 
@@ -903,19 +903,10 @@ density hexagons:
 
 }
 
-\caption{\label{fig-stdctsScurve}Distribution of 2D Euclidean
-distances.}
+\caption{\label{fig-stdctsScurve}Distribution of standardize counts by
+hexagons.}
 
 \end{figure}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
-\item
-  See the distribution of counts
-\item
-  Take the first quartile
-\end{enumerate}
 
 \begin{figure}
 
@@ -944,7 +935,10 @@ necessary bins as well which lead to distruct the 2D structure.}
 
 }
 
-\caption{\label{fig-rmlowdenshex}Goodness of f}
+\caption{\label{fig-rmlowdenshex}(a) Hexbin plot with colored hexbins
+based on point density, (b) Identification of low-density hexagons using
+a benchmark value of \(0.2\), and (c) Identification of low-density
+hexagons considering neighboring bins.}
 
 \end{figure}
 
@@ -965,7 +959,8 @@ approach to identifying a suitable threshold:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the 2D Euclidean distances.
+  Plot the distribution of the 2D Euclidean distances (see
+  Figure~\ref{fig-distScurve}).
 \item
   Identify the largest difference between consecutive distance values.
 \item
