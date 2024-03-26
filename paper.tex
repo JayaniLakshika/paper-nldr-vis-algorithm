@@ -224,7 +224,7 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, interior hidden, sharp corners, frame hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \hypertarget{sec-intro}{%
 \section{Introduction}\label{sec-intro}}
@@ -290,21 +290,21 @@ hexagonal binning, and triangulation. This integration facilitates a
 more understanding of the data structure, how well (or how poorly) NLDR
 techniques perform.
 
-The outline of this paper is as follows. The
-Section~\ref{sec-background} provides an detailed overview of dimension
-reduction methods, and tours. Building upon this foundation, the
-Section~\ref{sec-methods} delves into the proposed algorithm, its
-implementation details, how to tune the model, model summaries, and a
-synthetic example to illustrate the functionality of the algorithm.
-Subsequently, Section~\ref{sec-applications} showcases applications of
-the algorithm on different data sets, particularly in single-cell
-RNA-seq data. These applications reveal insights into the performance
-and trustworthiness of NLDR algorithms. We analyze the results to
-identify situations where NLDR techniques may lead to misleading
-interpretations. Finally, \textbf{?@sec-conclusions} concludes by
-summarizing the findings and emphasizing the significance of the
-proposed approach in tackling the challenges of high-dimensional data
-visualization.
+The outline of this paper is as follows. Section~\ref{sec-background}
+provides an detailed overview of dimension reduction methods, and tour
+technique. Building upon this foundation, Section
+Section~\ref{sec-methods} describes the proposed algorithm, including
+its implementation details, model tuning, summaries, and a synthetic
+example to demonstrate its functionality. In Section
+Section~\ref{sec-applications}, the algorithm's applications on various
+datasets, particularly in single-cell RNA-seq and handwritten digit
+data, are showcased. These applications demonstrate how some NLDR
+techniques effectively capture both local and global structures of the
+original data, while others may result in misleading interpretations.
+Finally, Section Section~\ref{sec-conclusions} summarizes the findings
+and describe the importance of the proposed approach in addressing the
+challenges associated with selecting the best NLDR method and parameter
+choices to achieve a more accurate 2D representation of high-D data.
 
 \begin{figure}
 
@@ -1816,8 +1816,8 @@ occur large model error.}
 
 \end{figure}
 
-\hypertarget{sec-conclusion}{%
-\section{Conclusion}\label{sec-conclusion}}
+\hypertarget{sec-conclusions}{%
+\section{Conclusion}\label{sec-conclusions}}
 
 In conclusion, our proposed model offers a novel approach for
 visualizing high-dimensional (high-D) data by leveraging non-linear

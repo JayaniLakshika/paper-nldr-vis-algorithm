@@ -123,7 +123,7 @@ If we cannot easily ask and answer these questions, our ability to understand th
 
 Also, the importance of m-vis along with data-vis has been recognized and incorporated into interactive software, **liminal** [@article21]. But the 2D model and high-D visualize side by side and interactive like brushing and linking connect the data in the two panels. To address this challenge, we propose a novel approach by combining the tour technique with a low-dimensional manifold. This manifold is created through the synergistic use of NLDR techniques, hexagonal binning, and triangulation. This integration facilitates a more understanding of the data structure, how well (or how poorly) NLDR techniques perform.
 
-The outline of this paper is as follows. The @sec-background provides an detailed overview of dimension reduction methods, and tours. Building upon this foundation, the @sec-methods delves into the proposed algorithm, its implementation details, how to tune the model, model summaries, and a synthetic example to illustrate the functionality of the algorithm. Subsequently, @sec-applications showcases applications of the algorithm on different data sets, particularly in single-cell RNA-seq data. These applications reveal insights into the performance and trustworthiness of NLDR algorithms. We analyze the results to identify situations where NLDR techniques may lead to misleading interpretations. Finally, @sec-conclusions concludes by summarizing the findings and emphasizing the significance of the proposed approach in tackling the challenges of high-dimensional data visualization.
+The outline of this paper is as follows. @sec-background provides an detailed overview of dimension reduction methods, and tour technique. Building upon this foundation, Section @sec-methods describes the proposed algorithm, including its implementation details, model tuning, summaries, and a synthetic example to demonstrate its functionality. In Section @sec-applications, the algorithm's applications on various datasets, particularly in single-cell RNA-seq and handwritten digit data, are showcased. These applications demonstrate how some NLDR techniques effectively capture both local and global structures of the original data, while others may result in misleading interpretations. Finally, Section @sec-conclusions summarizes the findings and describe the importance of the proposed approach in addressing the challenges associated with selecting the best NLDR method and parameter choices to achieve a more accurate 2D representation of high-D data.
 
 <!--UMAP with different param choices-->
 
@@ -214,26 +214,6 @@ plot_list1_umap + plot_list2_umap + plot_list3_umap + plot_list4_umap +
   plot_layout(ncol=4)
 ```
 
-
-
-<!--High-dimensional (high-D) data is widespread in many fields including ecology and bioinformatics [@Guo2023], in part because of new data collection technologies [@Johnstone2009; @ayesha2020overview]. Working with high-dimensional data poses considerable challenges due to the difficulty in visualizing beyond two dimensions [@Jia2022]. High-dimensional data also presents difficulties for model fitting [@Johnstone2009], both computationally and interpretation, each of which benefits from visualization.
-
-To create visual representations of high-dimensional data, it is common to apply dimension reduction techniques. 
-
-However, projecting high-dimensional data has limitations, such as information loss and potential distortion of essential structures and patterns [@Jia2022, @article53]. The choice of technique and parameters further impacts the accuracy of the visualization, necessitating careful consideration for meaningful interpretation (see @fig-nldervis).
-
-Interactive and dynamic graphics systems have also been developed over the years to enable visualizing high dimensions. One method, called a tour [@Asimov1985], shows a sequence of linear projections is shown as a movie, allowing exploration without warping the space [@lee2021review]. Interactive tools like **XGobi** and **GGobi** have been successful in incorporating tours for exploring high-dimensional data [@article60]. The R package **tourr** [@article61] further enhances tour visualization within R, although it may face limitations in frame rate and interactive features compared to **GGobi**.
-
-To overcome these limitations, the R package **detourr** [@article22] has been developed, leveraging a Javascript widget via htmlwidgets [@Ramnath2023] to achieve higher frame rates and enhanced interactivity. Additionally, the R package **langevitour** [@article09] utilizes Langevin Dynamics to generate a continuous path of projections, eliminating the need for interpolation between projections for animation. The tour technique has proven valuable in exploring statistical model fits [@article58] and factorial experimental designs [@article59]. Augmenting the results of non-linear dimensional reduction methods with the tour, as demonstrated in the **liminal** R package [@article21], further enhances data exploration.
-
-The earlier approaches for DR involve linear methods such as PCA [@Karl1901]. PCA aims to maintain the second-order statistics of the data by projecting the points into the low dimensional space that preserves the maximum amount of variance among all such projections. As a result, PCA has been shown to be effective in preserving the global structure of the data (Silva & Tenenbaum, 2003).
-The global structure includes the overall shape of the dataset, placement of the clusters, and the existence of potential outliers. Unlike PCA, much of the focus of the more recent non-linear methods, including t-SNE (Maaten & Hinton,2008), LargeVis (Tang et al., 2016), and UMAP (McInnes et al., 2018) has been on preserving the local neighborhood structure of each individual point. Mainly,  
-
-
-While tours [@Asimov1985] preserve space without warping [@lee2021review], they require integrating multiple low-dimensional views mentally to perceive high-dimensional structures. To address this challenge, we propose a novel approach by combining the tour technique with a low-dimensional manifold. This manifold is created through the synergistic use of Non-Linear Dimension Reduction (NLDR) techniques, hexagonal binning, and triangulation. By merging these techniques, our approach offers a comprehensive and efficient means to visualize and explore high-dimensional data while retaining the advantages of both tours and NLDR. This integration facilitates a more intuitive perception of complex data structures and empowers analysts with a robust tool for assessing the accuracy of data transformations. The implementation of our approach is available as an R package called **quollr**.
-
-The outline of this paper is as follows. The @sec-background provides an detailed overview of dimension reduction methods, triangulation, and tours. Building upon this foundation, the @sec-methods delves into the proposed algorithm, **quollr**, and its implementation details. In @sec-prediction, discusses the effectiveness of the learned low-dimensional manifold in accurately representing the complex high-dimensional data. Following that, @sec-simpleex presents simple examples from simulations to illustrate the functionality of the algorithm. Subsequently, @sec-applications showcases real-world applications of **quollr** on different data sets, particularly in single-cell RNA-seq data. These applications reveal insights into the performance and trustworthiness of NLDR algorithms. We analyze the results to identify situations where NLDR techniques may lead to misleading interpretations. Finally, @sec-conclusions concludes by summarizing the findings and emphasizing the significance of the proposed approach in tackling the challenges of high-dimensional data visualization. -->
-
 ## Background {#sec-background}
 
 ### Dimension Reduction
@@ -243,12 +223,6 @@ Consider the high-D data a rectangular matrix $X_{n \times p}$, where $X_{n \tim
 There are two main categories of dimension reduction techniques: linear and non-linear methods. Linear techniques involve a linear transformation of the data, with one popular example being PCA. PCA performs an eigen-decomposition of the sample covariance matrix to obtain orthogonal principal components that capture the variance of the data [@Karl1901].
 
 In contrast, NLDR techniques generate the low-dimensional representation $Y$ from the high-dimensional data $X$, often using pre-processing techniques like $k$-nearest neighbors graph or kernel transformations. Multidimensional Scaling (MDS) is a class of NLDR methods that aims to construct an embedding $Y$ in a low-dimensional space, approximating the pair-wise distances in $X$ [@Torgerson1967]. Variants of MDS include non-metric scaling [@article62] and Isomap, which estimate geodesic distances to create the low-dimensional representation [@article63]. Other approaches based on diffusion processes, like diffusion maps [@article64] and the PHATE (Potential of Heat-diffusion for Affinity-based Trajectory Embedding) algorithm [@article03], also fall under NLDR methods.
-
-<!--Their focus is on capturing complex structures that may not be easily represented in the original space, making a straightforward reverse mapping challenging.
-
-One specific technique we focus on is Pairwise Controlled Manifold Approximation (PaCMAP). Similar considerations apply to related methods like tSNE [@Laurens2008], UMAP [@Leland2018], and TrMAP [@article02].
-
-However, linear methods may not fully capture complex non-linear relationships present in the data.-->
 
 #### Non-linear dimension reduction techniques
 
@@ -434,8 +408,6 @@ A tour is a powerful visualization technique used to explore the shape and globa
 The process begins with the data matrix $X$. It generates a sequence of $p$ × $d$ orthonormal projection matrices (bases) $P_t$, usually $d$ is one or two dimensions. For each pair of orthonormal bases $P_t$ and $P_{t+1}$, a geodesic path is interpolated to create smooth animation between projections. The resulting tour continuously visualizes the projected data $Y_t$ = $XP_t$ as it interpolates between successive bases.
 
 Furthermore, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives. In our context, use grand tour along with the model to observe how effectively the model captures the underlying structure of the data.
-
-<!--While both tours can be used to visualize data, examples often focus on using the grand tour to observe global structures. However, software like **langevitour** can visualize both types of tours, providing flexibility for exploring high-dimensional data with various objectives. --> 
 
 ## Methodology {#sec-methods}
 
@@ -3243,7 +3215,7 @@ imge_error_sample <- pixels_gathered |>
 imge_error_sample
 ```
 
-## Conclusion {#sec-conclusion}
+## Conclusion {#sec-conclusions}
 
 In conclusion, our proposed model offers a novel approach for visualizing high-dimensional (high-D) data by leveraging non-linear dimension reduction (NLDR) techniques. Through a series of steps including hexagonating NLDR data, triangulating bin centroids, and lifting the 2D triangular mesh into high dimensions, our model effectively transforms complex high-D data into interpretable 2D representations. The model's performance is evaluated using goodness of fit statistics such as Mean Squared Error (MSE) and Akaike Information Criterion (AIC), providing insights into its accuracy and reliability. Overall, our model presents a valuable tool for researchers and practitioners in various fields to gain deeper insights from high-dimensional datasets.
 
