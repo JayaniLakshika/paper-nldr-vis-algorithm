@@ -794,7 +794,7 @@ The performance and robustness of our model depend on four key parameters: (i) t
 
 #### Total number of bins
 
-The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the 2D model. This is because it is the initial step in building the 2D model. The hexagonal grid with the chosen total number of bins must be able to capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to build an effective model.
+The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the 2D model, serving as the initial step in building the 2D model. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to construct an effective model.
 
 ```{r}
 #| echo: false
@@ -940,12 +940,7 @@ $$
 b = b_1 \times b_2
 $${#eq-equation8}
 
-Furthermore, the total number of bins is determined by the number of bins along the x-axis and y-axis (see @eq-equation8). To calculate the effective total number of bins, candidate values are selected based on the range between the minimum and approximate maximum number of bins along the x and y axes. The minimum number of bins along each axis is set to $1$, while the maximum number is estimated by taking the square root of the NLDR data point count. The analysis evaluates the MSE across varying total bin counts within this range, covering the minimum to maximum values along both axes.
-
-The analysis focuses on exploring the effect of total number of bins on MSE. It considers MSE across different total number of bins, covering the range calculated from the minimum to maximum values along both x and y axes.
-
-Typically, the MSE plot tends to have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or levesl off, indicating that a higher number of bins generates a smaller error. This MSE plot is useful in determining the effective number of bins required to construct the 2D model. @fig-diagnosticpltScurve has created a graph that shows how the Mean Squared Error (MSE) changes depending on the number of bins assigned in the hexagonal grid for UMAP applied to the S-curve dataset. As per the rule of thumb mentioned earlier, the effective number of bins is determined to be $84$, with $6$ bins along the x-axis and $14$ bins along the y-axis. Furthermore, @fig-modelScurve shows the 2D model constructed using UMAP with the selected total number of bins and how the model overlay on high-D data.
-
+Furthermore, the total number of bins is calculated based on the number of bins along the x-axis and y-axis, as shown in @eq-equation8. To determine the effective total number of bins, candidate values are selected based on the range between the minimum and approximate maximum number of bins along the x and y axes. The minimum number of bins along each axis is set to $1$, while the maximum number is estimated by taking the square root of the NLDR data points. The analysis evaluates the MSE across varying total number of bins within this range, covering the minimum to maximum values along both axes (see @fig-diagnosticpltScurve).
 
 ```{r}
 #| warning: false
@@ -1046,22 +1041,6 @@ mse_df <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```{r}
 #| warning: false
 #| echo: false
-
-## To draw with AIC
-# aic_plot <- ggplot(mse_df, aes(x = num_bins, y = aic
-# )) +
-#   geom_point() +
-#   geom_line() +
-#   geom_vline(xintercept = 84, linetype="solid",
-#                 color = "red", size=0.8, alpha = 0.5) +
-#   theme_light() +
-#   theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-#         axis.title = element_text(size = 7),
-#         axis.text = element_text(size = 7)) +
-#   #scale_colour_manual(values = c("#377eb8")) +
-#   ylab("AIC") +
-#   xlab("total number of bins")f
-## Effective number of bins along x-axis
 
 mse_plot <- ggplot(mse_df, aes(x = num_bins,
                                        y = mse
@@ -1299,7 +1278,7 @@ trimesh_removed_s_curve_umap <- trimesh_removed_s_curve_umap +
 
 #### Benchmark value to remove low-density hexagons
 
-After establishing the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them. To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed. The following steps will help in determining a suitable value for removing low-density hexagons:
+After establishing the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them (see @fig-rmlowdenshex (a)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed (see @fig-rmlowdenshex (b)). The following steps will help in determining a suitable value for removing low-density hexagons:
 
 1. Plot the distribution of the standardized counts (see @fig-stdctsScurve).
 2. Examine the distribution of counts.
@@ -1309,7 +1288,7 @@ $$
 \text{standard count} = \frac{\text{count}}{\text{max count}} 
 $${#eq-equationp2}
 
-Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven 2D model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density ones. If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the 2D model.   
+Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven 2D model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density ones (see @fig-rmlowdenshex (c)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the 2D model.   
 
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in Mean Squared Error (MSE) as the benchmark value increases (see @fig-diagnosticpltScurvelwd). The MSE shows a gradual increase as the benchmark value progresses from $0$ to $1$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
