@@ -97,6 +97,10 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \makeatletter
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -132,18 +136,25 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
-\usepackage{bookmark}
-
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -213,8 +224,10 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, interior hidden, boxrule=0pt, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
-\section{Introduction}\label{sec-intro}
+\hypertarget{sec-intro}{%
+\section{Introduction}\label{sec-intro}}
 
 High-dimensional (high-D) data is prevalent across various fields, such
 as ecology and bioinformatics \citep{Guo2023}, due to advancements in
@@ -295,9 +308,7 @@ choices to achieve a more accurate 2D representation of high-D data.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervisUMAP-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervisUMAP-1.pdf}
 
 }
 
@@ -307,11 +318,13 @@ S-curve data: (a) UMAP (n\_neighbors = 7), (b) UMAP (n\_neighbors = 15),
 best hyperparameter choice in representing UMAP or are they all
 providing equivalent information?}
 
-\end{figure}%
+\end{figure}
 
-\section{Background}\label{sec-background}
+\hypertarget{sec-background}{%
+\section{Background}\label{sec-background}}
 
-\subsection{Dimension Reduction}\label{dimension-reduction}
+\hypertarget{dimension-reduction}{%
+\subsection{Dimension Reduction}\label{dimension-reduction}}
 
 Consider the high-D data a rectangular matrix \(X_{n \times p}\), where
 \(X_{n \times p} = \begin{bmatrix} \textbf{x}_{1} & \textbf{x}_{2} & \cdots & \textbf{x}_{n}\\ \end{bmatrix}^\top\),
@@ -342,8 +355,9 @@ diffusion maps \citep{article64} and the PHATE (Potential of
 Heat-diffusion for Affinity-based Trajectory Embedding) algorithm
 \citep{article03}, also fall under NLDR methods.
 
+\hypertarget{non-linear-dimension-reduction-techniques}{%
 \subsubsection{Non-linear dimension reduction
-techniques}\label{non-linear-dimension-reduction-techniques}
+techniques}\label{non-linear-dimension-reduction-techniques}}
 
 NLDR techniques are crucial for analyzing and displaying
 high-dimensional data, where linear approaches may not adequately
@@ -408,9 +422,7 @@ gives users a way to change how PaCMAP works to fit their needs better.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervis-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervis-1.pdf}
 
 }
 
@@ -422,10 +434,11 @@ n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
 representation of the original data or are they all providing equivalent
 information?}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{linear-overviews-using-tours}{%
 \subsection{Linear overviews using
-tours}\label{linear-overviews-using-tours}
+tours}\label{linear-overviews-using-tours}}
 
 A tour is a powerful visualization technique used to explore the shape
 and global structure of high-dimensional data by generating a sequence
@@ -451,7 +464,8 @@ various objectives. In our context, use grand tour along with the model
 to observe how effectively the model captures the underlying structure
 of the data.
 
-\section{Methodology}\label{sec-methods}
+\hypertarget{sec-methods}{%
+\section{Methodology}\label{sec-methods}}
 
 In this paper, we introduce a novel method to determine the most
 effective NLDR technique and the best hyperparameter choice that
@@ -470,9 +484,7 @@ added to the original 3D data.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=1\textheight]{figures/workflow.png}
+{\centering \includegraphics[width=1\textwidth,height=1\textheight]{figures/workflow.png}
 
 }
 
@@ -480,9 +492,10 @@ added to the original 3D data.
 algorithm. There are two basic phases, one to generate the model in the
 2D space, and other to map the model into the high-D space.}
 
-\end{figure}%
+\end{figure}
 
-\subsection{Preprocessing steps}\label{preprocessing-steps}
+\hypertarget{preprocessing-steps}{%
+\subsection{Preprocessing steps}\label{preprocessing-steps}}
 
 To reduce computational complexity when applying NLDR techniques to
 high-D data and to reduce noise presence, PCA \citep[\citet{article68},
@@ -490,7 +503,8 @@ high-D data and to reduce noise presence, PCA \citep[\citet{article68},
 involves identifying principal components that maximize variance. These
 components are then used as the high-D data for the algorithm.
 
-\subsection{Constructing the 2D model}\label{sec-construct2d}
+\hypertarget{sec-construct2d}{%
+\subsection{Constructing the 2D model}\label{sec-construct2d}}
 
 \textbf{Step 1: Scaling NLDR data}
 
@@ -513,17 +527,17 @@ Finally, \(y_{max}\) is derived by taking the ceiling of
 that \(y_{max}\) is an integer multiple of \(hr\), accommodating the
 grid layout of the hexagonal bins.
 
-\begin{equation}\phantomsection\label{eq-equation1}{
+\begin{equation}\protect\hypertarget{eq-equation1}{}{
  ar = \frac{r_2}{r_1}
-}\end{equation}
+}\label{eq-equation1}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation2}{
+\begin{equation}\protect\hypertarget{eq-equation2}{}{
  hr = \frac{hb}{wb}
-}\end{equation}
+}\label{eq-equation2}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation3}{
+\begin{equation}\protect\hypertarget{eq-equation3}{}{
  y_{max} = \left\lceil\frac{ar}{hr}\right\rceil * hr
-}\end{equation}
+}\label{eq-equation3}\end{equation}
 
 \textbf{Step 2: Hexagonating NLDR data}
 
@@ -571,21 +585,21 @@ second embedding component (\(r_2\)), the buffer amount along the y-axis
 (\(buffer_{y}\)), and the vertical spacing (\(v\)) (see
 Equation~\ref{eq-equation13}).
 
-\begin{equation}\phantomsection\label{eq-equation11}{
+\begin{equation}\protect\hypertarget{eq-equation11}{}{
  h = \sqrt{3} * s
-}\end{equation}
+}\label{eq-equation11}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation12}{
+\begin{equation}\protect\hypertarget{eq-equation12}{}{
  b_1 = \frac{r_1 + buffer_{x}}{h}
-}\end{equation}
+}\label{eq-equation12}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation13}{
+\begin{equation}\protect\hypertarget{eq-equation13}{}{
   v = 1.5 * s
-}\end{equation}
+}\label{eq-equation13}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation14}{
+\begin{equation}\protect\hypertarget{eq-equation14}{}{
  b_2 = \frac{r_2 + buffer_{y}}{v}
-}\end{equation}
+}\label{eq-equation14}\end{equation}
 
 \textbf{(b) Generation of the hexagonal grid}
 
@@ -602,26 +616,24 @@ can be computed using \(d_x\) (see Equation~\ref{eq-equation15}) and
 \(d_y\) (see Equation~\ref{eq-equation16}) (see
 Figure~\ref{fig-hexcoord}).
 
-\begin{equation}\phantomsection\label{eq-equation15}{
+\begin{equation}\protect\hypertarget{eq-equation15}{}{
 d_x = \frac{h}{2}
-}\end{equation}
+}\label{eq-equation15}\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation16}{
+\begin{equation}\protect\hypertarget{eq-equation16}{}{
 d_y = \frac{2* v * 1.15}{\sqrt{3}} 
-}\end{equation}
+}\label{eq-equation16}\end{equation}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=1\textheight]{figures/hex_coord.png}
+{\centering \includegraphics[width=1\textwidth,height=1\textheight]{figures/hex_coord.png}
 
 }
 
 \caption{\label{fig-hexcoord}The hexagonal coordinates computed for the
 centroid \((C_x, C_y)\).}
 
-\end{figure}%
+\end{figure}
 
 \textbf{(c) Assignment of the NLDR data points to hexagons}
 
@@ -641,16 +653,16 @@ The bin centroid (\(C_k^{(2)}\)) for a \(k^{th}\) hexagon with hexagonal
 grid coordinates \((h^{k}x_{i}, h^{k}y_{i})\), where \(i = 1 \dots 6\)
 can be defined as:
 
-\begin{equation}\phantomsection\label{eq-equation4}{
+\begin{equation}\protect\hypertarget{eq-equation4}{}{
 C_k^{(2)} = (C_{ky_1}, C_{ky_2}) = \left(\frac{\sum_{i=1}^{6} h^{k}x_{i}}{6}, \frac{\sum_{i=1}^{6} h^{k}y_{i}}{6}\right).
-}\end{equation}
+}\label{eq-equation4}\end{equation}
 
 Also, the bin mean (\(C_k^{(2)}\)) is defined as the mean of the data
 points within the \(k^{th}\) hexagon (see Equation~\ref{eq-equation5}).
 
-\begin{equation}\phantomsection\label{eq-equation5}{
+\begin{equation}\protect\hypertarget{eq-equation5}{}{
 C_k^{(2)} = (C_{ky_1}, C_{ky_2}) = \left(\frac{1}{n_k} \sum_{i=1}^{n_k} y_{1i}, \frac{1}{n_k} \sum_{i=1}^{n_k} y_{2i}\right),
-}\end{equation}
+}\label{eq-equation5}\end{equation}
 
 where \(n_k\) is the number of data points within the hexagon,
 \(y_{1i}\) and \(y_{2i}\) are the \(x\) and \(y\) coordinates of the
@@ -679,11 +691,13 @@ in the triangulation contains no other points from \(C^{(2)}\).
 Given that the hexagons are regular, the resulting triangles will mostly
 be equilateral.
 
+\hypertarget{lifting-the-model-into-high-dimensions}{%
 \subsection{Lifting the model into high
-dimensions}\label{lifting-the-model-into-high-dimensions}
+dimensions}\label{lifting-the-model-into-high-dimensions}}
 
+\hypertarget{lifting-the-triangular-mesh-points-into-high-dimensions}{%
 \subsubsection{Lifting the triangular mesh points into high
-dimensions}\label{lifting-the-triangular-mesh-points-into-high-dimensions}
+dimensions}\label{lifting-the-triangular-mesh-points-into-high-dimensions}}
 
 Consider \(f: \mathbb{R}^p \rightarrow \mathbb{R}^2\) be a function that
 maps the high-D data (\(X_{n \times p}\)) to its NLDR equivalent
@@ -698,15 +712,15 @@ hexagon.
 
 The high-D mean of all the points in \(k^{th}\) hexagon by
 
-\begin{equation}\phantomsection\label{eq-equation6}{
+\begin{equation}\protect\hypertarget{eq-equation6}{}{
 C_k^{(p)} = (C_{kx_1}, ..., C_{kx_p}) = \left(\frac{1}{n_k} \sum_{i=1}^{n_k} x_{1i}, \frac{1}{n_k} \sum_{i=1}^{n_k} x_{2i}, \dots ,\frac{1}{n_k} \sum_{i=1}^{n_k} x_{pi}\right).
-}\end{equation}
+}\label{eq-equation6}\end{equation}
 
 Therefore,
 
-\begin{equation}\phantomsection\label{eq-equation7}{
+\begin{equation}\protect\hypertarget{eq-equation7}{}{
 v(C_k^{(2)}) = C_k^{(p)}.
-}\end{equation}
+}\label{eq-equation7}\end{equation}
 
 Therefore, \(f(g(x))\) gives the 2D centroid associated with high-D
 points \(x\), and \(v(C_k^{(2)})\) gives the high-D centroid associated
@@ -714,8 +728,9 @@ with 2D point \(C_k^{(2)}\). Thus, \(v(f(g(x)))\) gives the high-D
 centroid (\(C_k^{(p)}\)) associated with the 2D embedding of the points
 \(x\).
 
+\hypertarget{lifting-the-2d-triangular-mesh-into-high-dimensions}{%
 \subsubsection{Lifting the 2D triangular mesh into high
-dimensions}\label{lifting-the-2d-triangular-mesh-into-high-dimensions}
+dimensions}\label{lifting-the-2d-triangular-mesh-into-high-dimensions}}
 
 As described in Step 4 of Section~\ref{sec-construct2d}, during the
 triangulation process in 2D space, vertices are identified to form
@@ -725,9 +740,7 @@ video linked in Figure~\ref{fig-wkhighD}).
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-wkhighD-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-wkhighD-1.pdf}
 
 }
 
@@ -738,9 +751,10 @@ connected the \(7^{th}\) and \(12^{th}\) hexagons (colored in red) in
 the triangular mesh. A video of tour animation is available at
 \url{https://youtu.be/hxU91xNTJL0}.}
 
-\end{figure}%
+\end{figure}
 
-\subsection{Tuning the model}\label{tuning-the-model}
+\hypertarget{tuning-the-model}{%
+\subsection{Tuning the model}\label{tuning-the-model}}
 
 The performance and robustness of our model depend on four key
 parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
@@ -751,7 +765,8 @@ value for these parameters. The selection of these parameter values
 depends on the model performance computed by Mean Squared Error (MSE)
 (see Section~\ref{sec-goodfit}).
 
-\subsubsection{Total number of bins}\label{total-number-of-bins}
+\hypertarget{total-number-of-bins}{%
+\subsubsection{Total number of bins}\label{total-number-of-bins}}
 
 The number of hexagonal bins in the hexagonal grid has a considerable
 impact on the construction of the 2D model, serving as the initial step
@@ -766,9 +781,7 @@ an effective model.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-binsize-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-binsize-1.pdf}
 
 }
 
@@ -781,11 +794,11 @@ color representing lower point density within each bin. What is the
 number of bins that would be effective in representing low-dimensional
 data?}
 
-\end{figure}%
+\end{figure}
 
-\begin{equation}\phantomsection\label{eq-equation8}{
+\begin{equation}\protect\hypertarget{eq-equation8}{}{
 b = b_1 \times b_2
-}\end{equation}
+}\label{eq-equation8}\end{equation}
 
 Furthermore, the total number of bins is calculated based on the number
 of bins along the x-axis and y-axis, as shown in
@@ -800,9 +813,7 @@ both axes (see Figure~\ref{fig-diagnosticpltScurve}).
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-diagnosticpltScurve-1.pdf}
 
 }
 
@@ -818,10 +829,11 @@ sudden and noticeable change, resembling an elbow-like shape. This point
 indicates that adding less bins does not enough to capture the data
 structure.}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
 \subsubsection{Benchmark value to remove low-density
-hexagons}\label{benchmark-value-to-remove-low-density-hexagons}
+hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
 
 After establishing the hexagonal grid with an appropriate number of
 bins, some hexagonal bins may have few or no data points within them
@@ -848,9 +860,9 @@ hexagons:
   Select the first quartile value if the distribution is skewed.
 \end{enumerate}
 
-\begin{equation}\phantomsection\label{eq-equationp2}{
+\begin{equation}\protect\hypertarget{eq-equationp2}{}{
 \text{standard count} = \frac{\text{count}}{\text{max count}} 
-}\end{equation}
+}\label{eq-equationp2}\end{equation}
 
 Furthermore, selecting the benchmark value for removing low-density
 hexagons is important. Removing unnecessary bins may lead to the
@@ -874,22 +886,18 @@ hexagons.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-stdctsScurve-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-stdctsScurve-1.pdf}
 
 }
 
 \caption{\label{fig-stdctsScurve}Distribution of standardize counts by
 hexagons.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-diagnosticpltScurvelwd-1.pdf}
 
 }
 
@@ -906,13 +914,11 @@ experiences a sudden and noticeable change, resembling an elbow-like
 shape. This point indicates that higher benchmark values remove the
 necessary bins as well which lead to distruct the 2D structure.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-rmlowdenshex-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-rmlowdenshex-1.pdf}
 
 }
 
@@ -921,10 +927,11 @@ based on point density, (b) Identification of low-density hexagons using
 a benchmark value of \(0.2\), and (c) Identification of low-density
 hexagons considering neighboring bins.}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{benchmark-value-for-removing-long-edges}{%
 \subsubsection{Benchmark value for removing long
-edges}\label{benchmark-value-for-removing-long-edges}
+edges}\label{benchmark-value-for-removing-long-edges}}
 
 Creating a smooth 2D representation (see Figure~\ref{fig-modelScurve}
 (c)) requires removing edges that connect distant bin centroids within
@@ -950,9 +957,7 @@ approach to identifying a suitable threshold:
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-distScurve-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-distScurve-1.pdf}
 
 }
 
@@ -960,13 +965,11 @@ approach to identifying a suitable threshold:
 between bin centroids of the triangular mesh generated with S-curve UMAP
 data.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-modelScurve-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-modelScurve-1.pdf}
 
 }
 
@@ -974,10 +977,11 @@ data.}
 centroids, (b) Model constructed in 2D with long edges, and (c) Model
 constructed in 2D after removing the long edges.}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{starting-point-of-the-hexagonal-grid}{%
 \subsubsection{Starting point of the hexagonal
-grid}\label{starting-point-of-the-hexagonal-grid}
+grid}\label{starting-point-of-the-hexagonal-grid}}
 
 Hexagonal binning involves tessellating the \(xy\) plane over the set
 defined by the range of \(x\) and \(y\) \citep{Dan2023}. Therefore, the
@@ -993,9 +997,7 @@ Figure~\ref{fig-scurveshifthexgrids}), impacting the model.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-mseScurvestartpoint-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-mseScurvestartpoint-1.pdf}
 
 }
 
@@ -1012,45 +1014,43 @@ sudden and noticeable change, resembling an elbow-like shape. This point
 indicates that higher benchmark values remove the necessary bins as well
 which lead to distruct the 2D structure.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-scurveshifthexgridsexp-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-scurveshifthexgridsexp-1.pdf}
 
 }
 
 \caption{\label{fig-scurveshifthexgridsexp}(a) Visualization of bin
-centroids and (b) hexagonal grid, showcasing the configuration before
-(colored in gray) and after (colored in light orange) shifting the
-starting point by an identical amount applied in both x and y
-directions, with a shift value of \(0.537285\).}
+centroids and (b) hexagonal grid, showcasing the configuration when the
+starting point defined at \((-0.113, -0.098)\) (colored in gray) and the
+starting point defined at \((-0.025, -0.108)\) (colored in light
+orange).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-scurveshifthexgrids-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-scurveshifthexgrids-1.pdf}
 
 }
 
 \caption{\label{fig-scurveshifthexgrids}Hexbin plots shows the
-distribution of points before and after shifting the starting point of
+distribution of points before and after changing the starting point of
 the hexagonal grid generated for UMAP applied to the training S-curve
-dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after
-shifting (identical shift applied in both x and y directions, with a
-shift value of \(0.537285\)).}
+dataset. (a) Hexbin plot when the starting point defined at
+\((-0.113, -0.098)\), and (b) Hexbin plot after changing the starting
+point to \((-0.025, -0.108)\).}
 
-\end{figure}%
+\end{figure}
 
-\subsection{Model summaries}\label{sec-summary}
+\hypertarget{sec-summary}{%
+\subsection{Model summaries}\label{sec-summary}}
 
+\hypertarget{predicted-values-and-residuals}{%
 \subsubsection{Predicted values and
-residuals}\label{predicted-values-and-residuals}
+residuals}\label{predicted-values-and-residuals}}
 
 The prediction approach involves performing the K-nearest neighbors
 (KNN) algorithm for an unsupervised classification problem. First, the
@@ -1071,15 +1071,16 @@ differences between the high-D data (\(x_{ij}\)) and the high-D mapping
 of the 2D bin centroid data (\(C_{x_ij}\)) across all observations and
 dimensions (see Equation~\ref{eq-equation10}).
 
-\begin{equation}\phantomsection\label{eq-equation10}{
+\begin{equation}\protect\hypertarget{eq-equation10}{}{
 \text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-}\end{equation}
+}\label{eq-equation10}\end{equation}
 
 Here, \(n\) represents the number of observations, \(p\) represents the
 dimensions of high-D data, \(x_{ij}\) is the high-D data, and
 \(C_{x_ij}\) is the high-D mapping of the 2D bin centroid.
 
-\subsubsection{Goodness of fit statistics}\label{sec-goodfit}
+\hypertarget{sec-goodfit}{%
+\subsubsection{Goodness of fit statistics}\label{sec-goodfit}}
 
 To assess how well our method captures and represents the underlying
 structure of the high-D data, Mean Squared Error (MSE) is used. When
@@ -1087,11 +1088,12 @@ computing MSE, total model error (see Section~\ref{sec-summary}) is
 divided by the number of observations to make it as a mean value (see
 Equation~\ref{eq-equation9}).
 
-\begin{equation}\phantomsection\label{eq-equation9}{
+\begin{equation}\protect\hypertarget{eq-equation9}{}{
 \text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
-}\end{equation}
+}\label{eq-equation9}\end{equation}
 
-\subsection{Simulated data example}\label{sec-simpleex}
+\hypertarget{sec-simpleex}{%
+\subsection{Simulated data example}\label{sec-simpleex}}
 
 In this section, the effectiveness of the algorithm is described using a
 simulated dataset. The dataset consists of five spherical Gaussian
@@ -1113,9 +1115,7 @@ well-separated (see Figure~\ref{fig-nldervis5Gau} (d)).
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervis5Gau-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-nldervis5Gau-1.pdf}
 
 }
 
@@ -1127,30 +1127,28 @@ n\_outliers = 4, n\_random = 3), and (e) PaCMAP (n\_neighbors = 10, init
 representation of the original data or are they all providing equivalent
 information?}
 
-\end{figure}%
+\end{figure}
 
 To investigate which is the best representation to visualize the
 original data or all NLDR methods provide equivalent information, we
 visualize the model-in-data space. Models from all NLDR methods show
-five well-separated clusters (see Figure~\ref{fig-gau1-sc},
-Figure~\ref{fig-gau2-sc}, Figure~\ref{fig-gau3-sc},
-Figure~\ref{fig-gau4-sc}, and Figure~\ref{fig-gau5-sc}). This suggests
+five well-separated clusters (see Figure~\ref{fig-gau1_sc},
+Figure~\ref{fig-gau2_sc}, Figure~\ref{fig-gau3_sc},
+Figure~\ref{fig-gau4_sc}, and Figure~\ref{fig-gau5_sc}). This suggests
 that for the five Gaussian cluster dataset, all NLDR methods effectively
 preserve the global structure. tSNE, UMAP, and PHATE display clusters
 with varying densities, indicating their ability to capture
-within-cluster variation (see Figure~\ref{fig-gau1-sc},
-Figure~\ref{fig-gau2-sc}, and Figure~\ref{fig-gau3-sc}). On the other
+within-cluster variation (see Figure~\ref{fig-gau1_sc},
+Figure~\ref{fig-gau2_sc}, and Figure~\ref{fig-gau3_sc}). On the other
 hand, both TriMAP and PaCMAP show clusters with flat surfaces,
 suggesting a failure to capture within-cluster variation (see
-Figure~\ref{fig-gau4-sc} and Figure~\ref{fig-gau5-sc}). Therefore,
+Figure~\ref{fig-gau4_sc} and Figure~\ref{fig-gau5_sc}). Therefore,
 TriMAP and PaCMAP do not capture the local structure as effectively as
 other methods.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-modelfiveGau-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-modelfiveGau-1.pdf}
 
 }
 
@@ -1168,237 +1166,284 @@ TriMAP, and (e) Model generated with 31 and 40 bins along the x and y
 axes, respectively, using a hexagonal size of 0.02 in the 2D space with
 PaCMAP.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_tsne_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_1.png}
 
 }
 
-\subcaption{\label{fig-gau1-sc1}}
+}
 
+\subcaption{\label{fig-gau1_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_tsne_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_2.png}
 
 }
 
-\subcaption{\label{fig-gau1-sc2}}
+}
 
+\subcaption{\label{fig-gau1_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_tsne_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_tsne_3.png}
 
 }
 
-\subcaption{\label{fig-gau1-sc3}}
+}
 
+\subcaption{\label{fig-gau1_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-gau1-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-gau1_sc}Screen shots of the \textbf{langevitour} of
 the five Gaussian clusters dataset, shows the model with tSNE in high-D,
 a video of the tour animation is available at
 (\url{https://youtu.be/oQxEb4wRdHI}).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_umap_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_1.png}
 
 }
 
-\subcaption{\label{fig-gau2-sc1}}
+}
 
+\subcaption{\label{fig-gau2_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_umap_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_2.png}
 
 }
 
-\subcaption{\label{fig-gau2-sc2}}
+}
 
+\subcaption{\label{fig-gau2_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_umap_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_umap_3.png}
 
 }
 
-\subcaption{\label{fig-gau2-sc3}}
+}
 
+\subcaption{\label{fig-gau2_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-gau2-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-gau2_sc}Screen shots of the \textbf{langevitour} of
 the five Gaussian clusters dataset, shows the model with UMAP in high-D,
 a video of the tour animation is available at
 (\url{https://youtu.be/JW49csPpDx4}).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_phate_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_1.png}
 
 }
 
-\subcaption{\label{fig-gau3-sc1}}
+}
 
+\subcaption{\label{fig-gau3_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_phate_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_2.png}
 
 }
 
-\subcaption{\label{fig-gau3-sc2}}
+}
 
+\subcaption{\label{fig-gau3_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_phate_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_phate_3.png}
 
 }
 
-\subcaption{\label{fig-gau3-sc3}}
+}
 
+\subcaption{\label{fig-gau3_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-gau3-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-gau3_sc}Screen shots of the \textbf{langevitour} of
 the five Gaussian clusters dataset, shows the model with PHATE in
 high-D, a video of the tour animation is available at
 (\url{https://youtu.be/xqhRODt8Z-o}).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_trimap_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_1.png}
 
 }
 
-\subcaption{\label{fig-gau4-sc1}}
+}
 
+\subcaption{\label{fig-gau4_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_trimap_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_2.png}
 
 }
 
-\subcaption{\label{fig-gau4-sc2}}
+}
 
+\subcaption{\label{fig-gau4_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_trimap_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_trimap_3.png}
 
 }
 
-\subcaption{\label{fig-gau4-sc3}}
+}
 
+\subcaption{\label{fig-gau4_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-gau4-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-gau4_sc}Screen shots of the \textbf{langevitour} of
 the five Gaussian clusters dataset, shows the model with TriMAP in
 high-D, a video of the tour animation is available at
 (\url{https://youtu.be/X-uHSB4VoZ0}).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_pacmap_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_1.png}
 
 }
 
-\subcaption{\label{fig-gau5-sc1}}
+}
 
+\subcaption{\label{fig-gau5_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_pacmap_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_2.png}
 
 }
 
-\subcaption{\label{fig-gau5-sc2}}
+}
 
+\subcaption{\label{fig-gau5_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/five_gau_clusters/sc_pacmap_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/five_gau_clusters/sc_pacmap_3.png}
 
 }
 
-\subcaption{\label{fig-gau5-sc3}}
+}
 
+\subcaption{\label{fig-gau5_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-gau5-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-gau5_sc}Screen shots of the \textbf{langevitour} of
 the five Gaussian clusters dataset, shows the model with PaCMAP in
 high-D, a video of the tour animation is available at
 (\url{https://youtu.be/UxvU8HQd7JM}).}
 
-\end{figure}%
+\end{figure}
 
-\section{Applications}\label{sec-applications}
+\hypertarget{sec-applications}{%
+\section{Applications}\label{sec-applications}}
 
+\hypertarget{single-cell-rna-seq-data-of-human}{%
 \subsection{Single-cell RNA-seq data of
-human}\label{single-cell-rna-seq-data-of-human}
+human}\label{single-cell-rna-seq-data-of-human}}
 
 In the field of single-cell studies, a common analytical task involves
 clustering to identify groups of cells with similar expression profiles.
@@ -1413,9 +1458,7 @@ there are three distinct and well-separated clusters.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-umapauthor-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-umapauthor-1.pdf}
 
 }
 
@@ -1423,27 +1466,25 @@ there are three distinct and well-separated clusters.
 min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
 representation of the original data?}
 
-\end{figure}%
+\end{figure}
 
 To determine whether the UMAP representation with the parameter choice
 suggested by \citet{chen2023} preserves the original data structure, we
 visualize the model constructed with UMAP overlaid on the high-D data
-(model-in-data space). The figures in Figure~\ref{fig-pbmc1-sc} show
+(model-in-data space). The figures in Figure~\ref{fig-pbmc1_sc} show
 three well-separated clusters, indicating that the suggested UMAP
 representation preserves the global structure (see
 Figure~\ref{fig-umapauthor}). However, as shown in
-Figure~\ref{fig-pbmc1-sc}, these clusters are close to each other in
+Figure~\ref{fig-pbmc1_sc}, these clusters are close to each other in
 high-D space. Also, nonlinear continuity patterns and high-density
 patches within the clusters are observed (see
-Figure~\ref{fig-pbmc1-sc}). Therefore, the suggested UMAP representation
+Figure~\ref{fig-pbmc1_sc}). Therefore, the suggested UMAP representation
 (see Figure~\ref{fig-umapauthor}) does not accurately preserve the local
 structure of the PBMC3k dataset.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-nldervisPBMCUMAP-1.pdf}
 
 }
 
@@ -1451,51 +1492,60 @@ structure of the PBMC3k dataset.
 bins along x and y axes with hexagonal size 0.03 in the 2D space
 overlaid on UMAP data, and (b) high-D model error in model space.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_1.png}
 
 }
 
-\subcaption{\label{fig-pbmc1-sc1}}
+}
 
+\subcaption{\label{fig-pbmc1_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_2.png}
 
 }
 
-\subcaption{\label{fig-pbmc1-sc2}}
+}
 
+\subcaption{\label{fig-pbmc1_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_3.png}
 
 }
 
-\subcaption{\label{fig-pbmc1-sc3}}
+}
 
+\subcaption{\label{fig-pbmc1_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-pbmc1-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-pbmc1_sc}Screen shots of the \textbf{langevitour} of
 the PBMC3k data set, shows the model in high-D, a video of the tour
 animation is available at (\url{https://youtu.be/Gnhh4hfsbbg}).}
 
-\end{figure}%
+\end{figure}
 
 To find the best NLDR representation for PBMC3k dataset, we observe the
 absolute error for different number of non-empty bins and select the one
@@ -1506,9 +1556,7 @@ PBMC3k dataset.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_original_files/figure-pdf/fig-abserrorPBMC-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=1\textheight]{paper_original_files/figure-pdf/fig-abserrorPBMC-1.pdf}
 
 }
 
@@ -1522,7 +1570,7 @@ non-empty bins generates a smaller error. Using the elbow method, it was
 observed that when the number of non-empty bins is set to 439, the
 lowest error occurred with the parameters perplexity: 51.}
 
-\end{figure}%
+\end{figure}
 
 As shown in Figure~\ref{fig-tsnesuggest}, there are three well-separated
 clusters, although they are located close to each other. Additionally,
@@ -1533,9 +1581,7 @@ tSNE.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-tsnesuggest-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-tsnesuggest-1.pdf}
 
 }
 
@@ -1543,18 +1589,16 @@ tSNE.
 applied for the PBMC3k dataset. Is this a best representation of the
 original data?}
 
-\end{figure}%
+\end{figure}
 
 Next, the model is fitted for tSNE, and the resulting model is
 visualized in the data space. The model shows some quirks, as shown in
-Figure~\ref{fig-pbmc2-sc}. The large cluster is divided into three
+Figure~\ref{fig-pbmc2_sc}. The large cluster is divided into three
 subclusters, which are in close to each other.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-nldervisPBMCtSNE-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-nldervisPBMCtSNE-1.pdf}
 
 }
 
@@ -1562,53 +1606,63 @@ subclusters, which are in close to each other.
 bins along x and y axes with hexagonal size 0.02 in the 2D space
 overlaid on tSNE data, and (b) high-D model error in model space.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_4.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_4.png}
 
 }
 
-\subcaption{\label{fig-pbmc2-sc4}}
+}
 
+\subcaption{\label{fig-pbmc2_sc4}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_5.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_5.png}
 
 }
 
-\subcaption{\label{fig-pbmc2-sc5}}
+}
 
+\subcaption{\label{fig-pbmc2_sc5}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_6.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/pbmc3k/sc_6.png}
 
 }
 
-\subcaption{\label{fig-pbmc2-sc6}}
+}
 
+\subcaption{\label{fig-pbmc2_sc6}}
 \end{minipage}%
 
-\caption{\label{fig-pbmc2-sc}Screen shots of the \textbf{langevitour} of
+\caption{\label{fig-pbmc2_sc}Screen shots of the \textbf{langevitour} of
 the PBMC3k data set, shows the model in high-D, a video of the tour
 animation is available at (\url{https://youtu.be/R0EroJcGbas}).}
 
-\end{figure}%
+\end{figure}
 
-\subsection{Handwritten digits}\label{handwritten-digits}
+\hypertarget{handwritten-digits}{%
+\subsection{Handwritten digits}\label{handwritten-digits}}
 
 The MNIST dataset consists of grayscale images of handwritten digits
 \citep{lecun2010}. \citet{Yingfan2021} used this dataset to demonstrate
@@ -1633,26 +1687,24 @@ following questions,
 we visualize the model constructed with PaCMAP overlaid on data in
 high-D space (model-in-data space).
 
-According to Figure~\ref{fig-mnist1-sc1}, the nonlinear continuity
+According to Figure~\ref{fig-mnist1_sc1}, the nonlinear continuity
 structure observed in the 2D representation of PaCMAP is also visible
 when visualizing the model overlaid on the data space. This provides
 evidence that the model accurately captures the structure of the high-D
 data. Also, the model has a twisted pattern within the nonlinear
 structure, which is an addition pattern of data that cannot be seen in
-the 2D representation (see Figure~\ref{fig-mnist1-sc2}).
+the 2D representation (see Figure~\ref{fig-mnist1_sc2}).
 
 In order to visually assess the preservation of local structure, it's
 important to consider the edges in the model. In a model that
 effectively preserves local structure, there shouldn't be any long edges
-in high-D space. However, as shown in Figure~\ref{fig-mnist1-sc3}, some
+in high-D space. However, as shown in Figure~\ref{fig-mnist1_sc3}, some
 long edges exist in high-D space that are not identified as long edges
 in the 2D representation.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-pacmapauthor-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-pacmapauthor-1.pdf}
 
 }
 
@@ -1661,13 +1713,11 @@ in the 2D representation.
 FP\_ratio=2.0) applied for the digit 1 of the MNIST dataset. Is this a
 best representation of the original data?}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-sampleimg-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-sampleimg-1.pdf}
 
 }
 
@@ -1675,13 +1725,11 @@ best representation of the original data?}
 distributed along the right-to-left of first embedding axis of the
 PaCMAP nonlinear structure.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics{paper_original_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
+{\centering \includegraphics{paper_original_files/figure-pdf/fig-nldervisMNISTPACMAP-1.pdf}
 
 }
 
@@ -1689,52 +1737,61 @@ PaCMAP nonlinear structure.}
 15 bins along x and y axes with hexagonal size 0.06 in the 2D space
 overlaid on PaCMAP data, and (b) high-D model error in model space.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_1.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_1.png}
 
 }
 
-\subcaption{\label{fig-mnist1-sc1}}
+}
 
+\subcaption{\label{fig-mnist1_sc1}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_2.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_2.png}
 
 }
 
-\subcaption{\label{fig-mnist1-sc2}}
+}
 
+\subcaption{\label{fig-mnist1_sc2}}
 \end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}[t]{0.33\linewidth}
 
-\centering{
+{\centering 
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_3.png}
+\raisebox{-\height}{
+
+\includegraphics{figures/mnist/sc_3.png}
 
 }
 
-\subcaption{\label{fig-mnist1-sc3}}
+}
 
+\subcaption{\label{fig-mnist1_sc3}}
 \end{minipage}%
 
-\caption{\label{fig-mnist1-sc}Screen shots of the \textbf{langevitour}
+\caption{\label{fig-mnist1_sc}Screen shots of the \textbf{langevitour}
 of the MNIST digit 1 data set, shows the model-in-data space, a video of
 the tour animation is available at
 (\url{https://youtu.be/zq2GM9qvUNA}).}
 
-\end{figure}%
+\end{figure}
 
 In terms of model error, some data points show high error (see
 Figure~\ref{fig-nldervisMNISTPACMAP}) due to their deviation from the
@@ -1745,18 +1802,17 @@ Figure~\ref{fig-sampleimg}).
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-sampleimgerror-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_original_files/figure-pdf/fig-sampleimgerror-1.pdf}
 
 }
 
 \caption{\label{fig-sampleimgerror}Images of handwritten digit 1 which
 occur large model error.}
 
-\end{figure}%
+\end{figure}
 
-\section{Conclusion}\label{sec-conclusions}
+\hypertarget{sec-conclusions}{%
+\section{Conclusion}\label{sec-conclusions}}
 
 In conclusion, our proposed model offers a novel approach for
 visualizing high-dimensional (high-D) data by leveraging non-linear
@@ -1784,7 +1840,8 @@ useful.
 We introduce a new tool to help to determine which method, which
 parameter choice provide the most useful representation of high-D data.
 
-\section*{References}\label{references}
+\hypertarget{references}{%
+\section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
 \renewcommand{\bibsection}{}

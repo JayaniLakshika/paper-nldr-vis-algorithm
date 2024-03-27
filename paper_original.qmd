@@ -1633,7 +1633,7 @@ bin_centroids_ch_plot <- ggplot(data = all_centroids_df, aes(x = c_x, y = c_y)) 
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration before (colored in gray) and after (colored in light orange) shifting the starting point by an identical amount applied in both x and y directions, with a shift value of $0.537285$."
+#| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration when the starting point defined at $(-0.113, -0.098)$ (colored in gray) and the starting point defined at $(-0.025, -0.108)$ (colored in light orange)."
 #| label: fig-scurveshifthexgridsexp
 #| fig-pos: H
 
@@ -1644,7 +1644,7 @@ bin_centroids_ch_plot + hex_grid_ch_plot +
 
 ```{r}
 #| echo: false
-#| fig-cap: "Hexbin plots shows the distribution of points before and after shifting the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot before shifting, and (b) Hexbin plot after shifting (identical shift applied in both x and y directions, with a shift value of $0.537285$)."
+#| fig-cap: "Hexbin plots shows the distribution of points before and after changing the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot when the starting point defined at $(-0.113, -0.098)$, and (b) Hexbin plot after changing the starting point to $(-0.025, -0.108)$."
 #| label: fig-scurveshifthexgrids
 #| fig-pos: H
 
@@ -1765,7 +1765,7 @@ plot_list1_gau + plot_list2_gau + plot_list3_gau + plot_list4_gau + plot_list5_g
   plot_layout(ncol=5)
 ```
 
-To investigate which is the best representation to visualize the original data or all NLDR methods provide equivalent information, we visualize the model-in-data space. Models from all NLDR methods show five well-separated clusters (see @fig-gau1-sc, @fig-gau2-sc, @fig-gau3-sc, @fig-gau4-sc, and @fig-gau5-sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE, UMAP, and PHATE display clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1-sc, @fig-gau2-sc, and @fig-gau3-sc). On the other hand, both TriMAP and PaCMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau4-sc and @fig-gau5-sc). Therefore, TriMAP and PaCMAP do not capture the local structure as effectively as other methods.    
+To investigate which is the best representation to visualize the original data or all NLDR methods provide equivalent information, we visualize the model-in-data space. Models from all NLDR methods show five well-separated clusters (see @fig-gau1_sc, @fig-gau2_sc, @fig-gau3_sc, @fig-gau4_sc, and @fig-gau5_sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE, UMAP, and PHATE display clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1_sc, @fig-gau2_sc, and @fig-gau3_sc). On the other hand, both TriMAP and PaCMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau4_sc and @fig-gau5_sc). Therefore, TriMAP and PaCMAP do not capture the local structure as effectively as other methods.    
 
 ```{r}
 #| warning: false
@@ -2307,52 +2307,52 @@ trimesh_removed_tsne_gau + trimesh_removed_umap_gau + trimesh_removed_phate_gau 
 ```
 
 
-::: {#fig-gau1-sc layout-ncol="3" fig-pos="H"}
-![](figures/five_gau_clusters/sc_tsne_1.png){#fig-gau1-sc1}
+::: {#fig-gau1_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_tsne_1.png){#fig-gau1_sc1}
 
-![](figures/five_gau_clusters/sc_tsne_2.png){#fig-gau1-sc2}
+![](figures/five_gau_clusters/sc_tsne_2.png){#fig-gau1_sc2}
 
-![](figures/five_gau_clusters/sc_tsne_3.png){#fig-gau1-sc3}
+![](figures/five_gau_clusters/sc_tsne_3.png){#fig-gau1_sc3}
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with tSNE in high-D, a video of the tour animation is available at (<https://youtu.be/oQxEb4wRdHI>).
 :::
 
-::: {#fig-gau2-sc layout-ncol="3" fig-pos="H"}
-![](figures/five_gau_clusters/sc_umap_1.png){#fig-gau2-sc1}
+::: {#fig-gau2_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_umap_1.png){#fig-gau2_sc1}
 
-![](figures/five_gau_clusters/sc_umap_2.png){#fig-gau2-sc2}
+![](figures/five_gau_clusters/sc_umap_2.png){#fig-gau2_sc2}
 
-![](figures/five_gau_clusters/sc_umap_3.png){#fig-gau2-sc3}
+![](figures/five_gau_clusters/sc_umap_3.png){#fig-gau2_sc3}
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with UMAP in high-D, a video of the tour animation is available at (<https://youtu.be/JW49csPpDx4>).
 :::
 
-::: {#fig-gau3-sc layout-ncol="3" fig-pos="H"}
-![](figures/five_gau_clusters/sc_phate_1.png){#fig-gau3-sc1}
+::: {#fig-gau3_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_phate_1.png){#fig-gau3_sc1}
 
-![](figures/five_gau_clusters/sc_phate_2.png){#fig-gau3-sc2}
+![](figures/five_gau_clusters/sc_phate_2.png){#fig-gau3_sc2}
 
-![](figures/five_gau_clusters/sc_phate_3.png){#fig-gau3-sc3}
+![](figures/five_gau_clusters/sc_phate_3.png){#fig-gau3_sc3}
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PHATE in high-D, a video of the tour animation is available at (<https://youtu.be/xqhRODt8Z-o>).
 :::
 
-::: {#fig-gau4-sc layout-ncol="3" fig-pos="H"}
-![](figures/five_gau_clusters/sc_trimap_1.png){#fig-gau4-sc1}
+::: {#fig-gau4_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_trimap_1.png){#fig-gau4_sc1}
 
-![](figures/five_gau_clusters/sc_trimap_2.png){#fig-gau4-sc2}
+![](figures/five_gau_clusters/sc_trimap_2.png){#fig-gau4_sc2}
 
-![](figures/five_gau_clusters/sc_trimap_3.png){#fig-gau4-sc3}
+![](figures/five_gau_clusters/sc_trimap_3.png){#fig-gau4_sc3}
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with TriMAP in high-D, a video of the tour animation is available at (<https://youtu.be/X-uHSB4VoZ0>).
 :::
 
-::: {#fig-gau5-sc layout-ncol="3" fig-pos="H"}
-![](figures/five_gau_clusters/sc_pacmap_1.png){#fig-gau5-sc1}
+::: {#fig-gau5_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_pacmap_1.png){#fig-gau5_sc1}
 
-![](figures/five_gau_clusters/sc_pacmap_2.png){#fig-gau5-sc2}
+![](figures/five_gau_clusters/sc_pacmap_2.png){#fig-gau5_sc2}
 
-![](figures/five_gau_clusters/sc_pacmap_3.png){#fig-gau5-sc3}
+![](figures/five_gau_clusters/sc_pacmap_3.png){#fig-gau5_sc3}
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PaCMAP in high-D, a video of the tour animation is available at (<https://youtu.be/UxvU8HQd7JM>).
 :::
@@ -2408,7 +2408,7 @@ umap_plot_pbmc <- umap_pbmc_scaled |>
 umap_plot_pbmc 
 ```
 
-To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the high-D data (model-in-data space). The figures in @fig-pbmc1-sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umapauthor). However, as shown in @fig-pbmc1-sc, these clusters are close to each other in high-D space. Also, nonlinear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1-sc). Therefore, the suggested UMAP representation (see @fig-umapauthor) does not accurately preserve the local structure of the PBMC3k dataset.     
+To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the high-D data (model-in-data space). The figures in @fig-pbmc1_sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umapauthor). However, as shown in @fig-pbmc1_sc, these clusters are close to each other in high-D space. Also, nonlinear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1_sc). Therefore, the suggested UMAP representation (see @fig-umapauthor) does not accurately preserve the local structure of the PBMC3k dataset.     
 
 <!-- Fit the model and compute error-->
 ```{r}
@@ -2566,12 +2566,12 @@ plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom') 
 ```
 
-::: {#fig-pbmc1-sc layout-ncol="3" fig-pos="H"}
-![](figures/pbmc3k/sc_1.png){#fig-pbmc1-sc1}
+::: {#fig-pbmc1_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_1.png){#fig-pbmc1_sc1}
 
-![](figures/pbmc3k/sc_2.png){#fig-pbmc1-sc2}
+![](figures/pbmc3k/sc_2.png){#fig-pbmc1_sc2}
 
-![](figures/pbmc3k/sc_3.png){#fig-pbmc1-sc3}
+![](figures/pbmc3k/sc_3.png){#fig-pbmc1_sc3}
 
 Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/Gnhh4hfsbbg>).
 :::
@@ -2671,7 +2671,7 @@ tsne_plot_pbmc <- tsne_pbmc_scaled |>
 tsne_plot_pbmc 
 ```
 
-Next, the model is fitted for tSNE, and the resulting model is visualized in the data space. The model shows some quirks, as shown in @fig-pbmc2-sc. The large cluster is divided into three subclusters, which are in close to each other.
+Next, the model is fitted for tSNE, and the resulting model is visualized in the data space. The model shows some quirks, as shown in @fig-pbmc2_sc. The large cluster is divided into three subclusters, which are in close to each other.
 
 <!--Fit the model-->
 ```{r}
@@ -2843,12 +2843,12 @@ plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom') 
 ```
 
-::: {#fig-pbmc2-sc layout-ncol="3" fig-pos="H"}
-![](figures/pbmc3k/sc_4.png){#fig-pbmc2-sc4}
+::: {#fig-pbmc2_sc layout-ncol="3" fig-pos="H"}
+![](figures/pbmc3k/sc_4.png){#fig-pbmc2_sc4}
 
-![](figures/pbmc3k/sc_5.png){#fig-pbmc2-sc5}
+![](figures/pbmc3k/sc_5.png){#fig-pbmc2_sc5}
 
-![](figures/pbmc3k/sc_6.png){#fig-pbmc2-sc6}
+![](figures/pbmc3k/sc_6.png){#fig-pbmc2_sc6}
 
 Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/R0EroJcGbas>).
 :::
@@ -2864,9 +2864,9 @@ The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010
 
 we visualize the model constructed with PaCMAP overlaid on data in high-D space (model-in-data space).    
 
-According to @fig-mnist1-sc1, the nonlinear continuity structure observed in the 2D representation of PaCMAP is also visible when visualizing the model overlaid on the data space. This provides evidence that the model accurately captures the structure of the high-D data. Also, the model has a twisted pattern within the nonlinear structure, which is an addition pattern of data that cannot be seen in the 2D representation (see @fig-mnist1-sc2).
+According to @fig-mnist1_sc1, the nonlinear continuity structure observed in the 2D representation of PaCMAP is also visible when visualizing the model overlaid on the data space. This provides evidence that the model accurately captures the structure of the high-D data. Also, the model has a twisted pattern within the nonlinear structure, which is an addition pattern of data that cannot be seen in the 2D representation (see @fig-mnist1_sc2).
 
-In order to visually assess the preservation of local structure, it's important to consider the edges in the model. In a model that effectively preserves local structure, there shouldn't be any long edges in high-D space. However, as shown in @fig-mnist1-sc3, some long edges exist in high-D space that are not identified as long edges in the 2D representation.
+In order to visually assess the preservation of local structure, it's important to consider the edges in the model. In a model that effectively preserves local structure, there shouldn't be any long edges in high-D space. However, as shown in @fig-mnist1_sc3, some long edges exist in high-D space that are not identified as long edges in the 2D representation.
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3156,12 +3156,12 @@ plot_layout(guides='collect', ncol=2) &
   theme(legend.position='bottom')
 ```
 
-::: {#fig-mnist1-sc layout-ncol="3" fig-pos="H"}
-![](figures/mnist/sc_1.png){#fig-mnist1-sc1}
+::: {#fig-mnist1_sc layout-ncol="3" fig-pos="H"}
+![](figures/mnist/sc_1.png){#fig-mnist1_sc1}
 
-![](figures/mnist/sc_2.png){#fig-mnist1-sc2}
+![](figures/mnist/sc_2.png){#fig-mnist1_sc2}
 
-![](figures/mnist/sc_3.png){#fig-mnist1-sc3}
+![](figures/mnist/sc_3.png){#fig-mnist1_sc3}
 
 Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/zq2GM9qvUNA>).
 :::
