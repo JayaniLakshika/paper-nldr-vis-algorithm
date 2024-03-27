@@ -97,10 +97,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \makeatletter
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -136,25 +132,18 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
-\makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -224,7 +213,6 @@ manifold, manifold learning, tour, data vizualization
 \newpage
 \spacingset{1} % DON'T change the spacing! (Default 1.9)
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, enhanced, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \begin{itemize}
 \tightlist
@@ -245,7 +233,9 @@ Relevant high-d vis, NLDR history
 
 \begin{figure}[H]
 
-{\centering \includegraphics{paper_files/figure-pdf/fig-umapauthor-1.pdf}
+\centering{
+
+\includegraphics{paper_files/figure-pdf/fig-umapauthor-1.pdf}
 
 }
 
@@ -253,10 +243,9 @@ Relevant high-d vis, NLDR history
 min\_dist = 0.3) applied for the PBMC3k dataset. Is this a best
 representation of the original data?}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{method}{%
-\section{Method}\label{method}}
+\section{Method}\label{method}
 
 \begin{itemize}
 \tightlist
@@ -278,11 +267,9 @@ representation of the original data?}
   What is learned about simulated examples
 \end{itemize}
 
-\hypertarget{applications}{%
-\section{Applications}\label{applications}}
+\section{Applications}\label{applications}
 
-\hypertarget{pbmc}{%
-\subsection{pbmc}\label{pbmc}}
+\subsection{pbmc}\label{pbmc}
 
 \begin{verbatim}
  - NLDR view used to illustrate clusters
@@ -292,8 +279,7 @@ representation of the original data?}
  
 \end{verbatim}
 
-\hypertarget{digits-1}{%
-\subsection{digits: 1}\label{digits-1}}
+\subsection{digits: 1}\label{digits-1}
 
 \begin{verbatim}
  - NLDR is used to illustrate different ways 1's are drawn
@@ -302,8 +288,7 @@ representation of the original data?}
  
 \end{verbatim}
 
-\hypertarget{discussion}{%
-\section{Discussion}\label{discussion}}
+\section{Discussion}\label{discussion}
 
 \begin{itemize}
 \tightlist
@@ -316,8 +301,7 @@ representation of the original data?}
   What might be useful enhancements
 \end{itemize}
 
-\hypertarget{references}{%
-\section*{References}\label{references}}
+\section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
 \renewcommand{\bibsection}{}
