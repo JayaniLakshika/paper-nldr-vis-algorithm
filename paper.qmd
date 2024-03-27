@@ -107,6 +107,8 @@ source("nldr_code.R", local = TRUE)
 -->
 ```
 
+## Introduction
+
  - What's the problem:
 
   Non-linear dimension reduction being used to summarise high-dimensional data.
@@ -146,7 +148,8 @@ umap_plot_pbmc <- umap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'a', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3) 
 ```
 
 ```{r}
@@ -174,7 +177,8 @@ umap_plot_pbmc_1 <- umap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'b', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)
 
 ```
 
@@ -203,7 +207,8 @@ umap_plot_pbmc_2 <- umap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'c', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -233,7 +238,8 @@ umap_plot_pbmc_3 <- umap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'd', x = Inf, y = Inf, hjust = 1.5, vjust = 1.3, size = 3)
 
 ```
 
@@ -262,11 +268,10 @@ umap_plot_pbmc_4 <- umap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'e', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)   
 
 ```
-
-
 
 ```{r}
 #| warning: false
@@ -293,7 +298,8 @@ tsne_plot_pbmc_1 <- tsne_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'f', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)   
 ```
 
 
@@ -322,7 +328,8 @@ tsne_plot_pbmc <- tsne_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'g', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.1, size = 3)   
 ```
 
 ```{r}
@@ -350,7 +357,8 @@ tsne_plot_pbmc_2 <- tsne_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'h', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)   
 ```
 
 ```{r}
@@ -378,7 +386,8 @@ phate_plot_pbmc_1 <- phate_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'i', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)   
 
 ```
 
@@ -407,7 +416,8 @@ phate_plot_pbmc_2 <- phate_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'j', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -436,7 +446,8 @@ phate_plot_pbmc_3 <- phate_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm')) 
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'k', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)   
 
 ```
 
@@ -465,7 +476,8 @@ trimap_plot_pbmc_1 <- trimap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'l', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -494,7 +506,8 @@ trimap_plot_pbmc_2 <- trimap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'm', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -523,7 +536,8 @@ trimap_plot_pbmc_3 <- trimap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'n', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -552,7 +566,8 @@ pacmap_plot_pbmc_1 <- pacmap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'p', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -581,7 +596,8 @@ pacmap_plot_pbmc_2 <- pacmap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'q', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -610,7 +626,8 @@ pacmap_plot_pbmc_3 <- pacmap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 'r', x = -Inf, y = Inf, hjust = -0.5, vjust = 1.5, size = 3)  
 
 ```
 
@@ -639,16 +656,17 @@ pacmap_plot_pbmc_4 <- pacmap_pbmc_scaled |>
         legend.title = element_text(size=5), #change legend title font size
         legend.text = element_text(size=4),
         legend.key.height = unit(0.25, 'cm'),
-        legend.key.width = unit(0.25, 'cm'))
+        legend.key.width = unit(0.25, 'cm')) +
+  annotate(geom = 'text', label = 's', x = Inf, y = Inf, hjust = 1.5, vjust = 1.5, size = 3)  
 
 ```
 
-
 ```{r}
 #| echo: false
-#| fig-cap: "2D layout from UMAP (n_neighbors = 30, min_dist = 0.3) applied for the PBMC3k dataset. Is this a best representation of the original data?"
-#| label: fig-umapauthor
+#| fig-cap: "2D layouts from different NLDR techniques and different hyperparameter choices applied for the PBMC3k dataset: (a) UMAP (n_neighbors = 30, min_dist = 0.3), (b) UMAP (n_neighbors = 5, min_dist = 0.01), (c) UMAP (n_neighbors = 15, min_dist = 0.99), (d) UMAP (n_neighbors = 15, min_dist = 0.03), (e) UMAP (n_neighbors = 84, min_dist = 0.99), (f) tSNE (perplexity = 5), (g) tSNE (perplexity = 51), (h) tSNE (perplexity = 92), (i) PHATE (knn = 2), (j) PHATE (knn = 5), (k) PHATE (knn = 10), (l) TriMAP (n_inliers = 12, n_outliers = 4, n_random = 3), (m) TriMAP (n_inliers = 30, n_outliers = 4, n_random = 10), (n) TriMAP (n_inliers = 5, n_outliers = 2, n_random = 2), (p) PaCMAP (n_neighbors = 10, init = pca, MN_ratio = 0.5, FP_ratio = 2), (q) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.9, FP_ratio = 5), (r) PaCMAP (n_neighbors = 5, init = pca, MN_ratio = 0.1, FP_ratio = 1), and (s) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.1, FP_ratio = 1). Is there a best representation of the original data or are they all providing  equivalent information?"
+#| label: fig-diffnldrpbmc
 #| fig-pos: H
+#| out-width: 100%
 
 umap_plot_pbmc + umap_plot_pbmc_1 + umap_plot_pbmc_2 + umap_plot_pbmc_3 + umap_plot_pbmc_4 + tsne_plot_pbmc_1 + tsne_plot_pbmc + tsne_plot_pbmc_2 + phate_plot_pbmc_1 + phate_plot_pbmc_2 + phate_plot_pbmc_3 + trimap_plot_pbmc_1 + trimap_plot_pbmc_2 + trimap_plot_pbmc_3 + pacmap_plot_pbmc_1 + pacmap_plot_pbmc_2 + pacmap_plot_pbmc_3 + pacmap_plot_pbmc_4 + plot_layout(ncol = 6)
 ```
