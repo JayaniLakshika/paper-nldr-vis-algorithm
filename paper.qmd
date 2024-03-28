@@ -140,6 +140,11 @@ theme_set(theme_linedraw() +
      legend.key.width = unit(0.25, 'cm')
    )
 )
+interior_annotation <- function(label) {
+  annotation_custom(grid::textGrob(label = label,
+      x = unit(0.92, "npc"), y = unit(0.92, "npc"),
+      gp = grid::gpar(cex = 1, col="grey70")))
+}
 ```
 
 ```{r}
@@ -166,91 +171,78 @@ source("nldr_code.R", local = TRUE)
   Relevant high-d vis, NLDR history
   
 ```{r}
+# label: read-pbmc-nldr
+# Read a variety of different NLDR representations of PBMC
+# and plot them on same aspect ratio
+clr_choice <- "#0077A3"
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
 
 nldr1 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("a")
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("a")
 
-```{r}
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
 
 nldr2 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("b")
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("b")
 
-```
-
-```{r}
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
 nldr3 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("c") 
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("c")
 
-```{r}
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
 
 nldr4 <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("d")  
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("d")
 
-
-```{r}
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_51.rds")
 
 nldr5 <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("e") 
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("e")
 
-```{r}
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
 nldr6 <- phate_pbmc |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("f")  
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("f")
 
-```{r}
 trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
 nldr7 <- trimap_pbmc |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("g") 
-```
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("g")
 
-
-```{r}
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
 nldr8 <- pacmap_pbmc |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
-  geom_point(alpha=0.1, size=1) +
-  ggtitle("h")
+  geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("h")
 ```
 
 
 ```{r}
+#| label: NLDR-variety
 #| echo: false
 #| fig-cap: "Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Which is the most accurate representation of the structure in high dimensions?"
-#| label: fig-diffnldrpbmc
 #| fig-width: 8
-#| fig-height: 3
+#| fig-height: 4
 #| out-width: 100%
 # 2D layouts from different NLDR techniques and different hyperparameter choices applied for the PBMC3k dataset: (a) UMAP (n_neighbors = 30, min_dist = 0.3), (b) UMAP (n_neighbors = 5, min_dist = 0.01), (c) UMAP (n_neighbors = 15, min_dist = 0.99), (d) UMAP (n_neighbors = 15, min_dist = 0.03), (e) UMAP (n_neighbors = 84, min_dist = 0.99), (f) tSNE (perplexity = 5), (g) tSNE (perplexity = 51), (h) tSNE (perplexity = 92), (i) PHATE (knn = 2), (j) PHATE (knn = 5), (k) PHATE (knn = 10), (l) TriMAP (n_inliers = 12, n_outliers = 4, n_random = 3), (m) TriMAP (n_inliers = 30, n_outliers = 4, n_random = 10), (n) TriMAP (n_inliers = 5, n_outliers = 2, n_random = 2), (p) PaCMAP (n_neighbors = 10, init = pca, MN_ratio = 0.5, FP_ratio = 2), (q) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.9, FP_ratio = 5), (r) PaCMAP (n_neighbors = 5, init = pca, MN_ratio = 0.1, FP_ratio = 1), and (s) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.1, FP_ratio = 1). Is there a best representation of the original data or are they all providing  equivalent information?
 nldr1 + nldr2 + nldr3 + nldr4 +
@@ -285,6 +277,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
 
   - Summarise contributions
   - Explain where it is expected or not expected to work, eg higher dimensional relationships
+  - Diagnostic app to explore differences in distances
   - What might be useful enhancements
 
   
