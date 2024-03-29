@@ -263,12 +263,12 @@ future directions are provided in Section~\ref{sec-discussion}.
 
 Historically, \(k-D\) representations of \(p-D\) data have been computed
 using multidimensional Scaling (MDS), which includes principal
-components analysis as a special case. The \(k-D\) representation can be
-considered to be a layout of points in \(k-D\) produced by an embedding
-procedure that maps the data from \(p-D\). In MDS, the \(k-D\) layout is
-constructed by minimizing a stress function that differences distances
-between points in \(p-D\) with potential distances between points in
-\(k-D\). Various formulations of the stress function result in
+components analysis (PCA) as a special case. The \(k-D\) representation
+can be considered to be a layout of points in \(k-D\) produced by an
+embedding procedure that maps the data from \(p-D\). In MDS, the \(k-D\)
+layout is constructed by minimizing a stress function that differences
+distances between points in \(p-D\) with potential distances between
+points in \(k-D\). Various formulations of the stress function result in
 non-metric scaling \citep{article62} and isomap \citep{article63}.
 Challenges in working with high-dimensional data, including
 visualization, are outlined in \citet{Johnstone2009}.
@@ -283,10 +283,51 @@ PaCMAP are examples of diffusion processes \citep{article64} spreading
 to capture geometric shapes, that include both global and local
 structure.
 
+The array of layouts in Figure~\ref{fig-NLDR-variety} illustrate what
+can emerge from the choices of method and parameters, and the random
+seed that initiates the computation. Key structures interpreted from
+these views suggest:
+
 \begin{itemize}
 \tightlist
 \item
-  Tours
+  highly \textbf{separated clusters} (a, b, e, g, h) with the number
+  ranging from 3-6,
+\item
+  \textbf{stringy branches} (f), and
+\item
+  \textbf{barely separated clusters} (c, d) which apparently
+  \textbf{contradicts} the other representations.
+\end{itemize}
+
+It happens because these methods and parameter choices provide different
+lenses on the interpoint distances in the data.
+
+The alternative approach to visualizing the high-dimensional data is to
+use linear projections. PCA is the classical approach, resulting in a
+set of new variables which are linear combinations of the original
+variables. Tours, defined by \citet{Asimov1985}, broaden the scope by
+providing movies of linear projections, that provide views the data from
+all directions. \citet{lee2021review} provides an review of the main
+developments in tours. There are many tour algorithms implemented, with
+many available in the R package \texttt{tourr} \citep{article61}, and
+versions enabling better interactivity in \texttt{langevitour}
+\citep{article09} and \texttt{detourr} \citep{article22}. Linear
+projections are a safe way to view high-dimensional data, because they
+do not warp the space, so they are more faithful representations of the
+structure. However, linear projections can be cluttered, and global
+patterns can obscure local structure. The simple activity of projecting
+data from \(p-D\) suffers from piling \citep{laa2022}, where data
+concentrates in the center of projections. NLDR is designed to escape
+these issues, to exaggerate structure so that it can be observed. But as
+a result NLDR can hallucinate wildly, to suggest patterns that are not
+actually present in the data.
+
+The solution is to use the tour to examine how the NLDR is warping the
+space.
+
+\begin{itemize}
+\tightlist
 \item
   Model-in-the-data-space: how can we represent the model, eg plane for
   PCA, grid of values for classification boundaries.

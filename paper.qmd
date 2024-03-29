@@ -260,12 +260,23 @@ The paper is organised as follows. @sec-background provides a summary of the lit
 ## Background {#sec-background}
 
 <!-- - Connection between NLDR and MDS-->
-Historically, $k-D$ representations of $p-D$ data have been computed using multidimensional Scaling (MDS), which includes principal components analysis as a special case.  The $k-D$ representation can be considered to be a layout of points in $k-D$ produced by an embedding procedure that maps the data from $p-D$. In MDS, the $k-D$ layout is constructed by minimizing a stress function that differences distances between points in $p-D$ with potential distances between points in $k-D$. Various formulations of the stress function result in non-metric scaling [@article62] and isomap [@article63]. Challenges in working with high-dimensional data, including visualization, are outlined in @Johnstone2009. 
+Historically, $k-D$ representations of $p-D$ data have been computed using multidimensional Scaling (MDS), which includes principal components analysis (PCA) as a special case.  The $k-D$ representation can be considered to be a layout of points in $k-D$ produced by an embedding procedure that maps the data from $p-D$. In MDS, the $k-D$ layout is constructed by minimizing a stress function that differences distances between points in $p-D$ with potential distances between points in $k-D$. Various formulations of the stress function result in non-metric scaling [@article62] and isomap [@article63]. Challenges in working with high-dimensional data, including visualization, are outlined in @Johnstone2009. 
 
 Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in $p-D$. Here we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP and PaCMAP. tNSE and UMAP can be considered to produce the $k-D$ minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@article64] spreading to capture geometric shapes, that include both global and local structure.
 
+The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: 
 
-- Tours
+- highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6, 
+- **stringy branches** (f), and 
+- **barely separated clusters** (c, d) which apparently **contradicts** the other representations. 
+
+It happens because these methods and parameter choices provide different lenses on the interpoint distances in the data.
+
+The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables which are linear combinations of the original variables. Tours, defined by @Asimov1985, broaden the scope by providing movies of linear projections, that provide views the data from all directions. @lee2021review provides an review of the main developments in tours. There are many tour algorithms implemented, with many available in the R package `tourr` [@article61], and versions enabling better interactivity in `langevitour` [@article09] and `detourr` [@article22]. Linear projections are a safe way to view high-dimensional data, because they do not warp the space, so they are more faithful representations of the structure. 
+However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from $p-D$ suffers from piling [@laa2022], where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data. 
+
+The solution is to use the tour to examine how the NLDR is warping the space. 
+
 - Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries. 
 
 ## Method {#sec-method}
