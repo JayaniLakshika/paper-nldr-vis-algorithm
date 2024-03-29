@@ -217,18 +217,18 @@ manifold, manifold learning, tour, data vizualization
 \section{Introduction}\label{introduction}
 
 Non-linear dimension reduction (NLDR) is popular for making a convenient
-low-dimensional representation of high-dimensional data. Recently
-developed methods include t-distributed stochastic neighbor embedding
-(tSNE) \citep{Laurens2008}, uniform manifold approximation and
-projection (UMAP) \citep{Leland2018}, potential of heat-diffusion for
-affinity-based trajectory embedding (PHATE) algorithm \citep{article03},
-large-scale dimensionality reduction Using triplets (TriMAP)
-\citep{article02}, and pairwise controlled manifold approximation
-(PaCMAP) \citep{Yingfan2021}. However, the representation generated can
-vary dramatically from method to method, and with different choices of
-parameters or random seeds made using the same method
-(Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is then,
-\textbf{which representation to use}. The choice might result in
+low-dimensional (\(k-D\)) representation of high-dimensional (\(p-D\))
+data. Recently developed methods include t-distributed stochastic
+neighbor embedding (tSNE) \citep{Laurens2008}, uniform manifold
+approximation and projection (UMAP) \citep{Leland2018}, potential of
+heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm
+\citep{article03}, large-scale dimensionality reduction Using triplets
+(TriMAP) \citep{article02}, and pairwise controlled manifold
+approximation (PaCMAP) \citep{Yingfan2021}. However, the representation
+generated can vary dramatically from method to method, and with
+different choices of parameters or random seeds made using the same
+method (Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is
+then, \textbf{which representation to use}. The choice might result in
 different procedures used in the downstream analysis, or different
 inferential conclusions. The research described here provides new visual
 tools to aid with this decision.
@@ -261,26 +261,89 @@ future directions are provided in Section~\ref{sec-discussion}.
 
 \section{Background}\label{sec-background}
 
+Historically, \(k-D\) representations of \(p-D\) data have been computed
+using multidimensional Scaling (MDS), which includes principal
+components analysis as a special case. The \(k-D\) representation can be
+considered to be a layout of points in \(k-D\) produced by an embedding
+procedure that maps the data from \(p-D\). In MDS, the \(k-D\) layout is
+constructed by minimizing a stress function that differences distances
+between points in \(p-D\) with potential distances between points in
+\(k-D\). Various formulations of the stress function result in
+non-metric scaling \citep{article62} and isomap \citep{article63}.
+Challenges in working with high-dimensional data, including
+visualization, are outlined in \citet{Johnstone2009}.
+
+Many new methods for NLDR have emerged in recent years, all designed to
+better capture specific structures potentially existing in \(p-D\). Here
+we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
+and PaCMAP. tNSE and UMAP can be considered to produce the \(k-D\)
+minimizing the divergence between two distributions, where the
+distributions are modeling the inter-point distances. PHATE, TriMAP and
+PaCMAP are examples of diffusion processes \citep{article64} spreading
+to capture geometric shapes, that include both global and local
+structure.
+
+\begin{itemize}
+\tightlist
+\item
+  Tours
+\item
+  Model-in-the-data-space: how can we represent the model, eg plane for
+  PCA, grid of values for classification boundaries.
+\end{itemize}
+
 \section{Method}\label{sec-method}
 
 \begin{itemize}
 \tightlist
 \item
-  Create a representation of the model
+  Overview: Generate a form that maps the model, that is the interpoint
+  distances. What is the model?
 \item
-  Algorithm in 2D
+  Notation
+\item
+  Create a representation of the model
 
   \begin{itemize}
   \tightlist
   \item
-    Parameters
+    using hex-binning in 2D,
   \item
-    Tuning
+    parameters,
+  \item
+    tuning,
+  \item
+    pre-processing
   \end{itemize}
 \item
-  Showing model in high-d
+  How does this map to the representation in high-d
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Centroids,
+  \item
+    Edges
+  \end{itemize}
+\item
+  Measuring fit
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Fitted values
+  \item
+    Error calculation
+  \end{itemize}
 \item
   What is learned about simulated examples
+
+  \begin{itemize}
+  \tightlist
+  \item
+    Interesting organisation of points in UMAP
+  \item
+  \end{itemize}
 \end{itemize}
 
 \section{Applications}\label{sec-applications}
