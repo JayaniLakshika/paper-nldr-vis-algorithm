@@ -153,23 +153,27 @@ set.seed(20240110)
 source("nldr_code.R", local = TRUE)
 ```
 
-```{=html}
 <!-- 
-  Notes
-* Use American spelling
+Check-list before submission
+* Is it all American spelling
+* Spelling checked generally
+* Code all runs given fresh workspace
+* Code has a readme, explaining how the paper results are reproduced
 -->
-```
 
 ## Introduction
 
- - What's the problem:
+Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional representation of high-dimensional data. Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@Laurens2008], uniform manifold approximation and projection (UMAP) [@Leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@article03], large-scale dimensionality reduction Using triplets (TriMAP) [@article02], and pairwise controlled manifold approximation (PaCMAP) [@Yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
+
+<!-- - What's the problem:
 
   Non-linear dimension reduction being used to summarise high-dimensional data.
 
   - Summary of literature
 
   Relevant high-d vis, NLDR history
-  
+-->
+
 ```{r}
 # label: read-pbmc-nldr
 # Read a variety of different NLDR representations of PBMC
@@ -238,9 +242,9 @@ nldr8 <- pacmap_pbmc |>
 
 
 ```{r}
-#| label: NLDR-variety
+#| label: fig-NLDR-variety
 #| echo: false
-#| fig-cap: "Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Which is the most accurate representation of the structure in high dimensions?"
+#| fig-cap: "Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
@@ -250,8 +254,11 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   plot_layout(ncol = 4)
 ```
 
+The paper is organised as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion.
 
-## Method
+## Background {#sec-background}
+
+## Method {#sec-method}
 
   - Create a representation of the model
   - Algorithm in 2D
@@ -260,7 +267,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   - Showing model in high-d
   - What is learned about simulated examples
 
-## Applications
+## Applications {#sec-applications}
 
 ### pbmc
      - NLDR view used to illustrate clusters
@@ -273,7 +280,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
      - Use our method to assess is it a reasonable representation
      - Demonstrate that it is, except for the anomalies 
      
-## Discussion
+## Discussion {#sec-discussion}
 
   - Summarise contributions
   - Explain where it is expected or not expected to work, eg higher dimensional relationships

@@ -216,36 +216,52 @@ manifold, manifold learning, tour, data vizualization
 
 \section{Introduction}\label{introduction}
 
-\begin{itemize}
-\tightlist
-\item
-  What's the problem:
-\end{itemize}
+Non-linear dimension reduction (NLDR) is popular for making a convenient
+low-dimensional representation of high-dimensional data. Recently
+developed methods include t-distributed stochastic neighbor embedding
+(tSNE) \citep{Laurens2008}, uniform manifold approximation and
+projection (UMAP) \citep{Leland2018}, potential of heat-diffusion for
+affinity-based trajectory embedding (PHATE) algorithm \citep{article03},
+large-scale dimensionality reduction Using triplets (TriMAP)
+\citep{article02}, and pairwise controlled manifold approximation
+(PaCMAP) \citep{Yingfan2021}. However, the representation generated can
+vary dramatically from method to method, and with different choices of
+parameters or random seeds made using the same method
+(Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is then,
+\textbf{which representation to use}. The choice might result in
+different procedures used in the downstream analysis, or different
+inferential conclusions. The research described here provides new visual
+tools to aid with this decision.
 
-Non-linear dimension reduction being used to summarise high-dimensional
-data.
+\begin{figure}
 
-\begin{itemize}
-\tightlist
-\item
-  Summary of literature
-\end{itemize}
+\centering{
 
-Relevant high-d vis, NLDR history
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/NLDR-variety-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-variety-1.pdf}
 
 }
 
-\caption{Six different NLDR representations of the same data. Different
-techniques and different parameter choices are used. Which is the most
-accurate representation of the structure in high dimensions?}
+\caption{\label{fig-NLDR-variety}Six different NLDR representations of
+the same data. Different techniques and different parameter choices are
+used. Researchers may have seen any of these in their analysis of this
+data, depending on their choice of method, or typical parameter choice.
+Would they make different decisions downstream in the analysis depending
+on which version seen? Which is the most accurate representation of the
+structure in high dimensions?}
 
 \end{figure}%
 
-\section{Method}\label{method}
+The paper is organised as follows. Section~\ref{sec-background} provides
+a summary of the literature on NLDR, and high-dimensional data
+visualization methods. Section~\ref{sec-method} contains the details of
+the new methodology, including simulated data examples. Two applications
+illustrating the use of the new methodology for bioinformatics and image
+classification are in Section~\ref{sec-applications}. Limitations and
+future directions are provided in Section~\ref{sec-discussion}.
+
+\section{Background}\label{sec-background}
+
+\section{Method}\label{sec-method}
 
 \begin{itemize}
 \tightlist
@@ -267,7 +283,7 @@ accurate representation of the structure in high dimensions?}
   What is learned about simulated examples
 \end{itemize}
 
-\section{Applications}\label{applications}
+\section{Applications}\label{sec-applications}
 
 \subsection{pbmc}\label{pbmc}
 
@@ -288,7 +304,7 @@ accurate representation of the structure in high dimensions?}
  
 \end{verbatim}
 
-\section{Discussion}\label{discussion}
+\section{Discussion}\label{sec-discussion}
 
 \begin{itemize}
 \tightlist
