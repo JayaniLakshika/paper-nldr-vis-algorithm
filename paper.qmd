@@ -275,7 +275,9 @@ It happens because these methods and parameter choices provide different lenses 
 The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables which are linear combinations of the original variables. Tours, defined by @Asimov1985, broaden the scope by providing movies of linear projections, that provide views the data from all directions. @lee2021review provides an review of the main developments in tours. There are many tour algorithms implemented, with many available in the R package `tourr` [@article61], and versions enabling better interactivity in `langevitour` [@article09] and `detourr` [@article22]. Linear projections are a safe way to view high-dimensional data, because they do not warp the space, so they are more faithful representations of the structure. 
 However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from $p-D$ suffers from piling [@laa2022], where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data. 
 
-The solution is to use the tour to examine how the NLDR is warping the space. 
+The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what @article08 describes as *model-in-the-data-space*. The fitted model should be overlaid on the 
+
+Linked brushing as done by @article21
 
 - Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries. 
 
@@ -301,22 +303,24 @@ The solution is to use the tour to examine how the NLDR is warping the space.
 ## Applications {#sec-applications}
 
 ### pbmc
-     - NLDR view used to illustrate clusters
-     - Use our method to assess is it a reasonable representation
-     - Demonstrate that it is not
-     - Illustrate how to use out method to get a better representation
+
+- NLDR view used to illustrate clusters
+- Use our method to assess is it a reasonable representation
+- Demonstrate that it is not
+- Illustrate how to use out method to get a better representation
      
 ### digits: 1
-     - NLDR is used to illustrate different ways 1's are drawn
-     - Use our method to assess is it a reasonable representation
-     - Demonstrate that it is, except for the anomalies 
+
+- NLDR is used to illustrate different ways 1's are drawn
+- Use our method to assess is it a reasonable representation
+- Demonstrate that it is, except for the anomalies 
      
 ## Discussion {#sec-discussion}
 
-  - Summarise contributions
-  - Explain where it is expected or not expected to work, eg higher dimensional relationships
-  - Diagnostic app to explore differences in distances
-  - What might be useful enhancements
+- Summarise contributions
+- Explain where it is expected or not expected to work, eg higher dimensional relationships
+- Diagnostic app to explore differences in distances
+- What might be useful enhancements
 
   
 ## References {.unnumbered}
