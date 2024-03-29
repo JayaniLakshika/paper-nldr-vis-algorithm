@@ -219,12 +219,12 @@ the data space
 Non-linear dimension reduction (NLDR) is popular for making a convenient
 low-dimensional (\(k-D\)) representation of high-dimensional (\(p-D\))
 data. Recently developed methods include t-distributed stochastic
-neighbor embedding (tSNE) \citep{Laurens2008}, uniform manifold
-approximation and projection (UMAP) \citep{Leland2018}, potential of
+neighbor embedding (tSNE) \citep{laurens2008}, uniform manifold
+approximation and projection (UMAP) \citep{leland2018}, potential of
 heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm
-\citep{article03}, large-scale dimensionality reduction Using triplets
-(TriMAP) \citep{article02}, and pairwise controlled manifold
-approximation (PaCMAP) \citep{Yingfan2021}. However, the representation
+\citep{moon2019}, large-scale dimensionality reduction Using triplets
+(TriMAP) \citep{amid2022}, and pairwise controlled manifold
+approximation (PaCMAP) \citep{yingfan2021}. However, the representation
 generated can vary dramatically from method to method, and with
 different choices of parameters or random seeds made using the same
 method (Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is
@@ -280,7 +280,7 @@ we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
 and PaCMAP. tNSE and UMAP can be considered to produce the \(k-D\)
 minimizing the divergence between two distributions, where the
 distributions are modeling the inter-point distances. PHATE, TriMAP and
-PaCMAP are examples of diffusion processes \citep{article64} spreading
+PaCMAP are examples of diffusion processes \citep{coifman2005} spreading
 to capture geometric shapes, that include both global and local
 structure.
 
@@ -307,9 +307,9 @@ lenses on the interpoint distances in the data.
 The alternative approach to visualizing the high-dimensional data is to
 use linear projections. PCA is the classical approach, resulting in a
 set of new variables which are linear combinations of the original
-variables. Tours, defined by \citet{Asimov1985}, broaden the scope by
+variables. Tours, defined by \citet{asimov1985}, broaden the scope by
 providing movies of linear projections, that provide views the data from
-all directions. \citet{lee2021review} provides an review of the main
+all directions. \citet{lee2021} provides an review of the main
 developments in tours. There are many tour algorithms implemented, with
 many available in the R package \texttt{tourr} \citep{wickham2011}, and
 versions enabling better interactivity in \texttt{langevitour}
