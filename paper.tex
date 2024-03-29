@@ -325,14 +325,24 @@ actually present in the data.
 
 The solution is to use the tour to examine how the NLDR is warping the
 space. This approach follows what \citet{article08} describes as
-\emph{model-in-the-data-space}.
+\emph{model-in-the-data-space}. The fitted model should be overlaid on
+the data, to examine the fit relative the spread of the observations.
+While this is straightforward, and commonly done when data is 2D, it is
+also possible in \(p-D\), for many models, when a tour is used.
 
-\begin{itemize}
-\tightlist
-\item
-  Model-in-the-data-space: how can we represent the model, eg plane for
-  PCA, grid of values for classification boundaries.
-\end{itemize}
+\citet{article08} provides several examples of models overlaid on the
+data in \(p-D\). In hierarchical clustering, a representation of the
+dendrogrom using points and lines can be constructed by augmenting the
+data with points marking merging of clusters. Showing the movie of
+linear projections reveals shows how the algorithm sequentially fitted
+the cluster model to the data. For linear discriminant analysis or
+model-based clustering the model can be indicated by \((p-1)-D\)
+ellipses. It is possible to see whether the elliptical shapes
+appropriately matches the variance of the relevant clusters, and to
+compare and contrast different fits. For PCA, one can display the
+\(k-D\) plane of the reduced dimension using wireframes of transformed
+cubes. Using a wireframe is the approach we take here, to represent the
+NLDR model in \(p-D\).
 
 \section{Method}\label{sec-method}
 

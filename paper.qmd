@@ -275,11 +275,13 @@ It happens because these methods and parameter choices provide different lenses 
 The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables which are linear combinations of the original variables. Tours, defined by @Asimov1985, broaden the scope by providing movies of linear projections, that provide views the data from all directions. @lee2021review provides an review of the main developments in tours. There are many tour algorithms implemented, with many available in the R package `tourr` [@article61], and versions enabling better interactivity in `langevitour` [@article09] and `detourr` [@article22]. Linear projections are a safe way to view high-dimensional data, because they do not warp the space, so they are more faithful representations of the structure. 
 However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from $p-D$ suffers from piling [@laa2022], where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data. 
 
-The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what @article08 describes as *model-in-the-data-space*. The fitted model should be overlaid on the 
+The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what @article08 describes as *model-in-the-data-space*. The fitted model should be overlaid on the data, to examine the fit relative the spread of the observations. While this is straightforward, and commonly done when data is 2D, it is also possible in $p-D$, for many models, when a tour is used. 
 
-Linked brushing as done by @article21
+@article08 provides several examples of models overlaid on the data in $p-D$. In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by $(p-1)-D$ ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the $k-D$ plane of the reduced dimension using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in $p-D$.
 
-- Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries. 
+<!-- Linked brushing as done by @article21
+
+- Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries, ellipses for LDA and mclust, nets for SOM.--> 
 
 ## Method {#sec-method}
 
