@@ -291,6 +291,18 @@ At first glance, thinking of of NLDR as a model fitted to the data might seem st
 
 ### Notation
 
+```{r}
+# Notations used in the paper
+
+notation_df <- read_csv("data/paper_notations.csv")
+
+# Create the table
+kable(notation_df, format = "latex", booktabs = TRUE, escape = FALSE, 
+      caption = "Notations used in this paper.", label = "tbl-notations") |>
+  kable_styling(full_width = FALSE) |>
+  row_spec(0, bold = TRUE)
+```
+
 << XXX Jayani, please insert a table of notation >>
 
 Once we have notation, we need to have some math that gives precision to the paragraph above. (XXX Michael??)
