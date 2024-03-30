@@ -380,13 +380,13 @@ value.
 \textbf{Notation} & \textbf{Description}\\
 \midrule
 $n$ & number of observations\\
-$p$ & number of dimensions in $p$-D data\\
+$p$ & number of variables in $p$-D data\\
 $d$ & number of dimensions in embedding data, usually two\\
 $X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$ & $p$-D data matrix\\
 $Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$ & embedding matrix\\
 \addlinespace
 $P_t$, $P_{t+1}$ & point along the geodesic path at time $t$ and the next time instant, which is $t+1$\\
-$y_max$ & maximum value of the scaled second embedding component\\
+$y_{max}$ & maximum value of the scaled second embedding component\\
 $r_1$, $r_2$ & range of the first and  second embedding component\\
 $h_b$, $w_b$ & height and width of the hexagon\\
 $a_r$ & aspect ratio of the 2D layout before scaling\\
@@ -397,22 +397,17 @@ $(x_s, y_s)$ & starting coordinates of the hexagonal grid\\
 $q_x$, $q_y$ & buffer amount along the x and y axes\\
 $h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
 \addlinespace
-$d_x$ & horizontal spacing\\
-$d_y$ & adjusted vertical spacing for hexagonal coordinates\\
+$d_x$, $d_y$ & horizontal spacing and adjusted vertical spacing for hexagonal coordinates\\
 $b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
-$b$ & total number of hexagon bins in the grid\\
-$b'$ & number of hexagon bins without the empty bins\\
-\addlinespace
+$b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within $k^{th}$ hexagon\\
 $(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of $k^{th}$ hexagon\\
+\addlinespace
 $C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$ & hexagonal bin centroid coordinates of $k^{th}$ hexagon\\
 $C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ & $p$-D mappings of 2D hexagonal bin centroids of $k^{th}$ hexagon\\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\textless\textless{} XXX Jayani, please insert a table of notation
-\textgreater\textgreater{}
 
 Once we have notation, we need to have some math that gives precision to
 the paragraph above. (XXX Michael??)
