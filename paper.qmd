@@ -308,8 +308,9 @@ notation_df <- read_csv("data/paper_notations.csv")
 # Create the table
 kable(notation_df, format = "latex", booktabs = TRUE, escape = FALSE, 
       caption = "Notations used in this paper.", label = "tbl-notations") |>
-  kable_styling(full_width = FALSE) |>
-  row_spec(0, bold = TRUE)
+  kable_styling(latex_options = c("HOLD_position"), position = "center", full_width = FALSE) |>
+  row_spec(0, bold = TRUE) |>
+  column_spec(1:2, width = c("5cm", "12cm"))
 ```
 
 << XXX Jayani, please insert a table of notation >>
