@@ -81,7 +81,6 @@
 \addtolength{\textwidth}{1in}%
 \addtolength{\textheight}{1.7in}%
 \addtolength{\topmargin}{-1in}%
-
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -96,6 +95,14 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\def\tightlist{}
+\usepackage{setspace}
+\newcommand\pD{$p\text{-}D$}
+\newcommand\kD{$k\text{-}D$}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -166,6 +173,7 @@ the data space},
 \def\spacingset#1{\renewcommand{\baselinestretch}%
 {#1}\small\normalsize} \spacingset{1}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{\bf Looking at Non-Linear Dimension Reductions as Models in the
@@ -211,24 +219,23 @@ the data space
 \vfill
 
 \newpage
-\spacingset{1} % DON'T change the spacing! (Default 1.9)
-
+\spacingset{1.9} % DON'T change the spacing!
 
 \section{Introduction}\label{introduction}
 
 Non-linear dimension reduction (NLDR) is popular for making a convenient
-low-dimensional (\(k-D\)) representation of high-dimensional (\(p-D\))
-data. Recently developed methods include t-distributed stochastic
-neighbor embedding (tSNE) \citep{laurens2008}, uniform manifold
-approximation and projection (UMAP) \citep{leland2018}, potential of
-heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm
-\citep{moon2019}, large-scale dimensionality reduction Using triplets
-(TriMAP) \citep{amid2022}, and pairwise controlled manifold
-approximation (PaCMAP) \citep{yingfan2021}. However, the representation
-generated can vary dramatically from method to method, and with
-different choices of parameters or random seeds made using the same
-method (Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is
-then, \textbf{which representation to use}. The choice might result in
+low-dimensional (\kD) representation of high-dimensional (\pD) data.
+Recently developed methods include t-distributed stochastic neighbor
+embedding (tSNE) \citep{laurens2008}, uniform manifold approximation and
+projection (UMAP) \citep{leland2018}, potential of heat-diffusion for
+affinity-based trajectory embedding (PHATE) algorithm \citep{moon2019},
+large-scale dimensionality reduction Using triplets (TriMAP)
+\citep{amid2022}, and pairwise controlled manifold approximation
+(PaCMAP) \citep{yingfan2021}. However, the representation generated can
+vary dramatically from method to method, and with different choices of
+parameters or random seeds made using the same method
+(Figure~\ref{fig-NLDR-variety}). The dilemma for the analyst is then,
+\textbf{which representation to use}. The choice might result in
 different procedures used in the downstream analysis, or different
 inferential conclusions. The research described here provides new visual
 tools to aid with this decision.
@@ -261,22 +268,21 @@ future directions are provided in Section~\ref{sec-discussion}.
 
 \section{Background}\label{sec-background}
 
-Historically, \(k-D\) representations of \(p-D\) data have been computed
-using multidimensional scaling (MDS) \citep{borg2005}, which includes
+Historically, \kD representations of \pD data have been computed using
+multidimensional scaling (MDS) \citep{borg2005}, which includes
 principal components analysis (PCA) \citep{jolliffe2011} as a special
-case. The \(k-D\) representation can be considered to be a layout of
-points in \(k-D\) produced by an embedding procedure that maps the data
-from \(p-D\). In MDS, the \(k-D\) layout is constructed by minimizing a
-stress function that differences distances between points in \(p-D\)
-with potential distances between points in \(k-D\). Various formulations
-of the stress function result in non-metric scaling \citep{saeed2018}
-and isomap \citep{silva2002}. Challenges in working with
-high-dimensional data, including visualization, are outlined in
-\citet{johnstone2009}.
+case. The \kD representation can be considered to be a layout of points
+in \kD produced by an embedding procedure that maps the data from \pD.
+In MDS, the \kD layout is constructed by minimizing a stress function
+that differences distances between points in \pD with potential
+distances between points in \kD. Various formulations of the stress
+function result in non-metric scaling \citep{saeed2018} and isomap
+\citep{silva2002}. Challenges in working with high-dimensional data,
+including visualization, are outlined in \citet{johnstone2009}.
 
 Many new methods for NLDR have emerged in recent years, all designed to
-better capture specific structures potentially existing in \(p-D\). Here
-we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
+better capture specific structures potentially existing in \pD. Here we
+focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
 and PaCMAP. tNSE and UMAP can be considered to produce the \(k-D\)
 minimizing the divergence between two distributions, where the
 distributions are modeling the inter-point distances. PHATE, TriMAP and
@@ -318,7 +324,7 @@ projections are a safe way to view high-dimensional data, because they
 do not warp the space, so they are more faithful representations of the
 structure. However, linear projections can be cluttered, and global
 patterns can obscure local structure. The simple activity of projecting
-data from \(p-D\) suffers from piling \citep{laa2022}, where data
+data from \pD suffers from piling \citep{laa2022}, where data
 concentrates in the center of projections. NLDR is designed to escape
 these issues, to exaggerate structure so that it can be observed. But as
 a result NLDR can hallucinate wildly, to suggest patterns that are not
@@ -329,21 +335,21 @@ space. This approach follows what \citet{wickham2015} describes as
 \emph{model-in-the-data-space}. The fitted model should be overlaid on
 the data, to examine the fit relative the spread of the observations.
 While this is straightforward, and commonly done when data is 2D, it is
-also possible in \(p-D\), for many models, when a tour is used.
+also possible in \pD, for many models, when a tour is used.
 
 \citet{wickham2015} provides several examples of models overlaid on the
-data in \(p-D\). In hierarchical clustering, a representation of the
+data in \pD. In hierarchical clustering, a representation of the
 dendrogrom using points and lines can be constructed by augmenting the
 data with points marking merging of clusters. Showing the movie of
 linear projections reveals shows how the algorithm sequentially fitted
 the cluster model to the data. For linear discriminant analysis or
-model-based clustering the model can be indicated by \((p-1)-D\)
+model-based clustering the model can be indicated by \((p-1)\text{-}D\)
 ellipses. It is possible to see whether the elliptical shapes
 appropriately matches the variance of the relevant clusters, and to
 compare and contrast different fits. For PCA, one can display the
-\(k-D\) plane of the reduced dimension using wireframes of transformed
+\kD plane of the reduced dimension using wireframes of transformed
 cubes. Using a wireframe is the approach we take here, to represent the
-NLDR model in \(p-D\).
+NLDR model in \pD.
 
 \section{Method}\label{sec-method}
 
@@ -352,15 +358,15 @@ NLDR model in \(p-D\).
 At first glance, thinking of of NLDR as a model fitted to the data might
 seem strange. It is a model in the sense that it is a ``a simplified
 representation or abstraction of a system, process, or phenomenon in the
-real world''. The \(p-D\) observations are the realization of the
-phenomenon, and the \(k-D\) NLDR layout is the simplified
-representation. From a statistical perspective we can consider the
-distances between points in the \(k-D\) layout to be variance that the
-model explains, and the (relative) difference with their distances in
-\(p-D\) is the error, or unexplained variance. Abstractly, we can also
-imagine that the positioning of points in 2D represents fitted values,
-that will have some prescribed position in \(p-D\) that can be compared
-with the observed value.
+real world''. The \pD observations are the realization of the
+phenomenon, and the \kD NLDR layout is the simplified representation.
+From a statistical perspective we can consider the distances between
+points in the \kD layout to be variance that the model explains, and the
+(relative) difference with their distances in \pD is the error, or
+unexplained variance. Abstractly, we can also imagine that the
+positioning of points in 2D represents fitted values, that will have
+some prescribed position in \pD that can be compared with the observed
+value.
 
 \subsection{Notation}\label{notation}
 
@@ -422,7 +428,7 @@ the paragraph above. (XXX Michael??)
 \subsection{Constructing the 2D model}\label{constructing-the-2d-model}
 
 \subsection{\texorpdfstring{Displaying the model in
-\(p-D\)}{Displaying the model in p-D}}\label{displaying-the-model-in-p-d}
+\pD}{Displaying the model in }}\label{displaying-the-model-in}
 
 \subsection{Measuring the fit}\label{measuring-the-fit}
 
