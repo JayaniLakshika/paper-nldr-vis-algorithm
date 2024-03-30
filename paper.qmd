@@ -171,6 +171,8 @@ Check-list before submission
 * Re-write abstract
 -->
 
+\spacingset{1.0} <!--% command in JASA style, comment to go back to double spacing-->
+
 ## Introduction
 
 Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD) representation of high-dimensional (\pD) data. Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2022], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
@@ -300,15 +302,23 @@ At first glance, thinking of of NLDR as a model fitted to the data might seem st
 
 ### Notation
 
+@tbl-notation summarises the notation used to explain the new methodology. 
+
 ```{r}
+#| label: tbl-notation
+#| tbl-cap: "Summary of notation for describing new methodology."
 # Notations used in the paper
 
-notation_df <- read_csv("misc/paper_notations.csv")
+notation_df <- read_csv("misc/notation.csv")
 
 # Create the table
-kable(notation_df, format = "latex", booktabs = TRUE, escape = FALSE, 
-      caption = "Notations used in this paper.", label = "tbl-notations") |>
-  kable_styling(latex_options = c("HOLD_position"), position = "center", full_width = FALSE, font_size = 12) |>
+kable(notation_df, 
+      format = "latex", 
+      booktabs = TRUE, escape = FALSE) |>
+  kable_styling(latex_options = c("HOLD_position"),
+                position = "center", 
+                full_width = FALSE, 
+                font_size = 12) |>
   row_spec(0, bold = TRUE) |>
   column_spec(1:2, width = c("5cm", "12cm"))
 ```
