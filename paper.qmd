@@ -339,23 +339,31 @@ We need to have some math that gives precision to the paragraphs in the previous
 
 To illustrate the method, we use simulated data. The S-curve is generated as follows XXX Jayani
 
-The S-curve model, denoted as \( T \), is simulated through a multi-step process. Initially, a random variable \( T \) is generated from a uniform distribution between \(-\frac{\pi}{2}\) and \(\frac{\pi}{2}\), representing the parameter \( T \) in the S-curve model. Subsequently, three variables \( x_1 \), \( x_2 \), and \( x_3 \) are computed based on \( T \) to construct the S-curve data. \( x_1 \) is calculated as the sine of \( T \), \( x_2 \) as twice the value of another uniformly distributed random variable between 0 and 1, and \( x_3 \) as the cosine of \( T \) minus 1, multiplied by the sign of \( T \). Additionally, four noise dimensions are introduced to the dataset to introduce variability: \( x_4 \), \( x_5 \), \( x_6 \), and \( x_7 \), each generated from uniform distributions within specific intervals. Finally, these variables are aggregated to form the S-curve dataset \( X \).
+The S-curve model, denoted as $T$, is simulated through several steps. First, a random variable $x$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $x$ in the S-curve model. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $x$ to construct the S-curve data. $x_1$ is calculated as the sine of $x$ (\@ref(eq:eqn2)), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1, and $x_3$ as the cosine of $x$ minus 1, multiplied by the sign of $x$. Additionally, four noise dimensions are introduced to the dataset to introduce variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals. Finally, these variables are combined to form the S-curve dataset $T$.
 
-Let \( T \) be a random variable uniformly distributed in the interval \( [-\frac{\pi}{2}, \frac{\pi}{2}] \), i.e., \( T \sim U\left(-\frac{\pi}{2}, \frac{\pi}{2}\right) \).
+\begin{equation} \label{eq-eqn1}
+x_1 = \sin(3 \pi x)
+\end{equation}
 
-Then, we define the following variables:
+\begin{equation} \label{eq:eqn2}
+x_2 = 2.0 \times U(0, 1)
+\end{equation}
 
-- \( x_1 = \sin(3 \pi T) \)
-- \( x_2 = 2.0 \times U(0, 1) \), where \( U(0, 1) \) represents a uniform distribution between 0 and 1.
-- \( x_3 = \text{sign}(T) \times (\cos(3 \pi T) - 1) \)
+\begin{equation} \label{eq:eqn3}
+x_3 = \text{sign}(x) \times (\cos(3 \pi x) - 1)
+\end{equation}
 
-Additionally, we introduce noise dimensions:
+\begin{equation} \label{eq:eqn4}
+x_4, x_5 \sim U(-0.02, 0.02)
+\end{equation}
 
-- \( x_4, x_5 \) are uniformly distributed random variables in the interval \( [-0.02, 0.02] \), i.e., \( x_4, x_5 \sim U(-0.02, 0.02) \).
-- \( x_6 \) is a uniformly distributed random variable in the interval \( [-0.1, 0.1] \), i.e., \( x_6 \sim U(-0.1, 0.1) \).
-- \( x_7 \) is a uniformly distributed random variable in the interval \( [-0.01, 0.01] \), i.e., \( x_7 \sim U(-0.01, 0.01) \).
+\begin{equation} \label{eq:eqn5}
+x_6 \sim U(-0.1, 0.1)
+\end{equation}
 
-Finally, we form the data matrix \( X \) by combining \( x_1, x_2, x_3, x_4, x_5, x_6, \) and \( x_7 \) into columns.
+\begin{equation} \label{eq:eqn6}
+x_7 \sim U(-0.01, 0.01)
+\end{equation}
 
 ### Generating the \kD layout
 
