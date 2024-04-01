@@ -339,10 +339,10 @@ We need to have some math that gives precision to the paragraphs in the previous
 
 To illustrate the method, we use simulated data. The S-curve is generated as follows XXX Jayani
 
-The S-curve model, denoted as $T$, is simulated through several steps. First, a random variable $x$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ in the S-curve model. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $x$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
+First, a random variable $a$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ is in $T$. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $a$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce noise variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
 
 $$
-x_1 = \sin(3 \pi x)
+x_1 = \sin(3 \pi a)
 $$ {#eq-eqn1}
 
 $$
@@ -350,7 +350,7 @@ x_2 = 2.0 \times U(0, 1)
 $$ {#eq-eqn2}
 
 $$
-x_3 = \text{sign}(x) \times (\cos(3 \pi x) - 1)
+x_3 = \text{sign}(a) \times (\cos(3 \pi a) - 1)
 $$ {#eq-eqn3}
 
 $$
