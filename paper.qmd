@@ -77,6 +77,7 @@ header-includes: |
   \usepackage{setspace}
   \newcommand\pD{$p\text{-}D$\ }
   \newcommand\kD{$k\text{-}D$\ }
+  \newcommand\dD{$d\text{-}D$\ }
 ---
 
 ```{r include=FALSE}
@@ -298,11 +299,23 @@ The solution is to use the tour to examine how the NLDR is warping the space. Th
 
 ### What is the NLDR model?
 
-At first glance, thinking of of NLDR as a model fitted to the data might seem strange. It is a model in the sense that it is a "a simplified representation or abstraction of a system, process, or phenomenon in the real world". The \pD observations are the realization of the phenomenon, and the \kD NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD layout to be variance that the model explains, and the (relative) difference with their distances in \pD is the error, or unexplained variance. Abstractly, we can also imagine that the positioning of points in 2D represents fitted values, that will have some prescribed position in \pD that can be compared with the observed value. 
+At first glance, thinking of NLDR as a model fitted to the data might seem strange. It is a model in the sense that it is a "a simplified representation or abstraction of a system, process, or phenomenon in the real world". The \pD observations are the realization of the phenomenon, and the \kD NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD layout to be variance that the model explains, and the (relative) difference with their distances in \pD is the error, or unexplained variance. Abstractly, we can also imagine that the positioning of points in 2D represents fitted values, that will have some prescribed position in \pD that can be compared with the observed value. 
 
-### Notation
+<!--### Notation -->
 
-@tbl-notation summarises the notation used to explain the new methodology. 
+@tbl-notation summarises the notation used to explain the new methodology. $X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$ represents the observed data matrix, that are $n$ \pD vectors sampled from some population.
+
+
+<!--
+$X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$
+
+$Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$
+
+$C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$
+
+$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagonal bin centroids of the $k^{th}$ hexagon
+
+-->
 
 ```{r}
 #| label: tbl-notation
@@ -319,10 +332,16 @@ kable(notation_df,
                 full_width = FALSE, 
                 font_size = 12) |>
   row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("5cm", "12cm"))
+  column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
-Once we have notation, we need to have some math that gives precision to the paragraph above. (XXX Michael??)
+We need to have some math that gives precision to the paragraphs in the previous section, defining mapping from \pD to \kD to get the \kD layout. Might be written below, too (XXX Michael??)
+
+To illustrate the method, we use simulated data. The S-curve is generated as follows XXX Jayani
+
+### Generating the \kD layout
+
+The usual procedures are followed to produce a \kD layout, using the preferred method, t-SNE, UMAP, ... The data may need to be pre-processed by standardising or transforming to principal components. 
 
 ### Constructing the 2D model
 

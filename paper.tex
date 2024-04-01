@@ -103,6 +103,7 @@
 \usepackage{setspace}
 \newcommand\pD{$p\text{-}D$\ }
 \newcommand\kD{$k\text{-}D$\ }
+\newcommand\dD{$d\text{-}D$\ }
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -357,7 +358,7 @@ NLDR model in \pD.
 
 \subsection{What is the NLDR model?}\label{what-is-the-nldr-model}
 
-At first glance, thinking of of NLDR as a model fitted to the data might
+At first glance, thinking of NLDR as a model fitted to the data might
 seem strange. It is a model in the sense that it is a ``a simplified
 representation or abstraction of a system, process, or phenomenon in the
 real world''. The \pD observations are the realization of the
@@ -370,10 +371,11 @@ positioning of points in 2D represents fitted values, that will have
 some prescribed position in \pD that can be compared with the observed
 value.
 
-\subsection{Notation}\label{notation}
-
 Table~\ref{tbl-notation} summarises the notation used to explain the new
 methodology.
+\(X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top\)
+represents the observed data matrix, that are \(n\) \pD vectors sampled
+from some population.
 
 \begin{table}
 
@@ -381,14 +383,14 @@ methodology.
 
 \centering\begingroup\fontsize{12}{14}\selectfont
 
-\begin{tabular}{>{\raggedright\arraybackslash}p{5cm}>{\raggedright\arraybackslash}p{12cm}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{12cm}}
 \toprule
 \textbf{Notation} & \textbf{Description}\\
 \midrule
-$n, p, d$ & number of observations, variables, embedding dimension, respectively\\
-$X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$ & observed data matrix\\
-$Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$ & reduced dimension, embedding matrix\\
-$P_t$, $P_{t+1}$ & point along the geodesic path at time $t$ and the next time instant, which is $t+1$\\
+$n, p, k$ & number of observations, variables, embedding dimension, respectively\\
+$X$ & $p$-dimensional data\\
+$Y$ & $k$-dimensional layout\\
+$P$ & orthonormal basis, generating a $d-dimensional$ linear projection of $p$-dimensional data\\
 $y_{max}$ & maximum value of the scaled second embedding component\\
 \addlinespace
 $r_1$, $r_2$ & range of the first and  second embedding component\\
@@ -406,8 +408,7 @@ $b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
 $b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within the $k^{th}$ hexagon\\
 $(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of the $k^{th}$ hexagon\\
-$C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$ & hexagonal bin centroid coordinates of the $k^{th}$ hexagon\\
-$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ & $p$-D mappings of 2D hexagonal bin centroids of the $k^{th}$ hexagon\\
+$C^{(j)}$ & $j$-dimensional bin centers\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -419,8 +420,19 @@ methodology.}
 
 \end{table}%
 
-Once we have notation, we need to have some math that gives precision to
-the paragraph above. (XXX Michael??)
+We need to have some math that gives precision to the paragraphs in the
+previous section, defining mapping from \pD to \kD to get the
+\kD layout. Might be written below, too (XXX Michael??)
+
+To illustrate the method, we use simulated data. The S-curve is
+generated as follows XXX Jayani
+
+\subsection{\texorpdfstring{Generating the
+\kD layout}{Generating the layout}}\label{generating-the-layout}
+
+The usual procedures are followed to produce a \kD layout, using the
+preferred method, t-SNE, UMAP, \ldots{} The data may need to be
+pre-processed by standardising or transforming to principal components.
 
 \subsection{Constructing the 2D model}\label{constructing-the-2d-model}
 

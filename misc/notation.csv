@@ -1,8 +1,8 @@
 Notation ,Description
-"$n, p, d$","number of observations, variables, embedding dimension, respectively"
-$X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$,observed data matrix
-$Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$,"reduced dimension, embedding matrix"
-"$P_t$, $P_{t+1}$","point along the geodesic path at time $t$ and the next time instant, which is $t+1$"
+"$n, p, k$","number of observations, variables, embedding dimension, respectively"
+$X$,$p$-dimensional data
+$Y$,$k$-dimensional layout
+$P$,"orthonormal basis, generating a $d-dimensional$ linear projection of $p$-dimensional data"
 $y_{max}$,maximum value of the scaled second embedding component
 "$r_1$, $r_2$",range of the first and  second embedding component
 "$h_b$, $w_b$",height and width of the hexagon
@@ -17,5 +17,4 @@ $s$,hexagonal size (radius of the outer circle surrounding the hexagon)
 "$b$, $b'$",total and non-empty hexagon bins in the grid
 $n_k$,number of observations within the $k^{th}$ hexagon
 "$(h^k_{x_i}, h^k_{y_i})$",hexagonal grid coordinates of the $k^{th}$ hexagon
-"$C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$",hexagonal bin centroid coordinates of the $k^{th}$ hexagon
-"$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$",$p$-D mappings of 2D hexagonal bin centroids of the $k^{th}$ hexagon
+$C^{(j)}$,$j$-dimensional bin centers
