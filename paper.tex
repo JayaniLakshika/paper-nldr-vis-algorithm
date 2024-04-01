@@ -391,20 +391,21 @@ $n, p, k$ & number of observations, variables, embedding dimension, respectively
 $X$ & $p$-dimensional data\\
 $Y$ & $k$-dimensional layout\\
 $P$ & orthonormal basis, generating a $d-dimensional$ linear projection of $p$-dimensional data\\
-$y_{max}$ & maximum value of the scaled second embedding component\\
+$T$ & true  model\\
 \addlinespace
+$y_{max}$ & maximum value of the scaled second embedding component\\
 $r_1$, $r_2$ & range of the first and  second embedding component\\
 $h_b$, $w_b$ & height and width of the hexagon\\
 $a_r$ & aspect ratio of the 2D layout before scaling\\
 $h_r$ & hexagon ratio\\
-$s$ & hexagonal size (radius of the outer circle surrounding the hexagon)\\
 \addlinespace
+$s$ & hexagonal size (radius of the outer circle surrounding the hexagon)\\
 $(x_s, \ y_s)$ & starting coordinates of the hexagonal grid\\
 $q_x$, $q_y$ & buffer amount along the x and y axes\\
 $h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
 $d_x$, $d_y$ & horizontal spacing and adjusted vertical spacing for hexagonal coordinates\\
-$b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
 \addlinespace
+$b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
 $b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within the $k^{th}$ hexagon\\
 $(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of the $k^{th}$ hexagon\\
@@ -426,6 +427,56 @@ previous section, defining mapping from \pD to \kD to get the
 
 To illustrate the method, we use simulated data. The S-curve is
 generated as follows XXX Jayani
+
+The S-curve model, denoted as ( T ), is simulated through a multi-step
+process. Initially, a random variable ( T ) is generated from a uniform
+distribution between (-\frac{\pi}{2}) and (\frac{\pi}{2}), representing
+the parameter ( T ) in the S-curve model. Subsequently, three variables
+( x\_1 ), ( x\_2 ), and ( x\_3 ) are computed based on ( T ) to
+construct the S-curve data. ( x\_1 ) is calculated as the sine of ( T ),
+( x\_2 ) as twice the value of another uniformly distributed random
+variable between 0 and 1, and ( x\_3 ) as the cosine of ( T ) minus 1,
+multiplied by the sign of ( T ). Additionally, four noise dimensions are
+introduced to the dataset to introduce variability: ( x\_4 ), ( x\_5 ),
+( x\_6 ), and ( x\_7 ), each generated from uniform distributions within
+specific intervals. Finally, these variables are aggregated to form the
+S-curve dataset ( X ).
+
+Let ( T ) be a random variable uniformly distributed in the interval (
+{[}-\frac{\pi}{2}, \frac{\pi}{2}{]} ), i.e., ( T
+\sim U\left(-\frac{\pi}{2}, \frac{\pi}{2}\right) ).
+
+Then, we define the following variables:
+
+\begin{itemize}
+\tightlist
+\item
+  ( x\_1 = \sin(3 \pi T) )
+\item
+  ( x\_2 = 2.0 \times U(0, 1) ), where ( U(0, 1) ) represents a uniform
+  distribution between 0 and 1.
+\item
+  ( x\_3 = \text{sign}(T) \times (\cos(3 \pi T) - 1) )
+\end{itemize}
+
+Additionally, we introduce noise dimensions:
+
+\begin{itemize}
+\tightlist
+\item
+  ( x\_4, x\_5 ) are uniformly distributed random variables in the
+  interval ( {[}-0.02, 0.02{]} ), i.e., ( x\_4, x\_5 \sim U(-0.02, 0.02)
+  ).
+\item
+  ( x\_6 ) is a uniformly distributed random variable in the interval (
+  {[}-0.1, 0.1{]} ), i.e., ( x\_6 \sim U(-0.1, 0.1) ).
+\item
+  ( x\_7 ) is a uniformly distributed random variable in the interval (
+  {[}-0.01, 0.01{]} ), i.e., ( x\_7 \sim U(-0.01, 0.01) ).
+\end{itemize}
+
+Finally, we form the data matrix ( X ) by combining ( x\_1, x\_2, x\_3,
+x\_4, x\_5, x\_6, ) and ( x\_7 ) into columns.
 
 \subsection{\texorpdfstring{Generating the
 \kD layout}{Generating the layout}}\label{generating-the-layout}
