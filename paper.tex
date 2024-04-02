@@ -99,6 +99,7 @@
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage[utf8]{inputenc}
+\usepackage{bm}
 \def\tightlist{}
 \usepackage{setspace}
 \newcommand\pD{$p\text{-}D$\ }
@@ -296,19 +297,10 @@ structure.
 The array of layouts in Figure~\ref{fig-NLDR-variety} illustrate what
 can emerge from the choices of method and parameters, and the random
 seed that initiates the computation. Key structures interpreted from
-these views suggest:
-
-\begin{itemize}
-\tightlist
-\item
-  highly \textbf{separated clusters} (a, b, e, g, h) with the number
-  ranging from 3-6,
-\item
-  \textbf{stringy branches} (f), and
-\item
-  \textbf{barely separated clusters} (c, d) which apparently
-  \textbf{contradicts} the other representations.
-\end{itemize}
+these views suggest: (1) highly \textbf{separated clusters} (a, b, e, g,
+h) with the number ranging from 3-6; (2) \textbf{stringy branches} (f),
+and (3) \textbf{barely separated clusters} (c, d) which would
+\textbf{contradict} the other representations.
 
 It happens because these methods and parameter choices provide different
 lenses on the interpoint distances in the data.
@@ -372,10 +364,11 @@ some prescribed position in \pD that can be compared with the observed
 value.
 
 Table~\ref{tbl-notation} summarises the notation used to explain the new
-methodology.
-\(X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top\)
-represents the observed data matrix, that are \(n\) \pD vectors sampled
-from some population.
+methodology. The observed data is denoted as
+\(\mathbfit{x}_{n \times p}\) where \(x_{ij}\) would indicate the
+\(i^{th}\) observation on the \(j^{th}\) variable sampled from a
+population \(\mathbfit{X}\). To refer to variable \(j\), we would use
+\(X_j\).
 
 \begin{table}
 
@@ -388,23 +381,24 @@ from some population.
 \textbf{Notation} & \textbf{Description}\\
 \midrule
 $n, p, k$ & number of observations, variables, embedding dimension, respectively\\
-$X$ & $p$-dimensional data\\
+$\mathbfit{X}, \mathbfit{x}$ & $p$-dimensional data (population, sample)\\
 $Y$ & $k$-dimensional layout\\
-$P$ & orthonormal basis, generating a $d-dimensional$ linear projection of $p$-dimensional data\\
-$y_{max}$ & maximum value of the scaled second embedding component\\
+$P$ & orthonormal basis, generating a $d\text{-}dimensional$ linear projection of $p$-dimensional data\\
+$T$ & true  model\\
 \addlinespace
+$y_{max}$ & maximum value of the scaled second embedding component\\
 $r_1$, $r_2$ & range of the first and  second embedding component\\
 $h_b$, $w_b$ & height and width of the hexagon\\
 $a_r$ & aspect ratio of the 2D layout before scaling\\
 $h_r$ & hexagon ratio\\
-$s$ & hexagonal size (radius of the outer circle surrounding the hexagon)\\
 \addlinespace
+$s$ & hexagonal size (radius of the outer circle surrounding the hexagon)\\
 $(x_s, \ y_s)$ & starting coordinates of the hexagonal grid\\
 $q_x$, $q_y$ & buffer amount along the x and y axes\\
 $h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
 $d_x$, $d_y$ & horizontal spacing and adjusted vertical spacing for hexagonal coordinates\\
-$b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
 \addlinespace
+$b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
 $b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within the $k^{th}$ hexagon\\
 $(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of the $k^{th}$ hexagon\\
@@ -420,12 +414,16 @@ methodology.}
 
 \end{table}%
 
+To illustrate the method, we use \(7\text{-}D\) simulated data, which we
+call the ``S-curve''. It is constructed by setting
+\(X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]\).
+The remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error,
+with small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
+true model.
+
 We need to have some math that gives precision to the paragraphs in the
 previous section, defining mapping from \pD to \kD to get the
 \kD layout. Might be written below, too (XXX Michael??)
-
-To illustrate the method, we use simulated data. The S-curve is
-generated as follows XXX Jayani
 
 \subsection{\texorpdfstring{Generating the
 \kD layout}{Generating the layout}}\label{generating-the-layout}

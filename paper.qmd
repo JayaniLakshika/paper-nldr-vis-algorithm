@@ -73,6 +73,7 @@ header-includes: |
   \usepackage{float}
   \usepackage{hyperref}
   \usepackage[utf8]{inputenc}
+  \usepackage{bm}
   \def\tightlist{}
   \usepackage{setspace}
   \newcommand\pD{$p\text{-}D$\ }
@@ -276,11 +277,7 @@ Historically, \kD representations of \pD data have been computed using multidime
 
 Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD. Here we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP and PaCMAP. tNSE and UMAP can be considered to produce the \kD minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@coifman2005] spreading to capture geometric shapes, that include both global and local structure.
 
-The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: 
-
-- highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6, 
-- **stringy branches** (f), and 
-- **barely separated clusters** (c, d) which apparently **contradicts** the other representations. 
+The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d) which would **contradict** the other representations. 
 
 It happens because these methods and parameter choices provide different lenses on the interpoint distances in the data.
 
@@ -303,8 +300,7 @@ At first glance, thinking of NLDR as a model fitted to the data might seem stran
 
 <!--### Notation -->
 
-@tbl-notation summarises the notation used to explain the new methodology. $X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$ represents the observed data matrix, that are $n$ \pD vectors sampled from some population.
-
+@tbl-notation summarises the notation used to explain the new methodology. The observed data is denoted as $\mathbfit{x}_{n \times p}$ where $x_{ij}$ would indicate the $i^{th}$ observation on the $j^{th}$ variable sampled from a population $\mathbfit{X}$. To refer to variable $j$, we would use $X_j$. 
 
 <!--
 $X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$
@@ -335,9 +331,36 @@ kable(notation_df,
   column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
+
 We need to have some math that gives precision to the paragraphs in the previous section, defining mapping from \pD to \kD to get the \kD layout. Might be written below, too (XXX Michael??)
 
-To illustrate the method, we use simulated data. The S-curve is generated as follows XXX Jayani
+<!--First, a random variable $a$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ is in $T$. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $a$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce noise variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
+
+$$
+x_1 = \sin(3 \pi a)
+$$ {#eq-eqn1}
+
+$$
+x_2 = 2.0 \times U(0, 1)
+$$ {#eq-eqn2}
+
+$$
+x_3 = \text{sign}(a) \times (\cos(3 \pi a) - 1)
+$$ {#eq-eqn3}
+
+$$
+x_4, x_5 \sim U(-0.02, 0.02)
+$$ {#eq-eqn4}
+
+$$
+x_6 \sim U(-0.1, 0.1)
+$$ {#eq-eqn5}
+
+$$
+x_7 \sim U(-0.01, 0.01)
+$$ {#eq-eqn6}
+-->
 
 ### Generating the \kD layout
 
