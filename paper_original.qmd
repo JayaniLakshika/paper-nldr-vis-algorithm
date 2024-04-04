@@ -1436,7 +1436,7 @@ mse_df <- dplyr::bind_rows(vec)[0, ]
 mse_df <- mse_df |>
   dplyr::mutate_if(is.character, as.numeric)
 
-diff_start_df <- diff_start_df[c(1:5, 11:15,21:25, 101),]
+diff_start_df <- diff_start_df[c(2:5, 12:15, 22:25, 32:35, 42:45, 52:55, 62:65, 72:75, 82:85, 92:95, 101),]
 
 for (i in 1:NROW(diff_start_df)) { #NROW(diff_start_df)
   
@@ -1536,10 +1536,35 @@ mse_plot_start_point
 #| echo: false
 #| warning: false
 
+num_bins_x_s_curve <- 6
+num_bins_y_s_curve <- 14
+hex_size_s_curve <- 0.13
+
+hb_obj_s_curve <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x_s_curve, 
+                      num_bins_y = num_bins_y_s_curve, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_s_curve, col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_s_curve$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_s_curve$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_s_curve$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+
+## remove low-density hexagons
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
 ## Initial x and y start
 initial_start_plot <- ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data = df_bin_centroids, aes(x = c_x, y = c_y, label = hexID), size = 2) +
+  geom_point(data = umap_s_curve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  #geom_text(data = df_bin_centroids, aes(x = c_x, y = c_y, label = hexID), size = 2) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   coord_equal() +
   theme_void() +
@@ -1561,9 +1586,12 @@ num_bins_x_s_curve <- 6
 num_bins_y_s_curve <- 14
 hex_size_s_curve <- 0.13
 
+min_mse_df <- mse_df |> dplyr::filter(mse == min(mse_df$mse))
+
 hb_obj_s_curve_n <- hex_binning(data = umap_s_curve_scaled, x = "UMAP1", 
                       y = "UMAP2", num_bins_x = num_bins_x_s_curve, 
-                      num_bins_y = num_bins_y_s_curve, x_start = -0.0652, y_start = -0.195, 
+                      num_bins_y = num_bins_y_s_curve, x_start = min_mse_df$x_start[1], 
+                      y_start = min_mse_df$y_start[1], 
                       buffer_x = NA, buffer_y = NA, hex_size = hex_size_s_curve, col_start = "UMAP")
 
 ## Data set with all possible centroids in the hexagonal grid
@@ -1584,7 +1612,8 @@ hex_grid_with_counts_n <- dplyr::left_join(hex_grid_n, counts_df_n, by = c("hex_
 
 new_start_plot <- ggplot(data = hex_grid_with_counts_n, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-  geom_text(data= df_bin_centroids_n, aes(x = c_x, y = c_y, label = hexID), size = 2) +
+  #geom_text(data= df_bin_centroids_n, aes(x = c_x, y = c_y, label = hexID), size = 2) +
+  geom_point(data = umap_s_curve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   coord_equal() +
   theme_void() +
@@ -1633,7 +1662,7 @@ bin_centroids_ch_plot <- ggplot(data = all_centroids_df, aes(x = c_x, y = c_y)) 
 
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration when the starting point defined at $(-0.113, -0.098)$ (colored in gray) and the starting point defined at $(-0.025, -0.108)$ (colored in light orange)."
+#| fig-cap: "(a) Visualization of bin centroids and (b) hexagonal grid, showcasing the configuration when the starting point defined at $(-0.113, -0.098)$ (colored in gray) and the starting point defined at $(-0.075, -0.195)$ (colored in light orange)."
 #| label: fig-scurveshifthexgridsexp
 #| fig-pos: H
 
@@ -1644,7 +1673,7 @@ bin_centroids_ch_plot + hex_grid_ch_plot +
 
 ```{r}
 #| echo: false
-#| fig-cap: "Hexbin plots shows the distribution of points before and after changing the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot when the starting point defined at $(-0.113, -0.098)$, and (b) Hexbin plot after changing the starting point to $(-0.025, -0.108)$."
+#| fig-cap: "Hexbin plots shows the distribution of points before and after changing the starting point of the hexagonal grid generated for UMAP applied to the training S-curve dataset. (a) Hexbin plot when the starting point defined at $(-0.113, -0.098)$, and (b) Hexbin plot after changing the starting point to $(-0.075, -0.195)$."
 #| label: fig-scurveshifthexgrids
 #| fig-pos: H
 
