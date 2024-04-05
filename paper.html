@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jayani P.G. Lakshika">
+<meta name="author" content="Dianne Cook">
+<meta name="author" content="Paul Harrison">
+<meta name="author" content="Michael Lydeamore">
+<meta name="author" content="Thiyanga S. Talagala">
+<meta name="keywords" content="high-dimensional data, dimension reduction, hexagonal binning, low-dimensional manifold, tour, data vizualization, model in the data space">
+
+<title>Looking at Non-Linear Dimension Reductions as Models in the Data Space</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="paper_files/libs/clipboard/clipboard.min.js"></script>
+<script src="paper_files/libs/quarto-html/quarto.js"></script>
+<script src="paper_files/libs/quarto-html/popper.min.js"></script>
+<script src="paper_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="paper_files/libs/quarto-html/anchor.min.js"></script>
+<link href="paper_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="paper_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="paper_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="paper_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="paper_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+</head><body>\usepackage{amsmath}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{bm}
+\def\tightlist{}
+\usepackage{setspace}
+\newcommand\pD{$p\text{-}D$\ }
+\newcommand\kD{$k\text{-}D$\ }
+\newcommand\dD{$d\text{-}D$\ }
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+
+
+
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#sec-background" id="toc-sec-background" class="nav-link" data-scroll-target="#sec-background"><span class="header-section-number">2</span> Background</a></li>
+  <li><a href="#sec-method" id="toc-sec-method" class="nav-link" data-scroll-target="#sec-method"><span class="header-section-number">3</span> Method</a>
+  <ul class="collapse">
+  <li><a href="#what-is-the-nldr-model" id="toc-what-is-the-nldr-model" class="nav-link" data-scroll-target="#what-is-the-nldr-model"><span class="header-section-number">3.1</span> What is the NLDR model?</a></li>
+  <li><a href="#displaying-the-model-in" id="toc-displaying-the-model-in" class="nav-link" data-scroll-target="#displaying-the-model-in"><span class="header-section-number">3.2</span> Displaying the model in </a></li>
+  <li><a href="#measuring-the-fit" id="toc-measuring-the-fit" class="nav-link" data-scroll-target="#measuring-the-fit"><span class="header-section-number">3.3</span> Measuring the fit</a></li>
+  <li><a href="#what-can-be-learned" id="toc-what-can-be-learned" class="nav-link" data-scroll-target="#what-can-be-learned"><span class="header-section-number">3.4</span> What can be learned</a></li>
+  </ul></li>
+  <li><a href="#sec-applications" id="toc-sec-applications" class="nav-link" data-scroll-target="#sec-applications"><span class="header-section-number">4</span> Applications</a>
+  <ul class="collapse">
+  <li><a href="#pbmc" id="toc-pbmc" class="nav-link" data-scroll-target="#pbmc"><span class="header-section-number">4.1</span> pbmc</a></li>
+  <li><a href="#digits-1" id="toc-digits-1" class="nav-link" data-scroll-target="#digits-1"><span class="header-section-number">4.2</span> digits: 1</a></li>
+  </ul></li>
+  <li><a href="#sec-discussion" id="toc-sec-discussion" class="nav-link" data-scroll-target="#sec-discussion"><span class="header-section-number">5</span> Discussion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="paper.pdf"><i class="bi bi-file-pdf"></i>PDF (jasa)</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Looking at Non-Linear Dimension Reductions as Models in the Data Space</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Authors</div>
+  <div class="quarto-title-meta-heading">Affiliations</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="https://jayanilakshika.netlify.app/">Jayani P.G. Lakshika</a> <a href="mailto:jayani.piyadigamage@monash.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-6265-6481" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Monash University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="http://www.dicook.org/">Dianne Cook</a> <a href="mailto:dicook@monash.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-3813-7155" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Monash University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Paul Harrison <a href="mailto:paul.harrison@monash.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-3980-268X" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Monash University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author">Michael Lydeamore <a href="mailto:michael.lydeamore@monash.edu" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0001-6515-827X" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            Monash University
+          </p>
+      </div>
+    <div class="quarto-title-meta-contents">
+    <p class="author"><a href="https://thiyanga.netlify.app/">Thiyanga S. Talagala</a> <a href="mailto:ttalagala@sjp.ac.lk" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0000-0002-0656-9789" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            University of Sri Jayewardenepura
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+  
+    
+  </div>
+  
+<div>
+  <div class="abstract">
+    <div class="block-title">Abstract</div>
+    <p>Nonlinear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional (high-D) data using non-linear transformation. The methods and parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of high-D distributions. To help evaluate the NLDR we have developed an algorithm to show the 2D NLDR model in the high-D space, viewed with a tour. One can see if the model fits everywhere or better in some subspaces, or completely mismatches the data. It is used to evaluate which 2D layout is the best representation of the high-D distribution and see how different methods may have similar summaries or quirks.</p>
+  </div>
+</div>
+
+<div>
+  <div class="keywords">
+    <div class="block-title">Keywords</div>
+    <p>high-dimensional data, dimension reduction, hexagonal binning, low-dimensional manifold, tour, data vizualization, model in the data space</p>
+  </div>
+</div>
+
+</header>
+
+
+<!-- 
+Check-list before submission
+* Is it all American spelling
+* Spelling checked generally
+* Code all runs given fresh workspace
+* Code has a readme, explaining how the paper results are reproduced
+* Re-write abstract
+-->
+<p> <!--% command in JASA style, comment to go back to double spacing--></p>
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional () representation of high-dimensional () data. Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) <span class="citation" data-cites="laurens2008">(<a href="#ref-laurens2008" role="doc-biblioref">Maaten and Hinton 2008</a>)</span>, uniform manifold approximation and projection (UMAP) <span class="citation" data-cites="leland2018">(<a href="#ref-leland2018" role="doc-biblioref">McInnes and Healy 2018</a>)</span>, potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm <span class="citation" data-cites="moon2019">(<a href="#ref-moon2019" role="doc-biblioref">Moon et al. 2019</a>)</span>, large-scale dimensionality reduction Using triplets (TriMAP) <span class="citation" data-cites="amid2022">(<a href="#ref-amid2022" role="doc-biblioref">Amid and Warmuth 2022</a>)</span>, and pairwise controlled manifold approximation (PaCMAP) <span class="citation" data-cites="yingfan2021">(<a href="#ref-yingfan2021" role="doc-biblioref"><strong>yingfan2021?</strong></a>)</span>. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (<a href="#fig-NLDR-variety" class="quarto-xref">Figure&nbsp;1</a>). The dilemma for the analyst is then, <strong>which representation to use</strong>. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision.</p>
+<!-- - What's the problem:
+
+  Non-linear dimension reduction being used to summarise high-dimensional data.
+
+  - Summary of literature
+
+  Relevant high-d vis, NLDR history
+-->
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-NLDR-variety" class="quarto-figure quarto-figure-center quarto-float anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-NLDR-variety-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="paper_files/figure-html/fig-NLDR-variety-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-NLDR-variety-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The paper is organised as follows. <a href="#sec-background" class="quarto-xref">Section&nbsp;2</a> provides a summary of the literature on NLDR, and high-dimensional data visualization methods. <a href="#sec-method" class="quarto-xref">Section&nbsp;3</a> contains the details of the new methodology, including simulated data examples. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in <a href="#sec-applications" class="quarto-xref">Section&nbsp;4</a>. Limitations and future directions are provided in <a href="#sec-discussion" class="quarto-xref">Section&nbsp;5</a>.</p>
+</section>
+<section id="sec-background" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="sec-background"><span class="header-section-number">2</span> Background</h2>
+<!-- - Connection between NLDR and MDS-->
+<p>Historically, representations of data have been computed using multidimensional scaling (MDS) <span class="citation" data-cites="borg2005">(<a href="#ref-borg2005" role="doc-biblioref">Borg and Groenen 2005</a>)</span>, which includes principal components analysis (PCA) <span class="citation" data-cites="jolliffe2011">(<a href="#ref-jolliffe2011" role="doc-biblioref">Jolliffe 2011</a>)</span> as a special case. The representation can be considered to be a layout of points in produced by an embedding procedure that maps the data from . In MDS, the layout is constructed by minimizing a stress function that differences distances between points in with potential distances between points in . Various formulations of the stress function result in non-metric scaling <span class="citation" data-cites="saeed2018">(<a href="#ref-saeed2018" role="doc-biblioref">Saeed et al. 2018</a>)</span> and isomap <span class="citation" data-cites="silva2002">(<a href="#ref-silva2002" role="doc-biblioref">Silva and Tenenbaum 2002</a>)</span>. Challenges in working with high-dimensional data, including visualization, are outlined in <span class="citation" data-cites="johnstone2009">Johnstone and Titterington (<a href="#ref-johnstone2009" role="doc-biblioref">2009</a>)</span>.</p>
+<p>Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in . Here we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP and PaCMAP. tNSE and UMAP can be considered to produce the minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes <span class="citation" data-cites="coifman2005">(<a href="#ref-coifman2005" role="doc-biblioref">Coifman et al. 2005</a>)</span> spreading to capture geometric shapes, that include both global and local structure.</p>
+<p>The array of layouts in <a href="#fig-NLDR-variety" class="quarto-xref">Figure&nbsp;1</a> illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly <strong>separated clusters</strong> (a, b, e, g, h) with the number ranging from 3-6; (2) <strong>stringy branches</strong> (f), and (3) <strong>barely separated clusters</strong> (c, d) which would <strong>contradict</strong> the other representations.</p>
+<p>It happens because these methods and parameter choices provide different lenses on the interpoint distances in the data.</p>
+<p>The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables which are linear combinations of the original variables. Tours, defined by <span class="citation" data-cites="lee2021">Lee et al. (<a href="#ref-lee2021" role="doc-biblioref">2021</a>)</span>, broaden the scope by providing movies of linear projections, that provide views the data from all directions. <span class="citation" data-cites="lee2021">Lee et al. (<a href="#ref-lee2021" role="doc-biblioref">2021</a>)</span> provides an review of the main developments in tours. There are many tour algorithms implemented, with many available in the R package <code>tourr</code> <span class="citation" data-cites="wickham2011">(<a href="#ref-wickham2011" role="doc-biblioref">Wickham et al. 2011</a>)</span>, and versions enabling better interactivity in <code>langevitour</code> <span class="citation" data-cites="harisson2024">(<a href="#ref-harisson2024" role="doc-biblioref">Harrison 2023</a>)</span> and <code>detourr</code> <span class="citation" data-cites="hart2022">(<a href="#ref-hart2022" role="doc-biblioref">Hart and Wang 2022</a>)</span>. Linear projections are a safe way to view high-dimensional data, because they do not warp the space, so they are more faithful representations of the structure. However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from suffers from piling <span class="citation" data-cites="laa2022">(<a href="#ref-laa2022" role="doc-biblioref">Laa et al. 2022</a>)</span>, where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data.</p>
+<p>The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what <span class="citation" data-cites="wickham2015">Wickham et al. (<a href="#ref-wickham2015" role="doc-biblioref">2015</a>)</span> describes as <em>model-in-the-data-space</em>. The fitted model should be overlaid on the data, to examine the fit relative the spread of the observations. While this is straightforward, and commonly done when data is 2D, it is also possible in , for many models, when a tour is used.</p>
+<p><span class="citation" data-cites="wickham2015">Wickham et al. (<a href="#ref-wickham2015" role="doc-biblioref">2015</a>)</span> provides several examples of models overlaid on the data in . In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by <span class="math inline">\((p-1)\text{-}D\)</span> ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the plane of the reduced dimension using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in .</p>
+<!-- Linked brushing as done by @article21
+
+- Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries, ellipses for LDA and mclust, nets for SOM.-->
+</section>
+<section id="sec-method" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="sec-method"><span class="header-section-number">3</span> Method</h2>
+<section id="what-is-the-nldr-model" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="what-is-the-nldr-model"><span class="header-section-number">3.1</span> What is the NLDR model?</h3>
+<p>At first glance, thinking of NLDR as a model fitted to the data might seem strange. It is a model in the sense that it is a “a simplified representation or abstraction of a system, process, or phenomenon in the real world”. The observations are the realization of the phenomenon, and the NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the layout to be variance that the model explains, and the (relative) difference with their distances in is the error, or unexplained variance. Abstractly, we can also imagine that the positioning of points in 2D represents fitted values, that will have some prescribed position in that can be compared with the observed value. <!--### Notation --></p>
+<p><a href="#tbl-notation" class="quarto-xref">Table&nbsp;1</a> summarises the notation used to explain the new methodology. The observed data is denoted as <span class="math inline">\(\mathbfit{x}_{n \times p}\)</span> where <span class="math inline">\(x_{ij}\)</span> would indicate the <span class="math inline">\(i^{th}\)</span> observation on the <span class="math inline">\(j^{th}\)</span> variable sampled from a population <span class="math inline">\(\mathbfit{X}\)</span>. To refer to variable <span class="math inline">\(j\)</span>, we would use <span class="math inline">\(X_j\)</span>.</p>
+<!--
+$X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$
+
+$Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$
+
+$C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$
+
+$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagonal bin centroids of the $k^{th}$ hexagon
+
+-->
+<div class="cell" data-layout-align="center">
+<div id="tbl-notation" class="cell quarto-float anchored" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl figure">
+<div aria-describedby="tbl-notation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-notation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Summary of notation for describing new methodology.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>To illustrate the method, we use <span class="math inline">\(7\text{-}D\)</span> simulated data, which we call the “S-curve”. It is constructed by setting <span class="math inline">\(X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]\)</span>. The remaining variables <span class="math inline">\(X_4, X_5, X_6, X_7\)</span> are all uniform error, with small variance. We would consider <span class="math inline">\(T=(X_1, X_2, X_3)\)</span> to be the true model.</p>
+<p>We define the NLDR model as a function that maps to , and takes some (hyper)parameters <span class="math inline">\(\vec{\theta}\)</span>. That is,</p>
+<p><span class="math display">\[g : \mathbb{R}^p \rightarrow \mathbb{R}^k.\]</span></p>
+<p>The parameter vector, <span class="math inline">\(\vec{\theta}\)</span>, depends on the choice of <span class="math inline">\(g\)</span>, and can be considered part of ‘model fitting’ in the traditional sense. Common choices for <span class="math inline">\(g\)</span> include tSNE, uMAP, PACMAP, or PHATE, although in theory any function that maps the entire space <span class="math inline">\(\mathbb{R}^p\)</span> to a subset of <span class="math inline">\(\mathbb{R}^k\)</span> is suitable. Any input requirements for the data (such as normalisation, or preprocessing through the use of PCA or similar) is considered part of the function <span class="math inline">\(g\)</span>.</p>
+<p>Next, we create a model of the representation of the data using hexagonal binning. The aim of this process is to reduce the noise in the original data that may be preserved by <span class="math inline">\(g\)</span>. Define a hexagonal grid across the space, defined by the height and width of the hexagon (<span class="math inline">\(h_b\)</span> and <span class="math inline">\(w_b\)</span> respectively), the aspect ratio of the hexagon (<span class="math inline">\(h_r\)</span>), and the starting coordinates of the hexagonal grid <span class="math inline">\((x_s, y_s)\)</span>. We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.</p>
+<p>With the grid defined, the points will belong to a hexagonal bin. That is, for each <span class="math inline">\(y \in \mathbfit{Y}\)</span>, we can (uniquely) identify the hexagon that the point belongs to. Let,</p>
+<p><span class="math display">\[h : \mathbb{R}^k \rightarrow \mathbb{R}^k, \]</span></p>
+<p>be the function that maps a point in space to it’s hexagonal centroid. It follows that <span class="math inline">\(h \circ g : \mathbb{R}^p \rightarrow \mathbb{R}^k\)</span> maps each point in <span class="math inline">\(\mathbfit{X}\)</span> to a centroid.</p>
+<p>The final step of the algorithm is <em>lifting</em> the model back to , completing the ‘model-in-data-space’ picture. For this, define the set <span class="math inline">\(H^k\)</span> to be the set of points that belong to centroid <span class="math inline">\(k\)</span>. That is, <span class="math inline">\(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\)</span>. We use the Euclidean mean of the points in <span class="math inline">\(H^k\)</span> to map the centroid <span class="math inline">\((h_x^k, h_y^k)\)</span> to a point in . Let the <span class="math inline">\(i\)</span>-th component of the mean be</p>
+<p><span class="math display">\[f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,\]</span></p>
+<p>with corresponding vector <span class="math inline">\(\vec{f_i}\)</span>. Then, <span class="math inline">\(f(h\circ g)(x)\)</span> maps a point to the model estimate, completing the model cycle.</p>
+<!--First, a random variable $a$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ is in $T$. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $a$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce noise variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
+
+$$
+x_1 = \sin(3 \pi a)
+$$ {#eq-eqn1}
+
+$$
+x_2 = 2.0 \times U(0, 1)
+$$ {#eq-eqn2}
+
+$$
+x_3 = \text{sign}(a) \times (\cos(3 \pi a) - 1)
+$$ {#eq-eqn3}
+
+$$
+x_4, x_5 \sim U(-0.02, 0.02)
+$$ {#eq-eqn4}
+
+$$
+x_6 \sim U(-0.1, 0.1)
+$$ {#eq-eqn5}
+
+$$
+x_7 \sim U(-0.01, 0.01)
+$$ {#eq-eqn6}
+-->
+</section>
+<section id="displaying-the-model-in" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="displaying-the-model-in"><span class="header-section-number">3.2</span> Displaying the model in </h3>
+</section>
+<section id="measuring-the-fit" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="measuring-the-fit"><span class="header-section-number">3.3</span> Measuring the fit</h3>
+</section>
+<section id="what-can-be-learned" class="level3" data-number="3.4">
+<h3 data-number="3.4" class="anchored" data-anchor-id="what-can-be-learned"><span class="header-section-number">3.4</span> What can be learned</h3>
+<ul>
+<li>Overview: Generate a form that maps the model, that is the interpoint distances. What is the model?</li>
+<li>Notation</li>
+<li>Create a representation of the model
+<ul>
+<li>using hex-binning in 2D,</li>
+<li>parameters,</li>
+<li>tuning,</li>
+<li>pre-processing</li>
+</ul></li>
+<li>How does this map to the representation in high-d
+<ul>
+<li>Centroids,</li>
+<li>Edges</li>
+</ul></li>
+<li>Measuring fit
+<ul>
+<li>Fitted values</li>
+<li>Error calculation</li>
+</ul></li>
+<li>What is learned about simulated examples
+<ul>
+<li>Interesting organisation of points in UMAP</li>
+<li></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="sec-applications" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="sec-applications"><span class="header-section-number">4</span> Applications</h2>
+<section id="pbmc" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="pbmc"><span class="header-section-number">4.1</span> pbmc</h3>
+<ul>
+<li>NLDR view used to illustrate clusters</li>
+<li>Use our method to assess is it a reasonable representation</li>
+<li>Demonstrate that it is not</li>
+<li>Illustrate how to use out method to get a better representation</li>
+</ul>
+</section>
+<section id="digits-1" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="digits-1"><span class="header-section-number">4.2</span> digits: 1</h3>
+<ul>
+<li>NLDR is used to illustrate different ways 1’s are drawn</li>
+<li>Use our method to assess is it a reasonable representation</li>
+<li>Demonstrate that it is, except for the anomalies</li>
+</ul>
+</section>
+</section>
+<section id="sec-discussion" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="sec-discussion"><span class="header-section-number">5</span> Discussion</h2>
+<ul>
+<li>Summarise contributions</li>
+<li>Explain where it is expected or not expected to work, eg higher dimensional relationships</li>
+<li>Human behaviour, the desire to have more certainty, and a tendency to prefer the well-separated views</li>
+<li>Diagnostic app to explore differences in distances</li>
+<li>What might be useful enhancements</li>
+</ul>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-amid2022" class="csl-entry" role="listitem">
+Amid, E., and Warmuth, M. K. (2022), <span>“<a href="https://arxiv.org/abs/1910.00204">TriMap: Large-scale dimensionality reduction using triplets</a>.”</span>
+</div>
+<div id="ref-borg2005" class="csl-entry" role="listitem">
+Borg, I., and Groenen, P. J. F. (2005), <em>Modern multidimensional scaling theory and applications</em>, New York: Springer. <a href="https://doi.org/10.1007/0-387-28981-X">https://doi.org/10.1007/0-387-28981-X</a>.
+</div>
+<div id="ref-coifman2005" class="csl-entry" role="listitem">
+Coifman, R., Lafon, S., Lee, A., Maggioni, M., Nadler, B., Warner, F., and Zucker, S. (2005), <span>“Geometric diffusions as a tool for harmonic analysis and structure definition of data: Diffusion maps,”</span> <em>Proceedings of the National Academy of Sciences of the United States of America</em>, 102, 7426–31. <a href="https://doi.org/10.1073/pnas.0500334102">https://doi.org/10.1073/pnas.0500334102</a>.
+</div>
+<div id="ref-harisson2024" class="csl-entry" role="listitem">
+Harrison, P. (2023), <span>“Langevitour: Smooth interactive touring of high dimensions, demonstrated with scRNA-seq data,”</span> <em>The R Journal</em>, 15, 206–219. <a href="https://doi.org/10.32614/RJ-2023-046">https://doi.org/10.32614/RJ-2023-046</a>.
+</div>
+<div id="ref-hart2022" class="csl-entry" role="listitem">
+Hart, C., and Wang, E. (2022), <em><a href="\url{https://casperhart.github.io/detourr/}">Detourr: Portable and performant tour animations</a></em>.
+</div>
+<div id="ref-johnstone2009" class="csl-entry" role="listitem">
+Johnstone, I. M., and Titterington, D. M. (2009), <span>“Statistical challenges of high-dimensional data,”</span> <em>Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences</em>, 367, 4237–4253. <a href="https://doi.org/10.1098/rsta.2009.0159">https://doi.org/10.1098/rsta.2009.0159</a>.
+</div>
+<div id="ref-jolliffe2011" class="csl-entry" role="listitem">
+Jolliffe, I. (2011), <span>“Principal component analysis,”</span> in <em>International encyclopedia of statistical science</em>, ed. M. Lovric, Berlin, Heidelberg: Springer Berlin Heidelberg, pp. 1094–1096. <a href="https://doi.org/10.1007/978-3-642-04898-2_455">https://doi.org/10.1007/978-3-642-04898-2_455</a>.
+</div>
+<div id="ref-laa2022" class="csl-entry" role="listitem">
+Laa, U., Cook, D., and Lee, S. (2022), <span>“Burning sage: Reversing the curse of dimensionality in the visualization of high-dimensional data,”</span> <em>J. Comput. Graph. Stat.</em>, 31, 40–49. <a href="https://doi.org/10.1080/10618600.2021.1963264">https://doi.org/10.1080/10618600.2021.1963264</a>.
+</div>
+<div id="ref-lee2021" class="csl-entry" role="listitem">
+Lee, S., Cook, D., Silva, N. da, Laa, U., Wang, E., Spyrison, N., and Zhang, H. S. (2021), <span>“<a href="https://arxiv.org/abs/2104.08016">A review of the state-of-the-art on tours for dynamic visualization of high-dimensional data</a>.”</span>
+</div>
+<div id="ref-laurens2008" class="csl-entry" role="listitem">
+Maaten, L. van der, and Hinton, G. E. (2008), <span>“Visualizing data using t-SNE,”</span> <em>Journal of Machine Learning Research</em>, 9, 2579–2605.
+</div>
+<div id="ref-leland2018" class="csl-entry" role="listitem">
+McInnes, L., and Healy, J. (2018), <span>“UMAP: Uniform manifold approximation and projection for dimension reduction,”</span> <em>ArXiv</em>, abs/1802.03426.
+</div>
+<div id="ref-moon2019" class="csl-entry" role="listitem">
+Moon, K. R., Dijk, D. van, Wang, Z., Gigante, S. A., Burkhardt, D. B., Chen, W. S., Yim, K., Elzen, A. van den, Hirn, M. J., Coifman, R. R., Ivanova, N. B., Wolf, G., and Krishnaswamy, S. (2019), <span>“Visualizing structure and transitions in high-dimensional biological data,”</span> <em>Nature Biotechnology</em>, 37, 1482–1492.
+</div>
+<div id="ref-saeed2018" class="csl-entry" role="listitem">
+Saeed, N., Nam, H., Haq, M. I. U., and Muhammad Saqib, D. B. (2018), <span>“A survey on multidimensional scaling,”</span> <em>ACM Comput. Surv.</em>, New York, NY, USA: Association for Computing Machinery, 51. <a href="https://doi.org/10.1145/3178155">https://doi.org/10.1145/3178155</a>.
+</div>
+<div id="ref-silva2002" class="csl-entry" role="listitem">
+Silva, V., and Tenenbaum, J. (2002), <span>“Global versus local methods in nonlinear dimensionality reduction,”</span> <em>Advances in neural information processing systems</em>, 15.
+</div>
+<div id="ref-wickham2015" class="csl-entry" role="listitem">
+Wickham, H., Cook, D., and Hofmann, H. (2015), <span>“Visualizing statistical models: Removing the blindfold,”</span> <em>Statistical Analysis and Data Mining: The ASA Data Science Journal</em>, 8, 203–225. https://doi.org/<a href="https://doi.org/10.1002/sam.11271">https://doi.org/10.1002/sam.11271</a>.
+</div>
+<div id="ref-wickham2011" class="csl-entry" role="listitem">
+Wickham, H., Cook, D., Hofmann, H., and Buja, A. (2011), <span>“<a href="\url{http://www.jstatsoft.org/v40/i02/}">Tourr: An r package for exploring multivariate data with projections</a>,”</span> <em>Journal of Statistical Software</em>, 40, 1--18.
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

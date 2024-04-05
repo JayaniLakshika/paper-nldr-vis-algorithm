@@ -297,7 +297,6 @@ The solution is to use the tour to examine how the NLDR is warping the space. Th
 ### What is the NLDR model?
 
 At first glance, thinking of NLDR as a model fitted to the data might seem strange. It is a model in the sense that it is a "a simplified representation or abstraction of a system, process, or phenomenon in the real world". The \pD observations are the realization of the phenomenon, and the \kD NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD layout to be variance that the model explains, and the (relative) difference with their distances in \pD is the error, or unexplained variance. Abstractly, we can also imagine that the positioning of points in 2D represents fitted values, that will have some prescribed position in \pD that can be compared with the observed value. 
-
 <!--### Notation -->
 
 @tbl-notation summarises the notation used to explain the new methodology. The observed data is denoted as $\mathbfit{x}_{n \times p}$ where $x_{ij}$ would indicate the $i^{th}$ observation on the $j^{th}$ variable sampled from a population $\mathbfit{X}$. To refer to variable $j$, we would use $X_j$. 
@@ -333,7 +332,26 @@ kable(notation_df,
 
 To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
 
-We need to have some math that gives precision to the paragraphs in the previous section, defining mapping from \pD to \kD to get the \kD layout. Might be written below, too (XXX Michael??)
+
+We define the NLDR model as a function that maps \pD to \kD, and takes some (hyper)parameters $\vec{\theta}$. That is,
+
+$$g : \mathbb{R}^p \rightarrow \mathbb{R}^k.$$
+
+The parameter vector, $\vec{\theta}$, depends on the choice of $g$, and can be considered part of 'model fitting' in the traditional sense. Common choices for $g$ include tSNE, uMAP, PACMAP, or PHATE, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. Any input requirements for the data (such as normalisation, or preprocessing through the use of PCA or similar) is considered part of the function $g$.
+
+Next, we create a model of the \kD representation of the data using hexagonal binning. The aim of this process is to reduce the noise in the original data that may be preserved by $g$. Define a hexagonal grid across the \kD space, defined by the height and width of the hexagon ($h_b$ and $w_b$ respectively), the aspect ratio of the hexagon ($h_r$), and the starting coordinates of the hexagonal grid $(x_s, y_s)$. We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.
+
+With the grid defined, the \kD points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. Let,
+
+$$h : \mathbb{R}^k \rightarrow \mathbb{R}^k, $$
+
+be the function that maps a point in \kD space to it's hexagonal centroid. It follows that $h \circ g : \mathbb{R}^p \rightarrow \mathbb{R}^k$ maps each point in $\mathbfit{X}$ to a \kD centroid.
+
+The final step of the algorithm is _lifting_ the \kD model back to \pD, completing the 'model-in-data-space' picture. For this, define the set $H^k$ to be the set of points that belong to centroid $k$. That is, $H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}$. We use the \pD Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD. Let the $i$-th component of the \pD mean be
+
+$$f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,$$
+
+with corresponding \pD vector $\vec{f_i}$. Then, $f(h\circ g)(x)$ maps a \pD point to the \pD model estimate, completing the model cycle.
 
 <!--First, a random variable $a$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ is in $T$. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $a$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce noise variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
 
@@ -361,12 +379,6 @@ $$
 x_7 \sim U(-0.01, 0.01)
 $$ {#eq-eqn6}
 -->
-
-### Generating the \kD layout
-
-The usual procedures are followed to produce a \kD layout, using the preferred method, t-SNE, UMAP, ... The data may need to be pre-processed by standardising or transforming to principal components. 
-
-### Constructing the 2D model
 
 ### Displaying the model in \pD
 

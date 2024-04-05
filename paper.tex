@@ -421,18 +421,51 @@ The remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error,
 with small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
 true model.
 
-We need to have some math that gives precision to the paragraphs in the
-previous section, defining mapping from \pD to \kD to get the
-\kD layout. Might be written below, too (XXX Michael??)
+We define the NLDR model as a function that maps \pD to \kD, and takes
+some (hyper)parameters \(\vec{\theta}\). That is,
 
-\subsection{\texorpdfstring{Generating the
-\kD layout}{Generating the layout}}\label{generating-the-layout}
+\[g : \mathbb{R}^p \rightarrow \mathbb{R}^k.\]
 
-The usual procedures are followed to produce a \kD layout, using the
-preferred method, t-SNE, UMAP, \ldots{} The data may need to be
-pre-processed by standardising or transforming to principal components.
+The parameter vector, \(\vec{\theta}\), depends on the choice of \(g\),
+and can be considered part of `model fitting' in the traditional sense.
+Common choices for \(g\) include tSNE, uMAP, PACMAP, or PHATE, although
+in theory any function that maps the entire space \(\mathbb{R}^p\) to a
+subset of \(\mathbb{R}^k\) is suitable. Any input requirements for the
+data (such as normalisation, or preprocessing through the use of PCA or
+similar) is considered part of the function \(g\).
 
-\subsection{Constructing the 2D model}\label{constructing-the-2d-model}
+Next, we create a model of the \kD representation of the data using
+hexagonal binning. The aim of this process is to reduce the noise in the
+original data that may be preserved by \(g\). Define a hexagonal grid
+across the \kD space, defined by the height and width of the hexagon
+(\(h_b\) and \(w_b\) respectively), the aspect ratio of the hexagon
+(\(h_r\)), and the starting coordinates of the hexagonal grid
+\((x_s, y_s)\). We deliberately separate out the creation of the
+hexagonal grid from the mapping of points on the grid.
+
+With the grid defined, the \kD points will belong to a hexagonal bin.
+That is, for each \(y \in \mathbfit{Y}\), we can (uniquely) identify the
+hexagon that the point belongs to. Let,
+
+\[h : \mathbb{R}^k \rightarrow \mathbb{R}^k, \]
+
+be the function that maps a point in \kD space to it's hexagonal
+centroid. It follows that
+\(h \circ g : \mathbb{R}^p \rightarrow \mathbb{R}^k\) maps each point in
+\(\mathbfit{X}\) to a \kD centroid.
+
+The final step of the algorithm is \emph{lifting} the \kD model back to
+\pD, completing the `model-in-data-space' picture. For this, define the
+set \(H^k\) to be the set of points that belong to centroid \(k\). That
+is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\). We use the
+\pD Euclidean mean of the points in \(H^k\) to map the centroid
+\((h_x^k, h_y^k)\) to a point in \pD. Let the \(i\)-th component of the
+\pD mean be
+
+\[f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,\]
+
+with corresponding \pD vector \(\vec{f_i}\). Then, \(f(h\circ g)(x)\)
+maps a \pD point to the \pD model estimate, completing the model cycle.
 
 \subsection{\texorpdfstring{Displaying the model in
 \pD}{Displaying the model in }}\label{displaying-the-model-in}
