@@ -337,7 +337,7 @@ We define the NLDR model as a function that maps \pD to \kD, and takes some (hyp
 
 $$g : \mathbb{R}^p \rightarrow \mathbb{R}^k.$$
 
-The parameter vector, $\vec{\theta}$, depends on the choice of $g$, and can be considered part of 'model fitting' in the traditional sense. Common choices for $g$ include tSNE, UMAP, PHATE, TriMAP, or PaCMAP, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. Any input requirements for the data (such as normalisation, or preprocessing through the use of PCA or similar) is considered part of the function $g$.
+The parameter vector, $\vec{\theta}$, depends on the choice of $g$, and can be considered part of 'model fitting' in the traditional sense. Common choices for $g$ include tSNE, UMAP, PHATE, TriMAP, or PaCMAP, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.
 
 Next, we create a model of the \kD representation of the data using hexagonal binning. The aim of this process is to reduce the noise in the original data that may be preserved by $g$. Define a hexagonal grid across the \kD space, defined by the height and width of the hexagon ($h_b$ and $w_b$ respectively), the aspect ratio of the hexagon ($h_r$), and the starting coordinates of the hexagonal grid $(x_s, y_s)$. We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.
 
