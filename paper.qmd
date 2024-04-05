@@ -337,7 +337,7 @@ We define the NLDR model as a function that maps \pD to \kD, and takes some (hyp
 
 $$g : \mathbb{R}^p \rightarrow \mathbb{R}^k.$$
 
-The parameter vector, $\vec{\theta}$, depends on the choice of $g$, and can be considered part of 'model fitting' in the traditional sense. Common choices for $g$ include tSNE, uMAP, PACMAP, or PHATE, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. Any input requirements for the data (such as normalisation, or preprocessing through the use of PCA or similar) is considered part of the function $g$.
+The parameter vector, $\vec{\theta}$, depends on the choice of $g$, and can be considered part of 'model fitting' in the traditional sense. Common choices for $g$ include tSNE, UMAP, PHATE, TriMAP, or PaCMAP, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. Any input requirements for the data (such as normalisation, or preprocessing through the use of PCA or similar) is considered part of the function $g$.
 
 Next, we create a model of the \kD representation of the data using hexagonal binning. The aim of this process is to reduce the noise in the original data that may be preserved by $g$. Define a hexagonal grid across the \kD space, defined by the height and width of the hexagon ($h_b$ and $w_b$ respectively), the aspect ratio of the hexagon ($h_r$), and the starting coordinates of the hexagonal grid $(x_s, y_s)$. We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.
 
@@ -347,7 +347,7 @@ $$h : \mathbb{R}^k \rightarrow \mathbb{R}^k, $$
 
 be the function that maps a point in \kD space to it's hexagonal centroid. It follows that $h \circ g : \mathbb{R}^p \rightarrow \mathbb{R}^k$ maps each point in $\mathbfit{X}$ to a \kD centroid.
 
-The final step of the algorithm is _lifting_ the \kD model back to \pD, completing the 'model-in-data-space' picture. For this, define the set $H^k$ to be the set of points that belong to centroid $k$. That is, $H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}$. We use the \pD Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD. Let the $i$-th component of the \pD mean be
+The final step of the algorithm is _lifting_ the \kD model back to \pD, completing the *model-in-the-data-space* picture. For this, define the set $H^k$ to be the set of points that belong to centroid $k$. That is, $H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}$. We use the \pD Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD. Let the $i$-th component of the \pD mean be
 
 $$f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,$$
 

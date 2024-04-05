@@ -428,11 +428,12 @@ some (hyper)parameters \(\vec{\theta}\). That is,
 
 The parameter vector, \(\vec{\theta}\), depends on the choice of \(g\),
 and can be considered part of `model fitting' in the traditional sense.
-Common choices for \(g\) include tSNE, uMAP, PACMAP, or PHATE, although
-in theory any function that maps the entire space \(\mathbb{R}^p\) to a
-subset of \(\mathbb{R}^k\) is suitable. Any input requirements for the
-data (such as normalisation, or preprocessing through the use of PCA or
-similar) is considered part of the function \(g\).
+Common choices for \(g\) include tSNE, UMAP, PHATE, TriMAP, or PaCMAP,
+although in theory any function that maps the entire space
+\(\mathbb{R}^p\) to a subset of \(\mathbb{R}^k\) is suitable. Any input
+requirements for the data (such as normalisation, or preprocessing
+through the use of PCA or similar) is considered part of the function
+\(g\).
 
 Next, we create a model of the \kD representation of the data using
 hexagonal binning. The aim of this process is to reduce the noise in the
@@ -455,10 +456,10 @@ centroid. It follows that
 \(\mathbfit{X}\) to a \kD centroid.
 
 The final step of the algorithm is \emph{lifting} the \kD model back to
-\pD, completing the `model-in-data-space' picture. For this, define the
-set \(H^k\) to be the set of points that belong to centroid \(k\). That
-is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\). We use the
-\pD Euclidean mean of the points in \(H^k\) to map the centroid
+\pD, completing the \emph{model-in-the-data-space} picture. For this,
+define the set \(H^k\) to be the set of points that belong to centroid
+\(k\). That is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\). We use
+the \pD Euclidean mean of the points in \(H^k\) to map the centroid
 \((h_x^k, h_y^k)\) to a point in \pD. Let the \(i\)-th component of the
 \pD mean be
 
