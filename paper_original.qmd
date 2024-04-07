@@ -3197,7 +3197,8 @@ plot_layout(guides='collect', ncol=2) &
 Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/zq2GM9qvUNA>).
 :::
 
-In terms of model error, some data points show high error (see @fig-nldervisMNISTPACMAP) due to their deviation from the typical high-D data structure, acting as outliers. This is evident when comparing the images associated with these high model error points (see @fig-sampleimgerror) to others (see @fig-sampleimg).
+There are certain data points that exhibit high error rates due to their deviation from the usual high-dimensional data structure, which makes them outliers. These outliers can be classified into two types: those that are outliers within the nonlinear structure and those that lie outside of it. The images associated with high model error points within the nonlinear structure display different patterns of the digit 1, as shown in @fig-sampleimgerrorwithin. However, when comparing these images to the ones found outside of the nonlinear structure, it becomes evident that the latter display different patterns of the digit 1 (see @fig-sampleimgerror). @fig-nldervisMNISTPACMAP shows some data points that have high error rates due to their outlier status.
+
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
@@ -3223,7 +3224,7 @@ imge_error_sample_within <- pixels_gathered |>
   facet_wrap(~ factor(instance, levels = c(
     4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 6912,
     4370, 1227, 4042, 2444, 836,
-    1654)), ncol = 6) +
+    1654)), ncol = 12) +
   theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
               axis.title.x = element_blank(), axis.title.y = element_blank(),
               axis.text.x = element_blank(), axis.ticks.x = element_blank(),
