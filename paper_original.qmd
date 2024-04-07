@@ -3027,10 +3027,12 @@ img_sample
 num_bins_x_mnist <- 12
 num_bins_y_mnist <- 15
 hex_size_mnist <- 0.06
+x_start_mnist <- -0.05773503
+y_start_mnist <- -0.010
 
 hb_obj_mnist <- hex_binning(data = pacmap_minst_scaled, x = "PaCMAP1", 
                       y = "PaCMAP2", num_bins_x = num_bins_x_mnist, 
-                      num_bins_y = num_bins_y_mnist, x_start = NA, y_start = NA, 
+                      num_bins_y = num_bins_y_mnist, x_start = x_start_mnist, y_start = y_start_mnist, 
                       buffer_x = NA, buffer_y = NA, hex_size = hex_size_mnist, col_start = "PaCMAP")
 
 ## Data set with all possible centroids in the hexagonal grid
@@ -3063,7 +3065,7 @@ model_object <- fit_highd_model( training_data = training_data_mnist,
                                  x = "PaCMAP1", y = "PaCMAP2", 
                                  num_bins_x = num_bins_x_mnist, 
                                  num_bins_y = num_bins_y_mnist, 
-                                 x_start = NA, y_start = NA, 
+                                 x_start = x_start_mnist, y_start = y_start_mnist, 
                                  buffer_x = NA, buffer_y = NA, 
                                  hex_size = hex_size_mnist,
                                  is_rm_lwd_hex = FALSE, 
@@ -3198,15 +3200,67 @@ Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the mod
 In terms of model error, some data points show high error (see @fig-nldervisMNISTPACMAP) due to their deviation from the typical high-D data structure, acting as outliers. This is evident when comparing the images associated with these high model error points (see @fig-sampleimgerror) to others (see @fig-sampleimg).
 
 <!--images that occur large error-->
+<!-- within the nonlinear structure-->
+```{r}
+#| warning: false
+#| echo: false
+
+mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
+pixels_gathered <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% c(
+    4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 6912,
+    4370, 1227, 4042, 2444, 836,
+    1654)) 
+
+theme_set(theme_light())
+imge_error_sample_within <- pixels_gathered |> 
+  ggplot(aes(x, y, fill = value)) +  
+  geom_tile() +  
+  facet_wrap(~ factor(instance, levels = c(
+    4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 6912,
+    4370, 1227, 4042, 2444, 836,
+    1654)), ncol = 6) +
+  theme(legend.position = "none", plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+              axis.title.x = element_blank(), axis.title.y = element_blank(),
+              axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+              axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(), #change legend key width
+        legend.title = element_text(size=5), #change legend title font size
+        legend.text = element_text(size=4),
+         legend.key.height = unit(0.25, 'cm'),
+         legend.key.width = unit(0.25, 'cm'),
+        strip.text = element_blank(),
+        aspect.ratio = 1)
+```
+
+```{r}
+#| echo: false
+#| fig-cap: "Images of handwritten digit 1 which occur large model error within the nonlinear strcuture."
+#| label: fig-sampleimgerrorwithin
+#| out-width: 100%
+#| fig-pos: H
+
+imge_error_sample_within
+```
+
+
+<!--outside the nonlinear structure-->
 ```{r}
 #| warning: false
 #| echo: false
 
 img_error <- error_df |> 
-  dplyr::filter(total >= 10) |> 
+  dplyr::filter(total >= 8) |> 
+  dplyr::filter((!ID %in% c(
+    4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 6912,
+    4370, 1227, 4042, 2444, 836,
+    1654))) |>
   dplyr::pull(ID)
 
-mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 pixels_gathered <-  mnist_data |>
   mutate(instance = row_number()) |>
   gather(pixel, value, -Label, -instance) |>
@@ -3234,7 +3288,7 @@ imge_error_sample <- pixels_gathered |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Images of handwritten digit 1 which occur large model error."
+#| fig-cap: "Images of handwritten digit 1 which occur large model error outside the nonlinear structure."
 #| label: fig-sampleimgerror
 #| out-width: 100%
 #| fig-pos: H
