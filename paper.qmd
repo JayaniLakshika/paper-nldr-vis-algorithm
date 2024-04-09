@@ -371,7 +371,13 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 ```{r}
 umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 
-nldr_scurve <- umap_scurve |> 
+umap_scurve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_scurve, 
+                                    x = "UMAP1", y = "UMAP2"))) |>
+  rename(c("UMAP1" = "scaled_UMAP1", 
+                  "UMAP2" = "scaled_UMAP2")) |>
+  mutate(ID = 1:NROW(umap_scurve))
+
+nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
   interior_annotation("a")
@@ -379,19 +385,80 @@ nldr_scurve <- umap_scurve |>
 
 <!--Full hexagonal grid with UMAP data-->
 
+```{r}
+num_bins_x_scurve <- 6
+num_bins_y_scurve <- 14
+hex_size_scurve <- 0.13
+
+hb_obj_scurve <- hex_binning(data = umap_scurve_scaled, x = "UMAP1", 
+                      y = "UMAP2", num_bins_x = num_bins_x_scurve, 
+                      num_bins_y = num_bins_y_scurve, x_start = NA, y_start = NA, 
+                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_scurve, 
+                      col_start = "UMAP")
+
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_scurve$centroids))
+
+## Generate all coordinates of hexagons
+hex_grid <- as.data.frame(do.call(cbind, hb_obj_scurve$hex_poly))
+
+## To obtain the standardise counts within hexbins
+counts_df <- as.data.frame(do.call(cbind, hb_obj_scurve$std_cts))
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
+                                             counts_df = counts_df)
+
+hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
+  geom_point(data = umap_scurve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  interior_annotation("b")
+```
+
 <!--Non-empty bins with bin centroids-->
+
+```{r}
+hex_grid_nonempty <- hex_grid |>
+  filter(hex_poly_id %in% df_bin_centroids$hexID)
+
+hex_grid_nonempty_scurve <-  ggplot(data = hex_grid_nonempty, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
+  geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
+  interior_annotation("c") 
+```
 
 <!--2D model-->
 
 ```{r}
+## Triangulate bin centroids
+tr1_object_scurve <- tri_bin_centroids(df_bin_centroids, x = "c_x", y = "c_y")
+tr_from_to_df_scurve <- gen_edges(tri_object = tr1_object_scurve)
+
+## Compute 2D distances
+distance_scurve <- cal_2d_dist(tr_coord_df = tr_from_to_df_scurve, 
+                             start_x = "x_from", start_y = "y_from", 
+                             end_x = "x_to", end_y = "y_to", 
+                             select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_scurve <- find_lg_benchmark(distance_edges = distance_scurve, distance_col = "distance")
+
+trimesh_removed_scurve <- vis_rmlg_mesh(distance_edges = distance_scurve, 
+                                        benchmark_value = benchmark_scurve, 
+                                        tr_coord_df = tr_from_to_df_scurve, 
+                                        distance_col = "distance") +
+  interior_annotation("d") 
+```
+
+```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
-#| fig-cap: "Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
+#| fig-cap: ""
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
 
-nldr_scurve +
+nldr_scurve + hex_grid_scurve + hex_grid_nonempty_scurve + trimesh_removed_scurve +
   plot_layout(ncol = 4)
 ```
 
