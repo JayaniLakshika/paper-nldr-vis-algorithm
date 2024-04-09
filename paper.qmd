@@ -367,6 +367,35 @@ $$ {#eq-eqn6}
 
 To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
 
+<!--UMAP applied for Scurve data-->
+```{r}
+umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+
+nldr_scurve <- umap_scurve |> 
+  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
+  interior_annotation("a")
+```
+
+<!--Full hexagonal grid with UMAP data-->
+
+<!--Non-empty bins with bin centroids-->
+
+<!--2D model-->
+
+```{r}
+#| label: fig-NLDR-scurve
+#| echo: false
+#| fig-cap: "Six different NLDR representations of the same data. Different techniques and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
+#| fig-width: 8
+#| fig-height: 4
+#| out-width: 100%
+
+nldr_scurve +
+  plot_layout(ncol = 4)
+```
+
+
 ### Displaying the model in \pD{}
 
 The final step of the algorithm is _lifting_ the \kD{} model back to \pD{}, completing the *model-in-the-data-space* picture. For this, define the set $H^k$ to be the set of points that belong to centroid $k$. That is, $H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}$. We use the \pD{} Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD{}. Let the $i$-th component of the \pD{} mean be
