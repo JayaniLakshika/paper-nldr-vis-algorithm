@@ -228,7 +228,7 @@ the data space
 \section{Introduction}\label{introduction}
 
 Non-linear dimension reduction (NLDR) is popular for making a convenient
-low-dimensional (\kD) representation of high-dimensional (\pD) data.
+low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data.
 Recently developed methods include t-distributed stochastic neighbor
 embedding (tSNE) \citep{laurens2008}, uniform manifold approximation and
 projection (UMAP) \citep{leland2018}, potential of heat-diffusion for
@@ -272,23 +272,23 @@ future directions are provided in Section~\ref{sec-discussion}.
 
 \section{Background}\label{sec-background}
 
-Historically, \kD   representations of \pD   data have been computed
+Historically, \kD{} representations of \pD{} data have been computed
 using multidimensional scaling (MDS) \citep{borg2005}, which includes
 principal components analysis (PCA) \citep{jolliffe2011} as a special
-case. The \kD   representation can be considered to be a layout of
-points in \kD   produced by an embedding procedure that maps the data
-from \pD. In MDS, the \kD   layout is constructed by minimizing a stress
-function that differences distances between points in \pD   with
-potential distances between points in \kD. Various formulations of the
+case. The \kD{} representation can be considered to be a layout of
+points in \kD{} produced by an embedding procedure that maps the data
+from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a
+stress function that differences distances between points in \pD{} with
+potential distances between points in \kD{}. Various formulations of the
 stress function result in non-metric scaling \citep{saeed2018} and
 isomap \citep{silva2002}. Challenges in working with high-dimensional
 data, including visualization, are outlined in \citet{johnstone2009}.
 
 Many new methods for NLDR have emerged in recent years, all designed to
-better capture specific structures potentially existing in \pD. Here we
-focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
-and PaCMAP. tNSE and UMAP can be considered to produce the
-\kD   minimizing the divergence between two distributions, where the
+better capture specific structures potentially existing in \pD{}. Here
+we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP
+and PaCMAP. tNSE and UMAP can be considered to produce the \kD{}
+minimizing the divergence between two distributions, where the
 distributions are modeling the inter-point distances. PHATE, TriMAP and
 PaCMAP are examples of diffusion processes \citep{coifman2005} spreading
 to capture geometric shapes, that include both global and local
@@ -319,7 +319,7 @@ projections are a safe way to view high-dimensional data, because they
 do not warp the space, so they are more faithful representations of the
 structure. However, linear projections can be cluttered, and global
 patterns can obscure local structure. The simple activity of projecting
-data from \pD   suffers from piling \citep{laa2022}, where data
+data from \pD{} suffers from piling \citep{laa2022}, where data
 concentrates in the center of projections. NLDR is designed to escape
 these issues, to exaggerate structure so that it can be observed. But as
 a result NLDR can hallucinate wildly, to suggest patterns that are not
@@ -330,10 +330,10 @@ space. This approach follows what \citet{wickham2015} describes as
 \emph{model-in-the-data-space}. The fitted model should be overlaid on
 the data, to examine the fit relative the spread of the observations.
 While this is straightforward, and commonly done when data is 2D, it is
-also possible in \pD, for many models, when a tour is used.
+also possible in \pD{}, for many models, when a tour is used.
 
 \citet{wickham2015} provides several examples of models overlaid on the
-data in \pD. In hierarchical clustering, a representation of the
+data in \pD{}. In hierarchical clustering, a representation of the
 dendrogrom using points and lines can be constructed by augmenting the
 data with points marking merging of clusters. Showing the movie of
 linear projections reveals shows how the algorithm sequentially fitted
@@ -341,10 +341,10 @@ the cluster model to the data. For linear discriminant analysis or
 model-based clustering the model can be indicated by \((p-1)\text{-}D\)
 ellipses. It is possible to see whether the elliptical shapes
 appropriately matches the variance of the relevant clusters, and to
-compare and contrast different fits. For PCA, one can display the
-\kD plane of the reduced dimension using wireframes of transformed
-cubes. Using a wireframe is the approach we take here, to represent the
-NLDR model in \pD.
+compare and contrast different fits. For PCA, one can display the \kD{}
+plane of the reduced dimension using wireframes of transformed cubes.
+Using a wireframe is the approach we take here, to represent the NLDR
+model in \pD{}.
 
 \section{Method}\label{sec-method}
 
@@ -352,18 +352,18 @@ NLDR model in \pD.
 
 At first glance, thinking of NLDR as a modeling technique might seem
 strange. It is a simplified representation or abstraction of a system,
-process, or phenomenon in the real world. The \pD   observations are the
-realization of the phenomenon, and the \kD   NLDR layout is the
+process, or phenomenon in the real world. The \pD{} observations are the
+realization of the phenomenon, and the \kD{} NLDR layout is the
 simplified representation. From a statistical perspective we can
-consider the distances between points in the \kD   layout to be variance
+consider the distances between points in the \kD{} layout to be variance
 that the model explains, and the (relative) difference with their
-distances in \pD   is the error, or unexplained variance. We can also
+distances in \pD{} is the error, or unexplained variance. We can also
 imagine that the positioning of points in 2D represent the fitted
-values, that will have some prescribed position in \pD   that can be
+values, that will have some prescribed position in \pD{} that can be
 compared with their observed values. This is the conceptual framework
 underlying the more formal versions of factor analysis \citep{cfa69} and
 multidimensional scaling (MDS) \citep{borg2005}. (Note that, for this
-thinking the full \pD   data needs to be available, not just the
+thinking the full \pD{} data needs to be available, not just the
 interpoint distances.)
 
 \begin{table}
@@ -427,15 +427,15 @@ be lifted into high-dimensional space, the layout needs to be augmented
 to include neighbour information. A simple approach would be to
 triangulate the points and add edges. A more stable approach is to first
 hexagonally bin the data, and connect the bin centroids. This process
-serves reduce some noise in the resulting surface shown in \pD.
+serves reduce some noise in the resulting surface shown in \pD{}.
 
-Define a hexagonal grid across the \kD space, using hexagons with fixed
-height (\(h_b\)), width (\(w_b\)). The starting coordinates
-\((x_s, y_s)\) mark the lower left of the grid. Each of the \kD points
+Define a hexagonal grid across the \kD{} space, using hexagons with
+fixed height (\(h_b\)), width (\(w_b\)). The starting coordinates
+\((x_s, y_s)\) mark the lower left of the grid. Each of the \kD{} points
 will belong to a hexagonal bin. That is, for each
 \(y \in \mathbfit{Y}\), we can (uniquely) identify the hexagon that the
 point belongs to. Let \(h : \mathbb{R}^k \rightarrow \mathbb{R}^k\) be
-the function that maps a point in \kD space to it's hexagonal centroid
+the function that maps a point in \kD{} space to it's hexagonal centroid
 (\(C^{(k)}\)).
 
 To illustrate the method, we use \(7\text{-}D\) simulated data, which we
@@ -446,20 +446,21 @@ with small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
 true model.
 
 \subsection{\texorpdfstring{Displaying the model in
-\pD}{Displaying the model in }}\label{displaying-the-model-in}
+\pD{}}{Displaying the model in }}\label{displaying-the-model-in}
 
-The final step of the algorithm is \emph{lifting} the \kD model back to
-\pD, completing the \emph{model-in-the-data-space} picture. For this,
-define the set \(H^k\) to be the set of points that belong to centroid
-\(k\). That is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\). We use
-the \pD Euclidean mean of the points in \(H^k\) to map the centroid
-\((h_x^k, h_y^k)\) to a point in \pD. Let the \(i\)-th component of the
-\pD mean be
+The final step of the algorithm is \emph{lifting} the \kD{} model back
+to \pD{}, completing the \emph{model-in-the-data-space} picture. For
+this, define the set \(H^k\) to be the set of points that belong to
+centroid \(k\). That is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\).
+We use the \pD{} Euclidean mean of the points in \(H^k\) to map the
+centroid \((h_x^k, h_y^k)\) to a point in \pD{}. Let the \(i\)-th
+component of the \pD{} mean be
 
 \[f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,\]
 
-with corresponding \pD vector \(\vec{f_i}\). Then, \(f(h\circ g)(x)\)
-maps a \pD point to the \pD model estimate, completing the model cycle.
+with corresponding \pD{} vector \(\vec{f_i}\). Then, \(f(h\circ g)(x)\)
+maps a \pD{} point to the \pD{} model estimate, completing the model
+cycle.
 
 \subsection{Measuring the fit}\label{measuring-the-fit}
 
