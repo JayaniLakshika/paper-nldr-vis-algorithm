@@ -330,7 +330,7 @@ kable(notation_df,
   column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
-We define the NLDR model as function $g\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^k$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
+We define the NLDR as a function $g\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^k$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
 
 With our goal being to make a representation of this 2D layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonally bin the data, and connect the bin centroids. This process serves reduce some noise in the resulting surface shown in \pD{}. 
 
