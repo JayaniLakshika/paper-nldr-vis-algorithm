@@ -156,6 +156,12 @@ interior_annotation <- function(label) {
       x = unit(0.92, "npc"), y = unit(0.92, "npc"),
       gp = grid::gpar(cex = 1, col="grey70")))
 }
+
+interior_annotation_left <- function(label) {
+  annotation_custom(grid::textGrob(label = label,
+      x = unit(0.08, "npc"), y = unit(0.93, "npc"),
+      gp = grid::gpar(cex = 1, col="grey70")))
+}
 ```
 
 ```{r}
@@ -380,7 +386,7 @@ umap_scurve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_s
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
-  interior_annotation("a")
+  interior_annotation_left("a")
 ```
 
 <!--Full hexagonal grid with UMAP data-->
@@ -412,7 +418,7 @@ hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_i
 hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = umap_scurve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  interior_annotation("b")
+  interior_annotation_left("b")
 ```
 
 <!--Non-empty bins with bin centroids-->
@@ -424,7 +430,7 @@ hex_grid_nonempty <- hex_grid |>
 hex_grid_nonempty_scurve <-  ggplot(data = hex_grid_nonempty, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
-  interior_annotation("c") 
+  interior_annotation_left("c") 
 ```
 
 <!--2D model-->
@@ -447,13 +453,13 @@ trimesh_removed_scurve <- vis_rmlg_mesh(distance_edges = distance_scurve,
                                         benchmark_value = benchmark_scurve, 
                                         tr_coord_df = tr_from_to_df_scurve, 
                                         distance_col = "distance") +
-  interior_annotation("d") 
+  interior_annotation_left("d") 
 ```
 
 ```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
-#| fig-cap: ""
+#| fig-cap: "Key steps for constructing the $2-D$ model for S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP data, (c) obtain hexagonal bin centroids, and (d) triangulate bin centroids."
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
