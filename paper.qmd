@@ -130,7 +130,7 @@ library(grid)
 #| label: plot-theme
 theme_set(theme_linedraw() +
    theme(
-     aspect.ratio = 1,
+     #aspect.ratio = 1,
      plot.background = element_rect(fill = 'transparent', colour = NA),
      plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
      panel.background = element_rect(fill = 'transparent', 
@@ -386,6 +386,7 @@ umap_scurve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_s
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
+  coord_fixed() +
   interior_annotation_left("a")
 ```
 
@@ -418,6 +419,7 @@ hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_i
 hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = umap_scurve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
+  coord_fixed() +
   interior_annotation_left("b")
 ```
 
@@ -430,6 +432,7 @@ hex_grid_nonempty <- hex_grid |>
 hex_grid_nonempty_scurve <-  ggplot(data = hex_grid_nonempty, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
+  coord_fixed() +
   interior_annotation_left("c") 
 ```
 
@@ -463,7 +466,7 @@ trimesh_removed_scurve <- vis_rmlg_mesh(distance_edges = distance_scurve,
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
-
+ 
 nldr_scurve + hex_grid_scurve + hex_grid_nonempty_scurve + trimesh_removed_scurve +
   plot_layout(ncol = 4)
 ```
