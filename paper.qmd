@@ -347,18 +347,30 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 
 <!--UMAP applied for Scurve data-->
 ```{r}
-umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
 
-umap_scurve_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_scurve, 
-                                    x = "UMAP1", y = "UMAP2"))) |>
-  rename(c("UMAP1" = "scaled_UMAP1", 
-                  "UMAP2" = "scaled_UMAP2")) |>
-  mutate(ID = 1:NROW(umap_scurve))
+ar <- umap_scurve |>
+  summarise_at(c("UMAP1", "UMAP2"), 
+    function(x) max(x)-min(x)) |>
+  mutate(ar = UMAP2/UMAP1) |>
+  pull(ar) # This is a bit cumbersome too
+hr <- 2/sqrt(3)
+umap_scurve_scaled <- umap_scurve |>
+  mutate_at(c("UMAP1", "UMAP2"), 
+    function(x) (x - min(x))/(max(x)-min(x))) |> # can be no missings
+  mutate(UMAP2 = UMAP2 * ceiling(ar/hr) * hr)
+  
+  #as.data.frame(do.call(cbind, gen_scaled_data(data = umap_scurve, 
+  #                                  x = "UMAP1", y = "UMAP2"))) |>
+  #rename(c("UMAP1" = "scaled_UMAP1", 
+  #                "UMAP2" = "scaled_UMAP2")) |>
+  #mutate(ID = 1:NROW(umap_scurve))
 
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
-  coord_fixed() +
+  #coord_fixed() +
+  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
   interior_annotation_left("a")
 ```
 
@@ -391,7 +403,8 @@ hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_i
 hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = umap_scurve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  coord_fixed() +
+  #coord_fixed() +
+  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
   interior_annotation_left("b")
 ```
 
@@ -404,7 +417,8 @@ hex_grid_nonempty <- hex_grid |>
 hex_grid_nonempty_scurve <-  ggplot(data = hex_grid_nonempty, aes(x = x, y = y)) +
   geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
   geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
-  coord_fixed() +
+  #coord_fixed() +
+  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
   interior_annotation_left("c") 
 ```
 
