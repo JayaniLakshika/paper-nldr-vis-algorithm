@@ -389,7 +389,7 @@ $r$ & ranges of the embedding components\\
 $b$ & bins\\
 \addlinespace
 $a_r$ & aspect ratio of the 2D layout before scaling\\
-$s$ & hexagonal size (radius of the outer circle surrounding the hexagon)\\
+$s$ & hexagonal size (defined as the radius of the outer circle surrounding the hexagon)\\
 $(x_s, \ y_s)$ & starting coordinates of the hexagonal grid\\
 $q_x$, $q_y$ & buffer amount along the x and y axes\\
 $h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
@@ -443,6 +443,21 @@ call the ``S-curve''. It is constructed by setting
 The remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error,
 with small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
 true model.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-scurve-1.pdf}
+
+}
+
+\caption{\label{fig-NLDR-scurve}Key steps for constructing the \(2-D\)
+model for S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP
+data, (c) obtain hexagonal bin centroids, and (d) triangulate bin
+centroids.}
+
+\end{figure}%
 
 \subsection{\texorpdfstring{Displaying the model in
 \pD{}}{Displaying the model in }}\label{displaying-the-model-in}
