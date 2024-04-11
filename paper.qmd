@@ -336,40 +336,12 @@ kable(notation_df,
   column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
-We define the NLDR as a function $g\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^k$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that maps the entire space $\mathbb{R}^p$ to a subset of $\mathbb{R}^k$ is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
+We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
 
 With our goal being to make a representation of this 2D layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonally bin the data, and connect the bin centroids. This process serves reduce some noise in the resulting surface shown in \pD{}. 
 
 Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). The starting coordinates $(x_s, y_s)$ mark the lower left of the grid. <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
-Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. Let $h : \mathbb{R}^k \rightarrow \mathbb{R}^k$ be the function that maps a point in \kD{} space to it's hexagonal centroid ($C^{(k)}$). <!--It follows that $h \circ g : \mathbb{R}^p \rightarrow \mathbb{R}^k$ maps each point in $\mathbfit{X}$ to a \kD{} centroid.-->
-
-
-<!--First, a random variable $a$ is generated from a uniform distribution between $-\frac{\pi}{2}$ and $\frac{\pi}{2}$, representing the parameter $a$ is in $T$. Next, three variables $x_1$, $x_2$, and $x_3$ are computed based on $a$ to construct the S-curve data. $x_1$ is calculated as the sine of $a$ (@eq-eqn1), $x_2$ as twice the value of another uniformly distributed random variable between 0 and 1 (@eq-eqn2), and $x_3$ as the cosine of $a$ minus 1, multiplied by the sign of $a$ (@eq-eqn3). Additionally, four noise dimensions are introduced to the dataset to introduce noise variability: $x_4$, $x_5$, $x_6$, and $x_7$, each generated from uniform distributions within specific intervals (@eq-eqn4, @eq-eqn5, and @eq-eqn6 respectively). Finally, these variables are combined to form the S-curve dataset $T$.
-
-$$
-x_1 = \sin(3 \pi a)
-$$ {#eq-eqn1}
-
-$$
-x_2 = 2.0 \times U(0, 1)
-$$ {#eq-eqn2}
-
-$$
-x_3 = \text{sign}(a) \times (\cos(3 \pi a) - 1)
-$$ {#eq-eqn3}
-
-$$
-x_4, x_5 \sim U(-0.02, 0.02)
-$$ {#eq-eqn4}
-
-$$
-x_6 \sim U(-0.1, 0.1)
-$$ {#eq-eqn5}
-
-$$
-x_7 \sim U(-0.01, 0.01)
-$$ {#eq-eqn6}
--->
+Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's hexagonal centroid ($C^{(k)}$). 
 
 To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
 
@@ -462,7 +434,7 @@ trimesh_removed_scurve <- vis_rmlg_mesh(distance_edges = distance_scurve,
 ```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
-#| fig-cap: "Key steps for constructing the $2-D$ model for S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP data, (c) obtain hexagonal bin centroids, and (d) triangulate bin centroids."
+#| fig-cap: "Key steps for constructing the model on the NLDR layout ($k=2$) of the S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP data, (c) obtain hexagonal bin centroids, and (d) triangulate bin centroids."
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%

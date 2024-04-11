@@ -413,13 +413,13 @@ methodology.}
 \end{table}%
 
 We define the NLDR as a function
-\(g\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^k\), with
-(hyper-)parameters \(\mathbfit{\theta}\). The parameters,
+\(g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}\),
+with (hyper-)parameters \(\mathbfit{\theta}\). The parameters,
 \(\mathbfit{\theta}\), depend on the choice of \(g\), and can be
 considered part of model fitting in the traditional sense. Common
 choices for \(g\) include functions used in tSNE, UMAP, PHATE, TriMAP,
-PaCMAP, or MDS, although in theory any function that maps the entire
-space \(\mathbb{R}^p\) to a subset of \(\mathbb{R}^k\) is suitable.
+PaCMAP, or MDS, although in theory any function that does this mapping
+is suitable.
 
 With our goal being to make a representation of this 2D layout that can
 be lifted into high-dimensional space, the layout needs to be augmented
@@ -433,8 +433,9 @@ fixed height (\(h_b\)), width (\(w_b\)). The starting coordinates
 \((x_s, y_s)\) mark the lower left of the grid. Each of the \kD{} points
 will belong to a hexagonal bin. That is, for each
 \(y \in \mathbfit{Y}\), we can (uniquely) identify the hexagon that the
-point belongs to. Let \(h : \mathbb{R}^k \rightarrow \mathbb{R}^k\) be
-the function that maps a point in \kD{} space to it's hexagonal centroid
+point belongs to. Let
+\(h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}\) be the
+function that maps a point in \kD{} space to it's hexagonal centroid
 (\(C^{(k)}\)).
 
 To illustrate the method, we use \(7\text{-}D\) simulated data, which we
@@ -452,10 +453,10 @@ true model.
 
 }
 
-\caption{\label{fig-NLDR-scurve}Key steps for constructing the \(2-D\)
-model for S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP
-data, (c) obtain hexagonal bin centroids, and (d) triangulate bin
-centroids.}
+\caption{\label{fig-NLDR-scurve}Key steps for constructing the model on
+the NLDR layout (\(k=2\)) of the S-curve data: (a) obtain UMAP data, (b)
+hexagonating UMAP data, (c) obtain hexagonal bin centroids, and (d)
+triangulate bin centroids.}
 
 \end{figure}%
 
