@@ -343,16 +343,19 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 ```{r}
 umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
 
-ar <- umap_scurve |>
-  summarise_at(c("UMAP1", "UMAP2"), 
-    function(x) max(x)-min(x)) |>
-  mutate(ar = UMAP2/UMAP1) |>
-  pull(ar) # This is a bit cumbersome too
-hr <- 2/sqrt(3)
-umap_scurve_scaled <- umap_scurve |>
-  mutate_at(c("UMAP1", "UMAP2"), 
-    function(x) (x - min(x))/(max(x)-min(x))) |> # can be no missings
-  mutate(UMAP2 = UMAP2 * ceiling(ar/hr) * hr)
+umap_scurve_scaled <- gen_scaled_data(data = umap_scurve, x = "UMAP1", 
+                                      y = "UMAP2", hr = 2/sqrt(3))
+
+# ar <- umap_scurve |>
+#   summarise_at(c("UMAP1", "UMAP2"), 
+#     function(x) max(x)-min(x)) |>
+#   mutate(ar = UMAP2/UMAP1) |>
+#   pull(ar) # This is a bit cumbersome too
+# hr <- 2/sqrt(3)
+# umap_scurve_scaled <- umap_scurve |>
+#   mutate_at(c("UMAP1", "UMAP2"), 
+#     function(x) (x - min(x))/(max(x)-min(x))) |> # can be no missings
+#   mutate(UMAP2 = UMAP2 * ceiling(ar/hr) * hr)
   
   #as.data.frame(do.call(cbind, gen_scaled_data(data = umap_scurve, 
   #                                  x = "UMAP1", y = "UMAP2"))) |>
@@ -378,17 +381,17 @@ hex_size_scurve <- 0.13
 hb_obj_scurve <- hex_binning(data = umap_scurve_scaled, x = "UMAP1", 
                       y = "UMAP2", num_bins_x = num_bins_x_scurve, 
                       num_bins_y = num_bins_y_scurve, x_start = NA, y_start = NA, 
-                      buffer_x = NA, buffer_y = NA, hex_size = hex_size_scurve, 
+                      buffer_x = 0.346, buffer_y = 0.3, hex_size = hex_size_scurve, 
                       col_start = "UMAP")
 
 ## Data set with all possible centroids in the hexagonal grid
-all_centroids_df <- as.data.frame(do.call(cbind, hb_obj_scurve$centroids))
+all_centroids_df <- hb_obj_scurve$centroids
 
 ## Generate all coordinates of hexagons
-hex_grid <- as.data.frame(do.call(cbind, hb_obj_scurve$hex_poly))
+hex_grid <- hb_obj_scurve$hex_poly
 
 ## To obtain the standardise counts within hexbins
-counts_df <- as.data.frame(do.call(cbind, hb_obj_scurve$std_cts))
+counts_df <- hb_obj_scurve$std_cts
 df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
                                              counts_df = counts_df)
 
