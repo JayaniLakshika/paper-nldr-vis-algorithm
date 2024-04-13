@@ -374,14 +374,21 @@ nldr_scurve <- umap_scurve_scaled |>
 <!--Full hexagonal grid with UMAP data-->
 
 ```{r}
+## Compute hexbin parameters
 num_bins_x_scurve <- 6
 num_bins_y_scurve <- 14
 hex_size_scurve <- 0.13
+buffer_x_scurve <- 0.338
+buffer_y_scurve <- 0.292
+x_start_scurve <- -0.113
+y_start_scurve <- -0.098
 
-hb_obj_scurve <- hex_binning(data = umap_scurve_scaled, x = "UMAP1", 
-                      y = "UMAP2", num_bins_x = num_bins_x_scurve, 
-                      num_bins_y = num_bins_y_scurve, x_start = NA, y_start = NA, 
-                      buffer_x = 0.346, buffer_y = 0.3, hex_size = hex_size_scurve, 
+## Hexagonal bining to have regular hexagons
+hb_obj_scurve <- hex_binning(data = umap_scurve_scaled, x = "UMAP1",
+                      y = "UMAP2", num_bins_x = num_bins_x_scurve,
+                      num_bins_y = num_bins_y_scurve, x_start = x_start_scurve,
+                      y_start = y_start_scurve, buffer_x = buffer_x_scurve,
+                      buffer_y = buffer_y_scurve, hex_size = hex_size_scurve,
                       col_start = "UMAP")
 
 ## Data set with all possible centroids in the hexagonal grid
@@ -492,7 +499,7 @@ with corresponding \pD{} vector $\vec{f_i}$. Then, $f(h\circ g)(x)$ maps a \pD{}
 - NLDR view used to illustrate clusters
 - Use our method to assess is it a reasonable representation
 - Demonstrate that it is not
-- Illustrate how to use out method to get a better representation
+- Illustrate how to use our method to get a better representation
      
 ### digits: 1
 
