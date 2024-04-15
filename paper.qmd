@@ -343,32 +343,21 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 ```{r}
 umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
 
-umap_scurve_scaled <- gen_scaled_data(data = umap_scurve, x = "UMAP1", 
-                                      y = "UMAP2", hr = 2/sqrt(3))
+umap_scurve_scaled <- gen_scaled_data(
+  data = umap_scurve, 
+  x = "UMAP1", 
+  y = "UMAP2", 
+  hr = 2/sqrt(3))
 
-# ar <- umap_scurve |>
-#   summarise_at(c("UMAP1", "UMAP2"), 
-#     function(x) max(x)-min(x)) |>
-#   mutate(ar = UMAP2/UMAP1) |>
-#   pull(ar) # This is a bit cumbersome too
-# hr <- 2/sqrt(3)
-# umap_scurve_scaled <- umap_scurve |>
-#   mutate_at(c("UMAP1", "UMAP2"), 
-#     function(x) (x - min(x))/(max(x)-min(x))) |> # can be no missings
-#   mutate(UMAP2 = UMAP2 * ceiling(ar/hr) * hr)
-  
-  #as.data.frame(do.call(cbind, gen_scaled_data(data = umap_scurve, 
-  #                                  x = "UMAP1", y = "UMAP2"))) |>
-  #rename(c("UMAP1" = "scaled_UMAP1", 
-  #                "UMAP2" = "scaled_UMAP2")) |>
-  #mutate(ID = 1:NROW(umap_scurve))
-
+sc_ltr_pos <- c(0.08, 0.96)
+sc_xlims <- c(-0.25, 1.25)
+sc_ylims <- c(-0.25, 2.59)
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
   #coord_fixed() +
-  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
-  interior_annotation("a", c(0.08, 0.93))
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos)
 ```
 
 <!--Full hexagonal grid with UMAP data-->
@@ -384,14 +373,20 @@ x_start_scurve <- -0.113
 y_start_scurve <- -0.098
 
 ## Hexagonal bining to have regular hexagons
-hb_obj_scurve <- hex_binning(data = umap_scurve_scaled, x = "UMAP1",
-                      y = "UMAP2", num_bins_x = num_bins_x_scurve,
-                      num_bins_y = num_bins_y_scurve, x_start = x_start_scurve,
-                      y_start = y_start_scurve, buffer_x = buffer_x_scurve,
-                      buffer_y = buffer_y_scurve, hex_size = hex_size_scurve,
-                      col_start = "UMAP")
+hb_obj_scurve <- hex_binning(
+  data = umap_scurve_scaled, 
+  x = "UMAP1",
+  y = "UMAP2", 
+  num_bins_x = num_bins_x_scurve,
+  num_bins_y = num_bins_y_scurve, 
+  x_start = x_start_scurve,
+  y_start = y_start_scurve, 
+  buffer_x = buffer_x_scurve,
+  buffer_y = buffer_y_scurve, 
+  hex_size = hex_size_scurve,
+  col_start = "UMAP")
 
-## Data set with all possible centroids in the hexagonal grid
+## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
 
 ## Generate all coordinates of hexagons
@@ -399,17 +394,26 @@ hex_grid <- hb_obj_scurve$hex_poly
 
 ## To obtain the standardise counts within hexbins
 counts_df <- hb_obj_scurve$std_cts
-df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df, 
-                                             counts_df = counts_df)
+df_bin_centroids <- extract_hexbin_centroids(
+  centroids_df = all_centroids_df, 
+  counts_df = counts_df)
 
-hex_grid_with_counts <- dplyr::left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+hex_grid_with_counts <- 
+  dplyr::left_join(hex_grid,
+                   counts_df, 
+                   by = c("hex_poly_id" = "hb_id"))
 
-hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
-  geom_point(data = umap_scurve_scaled, aes(x = UMAP1, y = UMAP2), alpha = 0.5) +
-  #coord_fixed() +
-  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
-  interior_annotation("b", c(0.08, 0.93))
+hex_grid_scurve <- ggplot(
+  data = hex_grid_with_counts, 
+  aes(x = x, y = y)) +
+  geom_polygon(color = "black", 
+               aes(group = hex_poly_id), 
+               fill = "#ffffff") +
+  geom_point(data = umap_scurve_scaled, 
+             aes(x = UMAP1, y = UMAP2), 
+             alpha = 0.5) +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("b", sc_ltr_pos)
 ```
 
 <!--Non-empty bins with bin centroids-->
@@ -418,47 +422,62 @@ hex_grid_scurve <-  ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
 hex_grid_nonempty <- hex_grid |>
   filter(hex_poly_id %in% df_bin_centroids$hexID)
 
-hex_grid_nonempty_scurve <-  ggplot(data = hex_grid_nonempty, aes(x = x, y = y)) +
-  geom_polygon(color = "black", aes(group = hex_poly_id), fill = "#ffffff") +
-  geom_point(data = df_bin_centroids, aes(x = c_x, y = c_y), color = "#33a02c") +
-  #coord_fixed() +
-  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
-  interior_annotation("c", c(0.08, 0.93)) 
+hex_grid_nonempty_scurve <-  ggplot(
+  data = hex_grid_nonempty, 
+  aes(x = x, y = y)) +
+  geom_polygon(color = "black", 
+               aes(group = hex_poly_id), 
+               fill = "#ffffff") +
+  geom_point(data = df_bin_centroids, 
+             aes(x = c_x, y = c_y), 
+             color = "#33a02c") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("c", sc_ltr_pos) 
 ```
 
 <!--2D model-->
 
 ```{r}
 ## Triangulate bin centroids
-tr1_object_scurve <- tri_bin_centroids(df_bin_centroids, x = "c_x", y = "c_y")
-tr_from_to_df_scurve <- gen_edges(tri_object = tr1_object_scurve)
+tr1_object_scurve <- tri_bin_centroids(
+  df_bin_centroids, x = "c_x", y = "c_y")
+tr_from_to_df_scurve <- gen_edges(
+  tri_object = tr1_object_scurve)
 
 ## Compute 2D distances
-distance_scurve <- cal_2d_dist(tr_coord_df = tr_from_to_df_scurve, 
-                             start_x = "x_from", start_y = "y_from", 
-                             end_x = "x_to", end_y = "y_to", 
-                             select_vars = c("from", "to", "distance"))
+distance_scurve <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_scurve, 
+  start_x = "x_from", 
+  start_y = "y_from", 
+  end_x = "x_to", 
+  end_y = "y_to", 
+  select_vars = c("from", "to", "distance"))
 
 ## To find the benchmark value
-benchmark_scurve <- find_lg_benchmark(distance_edges = distance_scurve, distance_col = "distance")
+benchmark_scurve <- find_lg_benchmark(
+  distance_edges = distance_scurve, 
+  distance_col = "distance")
 
-trimesh_removed_scurve <- vis_rmlg_mesh(distance_edges = distance_scurve, 
-                                        benchmark_value = benchmark_scurve, 
-                                        tr_coord_df = tr_from_to_df_scurve, 
-                                        distance_col = "distance") +
-  xlim(c(-0.3, 1.3)) + ylim(c(-0.3, 2.6)) +
-  interior_annotation("d", c(0.08, 0.93)) 
+trimesh_removed_scurve <- vis_rmlg_mesh(
+  distance_edges = distance_scurve, 
+  benchmark_value = benchmark_scurve, 
+  tr_coord_df = tr_from_to_df_scurve, 
+  distance_col = "distance") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("d", sc_ltr_pos) 
 ```
 
 ```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
-#| fig-cap: "Key steps for constructing the model on the NLDR layout ($k=2$) of the S-curve data: (a) obtain UMAP data, (b) hexagonating UMAP data, (c) obtain hexagonal bin centroids, and (d) triangulate bin centroids."
+#| fig-cap: "Key steps for constructing the model on the UMAP layout ($k=2$) of the S-curve data: (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids."
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
  
-nldr_scurve + hex_grid_scurve + hex_grid_nonempty_scurve + trimesh_removed_scurve +
+nldr_scurve + hex_grid_scurve + 
+  hex_grid_nonempty_scurve + 
+  trimesh_removed_scurve +
   plot_layout(ncol = 4)
 ```
 
