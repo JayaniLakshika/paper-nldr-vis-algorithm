@@ -332,12 +332,8 @@ kable(notation_df,
 
 We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
 
-With our goal being to make a representation of this 2D layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonally bin the data, and connect the bin centroids. This process serves reduce some noise in the resulting surface shown in \pD{}. 
+With our goal being to make a representation of this 2D layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonally bin the data, and connect the bin centroids. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
 
-Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). The starting coordinates $(x_s, y_s)$ mark the lower left of the grid. <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
-Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's hexagonal centroid ($C^{(k)}$). 
-
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
 
 <!--UMAP applied for Scurve data-->
 ```{r}
@@ -355,7 +351,6 @@ sc_ylims <- c(-0.25, 2.59)
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
-  #coord_fixed() +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 ```
@@ -480,6 +475,25 @@ nldr_scurve + hex_grid_scurve +
   trimesh_removed_scurve +
   plot_layout(ncol = 4)
 ```
+
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by setting $X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the true model.
+
+#### Scaling the data
+
+It is beneficial to define the algorithm on data having a standard scale. Here we use [0, 1] scaling, but by default include the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$, by allowing for the upper bound to vary, $(y_{1,\text{max}}, y_{2,\text{max}}, ..., y_{k,\text{max}})$. 
+
+When $k=2$ which is assumed for hexagon binning, $(y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}\times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height and width of a regular hexagon.)
+
+#### Hexagon binning
+
+Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). The starting coordinates $(x_s, y_s)$ mark the lower left of the grid. <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
+Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. 
+
+#### Obtaining bin centroids
+
+Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's hexagonal centroid ($C^{(k)}$). 
+
+#### Triangulating centroids
 
 
 ### Displaying the model in \pD{}
