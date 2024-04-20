@@ -484,6 +484,12 @@ It is beneficial to define the algorithm on data having a standard scale. Here w
 
 When $k=2$ which is assumed for hexagon binning, $(y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}\times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height and width of a regular hexagon.)
 
+#### Computing hexagonal grid configurations
+
+To define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$), need to compute the how many hexagons should represented by each axes in \kD{} space.
+
+When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$ should computed by accounting ${r_1, r_2}$, offset along the axes, and height ($h_b$), width ($w_b$).
+
 #### Hexagon binning
 
 Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). The starting coordinates $(x_s, y_s)$ mark the lower left of the grid. <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
@@ -495,6 +501,8 @@ Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the funct
 
 #### Triangulating centroids
 
+When $k = 2$
+
 Delaunay triangulation of $C^{(k)}$ is a triangulation of the convex hull of $C^{(k)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(k)}$.
 
 ### Displaying the model in \pD{}
@@ -504,6 +512,8 @@ The final step of the algorithm is _lifting_ the \kD{} model back to \pD{}, comp
 $$f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,$$
 
 with corresponding \pD{} vector $\vec{f_i}$. Then, $f(h\circ g)(x)$ maps a \pD{} point to the \pD{} model estimate, completing the model cycle.
+
+When $k=2$. which bin centroids should connected are identified as a result of triangulation. Therefore, corresponding \pD{} points should connected in the same order. 
 
 ### Measuring the fit
 

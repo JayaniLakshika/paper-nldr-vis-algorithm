@@ -465,6 +465,17 @@ When \(k=2\) which is assumed for hexagon binning,
 \(\frac{2}{\sqrt{3}}\) accounts for the different height and width of a
 regular hexagon.)
 
+\subsubsection{Computing hexagonal grid
+configurations}\label{computing-hexagonal-grid-configurations}
+
+To define a hexagonal grid across the \kD{} space, using hexagons with
+fixed height (\(h_b\)), width (\(w_b\)), need to compute the how many
+hexagons should represented by each axes in \kD{} space.
+
+When \(k=2\), the number of bins along the \(x\) and \(y\) axes, \(b_1\)
+and \(b_2\) should computed by accounting \({r_1, r_2}\), offset along
+the axes, and height (\(h_b\)), width (\(w_b\)).
+
 \subsubsection{Hexagon binning}\label{hexagon-binning}
 
 Define a hexagonal grid across the \kD{} space, using hexagons with
@@ -481,6 +492,8 @@ the function that maps a point in \kD{} space to it's hexagonal centroid
 (\(C^{(k)}\)).
 
 \subsubsection{Triangulating centroids}\label{triangulating-centroids}
+
+When \(k = 2\)
 
 Delaunay triangulation of \(C^{(k)}\) is a triangulation of the convex
 hull of \(C^{(k)}\) such that the circumcircle of every triangle in the
@@ -502,6 +515,10 @@ component of the \pD{} mean be
 with corresponding \pD{} vector \(\vec{f_i}\). Then, \(f(h\circ g)(x)\)
 maps a \pD{} point to the \pD{} model estimate, completing the model
 cycle.
+
+When \(k=2\). which bin centroids should connected are identified as a
+result of triangulation. Therefore, corresponding \pD{} points should
+connected in the same order.
 
 \subsection{Measuring the fit}\label{measuring-the-fit}
 
