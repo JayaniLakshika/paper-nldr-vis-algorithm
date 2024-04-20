@@ -488,18 +488,28 @@ When $k=2$ which is assumed for hexagon binning, $(y_{1,\text{max}}=1$ and $y_{2
 
 To define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$), need to compute the how many hexagons should represented by each axes in \kD{} space.
 
-When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$ should computed by accounting ${r_1, r_2}$, offset along the axes, and height ($h_b$), width ($w_b$).
+When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$ is computed by accounting ${r_1, r_2}$, offset along the axes ($q_1$, $q_2$), and height ($h_b$), width ($w_b$) of a regular hexagon.
+
+($b_1 = \frac{r_1 + q_1}{w_b}$, $b_2 = \frac{r_2 + q_2}{0.75 \times h_b}$): $0.75 \times h_b$ acommodate to have the tesselation without spacing.
 
 #### Hexagon binning
 
-Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). The starting coordinates $(x_s, y_s)$ mark the lower left of the grid. <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
-Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. 
+Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($h_b$), width ($w_b$). 
+
+When $k=2$,
+
+The starting coordinates $(s_1, s_2)$ mark the lower left of the grid. This is the bottom left bin centroid. By starting from there, points are generated to fill the grid accounting $b_1$ and $b_2$. 
+
+<!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
+Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. This identification is done finding the nearest bin centroid for the \kD{} points by considering the \kD{} Euclidean distance.   
 
 #### Obtaining bin centroids
 
 Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's hexagonal centroid ($C^{(k)}$). 
 
-#### Triangulating centroids
+#### Generating edges
+
+computes a set of simplices such that no data points of X are contained in any circumspheres of the simplices.
 
 When $k = 2$
 
