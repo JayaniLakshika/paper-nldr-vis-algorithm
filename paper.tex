@@ -390,12 +390,12 @@ $b$ & bins\\
 \addlinespace
 $a_r$ & aspect ratio of the 2D layout before scaling\\
 $s$ & hexagonal size (defined as the radius of the outer circle surrounding the hexagon)\\
-$(x_s, \ y_s)$ & starting coordinates of the hexagonal grid\\
-$q_x$, $q_y$ & buffer amount along the x and y axes\\
+$(s_1, \ s_2)$ & starting coordinates of the hexagonal grid\\
+$q_1$, $q_2$ & buffer amount along the x and y axes\\
 $h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
 \addlinespace
 $d_x$, $d_y$ & horizontal spacing and adjusted vertical spacing for hexagonal coordinates\\
-$b_x$, $b_y$ & number of hexagon bins along the x and y axes\\
+$b_1$, $b_2$ & number of hexagon bins along the x and y axes\\
 $b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within the $k^{th}$ hexagon\\
 $(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of the $k^{th}$ hexagon\\
@@ -463,57 +463,61 @@ When \(k=2\) which is assumed for hexagon binning,
 \(y_{1,\text{max}}=1\) and
 \(y_{2,\text{max}} = \frac{r_2}{r_1}\times \frac{2}{\sqrt{3}}\). (The
 \(\frac{2}{\sqrt{3}}\) accounts for the different height (\(h_b\)) and
-width (\(w_b\)) of a regular hexagon.)
+width (\(w_b\)) of a regular hexagon.) (Figure~\ref{fig-NLDR-scurve}
+(a))
 
 \subsubsection{Computing hexagonal grid
 configurations}\label{computing-hexagonal-grid-configurations}
 
-To define a hexagonal grid across the \kD{} space, using hexagons with
-fixed height (\(h_b\)), width (\(w_b\)), need to compute the how many
-hexagons should represented by each axes in \kD{} space.
+To define a hexagonal grid across the \kD{} space, with hexagons of
+fixed height (\(h_b\)), width (\(w_b\)), it is necessary to determine
+how many hexagons should be represented along each axis in the \kD{}
+space.
 
 When \(k=2\), the number of bins along the \(x\) and \(y\) axes, \(b_1\)
-and \(b_2\) is computed by accounting \({r_1, r_2}\), offset along the
-axes (\(q_1\), \(q_2\)), and height (\(h_b\)), width (\(w_b\)) of a
-regular hexagon.
-
-(\(b_1 = \frac{r_1 + q_1}{w_b}\),
-\(b_2 = \frac{r_2 + q_2}{0.75 \times h_b}\)): \(0.75 \times h_b\)
-acommodate to have the tesselation without spacing.
+and \(b_2\), is computed by considering the scaling factors
+\({r_1, r_2}\), along with the offset along the axes (\(q_1\), \(q_2\)),
+and the height (\(h_b\)) and width (\(w_b\)) of a regular hexagon
+(Figure~\ref{fig-NLDR-scurve} (b)). (\(b_1 = \frac{r_1 + q_1}{w_b}\),
+and \(b_2 = \frac{r_2 + q_2}{0.75 \times h_b}\)) where
+\(0.75 \times h_b\) accommodate to have hexagons fill the entire 2D
+space without leaving any gaps between them.)
 
 \subsubsection{Hexagon binning}\label{hexagon-binning}
 
 Define a hexagonal grid across the \kD{} space, using hexagons with
-fixed height (\(h_b\)), width (\(w_b\)).
+fixed height (\(h_b\)), width (\(w_b\)). Each of the \kD{} points will
+belong to a hexagonal bin. That is, for each \(y \in \mathbfit{Y}\), we
+can (uniquely) identify the hexagon that the point belongs to. This
+identification is done finding the nearest bin centroid for the \kD{}
+points by considering the \kD{} Euclidean distance.
 
-When \(k=2\),
+When \(k=2\), the starting coordinates \((s_1, s_2)\) mark the lower
+left of the grid. This is the bottom left bin centroid. By starting from
+there, points are generated to fill the grid accounting \(b_1\),
+\(b_2\), \(w_b\), and \(h_b\).
 
-The starting coordinates \((s_1, s_2)\) mark the lower left of the grid.
-This is the bottom left bin centroid. By starting from there, points are
-generated to fill the grid accounting \(b_1\) and \(b_2\).
-
-Each of the \kD{} points will belong to a hexagonal bin. That is, for
-each \(y \in \mathbfit{Y}\), we can (uniquely) identify the hexagon that
-the point belongs to. This identification is done finding the nearest
-bin centroid for the \kD{} points by considering the \kD{} Euclidean
-distance.
-
-\subsubsection{Obtaining bin centroids}\label{obtaining-bin-centroids}
+\subsubsection{Obtaining bin
+representations}\label{obtaining-bin-representations}
 
 Let \(h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}\) be
-the function that maps a point in \kD{} space to it's hexagonal centroid
-(\(C^{(k)}\)).
+the function that maps a point in \kD{} space to it's bin representation
+(\(C^{(k)}\)). This is the model points in \kD{} space.
+
+When \(k = 2\), one of the representations of a bin is the hexagonal
+centroid (Figure~\ref{fig-NLDR-scurve} (c)).
 
 \subsubsection{Generating edges}\label{generating-edges}
 
-computes a set of simplices such that no data points of X are contained
-in any circumspheres of the simplices.
+Delaunay triangulation on bin representations generates edges by
+specifying which bin representations should be connected to generate the
+model in \kD{} space.
 
-When \(k = 2\)
-
-Delaunay triangulation of \(C^{(k)}\) is a triangulation of the convex
-hull of \(C^{(k)}\) such that the circumcircle of every triangle in the
-triangulation contains no other points from \(C^{(k)}\).
+When \(k = 2\) Delaunay triangulation on \(C^{(2)}\) generates the model
+in 2D space, which is a triangular mesh (Figure~\ref{fig-NLDR-scurve}
+(d)). It generates convex hulls of \(C^{(2)}\) such that the
+circumcircle of every triangle in the triangulation contains no other
+points from \(C^{(2)}\).
 
 \subsection{\texorpdfstring{Displaying the model in
 \pD{}}{Displaying the model in }}\label{displaying-the-model-in}
@@ -532,9 +536,9 @@ with corresponding \pD{} vector \(\vec{f_i}\). Then, \(f(h\circ g)(x)\)
 maps a \pD{} point to the \pD{} model estimate, completing the model
 cycle.
 
-When \(k=2\). which bin centroids should connected are identified as a
-result of triangulation. Therefore, corresponding \pD{} points should
-connected in the same order.
+Furthermore, edges that exist between \kD{} representations should also
+generate edges in \pD{} by connecting \pD{} mapping of the corresponding
+\kD{} representations.
 
 \subsection{Measuring the fit}\label{measuring-the-fit}
 
