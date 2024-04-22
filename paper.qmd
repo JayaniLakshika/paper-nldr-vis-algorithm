@@ -346,10 +346,10 @@ umap_scurve_scaled <- gen_scaled_data(
   hr = 2/sqrt(3))
 
 sc_ltr_pos <- c(0.08, 0.96)
-# sc_xlims <- c(-0.25, 1.25)
-# sc_ylims <- c(-0.25, 2.59)
 sc_xlims <- c(-0.25, 1.25)
-sc_ylims <- c(-0.25, 2)
+sc_ylims <- c(-0.25, 2.59)
+# sc_xlims <- c(-0.25, 1.25)
+# sc_ylims <- c(-0.25, 2)
 
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
@@ -363,7 +363,7 @@ nldr_scurve <- umap_scurve_scaled |>
 ```{r}
 ## Compute hexbin parameters
 num_bins_x_scurve <- 6
-num_bins_y_scurve <- 10
+num_bins_y_scurve <- 14
 hex_size_scurve <- 0.13
 buffer_x_scurve <- 0.338
 buffer_y_scurve <- 0.292
