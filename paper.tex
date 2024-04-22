@@ -470,21 +470,29 @@ The 2D hexagon grid is defined by the number of bins in each direction
 (\(b_1, b_2\)), and the lower left position where the grid starts
 (\(s_1, s_2\)). The values of \(s_i\) need to be below their respective
 minimum variable values, and could be a full bin lower, to allow a
-buffer corresponding to a full hexagon width and height around the data.
-The values of \(b_i\) are variables to be computed that define the
-reduction in size of the data (\(n\) to \(m\)).
+buffer corresponding to a full hexagon width (\(a_1\)) and height
+(\(a_2\)) around the data. The values of \(b_i\) are variables to be
+computed that define the reduction in size of the data (\(n\) to \(m\)).
 
 Number of bins is set by fixing \(b_1\), which determines the binwidth
 and breaks on \(x_1\), is calculated as
+
+\[
+b_1 = \frac{r_1 + q_1}{a_1}.
+\]
 
 The computed binwidth then determines the number of vertical bins,
 \(b_2\), and vertical binwidth, which are computed based on \(r_2\), and
 the height/width ratio of a regular hexagon, \(\frac{2}{\sqrt{3}}\) as
 
+\[
+b_2 = \frac{r_2 + q_2}{0.75 \times a_2}.
+\]
+
 \subsubsection{Hexagon binning}\label{hexagon-binning}
 
 Define a hexagonal grid across the \kD{} space, using hexagons with
-fixed height (\(a_1\)), width (\(a_2\)). Each of the \kD{} points will
+fixed height (\(a_2\)), width (\(a_1\)). Each of the \kD{} points will
 belong to a hexagonal bin. That is, for each \(y \in \mathbfit{Y}\), we
 can (uniquely) identify the hexagon that the point belongs to. This
 identification is done finding the nearest bin centroid for the \kD{}
@@ -493,7 +501,7 @@ points by considering the \kD{} Euclidean distance.
 When \(k=2\), the starting coordinates \((s_1, s_2)\) mark the lower
 left of the grid. This is the bottom left bin centroid. By starting from
 there, points are generated to fill the grid accounting \(b_1\),
-\(b_2\), \(a_2\), and \(a_1\).
+\(b_2\), \(a_1\), and \(a_2\).
 
 \subsubsection{Obtaining bin
 representations}\label{obtaining-bin-representations}
