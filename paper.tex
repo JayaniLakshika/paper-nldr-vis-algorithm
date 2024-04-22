@@ -462,31 +462,31 @@ upper bound to vary,
 When \(k=2\) which is assumed for hexagon binning,
 \(y_{1,\text{max}}=1\) and
 \(y_{2,\text{max}} = \frac{r_2}{r_1}\times \frac{2}{\sqrt{3}}\). (The
-\(\frac{2}{\sqrt{3}}\) accounts for the different height (\(h_b\)) and
-width (\(w_b\)) of a regular hexagon.) (Figure~\ref{fig-NLDR-scurve}
+\(\frac{2}{\sqrt{3}}\) accounts for the different height (\(a_1\)) and
+width (\(a_2\)) of a regular hexagon.) (Figure~\ref{fig-NLDR-scurve}
 (a))
 
 \subsubsection{Computing hexagonal grid
 configurations}\label{computing-hexagonal-grid-configurations}
 
 To define a hexagonal grid across the \kD{} space, with hexagons of
-fixed height (\(h_b\)), width (\(w_b\)), it is necessary to determine
+fixed height (\(a_1\)), width (\(a_2\)), it is necessary to determine
 how many hexagons should be represented along each axis in the \kD{}
 space.
 
 When \(k=2\), the number of bins along the \(x\) and \(y\) axes, \(b_1\)
 and \(b_2\), is computed by considering the scaling factors
 \({r_1, r_2}\), along with the offset along the axes (\(q_1\), \(q_2\)),
-and the height (\(h_b\)) and width (\(w_b\)) of a regular hexagon
-(Figure~\ref{fig-NLDR-scurve} (b)). (\(b_1 = \frac{r_1 + q_1}{w_b}\),
-and \(b_2 = \frac{r_2 + q_2}{0.75 \times h_b}\)) where
-\(0.75 \times h_b\) accommodate to have hexagons fill the entire 2D
+and the height (\(a_1\)) and width (\(a_2\)) of a regular hexagon
+(Figure~\ref{fig-NLDR-scurve} (b)). (\(b_1 = \frac{r_1 + q_1}{a_2}\),
+and \(b_2 = \frac{r_2 + q_2}{0.75 \times a_1}\)) where
+\(0.75 \times a_1\) accommodate to have hexagons fill the entire 2D
 space without leaving any gaps between them.)
 
 \subsubsection{Hexagon binning}\label{hexagon-binning}
 
 Define a hexagonal grid across the \kD{} space, using hexagons with
-fixed height (\(h_b\)), width (\(w_b\)). Each of the \kD{} points will
+fixed height (\(a_1\)), width (\(a_2\)). Each of the \kD{} points will
 belong to a hexagonal bin. That is, for each \(y \in \mathbfit{Y}\), we
 can (uniquely) identify the hexagon that the point belongs to. This
 identification is done finding the nearest bin centroid for the \kD{}
@@ -495,7 +495,7 @@ points by considering the \kD{} Euclidean distance.
 When \(k=2\), the starting coordinates \((s_1, s_2)\) mark the lower
 left of the grid. This is the bottom left bin centroid. By starting from
 there, points are generated to fill the grid accounting \(b_1\),
-\(b_2\), \(w_b\), and \(h_b\).
+\(b_2\), \(a_2\), and \(a_1\).
 
 \subsubsection{Obtaining bin
 representations}\label{obtaining-bin-representations}
