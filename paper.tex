@@ -425,9 +425,10 @@ With our goal being to make a representation of this 2D layout that can
 be lifted into high-dimensional space, the layout needs to be augmented
 to include neighbour information. A simple approach would be to
 triangulate the points and add edges. A more stable approach is to first
-hexagonally bin the data, and connect the bin centroids. This process
-serves to reduce some noisiness in the resulting surface shown in \pD{}.
-The steps in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
+hexagonally bin the data, reducing it from \(n\) to \(m\leq n\)
+observations, and connect the bin centroids. This process serves to
+reduce some noisiness in the resulting surface shown in \pD{}. The steps
+in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
 documented below.
 
 \begin{figure}
@@ -454,34 +455,31 @@ true model.
 \subsubsection{Scaling the data}\label{scaling-the-data}
 
 It is beneficial to define the algorithm on data having a standard
-scale. Here we use {[}0, 1{]} scaling, but by default include the aspect
-ratio produced by the NLDR \((r_1, r_2, ..., r_k)\), by allowing for the
-upper bound to vary,
-\((y_{1,\text{max}}, y_{2,\text{max}}, ..., y_{k,\text{max}})\).
+scale. Here the variables are scaled to {[}0, 1{]}, but the upper bound
+can incorporate the aspect ratio produced by the NLDR
+\((r_1, r_2, ..., r_k)\), by setting them to
+\((y_{1,\text{max}}, y_{2,\text{max}}, ..., y_{k,\text{max}})\). When
+\(k=2\) which is assumed for hexagon binning, \(y_{1,\text{max}}=1\) and
+\(y_{2,\text{max}} = \frac{r_2}{r_1}\), as observed in
+Figure~\ref{fig-NLDR-scurve}.
 
-When \(k=2\) which is assumed for hexagon binning,
-\(y_{1,\text{max}}=1\) and
-\(y_{2,\text{max}} = \frac{r_2}{r_1}\times \frac{2}{\sqrt{3}}\). (The
-\(\frac{2}{\sqrt{3}}\) accounts for the different height (\(a_1\)) and
-width (\(a_2\)) of a regular hexagon.) (Figure~\ref{fig-NLDR-scurve}
-(a))
+\subsubsection{Computing hexagon grid
+configurations}\label{computing-hexagon-grid-configurations}
 
-\subsubsection{Computing hexagonal grid
-configurations}\label{computing-hexagonal-grid-configurations}
+The 2D hexagon grid is defined by the number of bins in each direction
+(\(b_1, b_2\)), and the lower left position where the grid starts
+(\(s_1, s_2\)). The values of \(s_i\) need to be below their respective
+minimum variable values, and could be a full bin lower, to allow a
+buffer corresponding to a full hexagon width and height around the data.
+The values of \(b_i\) are variables to be computed that define the
+reduction in size of the data (\(n\) to \(m\)).
 
-To define a hexagonal grid across the \kD{} space, with hexagons of
-fixed height (\(a_1\)), width (\(a_2\)), it is necessary to determine
-how many hexagons should be represented along each axis in the \kD{}
-space.
+Number of bins is set by fixing \(b_1\), which determines the binwidth
+and breaks on \(x_1\), is calculated as
 
-When \(k=2\), the number of bins along the \(x\) and \(y\) axes, \(b_1\)
-and \(b_2\), is computed by considering the scaling factors
-\({r_1, r_2}\), along with the offset along the axes (\(q_1\), \(q_2\)),
-and the height (\(a_1\)) and width (\(a_2\)) of a regular hexagon
-(Figure~\ref{fig-NLDR-scurve} (b)). (\(b_1 = \frac{r_1 + q_1}{a_2}\),
-and \(b_2 = \frac{r_2 + q_2}{0.75 \times a_1}\)) where
-\(0.75 \times a_1\) accommodate to have hexagons fill the entire 2D
-space without leaving any gaps between them.)
+The computed binwidth then determines the number of vertical bins,
+\(b_2\), and vertical binwidth, which are computed based on \(r_2\), and
+the height/width ratio of a regular hexagon, \(\frac{2}{\sqrt{3}}\) as
 
 \subsubsection{Hexagon binning}\label{hexagon-binning}
 
