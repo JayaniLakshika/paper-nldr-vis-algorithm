@@ -490,19 +490,11 @@ offset \(q_2\), and the height/width ratio of a regular hexagon,
 a_2 = \frac{r_2 + q_2}{0.75 \times b_2}.
 \]
 
-\subsubsection{Hexagon binning}\label{hexagon-binning}
+\subsubsection{Binning the data}\label{binning-the-data}
 
-Define a hexagonal grid across the \kD{} space, using hexagons with
-fixed height (\(a_2\)), width (\(a_1\)). Each of the \kD{} points will
-belong to a hexagonal bin. That is, for each \(y \in \mathbfit{Y}\), we
-can (uniquely) identify the hexagon that the point belongs to. This
-identification is done finding the nearest bin centroid for the \kD{}
-points by considering the \kD{} Euclidean distance.
-
-When \(k=2\), the starting coordinates \((s_1, s_2)\) mark the lower
-left of the grid. This is the bottom left bin centroid. By starting from
-there, points are generated to fill the grid accounting \(b_1\),
-\(b_2\), \(a_1\), and \(a_2\).
+Points are allocated to the bin that they fall in. XXX How are you doing
+this? Do you check the bounds of the hexagon? Or do you use distance to
+centroid?
 
 \subsubsection{Obtaining bin
 representations}\label{obtaining-bin-representations}
