@@ -489,17 +489,19 @@ It is beneficial to define the algorithm on data having a standard scale. Here t
 
 The 2D hexagon grid is defined by the number of bins in each direction ($b_1, b_2$), and the lower left position where the grid starts ($s_1, s_2$). The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
 
-Number of bins is set by fixing $b_1$, which determines the binwidth accounting the offset $q_1$ and breaks on $x_1$, is calculated as 
+The value for $b_2$ is computed by fixing $b_1$. 
 
-$$
-a_1 = \frac{r_1 + q_1}{b_1}.
-$$
+<!-- Number of bins is set by fixing $b_1$, which determines the binwidth accounting the offset $q_1$ and breaks on $x_1$, is calculated as  -->
 
-The computed binwidth then determines the number of vertical bins, $b_2$, and vertical binwidth, which are computed based on $r_2$, the offset $q_2$, and the height/width ratio of a regular hexagon, $\frac{2}{\sqrt{3}}$ as
+<!-- $$ -->
+<!-- a_1 = \frac{r_1 + q_1}{b_1}. -->
+<!-- $$ -->
 
-$$
-a_2 = \frac{r_2 + q_2}{0.75 \times b_2}.
-$$
+<!-- The computed binwidth then determines the number of vertical bins, $b_2$, and vertical binwidth, which are computed based on $r_2$, the offset $q_2$, and the height/width ratio of a regular hexagon, $\frac{2}{\sqrt{3}}$ as -->
+
+<!-- $$ -->
+<!-- a_2 = \frac{r_2 + q_2}{0.75 \times b_2}. -->
+<!-- $$ -->
 
 <!-- To define a hexagonal grid across the \kD{} space, with hexagons of fixed height ($a_1$), width ($a_2$),  it is necessary to determine how many hexagons should be represented along each axis in the \kD{} space.
 
@@ -510,7 +512,9 @@ When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$, is c
 
 #### Binning the data
 
-Points are allocated to the bin that they fall in. XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid?
+Points are allocated to the bin that they fall in by considering the nearest nearest centroid. 
+
+<!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
 
 <!--
 Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($a_2$), width ($a_1$). Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. This identification is done finding the nearest bin centroid for the \kD{} points by considering the \kD{} Euclidean distance.    
