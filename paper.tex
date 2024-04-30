@@ -384,23 +384,15 @@ $T$ & true  model\\
 \addlinespace
 $g$ & functional mapping from \pD{} to \kD{}, especially as prescribed by NLDR\\
 $\mathbfit{\theta}$ & (Hyper-) parameters for NLDR method\\
-$y_\text{max}$ & maximum value of the scaled second embedding component\\
 $r$ & ranges of the embedding components\\
-$b$ & bins\\
+$C^{(j)}$ & $j$-dimensional bin centers\\
+$b$ & number of bins in each direction\\
 \addlinespace
-$a_r$ & aspect ratio of the 2D layout before scaling\\
-$s$ & hexagonal size (defined as the radius of the outer circle surrounding the hexagon)\\
+$a$ & binwidths, distance between centroids in each direction\\
 $(s_1, \ s_2)$ & starting coordinates of the hexagonal grid\\
-$q_1$, $q_2$ & buffer amount along the x and y axes\\
-$h_s$, $v_s$ & horizontal and vertical distance between adjacent hexagon bin centroids\\
-\addlinespace
-$d_x$, $d_y$ & horizontal spacing and adjusted vertical spacing for hexagonal coordinates\\
-$b_1$, $b_2$ & number of hexagon bins along the x and y axes\\
+$q$ & buffer to ensure hexgrid covers data, proportion of data range, 0-1\\
 $b$, $b'$ & total and non-empty hexagon bins in the grid\\
 $n_k$ & number of observations within the $k^{th}$ hexagon\\
-$(h^k_{x_i}, h^k_{y_i})$ & hexagonal grid coordinates of the $k^{th}$ hexagon\\
-\addlinespace
-$C^{(j)}$ & $j$-dimensional bin centers\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -467,12 +459,14 @@ Figure~\ref{fig-NLDR-scurve}.
 configurations}\label{computing-hexagon-grid-configurations}
 
 The 2D hexagon grid is defined by the number of bins in each direction
-(\(b_1, b_2\)), and the lower left position where the grid starts
-(\(s_1, s_2\)). The values of \(s_i\) need to be below their respective
-minimum variable values, and could be a full bin lower, to allow a
-buffer corresponding to a full hexagon width (\(a_1\)) and height
-(\(a_2\)) around the data. The values of \(b_i\) are variables to be
-computed that define the reduction in size of the data (\(n\) to \(m\)).
+\((b_1, b_2)\), as given by the centroids of each hexagon \((c_1, c_2)\)
+and the lower left position where the grid starts at \((s_1, s_2)\),
+which correspond to the lowest left centroid. The values of \(s_i\) need
+to be below their respective minimum variable values, and could be a
+full bin lower, to allow a buffer corresponding to a full hexagon width
+(\(a_1\)) and height (\(a_2\)) around the data. The values of \(b_i\)
+are variables to be computed that define the reduction in size of the
+data (\(n\) to \(m\)).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 lower bound of the NLDR, \(a_1 > 2 \times s_1\) and
