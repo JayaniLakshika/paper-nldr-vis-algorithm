@@ -339,15 +339,17 @@ With our goal being to make a representation of this 2D layout that can be lifte
 ```{r}
 umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
 
-umap_scurve_scaled <- gen_scaled_data(
-  data = umap_scurve, 
-  x = "UMAP1", 
-  y = "UMAP2", 
-  hr = 2/sqrt(3))
+scurve_scaled_obj <- gen_scaled_data(
+  data = umap_scurve)
+
+umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
+lim1 <- scurve_scaled_obj$lim1
+lim2 <- scurve_scaled_obj$lim2
+r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.96)
 sc_xlims <- c(-0.25, 1.25)
-sc_ylims <- c(-0.25, 2.59)
+sc_ylims <- c(-0.25, 1.9)
 # sc_xlims <- c(-0.25, 1.25)
 # sc_ylims <- c(-0.25, 2)
 
@@ -363,26 +365,14 @@ nldr_scurve <- umap_scurve_scaled |>
 ```{r}
 ## Compute hexbin parameters
 num_bins_x_scurve <- 6
-num_bins_y_scurve <- 14
-hex_size_scurve <- 0.13
-buffer_x_scurve <- 0.338
-buffer_y_scurve <- 0.292
-x_start_scurve <- -0.113
-y_start_scurve <- -0.098
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled, 
-  x = "UMAP1",
-  y = "UMAP2", 
-  num_bins_x = num_bins_x_scurve,
-  num_bins_y = num_bins_y_scurve, 
-  x_start = x_start_scurve,
-  y_start = y_start_scurve, 
-  buffer_x = buffer_x_scurve,
-  buffer_y = buffer_y_scurve, 
-  hex_size = hex_size_scurve,
-  col_start = "UMAP")
+  bin1 = num_bins_x_scurve, 
+  s1 = -0.06, 
+  s2 = -0.06, 
+  r2 = r2)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
