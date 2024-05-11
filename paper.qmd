@@ -349,7 +349,7 @@ r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.96)
 sc_xlims <- c(-0.25, 1.25)
-sc_ylims <- c(-0.25, 1.9)
+sc_ylims <- c(-0.4, 1.9)
 # sc_xlims <- c(-0.25, 1.25)
 # sc_ylims <- c(-0.25, 2)
 
@@ -370,8 +370,7 @@ num_bins_x_scurve <- 6
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = num_bins_x_scurve, 
-  s1 = -0.06, 
-  s2 = -0.06, 
+  q = 0.1,
   r2 = r2)
 
 ## Data set with all centroids
