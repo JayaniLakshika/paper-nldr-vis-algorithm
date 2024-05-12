@@ -476,10 +476,40 @@ It is beneficial to define the algorithm on data having a standard scale. Here t
 
 #### Computing hexagon grid configurations
 
-The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
+The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer ($q$) corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
 
 The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > 2 \times s_1$, and $a_1 > \frac{1-s_1}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. The $a_1$ that satisfies the constraints will be selected. Therefore, $b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil$.       
 
+```{r}
+hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+    geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354") +
+    geom_point(data = all_centroids_df |> dplyr::filter(hexID == 1), aes(x = c_x, y = c_y), color = "black") + ## starting point
+    geom_rect(aes(xmin = 0, xmax = 1, ymin = 0, ymax = r2), fill = "white", color = "black", alpha = 0, linewidth = 1) +
+    geom_segment(x = 0, y = -0.35, xend = 1, yend = -0.35,
+                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+
+    annotate("text", x=0.5, y=-0.45, label= "r1", color = "black") +
+    geom_segment(x = -0.25, y = 0, xend = -0.25, yend = r2,
+                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ 
+    annotate("text", x=-0.35, y=1, label= "r2", color = "black") +
+    geom_segment(x = -0.1 + 0.2087578, y = -0.15, xend = -0.1 + 0.2087578*2, yend = -0.15,
+                   arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a1 = 0.2087578
+    annotate("text", x=0.2, y=-0.25, label= "a1", color = "black") +
+    geom_segment(x = -0.15, y = -0.1*r2 + 0.1807896*2, xend = -0.15, yend = -0.1*r2 + 0.1807896*3,
+                     arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.1807896
+    annotate("text", x=-0.15, y=0.45, label= "a2", color = "black") +
+    annotate("text", x=-0.15, y=-0.35, label= "(s1, s2)", color = "black") ## starting point
+```
+
+```{r}
+#| label: fig-hex-param
+#| fig-cap: "Hexagon binning parameters."
+#| fig-width: 3
+#| fig-height: 3
+#| fig-pos: H
+ 
+hex_param_vis
+```
 
 <!-- Number of bins is set by fixing $b_1$, which determines the binwidth accounting the offset $q_1$ and breaks on $x_1$, is calculated as  -->
 

@@ -463,10 +463,10 @@ The 2D hexagon grid is defined by the number of bins in each direction
 and the lower left position where the grid starts at \((s_1, s_2)\),
 which correspond to the lowest left centroid. The values of \(s_i\) need
 to be below their respective minimum variable values, and could be a
-full bin lower, to allow a buffer corresponding to a full hexagon width
-(\(a_1\)) and height (\(a_2\)) around the data. The values of \(b_i\)
-are variables to be computed that define the reduction in size of the
-data (\(n\) to \(m\)).
+full bin lower, to allow a buffer (\(q\)) corresponding to a full
+hexagon width (\(a_1\)) and height (\(a_2\)) around the data. The values
+of \(b_i\) are variables to be computed that define the reduction in
+size of the data (\(n\) to \(m\)).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 lower bound of the NLDR, \(a_1 > 2 \times s_1\), and
@@ -475,6 +475,18 @@ of the NLDR, \(a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}\), because
 \(a_2 = \frac{\sqrt(3)}{2}a_1\) for regular hexagons. The \(a_1\) that
 satisfies the constraints will be selected. Therefore,
 \(b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil\).
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-hex-param-1.pdf}
+
+}
+
+\caption{\label{fig-hex-param}Hexagon binning parameters.}
+
+\end{figure}%
 
 \subsubsection{Binning the data}\label{binning-the-data}
 
