@@ -469,13 +469,12 @@ are variables to be computed that define the reduction in size of the
 data (\(n\) to \(m\)).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
-lower bound of the NLDR, \(a_1 > 2 \times s_1\) and
-\(a_1 > \frac{1-s_1}{b_1 -1}\). The minimum \(a_1\) that satisfies the
-constraints will be selected. For regular hexagons,
-\(a_2 = \frac{2}{\sqrt(3)}a_1\). Therefore, \(a_2\) is computed for the
-minimum \(a_1\). According to the upper bound of the NLDR,
-\(b_2 = \left\lceil\frac{r_2 - s_2}{v_2} + 1\right\rceil\), where
-\(v_2 = \frac{a_2}{2} + \sqrt{{(\frac{a_2}{2})}^2 - {(\frac{a_1}{2})}^2}\).
+lower bound of the NLDR, \(a_1 > 2 \times s_1\), and
+\(a_1 > \frac{1-s_1}{b_1 -1}\). Similarly, according to the upper bound
+of the NLDR, \(a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}\), because
+\(a_2 = \frac{\sqrt(3)}{2}a_1\) for regular hexagons. The \(a_1\) that
+satisfies the constraints will be selected. Therefore,
+\(b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil\).
 
 \subsubsection{Binning the data}\label{binning-the-data}
 
