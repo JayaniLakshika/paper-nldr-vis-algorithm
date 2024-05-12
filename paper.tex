@@ -478,8 +478,12 @@ satisfies the constraints will be selected. Therefore,
 
 \subsubsection{Binning the data}\label{binning-the-data}
 
-Points are allocated to the bin that they fall in by considering the
-nearest centroid.
+Points are allocated to the bin they fall into based on the nearest
+centroid. In situations where a point is equidistant from multiple
+centroids, tie-breaking rules are applied. If multiple centroids are in
+the same row, the point is assigned to the leftmost centroid. If
+multiple centroids are in different rows, the point is assigned to the
+bottom centroid.
 
 \subsubsection{Obtaining bin
 representations}\label{obtaining-bin-representations}

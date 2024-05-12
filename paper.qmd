@@ -502,7 +502,7 @@ When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$, is c
 
 #### Binning the data
 
-Points are allocated to the bin that they fall in by considering the nearest centroid. 
+Points are allocated to the bin they fall into based on the nearest centroid. In situations where a point is equidistant from multiple centroids, tie-breaking rules are applied. If multiple centroids are in the same row, the point is assigned to the leftmost centroid. If multiple centroids are in different rows, the point is assigned to the bottom centroid.
 
 <!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
 
