@@ -1,3 +1,4 @@
+## Run only once
 library(dplyr)
 library(snedata)
 library(ggflowchart)

@@ -1,0 +1,335 @@
+---
+title: "Hexagonal binning algorithm"
+format: pdf
+editor: visual
+---
+
+```{r}
+#| echo: false
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE
+)
+
+library(ggplot2)
+library(dplyr)
+
+theme_set(theme_linedraw() +
+   theme(
+     #aspect.ratio = 1,
+     plot.background = element_rect(fill = 'transparent', colour = NA),
+     plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+     panel.background = element_rect(fill = 'transparent', 
+                                     colour = NA),
+     panel.grid.major = element_blank(), 
+     panel.grid.minor = element_blank(), 
+     axis.title.x = element_blank(), axis.title.y = element_blank(),
+     axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+     axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+     legend.background = element_rect(fill = 'transparent', 
+                                      colour = NA),
+     legend.key = element_rect(fill = 'transparent', 
+                               colour = NA),
+     legend.position = "none", 
+     legend.title = element_text(size=5), 
+     legend.text = element_text(size=4),
+     legend.key.height = unit(0.25, 'cm'),
+     legend.key.width = unit(0.25, 'cm')
+   )
+)
+```
+
+## Computing hexagon grid configurations
+
+The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer corresponding to a distance between centroids in each direction ($a_1$ and $a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$). 
+
+The value for $b_2$ is computed by fixing $b_1$. Also, according to hexagonal ratio $a_2 = \frac{\sqrt{3}}{2}a_1$.
+
+The first step of this process is to find the optimal number of bins along the y-axis ($b_1$) at the minimum width of the hexagon ($a_1$) that satisfies the following constraints.
+
+$\text{min }a_1 \text{ s.t.}$
+
+$$
+s_1 - \frac{a_1}{2} < 0,
+$$ {#eq-equation1}
+
+$$
+s_1 + (b_1 - 1) \times a_1 > 1,
+$$ {#eq-equation2}
+
+$$
+s_2 - \frac{a_2}{2} < 0,
+$$ {#eq-equation4}
+
+$$
+s_2 + (b_2 - 1) \times a_2 > r_2.
+$$ {#eq-equation5}
+
+Since $a_1$ and $a_2$ are distances,
+
+$$
+a_1, a_2 > 0.
+$$
+Also, $(s_1, s_2) \in (-0.1, -0.05)$ as these are multiplicative offsets in the negative direction.
+
+@eq-equation1 can be rearranged as,
+
+$$
+a_1 > 2s_1
+$$
+
+which given $s_1 < 0$ and $a_1 > 0$ will *always* be true. The same logic follows for @eq-equation4 and substituting $a_2 = \frac{\sqrt{3}}{2}a_1$ to @eq-equation4 can be written as, 
+
+$$
+a_1 > \frac{4}{\sqrt{3}}s_2.
+$$
+Also, substituting $a_2 = \frac{\sqrt{3}}{2}a_1$ and rearranging @eq-equation5 gives:
+
+$$
+a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}.
+$${#eq-equation6}
+
+Similarly, @eq-equation2 becomes,
+
+$$
+a_1 > \frac{(1-s_1)}{(b_1 - 1)}.
+$${#eq-equation7}
+
+This is a linear optimisation problem. Therefore, the optimal solution must occur on a vertex. So, by setting @eq-equation6 equals to @eq-equation7 gives,
+
+$$
+\frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1-s_1)}{(b_1 - 1)}.
+$$
+After rearranging this,
+
+$$
+b_2 = 1 + \frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}
+$$ 
+
+and since $b_2$ should be an integer,
+
+$$
+b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil.
+$$ {#eq-equation8}
+
+Furthermore, with known $b_1$ and $b_2$, by considering @eq-equation2 or @eq-equation5 as the *binding* or *active constraint*, can compute $a_1$.
+
+If @eq-equation2 is active, then,
+
+$$
+\frac{(1-s_1)}{(b_1 - 1)} < \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}.
+$$
+Rearranging this gives, 
+
+$$
+r_2 > \frac{\sqrt{3}(b_2 - 1)(1-s_1)}{2(b_1 - 1)} + s_2.
+$$
+Therefore, if this equality is true, then $a_1 = \frac{(1-s_1)}{(b_1 - 1)}$, otherwise, $a_1 = \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}$.
+
+```{r, echo=FALSE}
+# bin1: Number of bins along the x-axis
+# buffer: proportion of buffer should between 0 and 1
+# r2: range of embedding 2
+calc_bins_y <- function(bin1 = 2, s1 = -0.1, s2 = -0.1, r2) {
+  
+  ## Need to have a check where bin2 greater than 2
+  if (bin1 < 2) {
+    stop("Number of bins along the x-axis at least should be 2.")
+  }
+  
+  ## To compute the number of bins along the x-axis
+  bin2 <- ceiling(1 + (2 * (r2-s2) * (bin1 - 1))/(sqrt(3) * (1-s1)))
+  
+  ## Validating and compute horizontal spacing
+  check_factor <- (sqrt(3) * (bin2 - 1) * (1-s1))/(2 * (bin1 - 1)) + s2
+  
+  if (r2 > check_factor) {
+    
+    a1 <- (1-s1)/(bin1 - 1)
+    
+  } else {
+    
+    a1 <- (2 * (r2-s2))/(sqrt(3) * (bin2 - 1))
+    
+  }
+  
+  return(list(bin2 = bin2, a1 = a1))
+}
+```
+
+
+```{r, echo=FALSE}
+gen_centroids <- function(bin1, s1 = -0.1, s2 = -0.1, r2){
+  
+  ## To compute hexagonal configurations
+  bin_obj <- calc_bins_y(bin1 = bin1, s1 = s1, s2 = s2, r2 = r2)
+
+  # To obtain the bins along the y-axis
+  bin2 <- bin_obj$bin2
+
+  # To obtain the width of the hexagon
+  a1 <- bin_obj$a1
+
+  # Generate x-coordinate of centroids for odd rows
+  c_x_vec_odd <- seq(s1, (bin1 - 1) * a1, by = a1)
+
+  # Generate x-coordinate of centroids for even rows
+  c_x_vec_even <- c_x_vec_odd + a1/2
+  c_x_vec <- c(c_x_vec_odd, c_x_vec_even)
+
+  # To compute vertical spacing
+  a2 <- sqrt(3) * a1/2
+
+  # Generate y-coordinate of centroids
+  c_y_vec <- seq(s2, (bin2 - 1) * a2, by = a2)
+  c_y <- rep(c_y_vec, each = bin1)
+
+  ## Do the number of belongs y axis is even or odd and adjust the x-coordinates
+  if ((bin2 %% 2) == 0) {
+
+    c_x <- rep(c_x_vec, bin2/2)
+
+  } else {
+
+    if ((ceiling(bin2/2) %% 2) == 0) {
+
+      c_x <- append(rep(c_x_vec, floor(bin2/2)), c_x_vec_odd)
+
+    } else{
+
+      c_x <- append(rep(c_x_vec, floor(bin2/2)), c_x_vec_even)
+
+    }
+
+  }
+
+  centroid_df <- tibble::tibble(hexID = 1:length(c_x), c_x = c_x, c_y = c_y)
+
+  return(centroid_df)
+
+}
+```
+
+```{r, echo=FALSE}
+all_centroids_df <- gen_centroids(bin1 = 4, s1 = -0.1, s2 = -0.1, r2 = 2.019414)
+```
+
+```{r, echo=FALSE}
+gen_hex_coord <- function(centroids_df, a1){
+
+  ## Obtain centroid info
+  hex_ids <- centroids_df$hexID
+  c_x_vec <- centroids_df$c_x
+  c_y_vec <- centroids_df$c_y
+  
+  ## To compute vertical spacing factor
+  vs_factor <- a1/(2 * sqrt(3))
+  
+  dx <- a1/2
+  dy <- a1/sqrt(3)
+  
+  ## Assign coordinates for 6 directions
+  x_add_factor <- c(0, -dx, -dx, 0, dx, dx)
+  y_add_factor <- c(dy, vs_factor, -vs_factor, -dy, -vs_factor, vs_factor)
+
+  ## Initialize vectors to store hexagonal coordinates
+  hex_poly_id <- integer(0)
+  x <- numeric(0)
+  y <- numeric(0)
+
+  for (hb_id in hex_ids) {
+
+    ## Since each hexagon has 6 coordinates
+    hexID_rep <- rep(hex_ids[hb_id], each = 6)
+    c_x_rep <- rep(c_x_vec[hb_id], each = 6)
+    c_y_rep <- rep(c_y_vec[hb_id], each = 6)
+
+    ## Generate the 6 coordinates
+    x_spec <- c_x_rep + x_add_factor
+    y_spec <- c_y_rep + y_add_factor
+
+    ## Append to existing vectors
+    x <- append(x, x_spec)
+    y <- append(y, y_spec)
+    hex_poly_id <- append(hex_poly_id, hexID_rep)
+
+  }
+
+  hex_coord_df <- tibble::tibble(hex_poly_id = hex_poly_id, x = x, y = y)
+
+  return(hex_coord_df)
+}
+```
+
+```{r, echo=FALSE}
+hex_grid <- gen_hex_coord(all_centroids_df, a1 = 0.3496126)
+```
+
+```{r, echo=FALSE}
+ggplot(data = hex_grid, aes(x = x, y = y)) + 
+    geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354") +
+    geom_point(data = all_centroids_df |> dplyr::filter(hexID == 1), aes(x = c_x, y = c_y), color = "#08519c") + ## starting point
+    geom_rect(aes(xmin = 0, xmax = 1, ymin = 0, ymax = 2.019414), fill = "white", color = "#feb24c", alpha = 0, linewidth = 1) +
+    geom_segment(x = 0, y = -0.25, xend = 1, yend = -0.25,
+                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "#f03b20")+
+    annotate("text", x=0.5, y=-0.35, label= "r1", color = "#f03b20") +
+    geom_segment(x = -0.25, y = 0, xend = -0.25, yend = 2.019414,
+                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "#f03b20")+ 
+    annotate("text", x=-0.35, y=1, label= "r2", color = "#f03b20") +
+    geom_segment(x = -0.1, y = -0.15, xend = -0.1 + 0.3496126, yend = -0.15,
+                   arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a1 = 0.3496126
+    annotate("text", x=0.17, y=-0.35, label= "a1", color = "black") +
+    geom_segment(x = -0.15, y = -0.1, xend = -0.15, yend = -0.1 + 0.3027734,
+                     arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.3027734
+    annotate("text", x=-0.35, y=0.15, label= "a2", color = "black") +
+    annotate("text", x=-0.15, y=-0.35, label= "(s1, s2)", color = "#08519c") + ## starting point
+    coord_fixed()
+```
+
+## Binning the data
+
+Points are allocated to the bin that they fall in by considering the nearest centroid. 
+
+To find the nearest centroid to a $k^{th}$ embedding point $(y_1, y_2)$ among centroids $(C_1^{(k)}, C_2^{(k)}, \ldots, C_b^{(k)})$, 
+
+$$
+\text{Minimize: }\sqrt{(y_1 - c_{1k})^2 + (y_2 - c_{2k})^2} + \text{centroid\_ID} \times 10^{-3}. 
+$$
+
+In this expression, $(c_{1k}, c_{2k})$ represents the coordinates of centroid $C_1^{(k)}$, and $\text{centroid\_ID}$ represents the ID of the centroid. This formulation ensures that if multiple centroids have the same minimum distance, the one with the minimum ID will be selected.
+
+```{r, echo=FALSE}
+emb_df <- tibble::tibble(emb1 = 0.774, emb2 = 0.5055) |>
+  add_row(emb1 = 0.424, emb2 = 0.5055) |>
+  add_row(emb1 = 0.5115, emb2 = 0.3545) |>
+  add_row(emb1 = 0.5115, emb2 = 0.6565) |>
+  add_row(emb1 = 0.6865, emb2 = 0.3545) |>
+  add_row(emb1 = 0.6865, emb2 = 0.6565) |>
+  add_row(emb1 = 0.599, emb2 = 0.304) |>
+  add_row(emb1 = 0.599, emb2 = 0.707) |>
+  add_row(emb1 = 0.424, emb2 = 0.405) |>
+  add_row(emb1 = 0.424, emb2 = 0.606) |>
+  add_row(emb1 = 0.774, emb2 = 0.405) |>
+  add_row(emb1 = 0.774, emb2 = 0.606)
+ 
+
+ggplot(data = hex_grid, aes(x = x, y = y)) + 
+    geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+    geom_point(data = emb_df, aes(x = emb1, y = emb2), color = "#253494") +
+    geom_segment(x = 0.774, y = 0.5055, xend = 0.7, yend = 0.5055,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.424, y = 0.5055, xend = 0.35, yend = 0.5055,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.599, y = 0.707, xend = 0.599, yend = 0.6,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.774, y = 0.405, xend = 0.774, yend = 0.3,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.774, y = 0.606, xend = 0.7, yend = 0.55,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.6865, y = 0.6565, xend = 0.62, yend = 0.6,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") +
+    geom_segment(x = 0.6865, y = 0.3545, xend = 0.6865, yend = 0.25,
+                       arrow = arrow(length = unit(0.03, "npc")), color = "black") 
+    
+```

@@ -478,7 +478,7 @@ It is beneficial to define the algorithm on data having a standard scale. Here t
 
 The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer ($q$) corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
 
-The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > 2 \times s_1$, and $a_1 > \frac{1-s_1}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. The $a_1$ that satisfies the constraints will be selected. Therefore, $b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil$.       
+The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > 2 \times s_1$, and $a_1 > \frac{1-s_1}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil$.       
 
 ```{r}
 hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
@@ -608,8 +608,11 @@ training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
-pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds")
-pacmap_minst_scaled <- gen_scaled_data(data = pacmap_minst)$scaled_nldr
+pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds") |> 
+  select(PaCMAP1, PaCMAP2, ID)
+mnist_scaled_obj <- gen_scaled_data(
+  data = pacmap_minst)
+pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr 
 
 position_df <- pacmap_minst_scaled |> 
   filter(ID %in% c(6475, 3311, 6489, 2347, 387, 
@@ -698,11 +701,103 @@ pacmap_plot_mnist + img_sample +
 
 <!-- Fit the model and compute error-->
 ```{r}
+## Compute hexbin parameters
+num_bins_x_mnist <- 20
+lim1 <- mnist_scaled_obj$lim1
+lim2 <- mnist_scaled_obj$lim2
+r2_mnist <- diff(lim1)/diff(lim2) # Need to correct r2_mnist <- diff(lim2)/diff(lim1)
 
+mnist_model <- fit_highd_model(
+  training_data = training_data_mnist,
+  emb_df = pacmap_minst_scaled,
+  bin1 = num_bins_x_mnist,
+  q = 0.1,
+  r2 = r2_mnist,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "PC"
+)
 
+df_bin_centroids_mnist <- mnist_model$df_bin_centroids
+df_bin_mnist <- mnist_model$df_bin
 
+## Triangulate bin centroids
+tr1_object_mnist <- tri_bin_centroids(
+  df_bin_centroids_mnist, x = "c_x", y = "c_y")
+tr_from_to_df_mnist <- gen_edges(
+  tri_object = tr1_object_mnist)
+
+## Compute 2D distances
+distance_mnist <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_mnist, 
+  start_x = "x_from", 
+  start_y = "y_from", 
+  end_x = "x_to", 
+  end_y = "y_to", 
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_mnist <- find_lg_benchmark(
+  distance_edges = distance_mnist, 
+  distance_col = "distance")
+
+trimesh_removed_mnist <- vis_rmlg_mesh(
+  distance_edges = distance_mnist, 
+  benchmark_value = benchmark_mnist, 
+  tr_coord_df = tr_from_to_df_mnist, 
+  distance_col = "distance") +
+  #xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos)
+
+## Compute error
+error_df <- augment(
+  df_bin_centroids = df_bin_centroids_mnist, 
+  df_bin = df_bin_mnist, 
+  training_data = training_data_mnist, 
+  newdata = NULL, 
+  type_NLDR = "PaCMAP", 
+  col_start = "PC") 
+
+## Categorize error
+
+error_df <- error_df |>
+  mutate(type = case_when(
+    row_wise_abs_error <= 2 ~ "error 0-2",
+    row_wise_abs_error <= 4 ~ "error 2-4",
+    row_wise_abs_error <= 6 ~ "error 4-6",
+    row_wise_abs_error <= 6 ~ "error 6-8",
+    row_wise_abs_error <= 10 ~ "error 8-10",
+    .default = "error greter than 10"
+  )) |>
+  mutate(type = factor(type, levels = c(
+    "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", 
+    "error greter than 10")))
+
+## To join embedding
+error_df <- error_df |>
+  bind_cols(pacmap_minst |> 
+              select(-ID))
+  
+error_plot_mnist <- error_df |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2, 
+             color = type, 
+             group = ID)) +
+  geom_point(alpha=0.5, 
+             size = 0.1) +
+  interior_annotation("b", sc_ltr_pos)
 ```
 
+```{r}
+#| echo: false
+#| fig-cap: "(a) Model generated in the 2D space overlaid on PaCMAP data, and (b) high-D model error in model space."
+#| label: fig-model-mnist
+#| fig-pos: H
+
+trimesh_removed_mnist + error_plot_mnist + 
+  plot_layout(guides='collect', ncol=2) &
+  theme(legend.position='bottom')
+```
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
@@ -724,7 +819,7 @@ imge_error_sample_within <- pixels_gathered |>
                                             4882, 773, 2825, 6169, 6948, 5987, 
                                             1282, 7715, 622, 2989, 6912, 4370, 
                                             1227, 4042, 2444, 836, 1654)), 
-             ncol = 12) +
+             ncol = 5) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank())
@@ -732,10 +827,8 @@ imge_error_sample_within <- pixels_gathered |>
 
 <!--outside the nonlinear structure-->
 ```{r}
-#| eval: false
-
 img_error <- error_df |> 
-  filter(total >= 8) |> 
+  filter(row_wise_abs_error >= 8) |> 
   filter((!ID %in% c(4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 
                             2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 
                             6912, 4370, 1227, 4042, 2444, 836, 1654))) |>
@@ -751,21 +844,23 @@ pixels_gathered <-  mnist_data |>
 imge_error_sample <- pixels_gathered |> 
   ggplot(aes(x, y, fill = value)) +  
   geom_tile() +  
-  facet_wrap(~ instance, ncol = 11) +
+  facet_wrap(~ instance, ncol = 5) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank())
 ```
 
 ```{r}
-#| eval: false
-##| echo: false
-#| fig-cap: "(a) Images of handwritten digit 1 which occur large model error within the nonlinear strcuture, and (b) Images of handwritten digit 1 which occur large model error outside the nonlinear structure."
+#| echo: false
+#| fig-cap: "(a) Images of handwritten digit 1 which occur large model error within the non-linear strcuture, and (b) Images of handwritten digit 1 which occur large model error outside the non-linear structure."
 #| label: fig-anomalies
+#| fig-width: 4
+#| fig-height: 4
 #| out-width: 100%
 #| fig-pos: H
 
 imge_error_sample_within + imge_error_sample +
+  plot_layout(ncol=2) +
   plot_annotation(tag_levels = 'a')
 ```
 
