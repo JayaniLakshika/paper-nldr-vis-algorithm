@@ -753,9 +753,8 @@ error_plot_pbmc <- ggplot(error_df,
   geom_line() + 
   geom_vline(xintercept = 137, linetype="solid", 
              color = "black", size=0.8, alpha = 0.5) +
-  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a', 
-                              '#b15928', '#ffff99')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#984ea3',
+                              '#ff7f00','#a6cee3','#a65628','#f781bf')) +
   ylab("log(absolute error)") +
   xlab("number of non-empty bins")
 
@@ -825,7 +824,6 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
-
 benchmark_pbmc <- 0.1
 
 trimesh_removed_pbmc <- vis_rmlg_mesh(
