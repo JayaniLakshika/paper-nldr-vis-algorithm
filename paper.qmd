@@ -594,6 +594,36 @@ Furthermore, edges that exist between \kD{} representations should also generate
 - Use our method to assess is it a reasonable representation
 - Demonstrate that it is not
 - Illustrate how to use our method to get a better representation
+
+<!-- UMAP layout with author's suggested parameter choice-->
+```{r}
+## Import data
+training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
+training_data_pbmc <- training_data_pbmc[, 1:9] |>
+  mutate(ID = 1:NROW(training_data_pbmc))
+
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
+pbmc_scaled_obj <- gen_scaled_data(
+  data = umap_pbmc)
+umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
+
+umap_pbmc <- umap_pbmc_scaled |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.5) 
+```
+
+<!-- UMAP parameters suggested by the author(n_neighbors = 30, min_dist = 0.3)-->
+```{r}
+#| fig-cap: "2D layout from UMAP applied for the PBMC3k dataset. Is this a best representation of the original data?"
+#| label: fig-umapauthor
+#| fig-width: 3
+#| fig-height: 3
+#| fig-pos: H
+
+umap_pbmc 
+```
+
      
 ### digits: 1
 
@@ -702,10 +732,10 @@ pacmap_plot_mnist + img_sample +
 <!-- Fit the model and compute error-->
 ```{r}
 ## Compute hexbin parameters
-num_bins_x_mnist <- 20
+num_bins_x_mnist <- 37
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
-r2_mnist <- diff(lim1)/diff(lim2) # Need to correct r2_mnist <- diff(lim2)/diff(lim1)
+r2_mnist <- diff(lim2)/diff(lim1) 
 
 mnist_model <- fit_highd_model(
   training_data = training_data_mnist,
@@ -775,7 +805,7 @@ error_df <- error_df |>
 
 ## To join embedding
 error_df <- error_df |>
-  bind_cols(pacmap_minst |> 
+  bind_cols(pacmap_minst_scaled |> 
               select(-ID))
   
 error_plot_mnist <- error_df |>
@@ -788,6 +818,7 @@ error_plot_mnist <- error_df |>
   interior_annotation("b", sc_ltr_pos)
 ```
 
+<!--bin1 = 37, bin2 = 26, b = 962, non_empty = 398-->
 ```{r}
 #| echo: false
 #| fig-cap: "(a) Model generated in the 2D space overlaid on PaCMAP data, and (b) high-D model error in model space."
@@ -844,7 +875,7 @@ pixels_gathered <-  mnist_data |>
 imge_error_sample <- pixels_gathered |> 
   ggplot(aes(x, y, fill = value)) +  
   geom_tile() +  
-  facet_wrap(~ instance, ncol = 5) +
+  facet_wrap(~ instance, ncol = 2) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank())

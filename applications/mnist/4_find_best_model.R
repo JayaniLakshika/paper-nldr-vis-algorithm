@@ -1,13 +1,15 @@
 library(quollr)
 library(dplyr)
 library(readr)
+library(ggplot2)
 
 ## Import data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
-pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds")
+pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds") |>
+  select(PaCMAP1, PaCMAP2, ID)
 mnist_scaled_obj <- gen_scaled_data(
   data = pacmap_minst)
 pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr
@@ -65,5 +67,5 @@ ggplot(error_minst, aes(x = b_non_empty,
                      y = log(MSE))) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 341, linetype="solid",
+  geom_vline(xintercept = 398, linetype="solid",
              color = "black", linewidth=0.8, alpha = 0.5)
