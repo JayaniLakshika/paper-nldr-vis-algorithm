@@ -637,6 +637,39 @@ space overlaid on UMAP data, and (b) high-D model error in model space.}
 
 \end{figure}%
 
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-abserrorPBMC-1.pdf}
+
+}
+
+\caption{\label{fig-abserrorPBMC}Absolute error from UMAP and tSNE
+applied to training PBMC3k dataset with diffferent parameter choices.
+What is the best parameter choice to create the model? The residual plot
+have a steep slope at the beginning, indicating that a smaller number of
+non-empty bins causes a larger amount of error. Then, the slope
+gradually declines or level off, indicating that a higher number of
+non-empty bins generates a smaller error. Using the elbow method, it was
+observed that when the number of non-empty bins is set to 137, the
+lowest error occurred with the parameters perplexity: 30.}
+
+\end{figure}%
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-model-pbmc-1.pdf}
+
+}
+
+\caption{\label{fig-model-pbmc}(a) Model generated in the 2D space
+overlaid on tSNE data, and (b) high-D model error in model space.}
+
+\end{figure}%
+
 \subsection{digits: 1}\label{digits-1}
 
 \begin{itemize}

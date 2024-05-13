@@ -144,8 +144,8 @@ theme_set(theme_linedraw() +
                                       colour = NA),
      legend.key = element_rect(fill = 'transparent', 
                                colour = NA),
-     legend.position = "none", 
-     legend.title = element_text(size=5), 
+     legend.position = "bottom", 
+     legend.title = element_blank(), 
      legend.text = element_text(size=4),
      legend.key.height = unit(0.25, 'cm'),
      legend.key.width = unit(0.25, 'cm')
@@ -680,7 +680,7 @@ error_df <- augment(
   df_bin = df_bin_pbmc,
   training_data = training_data_pbmc,
   newdata = NULL,
-  type_NLDR = "PaCMAP",
+  type_NLDR = "UMAP",
   col_start = "PC_")
 
 ## Categorize error
@@ -724,7 +724,171 @@ trimesh_removed_pbmc + error_plot_pbmc +
   theme(legend.position='bottom')
 ```
 
-     
+<!--compute absolute error for different parameter choices-->
+```{r}
+error_df_umap <- read_csv("data/pbmc3k/error_df_umap.csv", col_names = FALSE)
+names(error_df_umap) <- c("error", "mse", "bin1", "bin2", "b", "b_non_empty", 
+                     "method", "n_neighbors", "min_dist")
+
+error_df_umap <- error_df_umap |>
+  mutate(type = paste0("n_neighbors: ", n_neighbors, ", min_dist: ", min_dist)) |>
+  select(-c(n_neighbors, min_dist))
+
+error_df_tsne <- read_csv("data/pbmc3k/error_df_tsne.csv", col_names = FALSE)
+names(error_df_tsne) <- c("error", "mse", "bin1", "bin2", "b", "b_non_empty", 
+                          "method", "perplexity")
+
+error_df_tsne <- error_df_tsne |>
+  mutate(type = paste0("perplexity: ", perplexity)) |>
+  select(-perplexity)
+
+error_df <- bind_rows(error_df_umap, error_df_tsne)
+
+error_plot_pbmc <- ggplot(error_df, 
+                              aes(x = b_non_empty, 
+                                  y = log(error), 
+                                  group = type, 
+                                  colour = type)) + 
+  geom_point() +
+  geom_line() + 
+  geom_vline(xintercept = 137, linetype="solid", 
+             color = "black", size=0.8, alpha = 0.5) +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a', 
+                              '#b15928', '#ffff99')) +
+  ylab("log(absolute error)") +
+  xlab("number of non-empty bins")
+
+```
+
+```{r}
+#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to 137, the lowest error occurred with the parameters perplexity: 30."
+#| label: fig-abserrorPBMC
+#| fig-pos: H
+#| out-width: 100%
+
+error_plot_pbmc
+```
+
+<!--best choice-->
+
+```{r}
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
+pbmc_scaled_obj <- gen_scaled_data(
+  data = tsne_pbmc)
+tsne_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
+
+tsne_pbmc <- tsne_pbmc_scaled |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2)) +
+  geom_point(alpha=0.5)
+```
+
+<!--Fit the best model and compute error-->
+```{r}
+## Compute hexbin parameters
+num_bins_x_pbmc <- 15
+lim1 <- pbmc_scaled_obj$lim1
+lim2 <- pbmc_scaled_obj$lim2
+r2_pbmc <- diff(lim2)/diff(lim1) 
+
+pbmc_model <- fit_highd_model(
+  training_data = training_data_pbmc,
+  emb_df = tsne_pbmc_scaled,
+  bin1 = num_bins_x_pbmc,
+  q = 0.1,
+  r2 = r2_pbmc,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "PC_"
+)
+
+df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+df_bin_pbmc <- pbmc_model$df_bin
+
+## Triangulate bin centroids
+tr1_object_pbmc <- tri_bin_centroids(
+  df_bin_centroids_pbmc, x = "c_x", y = "c_y")
+tr_from_to_df_pbmc <- gen_edges(
+  tri_object = tr1_object_pbmc)
+
+## Compute 2D distances
+distance_pbmc <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_pbmc,
+  start_x = "x_from",
+  start_y = "y_from",
+  end_x = "x_to",
+  end_y = "y_to",
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_pbmc <- find_lg_benchmark(
+  distance_edges = distance_pbmc,
+  distance_col = "distance")
+
+benchmark_pbmc <- 0.1
+
+trimesh_removed_pbmc <- vis_rmlg_mesh(
+  distance_edges = distance_pbmc,
+  benchmark_value = benchmark_pbmc,
+  tr_coord_df = tr_from_to_df_pbmc,
+  distance_col = "distance") +
+  #xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos)
+
+## Compute error
+error_df <- augment(
+  df_bin_centroids = df_bin_centroids_pbmc,
+  df_bin = df_bin_pbmc,
+  training_data = training_data_pbmc,
+  newdata = NULL,
+  type_NLDR = "tSNE",
+  col_start = "PC_")
+
+## Categorize error
+
+error_df <- error_df |>
+  mutate(type = case_when(
+    row_wise_abs_error <= 5 ~ "error 0-5",
+    row_wise_abs_error <= 10 ~ "error 5-10",
+    row_wise_abs_error <= 15 ~ "error 10-15",
+    row_wise_abs_error <= 20 ~ "error 15-20",
+    row_wise_abs_error <= 25 ~ "error 20-25",
+    .default = "error greter than 25"
+  )) |>
+  mutate(type = factor(type, levels = c(
+    "error 0-5", "error 5-10", "error 10-15", "error 15-20", "error 20-25", 
+    "error greter than 25")))
+
+## To join embedding
+error_df <- error_df |>
+  bind_cols(tsne_pbmc_scaled |>
+              select(-ID))
+
+error_plot_pbmc <- error_df |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             color = type,
+             group = ID)) +
+  geom_point(alpha=0.5,
+             size = 0.1) +
+  interior_annotation("b", sc_ltr_pos)
+
+```
+
+<!--bin1 = 15, bin2 = 20, b = 300, non_empty = 137-->
+```{r}
+#| echo: false
+#| fig-cap: "(a) Model generated in the 2D space overlaid on tSNE data, and (b) high-D model error in model space."
+#| label: fig-model-pbmc
+#| fig-pos: H
+
+trimesh_removed_pbmc + error_plot_pbmc + 
+  plot_layout(guides='collect', ncol=2) &
+  theme(legend.position='bottom')
+```
+
+
 ### digits: 1
 
 - NLDR is used to illustrate different ways 1's are drawn
@@ -816,7 +980,8 @@ img_sample <- pixels_gathered |>
                         3120, 6869, 6345, 4470, 7147)), ncol = 5) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
-        strip.text.x = element_blank())
+        strip.text.x = element_blank(), 
+        legend.position = "none")
 ```
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
@@ -953,7 +1118,8 @@ imge_error_sample_within <- pixels_gathered |>
              ncol = 5) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
-        strip.text.x = element_blank())
+        strip.text.x = element_blank(),
+        legend.position = "none")
 ```
 
 <!--outside the nonlinear structure-->
@@ -978,7 +1144,8 @@ imge_error_sample <- pixels_gathered |>
   facet_wrap(~ instance, ncol = 2) +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
-        strip.text.x = element_blank())
+        strip.text.x = element_blank(),
+        legend.position = "none")
 ```
 
 ```{r}
