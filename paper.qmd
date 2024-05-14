@@ -478,7 +478,7 @@ It is beneficial to define the algorithm on data having a standard scale. Here t
 
 The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer ($q$) corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
 
-The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > 2 \times s_1$, and $a_1 > \frac{1-s_1}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2(r_2 - s_2)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2(r_2 - s_2)(b_1 - 1)}{\sqrt{3}(1-s_1)}\Big\rceil$.       
+The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$.       
 
 ```{r}
 hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
