@@ -476,9 +476,11 @@ It is beneficial to define the algorithm on data having a standard scale. Here t
 
 #### Computing hexagon grid configurations
 
-The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, as given by the centroids of each hexagon $(c_1, c_2)$ and the lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer ($q$) corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$).
+The 2D hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, giving total number of bins as $b = b_1 \times b_2$, and hexagon id, $h = 1, \dots, b$. Each hexagon, $H_h$ is uniquely described by centroid, $ C_{h}^{(2)} = (c_{h1}, c_{h2})$. The lower left position where the grid starts at $(s_1, s_2)$, which correspond to the lowest left centroid. The values of $s_i$ need to be below their respective minimum variable values, and could be a full bin lower, to allow a buffer ($q$) corresponding to a full hexagon width ($a_1$) and height ($a_2$) around the data. The values of $b_i$ are variables to be computed that define the reduction in size of the data ($n$ to $m$). 
 
-The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$.       
+The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$. 
+
+
 
 ```{r}
 hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
@@ -534,6 +536,8 @@ When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$, is c
 
 Points are allocated to the bin they fall into based on the nearest centroid. In situations where a point is equidistant from multiple centroids, tie-breaking rules are applied. If multiple centroids are in the same row, the point is assigned to the leftmost centroid. If multiple centroids are in different rows, the point is assigned to the bottom centroid.
 
+$\{ i \in H_h, h = 1, \dots, b, \text{ and } i = 1, \dots, n\}$
+
 <!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
 
 <!--
@@ -543,21 +547,21 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 -->
 
 <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
-#### Obtaining bin representations
+#### Summarization of the data in 2D
 
-Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's bin representation ($C^{(k)}$). This is the model points in \kD{} space.
+Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's bin centroid ($C^{(k)}$). This is the model points in \kD{} space.
 
 When $k = 2$, one of the representations of a bin is the hexagonal centroid (@fig-NLDR-scurve (c)).
 
-#### Generating edges
+#### Generating edges to indicate neighbours and removing long edges
 
-Delaunay triangulation on bin representations generates edges by specifying which bin representations should be connected to generate the model in \kD{} space.
+Delaunay triangulation is used to connect neighbouring centroids, which is needed to preserve neighbourhood information when the model is lifted into \pD{}. 
 
 When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in 2D space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
 
 ### Displaying the model in \pD{}
 
-The final step of the algorithm is _lifting_ the \kD{} model back to \pD{}, completing the *model-in-the-data-space* picture. For this, define the set $H^k$ to be the set of points that belong to centroid $k$. That is, $H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}$. We use the \pD{} Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD{}. Let the $i$-th component of the \pD{} mean be
+The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. Define the set $H^k$ to be the set of points that belong to bin $k$. We use the \pD{} Euclidean mean of the points in $H^k$ to map the centroid $(h_x^k, h_y^k)$ to a point in \pD{}. Let the $i$-th component of the \pD{} mean be
 
 $$f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,$$
 
@@ -565,26 +569,16 @@ with corresponding \pD{} vector $\vec{f_i}$. Then, $f(h\circ g)(x)$ maps a \pD{}
 
 Furthermore, edges that exist between \kD{} representations should also generate edges in \pD{} by connecting \pD{} mapping of the corresponding \kD{} representations.
 
+<!--langevitour with pD model for S-curve-->
+
 ### Measuring the fit
+ <!-- Fitted values,  Error calculation-->
+ 
+### Tuning
 
-### What can be learned
+<!-- removal of low density bins, removing long edges, choice of bins-->
 
-- Overview: Generate a form that maps the model, that is the interpoint distances. What is the model?
-- Notation
-- Create a representation of the model 
-    - using hex-binning in 2D, 
-    - parameters, 
-    - tuning, 
-    - pre-processing
-- How does this map to the representation in high-d
-    - Centroids, 
-    - Edges
-- Measuring fit
-    - Fitted values
-    - Error calculation
-- What is learned about simulated examples
-    - Interesting organisation of points in UMAP
-    - 
+### Illustration on simulated data
 
 ## Applications {#sec-applications}
 

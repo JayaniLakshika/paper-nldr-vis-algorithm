@@ -459,14 +459,16 @@ Figure~\ref{fig-NLDR-scurve}.
 configurations}\label{computing-hexagon-grid-configurations}
 
 The 2D hexagon grid is defined by the number of bins in each direction
-\((b_1, b_2)\), as given by the centroids of each hexagon \((c_1, c_2)\)
-and the lower left position where the grid starts at \((s_1, s_2)\),
-which correspond to the lowest left centroid. The values of \(s_i\) need
-to be below their respective minimum variable values, and could be a
-full bin lower, to allow a buffer (\(q\)) corresponding to a full
-hexagon width (\(a_1\)) and height (\(a_2\)) around the data. The values
-of \(b_i\) are variables to be computed that define the reduction in
-size of the data (\(n\) to \(m\)).
+\((b_1, b_2)\), giving total number of bins as \(b = b_1 \times b_2\),
+and hexagon id, \(h = 1, \dots, b\). Each hexagon, \(H_h\) is uniquely
+described by centroid, \$ C\_\{h\}\^{}\{(2)\} = (c\_\{h1\},
+c\_\{h2\})\$. The lower left position where the grid starts at
+\((s_1, s_2)\), which correspond to the lowest left centroid. The values
+of \(s_i\) need to be below their respective minimum variable values,
+and could be a full bin lower, to allow a buffer (\(q\)) corresponding
+to a full hexagon width (\(a_1\)) and height (\(a_2\)) around the data.
+The values of \(b_i\) are variables to be computed that define the
+reduction in size of the data (\(n\) to \(m\)).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 lower bound of the NLDR, \(a_1 > -2q\), and
@@ -497,21 +499,24 @@ the same row, the point is assigned to the leftmost centroid. If
 multiple centroids are in different rows, the point is assigned to the
 bottom centroid.
 
-\subsubsection{Obtaining bin
-representations}\label{obtaining-bin-representations}
+\(\{ i \in H_h, h = 1, \dots, b, \text{ and } i = 1, \dots, n\}\)
+
+\subsubsection{Summarization of the data in
+2D}\label{summarization-of-the-data-in-2d}
 
 Let \(h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}\) be
-the function that maps a point in \kD{} space to it's bin representation
+the function that maps a point in \kD{} space to it's bin centroid
 (\(C^{(k)}\)). This is the model points in \kD{} space.
 
 When \(k = 2\), one of the representations of a bin is the hexagonal
 centroid (Figure~\ref{fig-NLDR-scurve} (c)).
 
-\subsubsection{Generating edges}\label{generating-edges}
+\subsubsection{Generating edges to indicate neighbours and removing long
+edges}\label{generating-edges-to-indicate-neighbours-and-removing-long-edges}
 
-Delaunay triangulation on bin representations generates edges by
-specifying which bin representations should be connected to generate the
-model in \kD{} space.
+Delaunay triangulation is used to connect neighbouring centroids, which
+is needed to preserve neighbourhood information when the model is lifted
+into \pD{}.
 
 When \(k = 2\) Delaunay triangulation on \(C^{(2)}\) generates the model
 in 2D space, which is a triangular mesh (Figure~\ref{fig-NLDR-scurve}
@@ -522,13 +527,11 @@ points from \(C^{(2)}\).
 \subsection{\texorpdfstring{Displaying the model in
 \pD{}}{Displaying the model in }}\label{displaying-the-model-in}
 
-The final step of the algorithm is \emph{lifting} the \kD{} model back
-to \pD{}, completing the \emph{model-in-the-data-space} picture. For
-this, define the set \(H^k\) to be the set of points that belong to
-centroid \(k\). That is, \(H^k = \{ y \; | \; g(y) = (h_x^k, h_y^k)\}\).
-We use the \pD{} Euclidean mean of the points in \(H^k\) to map the
-centroid \((h_x^k, h_y^k)\) to a point in \pD{}. Let the \(i\)-th
-component of the \pD{} mean be
+The last step is to lift the \kD{} model into \pD{} by computing \pD{}
+vectors that represent bin centroids. Define the set \(H^k\) to be the
+set of points that belong to bin \(k\). We use the \pD{} Euclidean mean
+of the points in \(H^k\) to map the centroid \((h_x^k, h_y^k)\) to a
+point in \pD{}. Let the \(i\)-th component of the \pD{} mean be
 
 \[f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,\]
 
@@ -542,59 +545,10 @@ generate edges in \pD{} by connecting \pD{} mapping of the corresponding
 
 \subsection{Measuring the fit}\label{measuring-the-fit}
 
-\subsection{What can be learned}\label{what-can-be-learned}
+\subsection{Tuning}\label{tuning}
 
-\begin{itemize}
-\tightlist
-\item
-  Overview: Generate a form that maps the model, that is the interpoint
-  distances. What is the model?
-\item
-  Notation
-\item
-  Create a representation of the model
-
-  \begin{itemize}
-  \tightlist
-  \item
-    using hex-binning in 2D,
-  \item
-    parameters,
-  \item
-    tuning,
-  \item
-    pre-processing
-  \end{itemize}
-\item
-  How does this map to the representation in high-d
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Centroids,
-  \item
-    Edges
-  \end{itemize}
-\item
-  Measuring fit
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Fitted values
-  \item
-    Error calculation
-  \end{itemize}
-\item
-  What is learned about simulated examples
-
-  \begin{itemize}
-  \tightlist
-  \item
-    Interesting organisation of points in UMAP
-  \item
-  \end{itemize}
-\end{itemize}
+\subsection{Illustration on simulated
+data}\label{illustration-on-simulated-data}
 
 \section{Applications}\label{sec-applications}
 
