@@ -622,7 +622,72 @@ range, covering the minimum to maximum values along both axes (see
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
 
+After establishing the hexagonal grid with an appropriate number of
+bins, some hexagonal bins may have few or no data points within them
+(see \textbf{?@fig-rmlowdenshex} (a)). To ensure comprehensive coverage
+of the NLDR data, it is necessary to select hexagonal bins with a
+considerable number of data points. This involves calculating the number
+of points within each hexagon. Then, the standard count is computed by
+dividing the number of points within each hexagon by the maximum number
+of points in the grid (see \textbf{?@eq-equationp2}). Next, bins with a
+standard count less than a certain benchmark value are removed (see
+\textbf{?@fig-rmlowdenshex} (b)). The following steps will help in
+determining a suitable value for removing low-density hexagons:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Plot the distribution of the standardized counts (see
+  \textbf{?@fig-stdctsScurve}).
+\item
+  Examine the distribution of counts.
+\item
+  Select the first quantile value if the distribution is skewed.
+\end{enumerate}
+
+Furthermore, selecting the benchmark value for removing low-density
+hexagons is important. Removing unnecessary bins may lead to the
+formation of long edges and an uneven 2D model. Hence, rather than
+solely relying on the benchmark value to identify hexagons for removal,
+it's essential to consider the standard number of points in the
+neighboring hexagons of the identified low-density ones (see
+\textbf{?@fig-rmlowdenshex} (c)). If neighboring bins also show low
+counts, only those bins will be removed. The remaining bins are used to
+construct the 2D model.
+
+The benchmark value for removing low-density hexagons ranges between
+\(0\) and \(1\). When analyzing how these benchmark values influence
+model performance, it's essential to observe the change in MSE as the
+benchmark value increases (see \textbf{?@fig-diagnosticpltScurvelwd}).
+The MSE shows a gradual increase as the benchmark value progresses from
+\(0\) to \(1\). Evaluating this rate of increase is important. If the
+increment is not considerable, the decision might lean towards retaining
+low-density hexagons.
+
 \subsubsection{Removing long edges}\label{removing-long-edges}
+
+Creating a smooth 2D representation (see \textbf{?@fig-modelScurve} (c))
+requires removing edges that connect distant bin centroids within the
+triangular mesh (see \textbf{?@fig-modelScurve} (b)). These edges only
+exist in the 2D model and do not extend into higher dimensions, ensuring
+that their removal does not impact the model in higher dimensions. While
+specific criteria for determining the benchmark value to remove long
+edges do not exist, the following steps provide an approach to
+identifying a suitable threshold:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Plot the distribution of the 2D Euclidean distances (see
+  \textbf{?@fig-distScurve}).
+\item
+  Identify the largest difference between consecutive distance values.
+\item
+  Take the largest distance value corresponding to this difference as
+  the benchmark value.
+\end{enumerate}
 
 \subsection{Illustration on simulated
 data}\label{illustration-on-simulated-data}
