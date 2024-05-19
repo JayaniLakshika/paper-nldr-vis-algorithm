@@ -620,9 +620,15 @@ After establishing the hexagonal grid with an appropriate number of bins, some h
 2. Examine the distribution of counts.
 3. Select the first quantile value if the distribution is skewed.
 
+<!--add distribution of density and add the first quartile as the benchmark-->
+
 Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven 2D model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density ones (see @fig-rmlowdenshex (c)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the 2D model.   
 
+<!--add vis showing removing the hexagons using first quantile, and observing neighbors-->
+
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (see @fig-diagnosticpltScurvelwd). The MSE shows a gradual increase as the benchmark value progresses from $0$ to $1$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
+
+<!--add MSE vs density (0 to 1)-->
 
 #### Removing long edges
 
@@ -632,6 +638,8 @@ Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing
 2. Identify the largest difference between consecutive distance values.
 3. Take the largest distance value corresponding to this difference as the benchmark value.
 
+<!--add distribution of distance along with the default benchmark-->
+<!--show the trimesh with colored long edges-->
 
 ### Illustration on simulated data
 
