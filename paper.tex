@@ -482,7 +482,7 @@ the NLDR, \(a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}\), because
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-hex-param-1.pdf}
+\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-hex-param-1.pdf}
 
 }
 
@@ -596,30 +596,43 @@ data}\label{illustration-on-simulated-data}
 
 \subsection{pbmc}\label{pbmc}
 
-\begin{itemize}
-\tightlist
-\item
-  NLDR view used to illustrate clusters
-\item
-  Use our method to assess is it a reasonable representation
-\item
-  Demonstrate that it is not
-\item
-  Illustrate how to use our method to get a better representation
-\end{itemize}
+In the field of single-cell studies, a common analytical task involves
+clustering to identify groups of cells with similar expression profiles.
+Analysts often turn to NLDR techniques to verify and identify these
+clusters and explore developmental trajectories. To illustrate the
+importance of NLDR techniques and parameter selection in identifying
+clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset
+\citep{chen2023} is used. In a study by \citet{chen2023}, this dataset
+was used to demonstrate how UMAP represents clusters (see
+Figure~\ref{fig-umap-author}). As shown in Figure~\ref{fig-umap-author},
+there are three distinct and well-separated clusters.
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-umapauthor-1.pdf}
+\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-umap-author-1.pdf}
 
 }
 
-\caption{\label{fig-umapauthor}2D layout from UMAP applied for the
-PBMC3k dataset. Is this a best representation of the original data?}
+\caption{\label{fig-umap-author}\(2\text{-}D\) layout from UMAP applied
+for the PBMC3k dataset. Is this a best representation of the original
+data? The parameter setting is n\_neighbors = 30, min\_dist = 0.3.}
 
 \end{figure}%
+
+To determine whether the UMAP representation with the parameter choice
+suggested by \citet{chen2023} preserves the original data structure, we
+visualize the model constructed with UMAP overlaid on the \pD{} data.
+The figures in Figure~\ref{fig-pbmc1_sc} show three well-separated
+clusters, indicating that the suggested UMAP representation preserves
+the global structure (see Figure~\ref{fig-umap-author}). However, as
+shown in Figure~\ref{fig-pbmc1_sc}, these clusters are close to each
+other in \pD{}. Also, non-linear continuity patterns and high-density
+patches within the clusters are observed (see
+Figure~\ref{fig-pbmc1_sc}). Therefore, the suggested UMAP representation
+(see Figure~\ref{fig-umap-author}) does not accurately preserve the
+local structure of the PBMC3k dataset.
 
 \begin{figure}[H]
 
@@ -629,41 +642,174 @@ PBMC3k dataset. Is this a best representation of the original data?}
 
 }
 
-\caption{\label{fig-model-pbmc-author}(a) Model generated in the 2D
-space overlaid on UMAP data, and (b) high-D model error in model space.}
+\caption{\label{fig-model-pbmc-author}(a) Model generated in
+\(2\text{-}D\) with UMAP, and (b) \(p\text{-}D\) model error in
+\(2\text{-}D\). The \(2\text{-}D\) model shows three well-separated
+distinct clusters. The \(p\text{-}D\) model errors are distributed along
+clusters.}
 
 \end{figure}%
 
 \begin{figure}[H]
 
+\begin{minipage}{0.33\linewidth}
+
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-abserrorPBMC-1.pdf}
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_1.png}
 
 }
 
-\caption{\label{fig-abserrorPBMC}Absolute error from UMAP and tSNE
+\subcaption{\label{fig-pbmc1_sc1}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_2.png}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc2}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_3.png}
+
+}
+
+\subcaption{\label{fig-pbmc1_sc3}}
+
+\end{minipage}%
+
+\caption{\label{fig-pbmc1_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model-in-data space, a video of the tour
+animation is available at (\url{https://youtu.be/Gnhh4hfsbbg}).}
+
+\end{figure}%
+
+In order to find a reasonable NLDR representation for the PBMC3k
+dataset, we calculated the absolute error for different numbers of
+non-empty bins using various NLDR techniques and different parameter
+settings (see Figure~\ref{fig-pbmc-abserror}). After analyzing the
+results, we found that tSNE with a perplexity set to \(30\) had the
+lowest error when the number of non-empty bins was \(137\). Therefore,
+tSNE with a perplexity of \(30\), which is the default parameter
+setting, is considered as a reasonable representation for the PBMC3k
+dataset.
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-abserror-1.pdf}
+
+}
+
+\caption{\label{fig-pbmc-abserror}Absolute error from UMAP and tSNE
 applied to training PBMC3k dataset with diffferent parameter choices.
 What is the best parameter choice to create the model? The residual plot
 have a steep slope at the beginning, indicating that a smaller number of
 non-empty bins causes a larger amount of error. Then, the slope
 gradually declines or level off, indicating that a higher number of
 non-empty bins generates a smaller error. Using the elbow method, it was
-observed that when the number of non-empty bins is set to 137, the
-lowest error occurred with the parameters perplexity: 30.}
+observed that when the number of non-empty bins is set to \(137\), the
+lowest error occurred with the parameters perplexity: \(30\).}
 
 \end{figure}%
+
+As shown in Figure~\ref{fig-tsne-suggest}, there are three
+well-separated clusters, although they are located close to each other.
+Additionally, non-linear structures can also be observed within the
+clusters (see Figure~\ref{fig-model-pbmc} (a)). In this manner, tSNE was
+able to capture the data structure for the PBMC3k dataset that UMAP
+failed to do.
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-model-pbmc-1.pdf}
+\includegraphics[width=0.4\textwidth,height=\textheight]{paper_files/figure-pdf/fig-tsne-suggest-1.pdf}
 
 }
 
-\caption{\label{fig-model-pbmc}(a) Model generated in the 2D space
-overlaid on tSNE data, and (b) high-D model error in model space.}
+\caption{\label{fig-tsne-suggest}\(2\text{-}D\) layout from tSNE applied
+for the PBMC3k dataset. Is this a best representation of the original
+data? The parameter setting is perplexity=30.}
+
+\end{figure}%
+
+We then fit the model for tSNE, and visualize the resultant model in the
+\pD{} data space. The model shows a quirk, as shown in
+Figure~\ref{fig-pbmc2_sc}. All three clusters are connected by an edge
+except the small and large clusters. Because the clusters are so close
+in \gD{}, they attempt to maintain the structure in \pD{} as well. This
+is evident that tSNE with perplexity \(30\) provides a reasonable
+representation of PBMC3k data.
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-model-pbmc-1.pdf}
+
+}
+
+\caption{\label{fig-model-pbmc}(a) Model generated in \(2\text{-}D\)
+with tSNE, and (b) \(p\text{-}D\) model error in \(2\text{-}D\). The
+\(2\text{-}D\) model shows three well-separated distinct clusters. The
+\(p\text{-}D\) model errors are distributed along clusters, but most low
+\(p\text{-}D\) model errors present in the large cluster.}
+
+\end{figure}%
+
+\begin{figure}[H]
+
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_4.png}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc4}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_5.png}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc5}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/pbmc3k/sc_6.png}
+
+}
+
+\subcaption{\label{fig-pbmc2_sc6}}
+
+\end{minipage}%
+
+\caption{\label{fig-pbmc2_sc}Screen shots of the \textbf{langevitour} of
+the PBMC3k data set, shows the model in high-D, a video of the tour
+animation is available at (\url{https://youtu.be/R0EroJcGbas}).}
 
 \end{figure}%
 
