@@ -544,7 +544,7 @@ Furthermore, edges that exist between \kD{} representations should also
 generate edges in \pD{} by connecting \pD{} mapping of the corresponding
 \kD{} representations.
 
-\subsection{Measuring the fit}\label{measuring-the-fit}
+\subsection{Measuring the fit}\label{sec-summary}
 
 \subsubsection{Fitted values}\label{fitted-values}
 
@@ -579,8 +579,8 @@ dimensions of high-D data, \(x_{ij}\) is the high-D data, and
 
 To assess how well our method captures and represents the underlying
 structure of the high-D data, Mean Squared Error (MSE) is used. When
-computing MSE, total model error (see \textbf{?@sec-summary}) is divided
-by the number of observations to make it as a mean value (see
+computing MSE, total model error (see Section~\ref{sec-summary}) is
+divided by the number of observations to make it as a mean value (see
 Equation~\ref{eq-equation9}).
 
 \begin{equation}\phantomsection\label{eq-equation9}{
@@ -588,6 +588,41 @@ Equation~\ref{eq-equation9}).
 }\end{equation}
 
 \subsection{Tuning}\label{tuning}
+
+The performance and robustness of our model depend on three key
+parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
+used to remove low-density hexagons, and (iii) a benchmark value used to
+remove long edges. However, there is no analytical formula to calculate
+an appropriate value for these parameters. The selection of these
+parameter values depends on the model performance computed by MSE (see
+Section~\ref{sec-summary}).
+
+\subsubsection{Choice of bins}\label{choice-of-bins}
+
+The number of hexagonal bins in the hexagonal grid has a considerable
+impact on the construction of the \gD{} model, serving as the initial
+step. The chosen total number of bins must effectively capture the
+structure of the NLDR data. If the number of bins is too low, the model
+may not be able to capture the structure of the NLDR data effectively
+(see \textbf{?@fig-binsize} (a)), while if there are too many bins, it
+may result in over-fitting the individual points of the NLDR data (see
+\textbf{?@fig-binsize} (c)). Therefore, it is important to determine an
+appropriate number of bins to construct an effective model.
+
+Furthermore, the total number of bins is calculated based on the number
+of bins along the x-axis and y-axis, \(b = b_1 \times b_2\). To
+determine the effective \(b\), candidate values are selected based on
+the range between the minimum and approximate maximum \(b_1\), because
+\(b_2\) is computed from \(b_1\). The minimum \(b_1\) is set to \(2\),
+while the maximum number is estimated by taking the square root of
+\(n\). The analysis evaluates the MSE across varying \(b\) within this
+range, covering the minimum to maximum values along both axes (see
+\textbf{?@fig-diagnostic1-scurve}).
+
+\subsubsection{Removal of low density
+bins}\label{removal-of-low-density-bins}
+
+\subsubsection{Removing long edges}\label{removing-long-edges}
 
 \subsection{Illustration on simulated
 data}\label{illustration-on-simulated-data}

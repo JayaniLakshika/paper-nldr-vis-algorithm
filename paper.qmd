@@ -574,7 +574,7 @@ Furthermore, edges that exist between \kD{} representations should also generate
 
 <!--langevitour with pD model for S-curve-->
 
-### Measuring the fit
+### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
  
 #### Fitted values
@@ -598,8 +598,23 @@ $$
 $$ {#eq-equation9}
  
 ### Tuning
-
 <!-- removal of low density bins, removing long edges, choice of bins-->
+
+The performance and robustness of our model depend on three key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, and (iii) a benchmark value used to remove long edges. However, there is no analytical formula to calculate an appropriate value for these parameters. The selection of these parameter values depends on the model performance computed by MSE (see @sec-summary). 
+
+#### Choice of bins
+
+The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-binsize (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-binsize (c)). Therefore, it is important to determine an appropriate number of bins to construct an effective model.
+
+<!--add three choice of bins-->
+
+Furthermore, the total number of bins is calculated based on the number of bins along the x-axis and y-axis, $b = b_1 \times b_2$. To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $n$. The analysis evaluates the MSE across varying $b$ within this range, covering the minimum to maximum values along both axes (see @fig-diagnostic1-scurve).
+
+<!--add MSE vs total number of error plot-->
+
+#### Removal of low density bins
+
+#### Removing long edges
 
 ### Illustration on simulated data
 

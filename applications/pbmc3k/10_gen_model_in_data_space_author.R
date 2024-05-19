@@ -26,7 +26,7 @@ pbmc_model <- fit_highd_model(
   bin1 = num_bins_x_pbmc,
   r2 = r2_pbmc,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "PC"
 )
 
@@ -55,11 +55,12 @@ benchmark_pbmc <- find_lg_benchmark(
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_pbmc <- hex_binning(
-  data = umap_minst_scaled,
+  data = umap_pbmc_scaled,
   bin1 = num_bins_x_pbmc,
   r2 = r2_pbmc)
 
 umap_data_with_hb_id <- hb_obj_pbmc$data_hb_id
+
 df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
                                  umap_data_with_hb_id)
 

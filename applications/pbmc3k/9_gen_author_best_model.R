@@ -24,16 +24,15 @@ error_pbmc <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, q = 0.1, r2 = r2_pbmc)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_pbmc)$bin2
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
-    q = 0.1,
     r2 = r2_pbmc,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC_"
   )
 
@@ -65,5 +64,5 @@ ggplot(error_pbmc, aes(x = b_non_empty,
                         y = log(MSE))) +
   geom_point() +
   geom_line() +
-  geom_vline(xintercept = 132, linetype="solid",
+  geom_vline(xintercept = 114, linetype="solid",
              color = "black", linewidth=0.8, alpha = 0.5)
