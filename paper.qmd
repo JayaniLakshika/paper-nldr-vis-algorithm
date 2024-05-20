@@ -956,7 +956,6 @@ mse_scurve_lwd
 
 Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.   
 
-<!--add vis showing removing the hexagons using first quantile, and observing neighbors-->
 <!--Using first quantile as the benchmark value-->
 ```{r}
 hex_grid_with_low_counts <- full_join(hex_grid2, 
@@ -993,6 +992,9 @@ remove_id <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids_scurve,
 df_bin_centroids_scurve_removed <- df_bin_centroids_scurve |>
   filter(hexID %in%remove_id)
 
+df_bin_centroids_scurve_keep  <- df_bin_centroids_scurve |>
+  filter(!(hexID %in%remove_id))
+
 hex_grid_with_low_counts_neighbor <- right_join(hex_grid, 
                                              df_bin_centroids_scurve_removed, 
                                              by = c("hex_poly_id" = "hexID"))
@@ -1013,7 +1015,7 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 #| echo: false
 #| label: fig-lwd-scurve
 #| fig-pos: H
-#| fig-cap: "(a) Identification of low-density hexagons using a benchmark value of $0.158$, and (c) Identification of low-density hexagons considering neighboring bins."
+#| fig-cap: "(a) Identification of low-density hexagons using a benchmark value of $0.242$, and (c) Identification of low-density hexagons considering neighboring bins."
 #| fig-width: 9
 #| fig-height: 6
 
@@ -1030,12 +1032,11 @@ To create a smooth \gD{} representation (see @fig-NLDR-scurve (d)), it is necess
 2. Identify the first largest difference between consecutive distance values.
 3. Take the distance value corresponding to this difference as the benchmark value.
 
-<!--add distribution of distance along with the default benchmark-->
-
+<!--distribution of distance along with the default benchmark-->
 ```{r}
 ## Triangulate bin centroids
 tr1_object_scurve <- tri_bin_centroids(
-  df_bin_centroids_scurve, x = "c_x", y = "c_y")
+  df_bin_centroids_scurve_keep, x = "c_x", y = "c_y")
 tr_from_to_df_scurve <- gen_edges(
   tri_object = tr1_object_scurve)
 
@@ -1079,7 +1080,47 @@ distance_scurve_plot <- ggplot(distance_scurve,
 distance_scurve_plot
 ```
 
-<!--show the trimesh with colored long edges with different benchmark values-->
+<!--trimesh with different benchmark values-->
+
+```{r}
+## With calculated default: 0.201
+trimesh_lg_scurve1 <- vis_rmlg_mesh(
+  distance_edges = distance_scurve, 
+  benchmark_value = benchmark_scurve, 
+  tr_coord_df = tr_from_to_df_scurve, 
+  distance_col = "distance") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos) 
+
+trimesh_lg_scurve2 <- vis_rmlg_mesh(
+  distance_edges = distance_scurve, 
+  benchmark_value = 0.35, 
+  tr_coord_df = tr_from_to_df_scurve, 
+  distance_col = "distance") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("b", sc_ltr_pos) 
+
+trimesh_lg_scurve3 <- vis_rmlg_mesh(
+  distance_edges = distance_scurve, 
+  benchmark_value = 1.1, 
+  tr_coord_df = tr_from_to_df_scurve, 
+  distance_col = "distance") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("c", sc_ltr_pos) 
+```
+
+```{r}
+#| echo: false
+#| label: fig-lg-scurve
+#| fig-pos: H
+#| fig-cap: "$2\\text{-}D$ model generated for different benchamrk values to remove long edges: (a) benchmark = $0.201$ (default), (b) benchmark = $0.35$, and (c) benchmark = $1.1$. What is the effective benchmark value to remove long edges?"
+#| fig-width: 6
+#| fig-height: 3
+
+trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+```
 
 ### Illustration on simulated data
 
