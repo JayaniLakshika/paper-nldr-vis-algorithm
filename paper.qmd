@@ -1381,7 +1381,7 @@ trimesh_removed_gau1 + trimesh_removed_gau2 +
 - Illustrate how to use our method to get a better representation
 -->
 
-In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories. To illustrate the importance of NLDR techniques and parameter selection in identifying clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset [@chen2023] is used. In a study by @chen2023, this dataset was used to demonstrate how UMAP represents clusters (see @fig-umap-author). As shown in @fig-umap-author, there are three distinct and well-separated clusters. 
+In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories. To illustrate the importance of NLDR techniques and parameter selection in identifying clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset [@chen2023] is used. In a study by @chen2023, this dataset was used to demonstrate how UMAP represents clusters (see @fig-umap-author). As shown in @fig-umap-author, there are three distant and well-separated clusters. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -1503,7 +1503,7 @@ error_plot_pbmc <- error_df |>
 <!--bin1 = 30, bin2 = 29, b = 870, non_empty = 132-->
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Model generated in $2\\text{-}D$ with UMAP, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distinct clusters. The $p\\text{-}D$ model errors are distributed along clusters."
+#| fig-cap: "(a) Model generated in $2\\text{-}D$ with UMAP, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters."
 #| label: fig-model-pbmc-author
 #| fig-pos: H
 
@@ -1695,7 +1695,7 @@ error_plot_pbmc <- error_df |>
 <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 137-->
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distinct clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster."
+#| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster."
 #| label: fig-model-pbmc
 #| fig-pos: H
 #| out-height: 30%
