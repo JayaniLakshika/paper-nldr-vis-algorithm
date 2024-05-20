@@ -797,7 +797,7 @@ mse_scurve_b <- ggplot(error_scurve,
 #| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent $b$ choices. What is the effective $b$ to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller $b$ causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher $b$ generates a smaller MSE. Using the elbow method, it was observed that when the $b$ is set to $190$, the lowest MSE occurred."
 #| label: fig-mse-scurve-b
 #| fig-pos: H
-#| out-height: 40%
+#| out-height: 50%
 
 mse_scurve_b
 ```
@@ -946,11 +946,11 @@ mse_scurve_lwd
 
 #### Removing long edges
 
-Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing edges that connect distant bin centroids within the triangular mesh (see @fig-modelScurve (b)). These edges only exist in the 2D model and do not extend into higher dimensions, ensuring that their removal does not impact the model in higher dimensions. While specific criteria for determining the benchmark value to remove long edges do not exist, the following steps provide an approach to identifying a suitable threshold:
+To create a smooth \gD{} representation (see @fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
 
-1. Plot the distribution of the 2D Euclidean distances (see @fig-distScurve).
-2. Identify the largest difference between consecutive distance values.
-3. Take the largest distance value corresponding to this difference as the benchmark value.
+1. Plot the distribution of the 2D Euclidean distances (see @fig-dist-scurve).
+2. Identify the first largest difference between consecutive distance values.
+3. Take the distance value corresponding to this difference as the benchmark value.
 
 <!--add distribution of distance along with the default benchmark-->
 
