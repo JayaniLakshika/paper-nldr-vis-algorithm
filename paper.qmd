@@ -804,7 +804,7 @@ mse_scurve_b
 
 #### Removal of low density bins
 
-After establishing the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them (see @fig-rmlowdenshex (a)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed (see @fig-rmlowdenshex (b)). The following steps will help in determining a suitable value for removing low-density hexagons:
+Once setting up the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them (see @fig-rmlowdenshex (a)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed (see @fig-rmlowdenshex (b)). The following steps will help in determining a suitable value for removing low-density hexagons:
 
 1. Plot the distribution of the standardized counts (see @fig-stdctsScurve).
 2. Examine the distribution of counts.
@@ -1193,28 +1193,31 @@ trimesh_removed_gau2 <- vis_rmlg_mesh(
 
 <!--trimesh with phate-->
 ```{r}
-gau3_scaled_obj <- gen_scaled_data(
-  data = phate_data_gau)
-phate_gau_scaled <- gau3_scaled_obj$scaled_nldr
+# gau3_scaled_obj <- gen_scaled_data(
+#   data = phate_data_gau)
+# phate_gau_scaled <- gau3_scaled_obj$scaled_nldr
+# 
+# ## Compute hexbin parameters
+# num_bins_x_gau3 <- 250
+# lim1 <- gau3_scaled_obj$lim1
+# lim2 <- gau3_scaled_obj$lim2
+# r2_gau3 <- diff(lim2)/diff(lim1)
+# 
+# gau3_model <- fit_highd_model(
+#   training_data = training_data_gau,
+#   emb_df = phate_gau_scaled,
+#   bin1 = num_bins_x_gau3,
+#   r2 = r2_gau3,
+#   is_bin_centroid = TRUE,
+#   is_rm_lwd_hex = FALSE,
+#   col_start_highd = "x"
+# )
+# 
+# df_bin_centroids_gau3 <- gau3_model$df_bin_centroids
+# df_bin_gau3 <- gau3_model$df_bin
 
-## Compute hexbin parameters
-num_bins_x_gau3 <- 250
-lim1 <- gau3_scaled_obj$lim1
-lim2 <- gau3_scaled_obj$lim2
-r2_gau3 <- diff(lim2)/diff(lim1)
-
-gau3_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = phate_gau_scaled,
-  bin1 = num_bins_x_gau3,
-  r2 = r2_gau3,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
-)
-
-df_bin_centroids_gau3 <- gau3_model$df_bin_centroids
-df_bin_gau3 <- gau3_model$df_bin
+df_bin_centroids_gau3 <- read_rds("data/five_gau_clusters/df_bin_centroids_gau_phate.rds")
+df_bin_gau3 <- read_rds("data/five_gau_clusters/df_bin_gau_phate.rds")
 
 ## Triangulate bin centroids
 tr1_object_gau3 <- tri_bin_centroids(
