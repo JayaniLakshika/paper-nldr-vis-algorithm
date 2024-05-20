@@ -1042,6 +1042,9 @@ benchmark_scurve <- find_lg_benchmark(
   distance_edges = distance_scurve, 
   distance_col = "distance")
 
+benchmark_label_df <- tibble(y = benchmark_scurve - 0.03,
+                             x = 1.4,
+                             label = paste0("benchmark is ", benchmark_scurve))
 
 ## To draw the distance distribution
 distance_scurve$group <- "1"
@@ -1053,6 +1056,12 @@ distance_scurve_plot <- ggplot(distance_scurve,
   coord_flip() + 
   geom_hline(yintercept = benchmark_scurve, linetype="solid", 
              color = "black", linewidth=0.8, alpha = 0.5) +
+  geom_text(data = benchmark_label_df, 
+            aes(x=x, 
+                label= label, 
+                y=y), 
+            colour="black", 
+            angle=90) +
   ylab(expression(d^{(2)})) +
   theme(axis.text.x = element_text(size = 5),
         axis.title.x = element_text(size = 5))
@@ -1176,14 +1185,6 @@ nldr_gau1 + nldr_gau2 +
   nldr_gau3 + nldr_gau4 + nldr_gau5 + 
   plot_layout(ncol = 5)
 ```
-
-To investigate which is the reasonable representation to visualize the five spherical Gaussian cluster data or all NLDR methods provide equivalent information, we visualize all the models in \pD{} space. Models from tSNE, UMAP, and PHATE show five well-separated clusters (see @fig-gau1_sc, @fig-gau2_sc, and @fig-gau3_sc), while PaCMAP and TriMAP have a long edge that connects neighboring two clusters and three well-separated clusters (see @fig-gau4_sc, and @fig-gau5_sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure.   
-
-
-Models from all NLDR methods show five well-separated clusters (see @fig-gau1_sc, @fig-gau2_sc, @fig-gau3_sc, @fig-gau4_sc, and @fig-gau5_sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE, UMAP, and PHATE display clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1_sc, @fig-gau2_sc, and @fig-gau3_sc). On the other hand, both TriMAP and PaCMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau4_sc and @fig-gau5_sc). Therefore, TriMAP and PaCMAP do not capture the local structure as effectively as other methods.
-
-
-When compare the NLDR representations and generates models, tSNE with perplexity $61$ is the reasonable representation to visualize the five Gaussian cluster dataset.  
 
 ```{r}
 sc_xlims_gau <- c(-0.25, 1.25)
@@ -1358,7 +1359,7 @@ trimesh_removed_gau3 <- vis_rmlg_mesh(
 <!--trimesh with pacmap-->
 ```{r}
 gau4_scaled_obj <- gen_scaled_data(
-  data = umap_data_gau)
+  data = pacmap_data_gau)
 pacmap_gau_scaled <- gau4_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
@@ -1453,6 +1454,7 @@ distance_gau5 <- cal_2d_dist(
 benchmark_gau5 <- find_lg_benchmark(
   distance_edges = distance_gau5,
   distance_col = "distance")
+benchmark_gau5 <- 0.2 
 
 trimesh_removed_gau5 <- vis_rmlg_mesh(
   distance_edges = distance_gau5, 
@@ -1468,7 +1470,7 @@ trimesh_removed_gau5 <- vis_rmlg_mesh(
 ```{r}
 #| label: fig-trimesh-gau
 #| echo: false
-#| fig-cap: "Model generated with five diiferent NLDR methods in $2\\text{-}D$ with approximately $65$ non-empty bins."
+#| fig-cap: "Model generated with five different NLDR methods in $2\\text{-}D$ with approximately $65$ non-empty bins in each."
 #| fig-width: 8
 #| fig-height: 2
 #| out-width: 100%
@@ -1480,6 +1482,60 @@ trimesh_removed_gau1 + trimesh_removed_gau2 +
 ```
 
 <!--add three screenshots from each technique with you tube links-->
+
+To investigate which is the reasonable representation to visualize the five spherical Gaussian cluster data or all NLDR methods provide equivalent information, we visualize all the models in \pD{} space. Models from all NLDR methods show five well-separated clusters (see @fig-gau1_sc, @fig-gau2_sc, @fig-gau3_sc, @fig-gau4_sc, and @fig-gau5_sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE, UMAP, and PHATE display clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1_sc, @fig-gau2_sc, and @fig-gau3_sc). On the other hand, both TriMAP and PaCMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau4_sc and @fig-gau5_sc). Therefore, TriMAP and PaCMAP do not capture the local structure as effectively as other methods.
+
+::: {#fig-gau1_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_tsne_1.png){#fig-gau1_sc1}
+
+![](figures/five_gau_clusters/sc_tsne_2.png){#fig-gau1_sc2}
+
+![](figures/five_gau_clusters/sc_tsne_3.png){#fig-gau1_sc3}
+
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with tSNE in high-D, a video of the tour animation is available at (<https://youtu.be/oQxEb4wRdHI>).
+:::
+
+::: {#fig-gau2_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_umap_1.png){#fig-gau2_sc1}
+
+![](figures/five_gau_clusters/sc_umap_2.png){#fig-gau2_sc2}
+
+![](figures/five_gau_clusters/sc_umap_3.png){#fig-gau2_sc3}
+
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with UMAP in high-D, a video of the tour animation is available at (<https://youtu.be/JW49csPpDx4>).
+:::
+
+::: {#fig-gau3_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_phate_1.png){#fig-gau3_sc1}
+
+![](figures/five_gau_clusters/sc_phate_2.png){#fig-gau3_sc2}
+
+![](figures/five_gau_clusters/sc_phate_3.png){#fig-gau3_sc3}
+
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PHATE in high-D, a video of the tour animation is available at (<https://youtu.be/xqhRODt8Z-o>).
+:::
+
+::: {#fig-gau4_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_trimap_1.png){#fig-gau4_sc1}
+
+![](figures/five_gau_clusters/sc_trimap_2.png){#fig-gau4_sc2}
+
+![](figures/five_gau_clusters/sc_trimap_3.png){#fig-gau4_sc3}
+
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with TriMAP in high-D, a video of the tour animation is available at (<https://youtu.be/X-uHSB4VoZ0>).
+:::
+
+::: {#fig-gau5_sc layout-ncol="3" fig-pos="H"}
+![](figures/five_gau_clusters/sc_pacmap_1.png){#fig-gau5_sc1}
+
+![](figures/five_gau_clusters/sc_pacmap_2.png){#fig-gau5_sc2}
+
+![](figures/five_gau_clusters/sc_pacmap_3.png){#fig-gau5_sc3}
+
+Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PaCMAP in high-D, a video of the tour animation is available at (<https://youtu.be/UxvU8HQd7JM>).
+:::
+
+When compare the NLDR representations and generated models, tSNE with perplexity $61$ appears to be a reasonable representation for visualizing the five Gaussian cluster dataset. This is supported by investigating the model generated with tSNE in the data space, which provides evidence that it preserves both local and global structures. Also, the NLDR representation with tSNE shows five well-separated clusters.
 
 ## Applications {#sec-applications}
 
