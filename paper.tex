@@ -459,17 +459,18 @@ Figure~\ref{fig-NLDR-scurve}.
 \subsubsection{Computing hexagon grid
 configurations}\label{computing-hexagon-grid-configurations}
 
-The 2D hexagon grid is defined by the number of bins in each direction
-\((b_1, b_2)\), giving total number of bins as \(b = b_1 \times b_2\),
-and hexagon id, \(h = 1, \dots, b\). Each hexagon, \(H_h\) is uniquely
-described by centroid, \$ C\_\{h\}\^{}\{(2)\} = (c\_\{h1\},
-c\_\{h2\})\$. The lower left position where the grid starts at
-\((s_1, s_2)\), which correspond to the lowest left centroid. The values
-of \(s_i\) need to be below their respective minimum variable values,
-and could be a full bin lower, to allow a buffer (\(q\)) corresponding
-to a full hexagon width (\(a_1\)) and height (\(a_2\)) around the data.
-The values of \(b_i\) are variables to be computed that define the
-reduction in size of the data (\(n\) to \(m\)).
+The \gD{} hexagon grid is defined by the number of bins in each
+direction \((b_1, b_2)\), giving total number of bins as
+\(b = b_1 \times b_2\), and hexagon id, \(h = 1, \dots, b\). Each
+hexagon, \(H_h\) is uniquely described by centroid,
+\(C_{h}^{(2)} = (c_{h1}, c_{h2})\). The lower left position where the
+grid starts at \((s_1, s_2)\), which correspond to the lowest left
+centroid. The values of \(s_i\) need to be below their respective
+minimum variable values, and could be a full bin lower, to allow a
+buffer (\(q\)) corresponding to a full hexagon width (\(a_1\)) and
+height (\(a_2\)) around the data. The values of \(b_i\) are variables to
+be computed that define the reduction in size of the data (\(n\) to
+\(m\)).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 lower bound of the NLDR, \(a_1 > -2q\), and
@@ -627,21 +628,19 @@ bin. What is the number of bins that would be effective?}
 
 \end{figure}%
 
-Furthermore, the total number of bins is calculated based on the number
-of bins along the x-axis and y-axis, \(b = b_1 \times b_2\). To
-determine the effective \(b\), candidate values are selected based on
+To determine the effective \(b\), candidate values are selected based on
 the range between the minimum and approximate maximum \(b_1\), because
 \(b_2\) is computed from \(b_1\). The minimum \(b_1\) is set to \(2\),
 while the maximum number is estimated by taking the square root of
-\(n\). The analysis evaluates the MSE across varying \(b\) within this
-range, covering the minimum to maximum values along both axes (see
-Figure~\ref{fig-mse-scurve-b}).
+\(\frac{n}{2}\). The analysis evaluates the MSE across varying \(b\)
+within this range, covering the minimum to maximum values along both
+axes (see Figure~\ref{fig-mse-scurve-b}).
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
+\includegraphics[width=1\textwidth,height=0.2\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
 
 }
 
