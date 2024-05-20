@@ -26,7 +26,7 @@ pbmc_model <- fit_highd_model(
   bin1 = num_bins_x_pbmc,
   r2 = r2_pbmc,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = TRUE,
+  is_rm_lwd_hex = FALSE,
   col_start_highd = "PC"
 )
 

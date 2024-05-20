@@ -32,7 +32,7 @@ for (xbins in bin1_vec) {
     bin1 = xbins,
     r2 = r2_pbmc,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = TRUE,
+    is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
   )
 
