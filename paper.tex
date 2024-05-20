@@ -596,41 +596,20 @@ animation is available at (\url{https://youtu.be/G1m4q9k--v4}).}
 The prediction approach involves performing the K-nearest neighbors
 (KNN) algorithm for an unsupervised classification problem. First, the
 nearest \pD{} model point is identified for a given new \pD{} point.
-Then, the corresponding \gD{} centroid mapping for the identified \pD{}
-model point is determined. Finally, the coordinates of this \gD{}
-centroid are used as the predicted \gD{} embedding for the new \pD{}
-data point. This step is particularly valuable due to the limitations of
-some NLDR techniques, like tSNE, which don't provide a straightforward
-method for prediction. As a result, our approach offers a solution that
-capable of generating predicted \gD{} embedding regardless of the NLDR
-technique employed, effectively addressing this functional gap.
+Then, the corresponding \kD{} centroid mapping for the identified \pD{}
+model point is determined. Finally, the coordinates of this \kD{}
+centroid are used as the predicted \kD{} embedding for the new \pD{}
+data point. .
 
 \subsubsection{Error calculation}\label{error-calculation}
 
-Residuals are essential for evaluating the accuracy of representing
-high-D points by the high-D mapping of 2D bin centroids. To measure this
-accuracy, an error metric is introduced, quantifying the sum of squared
-differences between the high-D data (\(x_{ij}\)) and the high-D mapping
-of the 2D bin centroid data (\(C_{x_ij}\)) across all observations and
-dimensions (see Equation~\ref{eq-equation10}).
-
-\begin{equation}\phantomsection\label{eq-equation10}{
-\text{Error} = \sum_{j = 1}^{n}\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2
-}\end{equation}
-
-Here, \(n\) represents the number of observations, \(p\) represents the
-dimensions of high-D data, \(x_{ij}\) is the high-D data, and
-\(C_{x_ij}\) is the high-D mapping of the 2D bin centroid.
-
 To assess how well our method captures and represents the underlying
-structure of the high-D data, Mean Squared Error (MSE) is used. When
-computing MSE, total model error (see Section~\ref{sec-summary}) is
-divided by the number of observations to make it as a mean value (see
-Equation~\ref{eq-equation9}).
-
-\begin{equation}\phantomsection\label{eq-equation9}{
-\text{MSE} = \sum_{j = 1}^{n} \frac{\sum_{i = 1}^{p} (x_{ij} - C_{x_ij})^2}{n}
-}\end{equation}
+structure of the \pD{} data, residuals are important. Residuals are
+computed by taking the squared \pD{} Euclidean distance,
+\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{x_ij})^2\).
+Additionally, Mean Squared Error (MSE),
+\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} \frac{(x_{ij} - C^{(p)}_{x_ij})^2}{n}\),
+is computed based on residuals.
 
 \subsection{Tuning}\label{tuning}
 
