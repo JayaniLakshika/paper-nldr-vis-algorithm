@@ -604,10 +604,28 @@ impact on the construction of the \gD{} model, serving as the initial
 step. The chosen total number of bins must effectively capture the
 structure of the NLDR data. If the number of bins is too low, the model
 may not be able to capture the structure of the NLDR data effectively
-(see \textbf{?@fig-binsize} (a)), while if there are too many bins, it
-may result in over-fitting the individual points of the NLDR data (see
-\textbf{?@fig-binsize} (c)). Therefore, it is important to determine an
-appropriate number of bins to construct an effective model.
+(see Figure~\ref{fig-bins-scurve} (a)), while if there are too many
+bins, it may result in over-fitting the individual points of the NLDR
+data (see Figure~\ref{fig-bins-scurve} (c)). Therefore, it is important
+to determine an effective number of bins to construct a reasonable model
+(see Figure~\ref{fig-bins-scurve} (b)).
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-bins-scurve-1.pdf}
+
+}
+
+\caption{\label{fig-bins-scurve}Hexbin plots from different number of
+bins for the UMAP applied to S-curve data: (a) \(b = 12\) (3, 5), (b)
+\(b = 190\) (10, 19), and (c) \(b = 2176\) (34, 64). The hexbins are
+colored based on the density of points, with darker colors indicating
+higher density and yellow color representing lower density within each
+bin. What is the number of bins that would be effective?}
+
+\end{figure}%
 
 Furthermore, the total number of bins is calculated based on the number
 of bins along the x-axis and y-axis, \(b = b_1 \times b_2\). To
@@ -617,13 +635,13 @@ the range between the minimum and approximate maximum \(b_1\), because
 while the maximum number is estimated by taking the square root of
 \(n\). The analysis evaluates the MSE across varying \(b\) within this
 range, covering the minimum to maximum values along both axes (see
-\textbf{?@fig-diagnostic1-scurve}).
+Figure~\ref{fig-mse-scurve-b}).
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
 
 }
 
@@ -664,6 +682,19 @@ determining a suitable value for removing low-density hexagons:
   Select the first quantile value if the distribution is skewed.
 \end{enumerate}
 
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-stdcts-scurve-1.pdf}
+
+}
+
+\caption{\label{fig-stdcts-scurve}Distribution of standardize counts by
+hexagons.}
+
+\end{figure}%
+
 Furthermore, selecting the benchmark value for removing low-density
 hexagons is important. Removing unnecessary bins may lead to the
 formation of long edges and an uneven 2D model. Hence, rather than
@@ -687,7 +718,7 @@ low-density hexagons.
 
 \centering{
 
-\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mse-scurve-lwd-1.pdf}
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-lwd-1.pdf}
 
 }
 
@@ -725,6 +756,20 @@ identifying a suitable threshold:
   Take the largest distance value corresponding to this difference as
   the benchmark value.
 \end{enumerate}
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-dist-scurve-1.pdf}
+
+}
+
+\caption{\label{fig-dist-scurve}Distribution of \(2\text{-}D\) Euclidean
+distances between bin centroids of the triangular mesh generated with
+S-curve UMAP data.}
+
+\end{figure}%
 
 \subsection{Illustration on simulated
 data}\label{illustration-on-simulated-data}
