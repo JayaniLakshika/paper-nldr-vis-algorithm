@@ -683,6 +683,25 @@ The MSE shows a gradual increase as the benchmark value progresses from
 increment is not considerable, the decision might lean towards retaining
 low-density hexagons.
 
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mse-scurve-lwd-1.pdf}
+
+}
+
+\caption{\label{fig-mse-scurve-lwd}MSE from UMAP applied to S-curve
+dataset with diffferent bechmark choices. What is the effective bechmark
+value to remove low density hexagons? The residual plot have a steep
+slope at the beginning, indicating that a smaller bechmark value causes
+a larger amount of MSE. Then, the slope gradually declines or level off,
+indicating that a higher bechmark value generates a smaller MSE. Using
+the elbow method, it was observed that when the bechmark value is set to
+\(0.6\), the lowest MSE occurred.}
+
+\end{figure}%
+
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
 Creating a smooth 2D representation (see \textbf{?@fig-modelScurve} (c))

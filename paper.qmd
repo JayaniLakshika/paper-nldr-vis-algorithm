@@ -699,6 +699,90 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 
 <!--add MSE vs density (0 to 1)-->
 
+<!--To generate errors for different total number of bins-->
+```{r}
+## To initialize effective bins along x
+effective_bin1_scurve <- 10
+
+## To initialize benchmark values to remove low density hexagons
+benchmark_rm_hex_vec <- append(seq(0, 0.99, by=0.1),0.99)
+
+error_rm_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+
+effective_bin2_scurve <- calc_bins_y(bin1 = effective_bin1_scurve, r2 = r2)$bin2
+
+scurve_model <- fit_highd_model(
+  training_data = training_data_scurve,
+  emb_df = umap_scurve_scaled,
+  bin1 = effective_bin1_scurve,
+  r2 = r2,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "x"
+)
+
+df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+df_bin_scurve <- scurve_model$df_bin
+
+for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
+  
+  df_bin_centroids_scurve_high_dens <- df_bin_centroids_scurve |>
+    filter(std_counts > benchmark_rm_lwd)
+  
+  df_bin_scurve_high_dens <- df_bin_scurve |>
+    filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
+
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_scurve_high_dens,
+    df_bin = df_bin_scurve_high_dens,
+    training_data = training_data_scurve,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "x") |>
+    mutate(benchmark_rm_lwd = benchmark_rm_lwd,
+           bin1 = effective_bin1_scurve,
+           bin2 = effective_bin2_scurve,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_scurve_high_dens))
+
+  error_rm_scurve <- bind_rows(error_rm_scurve, error_df)
+
+}
+
+benchmark_label_df <- tibble(x = 14, y = 0.6, 
+                          label = "benchmark is 0.60.")
+
+mse_scurve_lwd <- ggplot(error_rm_scurve, 
+                     aes(x = b_non_empty, 
+                         y = log(MSE))) + 
+  geom_point(size = 1) +
+  geom_line() + 
+  geom_vline(xintercept = 15, linetype="solid", 
+             color = "black", linewidth=0.8, alpha = 0.5) +
+  geom_text(data = benchmark_label_df, 
+            aes(x=x, 
+                label= label, 
+                y=y), 
+            colour="red", 
+            angle=90) +
+  ylab("log(MSE)") +
+  xlab("number of non-empty bins") +
+  theme(axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 5),
+        axis.title.x = element_text(size = 5),
+        axis.title.y = element_text(size = 5, angle = 90))
+```
+
+```{r}
+#| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent bechmark choices. What is the effective bechmark value to remove low density hexagons? The residual plot have a steep slope at the beginning, indicating that a smaller bechmark value causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher bechmark value generates a smaller MSE. Using the elbow method, it was observed that when the bechmark value is set to $0.6$, the lowest MSE occurred."
+#| label: fig-mse-scurve-lwd
+#| fig-pos: H
+#| out-width: 50%
+
+mse_scurve_lwd
+```
+
 #### Removing long edges
 
 Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing edges that connect distant bin centroids within the triangular mesh (see @fig-modelScurve (b)). These edges only exist in the 2D model and do not extend into higher dimensions, ensuring that their removal does not impact the model in higher dimensions. While specific criteria for determining the benchmark value to remove long edges do not exist, the following steps provide an approach to identifying a suitable threshold:
@@ -708,7 +792,7 @@ Creating a smooth 2D representation (see @fig-modelScurve (c)) requires removing
 3. Take the largest distance value corresponding to this difference as the benchmark value.
 
 <!--add distribution of distance along with the default benchmark-->
-<!--show the trimesh with colored long edges-->
+<!--show the trimesh with colored long edges with different benchmark values-->
 
 ### Illustration on simulated data
 
