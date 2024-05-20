@@ -85,5 +85,5 @@ distance_df_small_edges <- distance_gau1 |>
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges$from,
                          lineTo = distance_df_small_edges$to,
-                         group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
+                         group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.4, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))

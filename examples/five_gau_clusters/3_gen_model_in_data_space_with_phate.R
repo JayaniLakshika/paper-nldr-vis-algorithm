@@ -6,29 +6,32 @@ library(langevitour)
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
 
-tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
+phate_data_gau <- read_rds("data/five_gau_clusters/phate_data_five_gau.rds")
 gau1_scaled_obj <- gen_scaled_data(
-  data = tsne_data_gau)
-tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
+  data = phate_data_gau)
+phate_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 12
+num_bins_x_gau1 <- 250
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
-gau1_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = tsne_gau_scaled,
-  bin1 = num_bins_x_gau1,
-  r2 = r2_gau1,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
-)
+# gau1_model <- fit_highd_model(
+#   training_data = training_data_gau,
+#   emb_df = phate_gau_scaled,
+#   bin1 = num_bins_x_gau1,
+#   r2 = r2_gau1,
+#   is_bin_centroid = TRUE,
+#   is_rm_lwd_hex = FALSE,
+#   col_start_highd = "x"
+# )
+#
+# df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
+# df_bin_gau1 <- gau1_model$df_bin
 
-df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
-df_bin_gau1 <- gau1_model$df_bin
+df_bin_centroids_gau1 <- read_rds("data/five_gau_clusters/df_bin_centroids_gau_phate.rds")
+df_bin_gau1 <- read_rds("data/five_gau_clusters/df_bin_gau_phate.rds")
 
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
@@ -52,14 +55,14 @@ benchmark_gau1 <- find_lg_benchmark(
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
-  data = tsne_gau_scaled,
+  data = phate_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1)
 
-tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
+phate_data_with_hb_id <- hb_obj_gau1$data_hb_id
 
 df_all_gau1 <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID),
-                                  tsne_data_with_hb_id)
+                                phate_data_with_hb_id)
 
 ### Define type column
 df <- df_all_gau1 |>
