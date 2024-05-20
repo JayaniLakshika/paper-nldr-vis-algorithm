@@ -612,6 +612,75 @@ Furthermore, the total number of bins is calculated based on the number of bins 
 
 <!--add MSE vs total number of error plot-->
 
+```{r}
+training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+```
+
+<!--To generate errors for different total number of bins-->
+```{r}
+## To initialize number of bins along the x-axis
+bin1_vec_scurve <- 2:27 #sqrt(NROW(training_data_scurve))
+
+error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_scurve) {
+
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2)$bin2
+
+  scurve_model <- fit_highd_model(
+    training_data = training_data_scurve,
+    emb_df = umap_scurve_scaled,
+    bin1 = xbins,
+    r2 = r2,
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "x"
+  )
+
+  df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+  df_bin_scurve <- scurve_model$df_bin
+
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_scurve,
+    df_bin = df_bin_scurve,
+    training_data = training_data_scurve,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "x") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_scurve))
+
+  error_scurve <- bind_rows(error_scurve, error_df)
+
+}
+
+mse_scurve_b <- ggplot(error_scurve, 
+                     aes(x = b, 
+                         y = log(MSE))) + 
+  geom_point(size = 1) +
+  geom_line() + 
+  geom_vline(xintercept = 190, linetype="solid", 
+             color = "black", linewidth=0.8, alpha = 0.5) +
+  ylab("log(MSE)") +
+  xlab("b") +
+  theme(axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 5),
+        axis.title.x = element_text(size = 5),
+        axis.title.y = element_text(size = 5, angle = 90))
+```
+
+```{r}
+#| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent $b$ choices. What is the effective $b$ to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller $b$ causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher $b$ generates a smaller MSE. Using the elbow method, it was observed that when the $b$ is set to $190$, the lowest MSE occurred."
+#| label: fig-mse-scurve-b
+#| fig-pos: H
+#| out-width: 50%
+
+mse_scurve_b
+```
+
 #### Removal of low density bins
 
 After establishing the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them (see @fig-rmlowdenshex (a)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid (see @eq-equationp2). Next, bins with a standard count less than a certain benchmark value are removed (see @fig-rmlowdenshex (b)). The following steps will help in determining a suitable value for removing low-density hexagons:
