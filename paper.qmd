@@ -552,11 +552,11 @@ Let $h : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the funct
 
 When $k = 2$, one of the representations of a bin is the hexagonal centroid (@fig-NLDR-scurve (c)).
 
-#### Generating edges to indicate neighbours and removing long edges
+#### Generating edges to indicate neighbors and removing long edges
 
-Delaunay triangulation is used to connect neighbouring centroids, which is needed to preserve neighbourhood information when the model is lifted into \pD{}. 
+Delaunay triangulation is used to connect neighboring centroids, which is needed to preserve neighborhood information when the model is lifted into \pD{}. 
 
-When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in 2D space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
+When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
 
 <!--need to add what is meant by a long edge-->
 
@@ -571,6 +571,16 @@ with corresponding \pD{} vector $\vec{f_i}$. Then, $f(h\circ g)(x)$ maps a \pD{}
 Furthermore, edges that exist between \kD{} representations should also generate edges in \pD{} by connecting \pD{} mapping of the corresponding \kD{} representations.
 
 <!--langevitour with pD model for S-curve-->
+::: {#fig-scurve_sc layout-ncol="3" fig-pos="H"}
+![](figures/scurve/sc_1.png){#fig-scurve_sc1}
+
+![](figures/scurve/sc_2.png){#fig-scurve_sc2}
+
+![](figures/scurve/sc_3.png){#fig-scurve_sc3}
+
+Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/G1m4q9k--v4>).
+:::
+
 
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
@@ -785,17 +795,17 @@ mse_scurve_b <- ggplot(error_scurve,
              color = "black", linewidth=0.8, alpha = 0.5) +
   ylab("log(MSE)") +
   xlab("b") +
-  theme(axis.text.x = element_text(size = 5),
-        axis.text.y = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, angle = 90))
+  theme(axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, angle = 90))
 ```
 
 ```{r}
 #| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent $b$ choices. What is the effective $b$ to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller $b$ causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher $b$ generates a smaller MSE. Using the elbow method, it was observed that when the $b$ is set to $190$, the lowest MSE occurred."
 #| label: fig-mse-scurve-b
 #| fig-pos: H
-#| out-height: 20%
+#| out-height: 50%
 
 mse_scurve_b
 ```

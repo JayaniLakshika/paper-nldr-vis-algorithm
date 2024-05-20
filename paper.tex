@@ -513,15 +513,15 @@ the function that maps a point in \kD{} space to it's bin centroid
 When \(k = 2\), one of the representations of a bin is the hexagonal
 centroid (Figure~\ref{fig-NLDR-scurve} (c)).
 
-\subsubsection{Generating edges to indicate neighbours and removing long
-edges}\label{generating-edges-to-indicate-neighbours-and-removing-long-edges}
+\subsubsection{Generating edges to indicate neighbors and removing long
+edges}\label{generating-edges-to-indicate-neighbors-and-removing-long-edges}
 
-Delaunay triangulation is used to connect neighbouring centroids, which
-is needed to preserve neighbourhood information when the model is lifted
+Delaunay triangulation is used to connect neighboring centroids, which
+is needed to preserve neighborhood information when the model is lifted
 into \pD{}.
 
 When \(k = 2\) Delaunay triangulation on \(C^{(2)}\) generates the model
-in 2D space, which is a triangular mesh (Figure~\ref{fig-NLDR-scurve}
+in \gD{} space, which is a triangular mesh (Figure~\ref{fig-NLDR-scurve}
 (d)). It generates convex hulls of \(C^{(2)}\) such that the
 circumcircle of every triangle in the triangulation contains no other
 points from \(C^{(2)}\).
@@ -544,6 +544,50 @@ cycle.
 Furthermore, edges that exist between \kD{} representations should also
 generate edges in \pD{} by connecting \pD{} mapping of the corresponding
 \kD{} representations.
+
+\begin{figure}[H]
+
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/scurve/sc_1.png}
+
+}
+
+\subcaption{\label{fig-scurve_sc1}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/scurve/sc_2.png}
+
+}
+
+\subcaption{\label{fig-scurve_sc2}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.33\linewidth}
+
+\centering{
+
+\captionsetup{labelsep=none}\includegraphics{figures/scurve/sc_3.png}
+
+}
+
+\subcaption{\label{fig-scurve_sc3}}
+
+\end{minipage}%
+
+\caption{\label{fig-scurve_sc}Screen shots of the \textbf{langevitour}
+of the S-curve, shows the model-in-data space, a video of the tour
+animation is available at (\url{https://youtu.be/G1m4q9k--v4}).}
+
+\end{figure}%
 
 \subsection{Measuring the fit}\label{sec-summary}
 
@@ -640,7 +684,7 @@ axes (see Figure~\ref{fig-mse-scurve-b}).
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.2\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
 
 }
 
