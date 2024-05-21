@@ -484,9 +484,9 @@ The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of 
 ```{r}
 hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
     geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
-    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354") +
+    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354", size = 0.9) +
     geom_point(data = all_centroids_df |> dplyr::filter(hexID == 1), aes(x = c_x, y = c_y), color = "black") + ## starting point
-    geom_rect(aes(xmin = 0 - 0.03, xmax = 1 - 0.03, ymin = 0 - 0.05, ymax = r2- 0.05), fill = "white", color = "black", alpha = 0, linewidth = 1) +
+    geom_rect(aes(xmin = 0 - 0.03, xmax = 1 - 0.03, ymin = 0 - 0.05, ymax = r2- 0.05), fill = "white", color = "black", alpha = 0, linewidth = 0.7) +
     geom_segment(x = 0 - 0.03, y = -0.35, xend = 1 - 0.03, yend = -0.35,
                  arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+
     annotate("text", x=0.5, y=-0.45, label= "r1", color = "black") +
@@ -499,14 +499,15 @@ hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) +
     geom_segment(x = -0.15, y = -0.1*r2 + 0.1807896*2, xend = -0.15, yend = -0.1*r2 + 0.1807896*3,
                      arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.1807896
     annotate("text", x=-0.15, y=0.45, label= "a2", color = "black") +
-    annotate("text", x=-0.18, y=-0.35, label= "(s1, s2)", color = "black") + ## starting point
-  coord_fixed()
+    annotate("text", x=-0.18, y=-0.45, label= "(s1, s2)", color = "black") ## starting point
 ```
 
 ```{r}
 #| label: fig-hex-param
 #| fig-cap: "Notations for hexagonal grid configurations."
 #| out-height: 30%
+#| fig-width: 2
+#| fig-height: 3
 #| fig-pos: H
  
 hex_param_vis
