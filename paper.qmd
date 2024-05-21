@@ -549,7 +549,7 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 <!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
 #### Summarization of the data in 2D
 
-Let $g : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's bin centroid ($C^{(k)}$). This is the model points in \kD{} space.
+Let $u : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}$ be the function that maps a point in \kD{} space to it's bin centroid ($C^{(k)}$). This is the model points in \kD{} space.
 
 When $k = 2$, one of the representations of a bin is the hexagonal centroid (@fig-NLDR-scurve (c)). Also, it could be the mean of the data points within each hexagon.
 
@@ -569,7 +569,7 @@ The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors t
 
 $$f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,$$
 
-with corresponding \pD{} vector $\vec{f_i}$. Then, $f(g(x))$ maps a \pD{} point to the \pD{} model estimate, completing the model cycle.
+with corresponding \pD{} vector $\vec{f_i}$. Then, $f(u(x))$ maps a \pD{} point to the \pD{} model estimate, completing the model cycle.
 
 Furthermore, edges that exist between \kD{} representations should also generate edges in \pD{} by connecting \pD{} mapping of the corresponding \kD{} representations.
 
