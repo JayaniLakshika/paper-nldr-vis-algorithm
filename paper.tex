@@ -359,7 +359,7 @@ simplified representation. From a statistical perspective we can
 consider the distances between points in the \kD{} layout to be variance
 that the model explains, and the (relative) difference with their
 distances in \pD{} is the error, or unexplained variance. We can also
-imagine that the positioning of points in 2D represent the fitted
+imagine that the positioning of points in \gD{} represent the fitted
 values, that will have some prescribed position in \pD{} that can be
 compared with their observed values. This is the conceptual framework
 underlying the more formal versions of factor analysis \citep{cfa69} and
@@ -377,7 +377,7 @@ interpoint distances.)
 \toprule
 \textbf{Notation} & \textbf{Description}\\
 \midrule
-$n, p, k, m$ & number of observations, variables, embedding dimension, number of non-empty bins, respectively\\
+$n, p, k$ & number of observations, variables, embedding dimension, respectively\\
 $\mathbfit{X}, \mathbfit{x}$ & $p$-dimensional data (population, sample)\\
 $\mathbfit{y}$ & $k$-dimensional layout\\
 $P$ & orthonormal basis, generating a $d\text{-}dimensional$ linear projection of $p$-dimensional data\\
@@ -392,8 +392,8 @@ $(b_1, b_2)$ & number of bins in each direction\\
 $(a_1, a_2)$ & binwidths, distance between centroids in each direction\\
 $(s_1, \ s_2)$ & starting coordinates of the hexagonal grid\\
 $q$ & buffer to ensure hexgrid covers data, proportion of data range, 0-1\\
-$b$, $b'$ & total and non-empty hexagon bins in the grid\\
-$n_m$ & number of observations within the $m^{th}$ hexagon\\
+$m$ & number of non-empty bins\\
+$b$ & number of  hexagons in the grid\\
 \addlinespace
 $h$ & hexagonal id\\
 \bottomrule
@@ -416,11 +416,11 @@ choices for \(g\) include functions used in tSNE, UMAP, PHATE, TriMAP,
 PaCMAP, or MDS, although in theory any function that does this mapping
 is suitable.
 
-With our goal being to make a representation of this 2D layout that can
-be lifted into high-dimensional space, the layout needs to be augmented
-to include neighbour information. A simple approach would be to
-triangulate the points and add edges. A more stable approach is to first
-hexagonally bin the data, reducing it from \(n\) to \(m\leq n\)
+With our goal being to make a representation of this \gD{} layout that
+can be lifted into high-dimensional space, the layout needs to be
+augmented to include neighbour information. A simple approach would be
+to triangulate the points and add edges. A more stable approach is to
+first hexagonally bin the data, reducing it from \(n\) to \(m\leq n\)
 observations, and connect the bin centroids. This process serves to
 reduce some noisiness in the resulting surface shown in \pD{}. The steps
 in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
@@ -505,9 +505,6 @@ bottom centroid.
 
 \(\{ i \in H_h, h = 1, \dots, b, \text{ and } i = 1, \dots, n\}\)
 
-\subsubsection{Summarization of the data in
-2D}\label{summarization-of-the-data-in-2d}
-
 Let \(u : \mathbb{R}^{n\times k} \rightarrow \mathbb{R}^{m\times k}\) be
 the function that maps a point in \kD{} space to it's bin centroid
 (\(C^{(k)}\)). This is the model points in \kD{} space.
@@ -516,8 +513,8 @@ When \(k = 2\), one of the representations of a bin is the hexagonal
 centroid (Figure~\ref{fig-NLDR-scurve} (c)). Also, it could be the mean
 of the data points within each hexagon.
 
-\subsubsection{Generating edges to indicate neighbors and removing long
-edges}\label{generating-edges-to-indicate-neighbors-and-removing-long-edges}
+\subsubsection{Indicating neighbors by line segments connecting
+centroids}\label{indicating-neighbors-by-line-segments-connecting-centroids}
 
 Delaunay triangulation is used to connect neighboring centroids, which
 is needed to preserve neighborhood information when the model is lifted
@@ -539,20 +536,15 @@ in \gD{}, these long edges are removed (Figure~\ref{fig-NLDR-scurve}
 \pD{}}{Displaying the model in }}\label{displaying-the-model-in}
 
 The last step is to lift the \kD{} model into \pD{} by computing \pD{}
-vectors that represent bin centroids. Define the set \(H^k\) to be the
-set of points that belong to bin \(k\). We use the \pD{} Euclidean mean
-of the points in \(H^k\) to map the centroid
-\(C_{h}^{(k)} = (c_{h1}, c_{h2})\) to a point in \pD{}. Let the \(i\)-th
-component of the \pD{} mean be
+vectors that represent bin centroids. We use the \pD{} mean of the
+points in \(H_h\) to map the centroid
+\(C_{h}^{(k)} = (c_{h1}, c_{h2}, \dots, c_{hk})\) to a point in \pD{}.
+Let the \pD{} mean be
 
-\[f_i = \frac{1}{\left|H^k\right|}\sum_{y \in H^k} y_i,\]
-
-with corresponding \pD{} vector \(\vec{f_i}\). Then, \(f(u(x))\) maps a
-\pD{} point to the \pD{} model estimate, completing the model cycle.
-
-Furthermore, edges that exist between \kD{} representations should also
-generate edges in \pD{} by connecting \pD{} mapping of the corresponding
-\kD{} representations.
+\[C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.\]
+Furthermore, line segments that exist in the \kD{} model generate line
+segments in \pD{} by connecting the \pD{} means of the corresponding
+\kD{} bin centroids.
 
 \begin{figure}[H]
 
@@ -588,9 +580,9 @@ data point. .
 To assess how well our method captures and represents the underlying
 structure of the \pD{} data, residuals are important. Residuals are
 computed by taking the squared \pD{} Euclidean distance,
-\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{x_ij})^2\).
+\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{hx_ij})^2\).
 Additionally, Mean Squared Error (MSE),
-\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} \frac{(x_{ij} - C^{(p)}_{x_ij})^2}{n}\),
+\(\frac{1}{n}\sum_{i = 1}^{n}\sum_{j = 1}^{p}(x_{ij} - C^{(p)}_{hx_ij})^2\),
 is computed based on residuals.
 
 \subsection{Tuning}\label{tuning}
@@ -625,7 +617,7 @@ to determine an effective number of bins to construct a reasonable model
 }
 
 \caption{\label{fig-bins-scurve}Hexbin plots from different number of
-bins for the UMAP applied to S-curve data: (a) \(b = 12\) (3, 5), (b)
+bins for the UMAP applied to S-curve data: (a) \(b = 15\) (3, 5), (b)
 \(b = 190\) (10, 19), and (c) \(b = 2176\) (34, 64). The hexbins are
 colored based on the density of points, with darker colors indicating
 higher density and yellow color representing lower density within each
