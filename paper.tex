@@ -554,22 +554,22 @@ animation is available at (\url{https://youtu.be/G1m4q9k--v4}).}
 
 \subsubsection{Fitted values}\label{fitted-values}
 
-The prediction approach involves performing the K-nearest neighbors
-(KNN) algorithm for an unsupervised classification problem. First, the
-nearest \pD{} model point is identified for a given new \pD{} point.
-Then, the corresponding \kD{} centroid mapping for the identified \pD{}
-model point is determined. Finally, the coordinates of this \kD{}
-centroid are used as the predicted \kD{} embedding for the new \pD{}
-data point. .
+We define the function
+\(z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}\).
+
+For the \(i^{th}\) point,
+\(z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(2)}_{jv})^2}\),
+and assign it to \(H_h = \{i| z(i) = h\}\). Then, the fitted values for
+\(i\) are defined as \(C_{h}^{(2)} = (c_{h1}, c_{h2})\).
 
 \subsubsection{Error calculation}\label{error-calculation}
 
 To assess how well our method captures and represents the underlying
 structure of the \pD{} data, residuals are important. Residuals are
 computed by taking the squared \pD{} Euclidean distance,
-\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{hx_ij})^2\).
+\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{hj})^2\).
 Additionally, Mean Squared Error (MSE),
-\(\frac{1}{n}\sum_{i = 1}^{n}\sum_{j = 1}^{p}(x_{ij} - C^{(p)}_{hx_ij})^2\),
+\(\frac{1}{n}\sum_{i = 1}^{n}\sum_{j = 1}^{p}(x_{ij} - C^{(p)}_{hj})^2\),
 is computed based on residuals.
 
 \subsection{Tuning}\label{tuning}
