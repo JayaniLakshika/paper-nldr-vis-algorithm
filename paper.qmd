@@ -554,11 +554,11 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 
 #### Indicating neighbors by line segments connecting centroids
 
-Delaunay triangulation is used to connect neighboring centroids, which is needed to preserve neighborhood information when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980] is used to connect neighboring centroids, which is needed to preserve neighborhood information when the model is lifted into \pD{}. 
 
-When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$.
+<!-- When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$. -->
 
-When neighboring centroids are connected with edges in Delaunay triangulation in \gD{}, there are situations where distant centroids are also connected, which generates long edges. To generate a smooth surface in \gD{}, these long edges are removed (@fig-NLDR-scurve (d)).    
+It can also happen that distant centroids can be connected, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments must be removed (@fig-NLDR-scurve (d)).
 
 <!--need to add what is meant by a long edge-->
 

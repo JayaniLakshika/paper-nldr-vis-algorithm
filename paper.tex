@@ -516,21 +516,14 @@ of the data points within each hexagon.
 \subsubsection{Indicating neighbors by line segments connecting
 centroids}\label{indicating-neighbors-by-line-segments-connecting-centroids}
 
-Delaunay triangulation is used to connect neighboring centroids, which
-is needed to preserve neighborhood information when the model is lifted
-into \pD{}.
+Delaunay triangulation \citep{lee1980} is used to connect neighboring
+centroids, which is needed to preserve neighborhood information when the
+model is lifted into \pD{}.
 
-When \(k = 2\) Delaunay triangulation on \(C^{(2)}\) generates the model
-in \gD{} space, which is a triangular mesh (Figure~\ref{fig-NLDR-scurve}
-(d)). It generates convex hulls of \(C^{(2)}\) such that the
-circumcircle of every triangle in the triangulation contains no other
-points from \(C^{(2)}\).
-
-When neighboring centroids are connected with edges in Delaunay
-triangulation in \gD{}, there are situations where distant centroids are
-also connected, which generates long edges. To generate a smooth surface
-in \gD{}, these long edges are removed (Figure~\ref{fig-NLDR-scurve}
-(d)).
+It can also happen that distant centroids can be connected, which can
+result in long line segments. In order to generate a smooth surface in
+\gD{}, these long line segments must be removed
+(Figure~\ref{fig-NLDR-scurve} (d)).
 
 \subsection{\texorpdfstring{Displaying the model in
 \pD{}}{Displaying the model in }}\label{displaying-the-model-in}
