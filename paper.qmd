@@ -590,13 +590,19 @@ Screen shots of the **langevitour** of the S-curve, shows the model-in-data spac
 
 <!-- The prediction approach involves performing the K-nearest neighbors (KNN) algorithm for an unsupervised classification problem. First, the nearest \pD{} model point is identified for a given new \pD{} point. Then, the corresponding \kD{} centroid mapping for the identified \pD{} model point is determined. Finally, the coordinates of this \kD{} centroid are used as the predicted \kD{} embedding for the new \pD{} data point. . -->
 
-We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$.
+<!-- We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, -->
 
-For the $i^{th}$ point, $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(2)}_{jv})^2}$, and assign it to $H_h = \{i| z(i) = h\}$. Then, the fitted values for $i$ are defined as $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
+<!-- For the $i^{th}$ point, $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(2)}_{jv})^2}$, and assign it to $H_h = \{i| z(i) = h\}$. Then, the fitted values for $i$ are defined as $C_{h}^{(2)} = (c_{h1}, c_{h2})$.  -->
+
+The fitted values refers to the \pD{} mappings of the \kD{} model. 
 
 #### Error calculation
 
-To assess how well our method captures and represents the underlying structure of the \pD{} data, residuals are important. Residuals are computed by taking the squared \pD{} Euclidean distance, $\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{hj})^2$. Additionally, Mean Squared Error (MSE), $\frac{1}{n}\sum_{i = 1}^{n}\sum_{j = 1}^{p}(x_{ij} - C^{(p)}_{hj})^2$, is computed based on residuals.  
+To assess how well our method captures and represents the underlying structure of the \pD{} data, residuals are important. Residuals are computed by taking the squared \pD{} Euclidean distance, $\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2$. Additionally, Mean Squared Error (MSE), $\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2$, is computed based on residuals. 
+
+### Prediction
+
+The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.   
 
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
@@ -1124,7 +1130,11 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
-### Illustration on simulated data
+## Deciding on the most suitable fit
+
+<!--change the tuning parameter-->
+
+## Illustration on simulated data
 
 In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation.
 
@@ -1539,8 +1549,6 @@ Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows
 
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with TriMAP in \pD{}, a video of the tour animation is available at (<https://youtu.be/Chs1lYAoX2w>).
 :::
-
-
 
 When compare the NLDR representations and generated models, tSNE with perplexity $61$ appears to be a reasonable representation for visualizing the five Gaussian cluster dataset. This is supported by investigating the model generated with tSNE in the data space, which provides evidence that it preserves both local and global structures. Also, the NLDR representation with tSNE shows five well-separated clusters.
 
@@ -2217,8 +2225,6 @@ Evaluating the error or unexplained variance is important for assessing how well
 The **digit: 1** example further illustrates the model's ability to accurately capture non-linear structures and provide additional information. Key findings include a twisted pattern that compresses the structure in some projections and long line segments that detect anomalies.
 
 Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
-
-We have also developed a diagnostic application to explore differences in distances within the data. This tool helps identify discrepancies and ensures that the model accurately reflects the true relationships in the high-dimensional space.
 
 In conclusion, while our method effectively captures and represents high-dimensional data structures, further enhancements could involve introducing approaches to bind the data and indicate line segments beyond \gD{}. These improvements would help in creating a more accurate representation of the data when \gD{} layout is inadequate.
 

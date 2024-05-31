@@ -554,23 +554,28 @@ animation is available at (\url{https://youtu.be/G1m4q9k--v4}).}
 
 \subsubsection{Fitted values}\label{fitted-values}
 
-We define the function
-\(z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}\).
-
-For the \(i^{th}\) point,
-\(z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(2)}_{jv})^2}\),
-and assign it to \(H_h = \{i| z(i) = h\}\). Then, the fitted values for
-\(i\) are defined as \(C_{h}^{(2)} = (c_{h1}, c_{h2})\).
+The fitted values refers to the \pD{} mappings of the \kD{} model.
 
 \subsubsection{Error calculation}\label{error-calculation}
 
 To assess how well our method captures and represents the underlying
 structure of the \pD{} data, residuals are important. Residuals are
 computed by taking the squared \pD{} Euclidean distance,
-\(\sum_{i = 1}^{n}\sum_{j = 1}^{p} (x_{ij} - C^{(p)}_{hj})^2\).
+\(\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2\).
 Additionally, Mean Squared Error (MSE),
-\(\frac{1}{n}\sum_{i = 1}^{n}\sum_{j = 1}^{p}(x_{ij} - C^{(p)}_{hj})^2\),
+\(\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2\),
 is computed based on residuals.
+
+\subsection{Prediction}\label{prediction}
+
+The prediction approach involves finding the nearest \kD{} model point
+for a new \pD{} point. We define the function
+\(z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}\), where
+\(z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(p)}_{jv})^2}\)
+maps each \pD{} point to its nearest \pD{} mapping of the model.
+Therefore, the new observation \(i\) falls in the hexagon,
+\(H_h = \{i| z(i) = h\}\) and the corresponding \kD{} bin centroids,
+\(C_{h}^{(2)} = (c_{h1}, c_{h2})\) be the predicted values.
 
 \subsection{Tuning}\label{tuning}
 
@@ -784,7 +789,10 @@ different benchamrk values to remove long edges: (a) benchmark =
 
 \end{figure}%
 
-\subsection{Illustration on simulated
+\section{Deciding on the most suitable
+fit}\label{deciding-on-the-most-suitable-fit}
+
+\section{Illustration on simulated
 data}\label{illustration-on-simulated-data}
 
 In this section, the effectiveness of the algorithm is described using a
@@ -1312,11 +1320,6 @@ straightforward method for prediction. As a result, our approach offers
 a solution that capable of generating predicted \kD{} embedding
 regardless of the NLDR method employed, effectively addressing this
 functional gap.
-
-We have also developed a diagnostic application to explore differences
-in distances within the data. This tool helps identify discrepancies and
-ensures that the model accurately reflects the true relationships in the
-high-dimensional space.
 
 In conclusion, while our method effectively captures and represents
 high-dimensional data structures, further enhancements could involve
