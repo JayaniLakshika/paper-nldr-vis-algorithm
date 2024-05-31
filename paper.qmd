@@ -2199,27 +2199,26 @@ imge_error_sample_within + imge_error_sample +
 
 <!-- - Summarise contributions -->
 <!-- - Explain where it is expected or not expected to work, eg higher dimensional relationships -->
-<!-- - Human behaviour, the desire to have more certainty, and a tendency to prefer the well-separated views (need to add)-->
+<!-- - Human behaviour, the desire to have more certainty, and a tendency to prefer the well-separated views (need to add) -->
 <!-- - Predicting new observations in $k$-D -->
 <!-- - Extending layouts beyond $k$-D, when 2D is clearly inadequate. -->
-<!-- - Diagnostic app to explore differences in distances (need to add)--> 
+<!-- - Diagnostic app to explore differences in distances (need to add) -->
 <!-- - What might be useful enhancements -->
 
-We have developed an algorithm to evaluate the most useful NLDR method and (hyper-)parameter choices for creating a reasonable \gD{} layout of high-dimensional data. Our objective is to fit a model for the \gD{} layout that preserves the relationships between neighboring points and turns it into a high-dimensional wireframe, which can be overlaid on the data and visualized using a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.
 
-The S-curve example demonstrates how the model accurately fits the points. Viewing the wireframe with a tour reveals how well the model represents the underlying geometry of the S-curve, highlighting its ability to preserve both local and global structures in high-dimensional space. 
+This study makes several important contributions to the field of NLDR. We have developed an algorithm to evaluate the most useful NLDR method and (hyper-)parameter choices for creating a reasonable \gD{} layout of high-dimensional data. Our objective is to fit a model for the \gD{} layout that preserves the relationships between neighboring points and turns it into a high-dimensional wireframe, which can be overlaid on the data and visualized using a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.
 
-As demonstrated in the simulation case study, all observed NLDR methods preserve the global structure, while tSNE is the only method that preserves the local structure. Our approach helps in determining this and illustrates how different methods have specific quirks.
+The effectiveness of this approach is illustrated through various examples. For instance, the S-curve example demonstrates how the model accurately fits the points, capturing both local and global structures in high-dimensional space. Our simulation case study further, five Gaussian cluster example shows that while all observed NLDR methods preserve the global structure, only tSNE effectively maintains the local structure, highlighting the specific strengths and quirks of different methods.
 
-Even though three distant well-separated clusters have shown in the UMAP layout of **pbmc** suggested by @chen2023, the model evident that the clusters are close to each other in high dimension. Also, viewing the model in the data space shows data patches which shows the data are not uniformly distributed within the clusters and non-linear structures within clusters. These summaries can't be observed in UMAP layout. Therefore, model in high dimension is useful to obtain some quirks like these.
+Human behavior often shows a desire for more certainty and a tendency to prefer well-separated views. This emphasizes the importance of clear and distinct clusters. For example, in the UMAP layout of the **pbmc** dataset suggested by @chen2023, three distant, well-separated clusters are shown. However, our model reveals that these clusters are actually close to each other in \pD{}. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the UMAP layout, demonstrating the ability of our model in uncovering hidden data characteristics.
 
-On the other hand, the error or unexplained variance is important in evaluating how well the model fit the data. By observing error for different number of bins, tSNE with perplexity 30 selects as a reasonable representation for **pbmc**. Connecting closest clusters by line segments in the fitted model provides evidence of preserving the neighborhood.   
+Evaluating the error or unexplained variance is important for assessing how well the model fits the data. By examining the error for different numbers of bins, we found that tSNE with a perplexity of $30$ provides a reasonable representation for the **pbmc** dataset. Connecting the closest clusters with line segments in the fitted model further supports the preservation of neighborhood relationships.
 
-We have shown in the **digit: 1**, how the model accurately represents the non-linear structure. Also, provides some unobserved information in \gD{}. The twisted pattern which squeezed the structure in some projections and long line segments which detect anomalies.  
+The **digit: 1** example further illustrates the model's ability to accurately capture non-linear structures and provide additional information. Key findings include a twisted pattern that compresses the structure in some projections and long line segments that detect anomalies.
 
 Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
 
-The future enhancements involve introducing approaches to bind the data and indicate line segments beyond \gD{}. This would help in creating a more accurate representation of the data when \gD{} layout is inadequate.
+In conclusion, while our method effectively captures and represents high-dimensional data structures, further enhancements could involve introducing approaches to bind the data and indicate line segments beyond \gD{}. These improvements would help in creating a more accurate representation of the data when \gD{} layout is inadequate.
 
 ## Supplementary Materials
 
