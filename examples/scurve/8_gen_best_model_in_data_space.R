@@ -1,7 +1,7 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
 
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
@@ -17,7 +17,7 @@ lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 10
+num_bins_x_scurve <- 14
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
@@ -61,7 +61,7 @@ hb_obj_scurve <- hex_binning(
 umap_data_with_hb_id <- hb_obj_scurve$data_hb_id
 
 df_all_scurve <- dplyr::bind_cols(training_data_scurve |> dplyr::select(-ID),
-                                umap_data_with_hb_id)
+                                  umap_data_with_hb_id)
 
 ### Define type column
 df <- df_all_scurve |>
@@ -88,3 +88,17 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2)$bin2
+
+glance(
+  df_bin_centroids = df_bin_centroids_scurve,
+  df_bin = df_bin_scurve,
+  training_data = training_data_scurve,
+  newdata = NULL,
+  type_NLDR = "UMAP",
+  col_start = "x") |>
+  mutate(bin1 = num_bins_x_scurve,
+         bin2 = bin2,
+         b = bin1 * bin2,
+         b_non_empty = NROW(df_bin_centroids_scurve))
