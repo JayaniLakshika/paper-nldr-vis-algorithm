@@ -1126,6 +1126,91 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
 
 ## Deciding on the most suitable fit
 
+<!-- Find the best model-->
+```{r}
+## To initialize number of bins along the x-axis
+bin1_vec_scurve <- 2:25 #sqrt(NROW(training_data_scurve)/2)
+
+error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_scurve) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2)$bin2
+  
+  scurve_model <- fit_highd_model(
+    training_data = training_data_scurve,
+    emb_df = umap_scurve_scaled,
+    bin1 = xbins,
+    r2 = r2,
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = TRUE,
+    col_start_highd = "x"
+  )
+  
+  df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+  df_bin_scurve <- scurve_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_scurve,
+    df_bin = df_bin_scurve,
+    training_data = training_data_scurve,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "x") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_scurve),
+           aic = 2*(NCOL(training_data_scurve)-1)*b + 2*NROW(training_data_scurve)*(NCOL(training_data_scurve)-1)*log(MSE))
+  
+  error_scurve <- bind_rows(error_scurve, error_df)
+  
+}
+
+best_model_b <- error_scurve |>
+                    filter(aic == min(aic)) |>
+                    pull(b)
+
+mse_scurve_b <- ggplot(error_scurve, 
+                      aes(x = b, 
+                          y = log(MSE))) + 
+  geom_point(size = 1) +
+  geom_line() + 
+  geom_vline(xintercept = best_model_b, linetype="solid", 
+             color = "black", linewidth=0.8, alpha = 0.5) +
+  ylab("log(MSE)") +
+  xlab("b") +
+  theme(axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, angle = 90))
+
+aic_scurve_b <- ggplot(error_scurve, 
+                      aes(x = b, 
+                          y = aic)) + 
+  geom_point(size = 1) +
+  geom_line() + 
+  geom_vline(xintercept = best_model_b, linetype="solid", 
+             color = "black", linewidth=0.8, alpha = 0.5) +
+  ylab("AIC") +
+  xlab("b") +
+  theme(axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, angle = 90))
+
+```
+
+```{r}
+#| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent $b$ choices. What is the effective $b$ to create the model? The MSE plot have a steep slope at the beginning, indicating that a smaller $b$ causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher $b$ generates a smaller MSE. Using the elbow method, it was observed that when the $b$ is set to $420$, the lowest MSE occurred."
+#| label: fig-mse-aic-scurve
+#| fig-pos: H
+#| out-height: 50%
+mse_scurve_b + aic_scurve_b
+```
+
+<!------>
 <!--add more details regarding to the how the change happening with different number of bins-->
 
 <!--best model-->
