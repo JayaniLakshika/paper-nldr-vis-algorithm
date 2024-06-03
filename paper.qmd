@@ -1210,6 +1210,10 @@ aic_scurve_b <- ggplot(error_scurve,
 mse_scurve_b + aic_scurve_b
 ```
 
+The best model for the S-curve with UMAP (n_neighbors: $15$) create with $420$ of total number of bins. Also, the best model made after removing edges which has the length greater than $0.134$. Why this is the best? Because AIC plot shows that the minimum occur at $420$. Visually, the model capture the geometry of the S-curve well. 
+
+On the other hand, a bad model for the S-curve with UMAP is made with $190$ bins, and removing edges which has the length greater than $0.3$. Why this is a bad model? The MSE error is greater than the best model. Visually, the model is not continuously fitted along with the S-curve data, and show some disconnect edges.  
+
 <!--langevitour with best pD model for S-curve-->
 ::: {#fig-scurve_sc layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_best_1.png)
@@ -1218,7 +1222,7 @@ mse_scurve_b + aic_scurve_b
 
 ![](figures/scurve/sc_best_3.png)
 
-Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/4RFNENX_fXk>).
+Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/4RFNENX_fXk>). MSE with $0.035$.
 :::
 
 <!--langevitour with bad pD model for S-curve-->
@@ -1229,7 +1233,7 @@ Screen shots of the **langevitour** of the S-curve, shows the model-in-data spac
 
 ![](figures/scurve/sc_bad_3.png)
 
-Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/DHPvhkZ0lUM>).
+Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/DHPvhkZ0lUM>). MSE with $0.090$.
 :::
 
 
@@ -1242,7 +1246,7 @@ Screen shots of the **langevitour** of the S-curve, shows the model-in-data spac
 
 <!--bad model-->
 <!--need to mention why it is the bad-->
-<!--Not represented the whole data structure beacuse there are some discontinuity in the S-curve-->
+<!--Not represented the whole data structure because there are some discontinuity in the S-curve-->
 <!-- Why? bad 
 
 <!-- add MSE values for the screenshot figure names-->

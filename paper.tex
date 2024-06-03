@@ -811,6 +811,18 @@ when the \(b\) is set to \(420\), the lowest MSE occurred.}
 
 \end{figure}%
 
+The best model for the S-curve with UMAP (n\_neighbors: \(15\)) create
+with \(420\) of total number of bins. Also, the best model made after
+removing edges which has the length greater than \(0.134\). Why this is
+the best? Because AIC plot shows that the minimum occur at \(420\).
+Visually, the model capture the geometry of the S-curve well.
+
+On the other hand, a bad model for the S-curve with UMAP is made with
+\(190\) bins, and removing edges which has the length greater than
+\(0.3\). Why this is a bad model? The MSE error is greater than the best
+model. Visually, the model is not continuously fitted along with the
+S-curve data, and show some disconnect edges.
+
 \begin{figure}[H]
 
 \begin{minipage}{0.33\linewidth}
@@ -824,7 +836,8 @@ when the \(b\) is set to \(420\), the lowest MSE occurred.}
 
 \caption{\label{fig-scurve_sc}Screen shots of the \textbf{langevitour}
 of the S-curve, shows the model-in-data space, a video of the tour
-animation is available at (\url{https://youtu.be/4RFNENX_fXk}).}
+animation is available at (\url{https://youtu.be/4RFNENX_fXk}). MSE with
+\(0.035\).}
 
 \end{figure}%
 
@@ -841,7 +854,8 @@ animation is available at (\url{https://youtu.be/4RFNENX_fXk}).}
 
 \caption{\label{fig-scurve_sc}Screen shots of the \textbf{langevitour}
 of the S-curve, shows the model-in-data space, a video of the tour
-animation is available at (\url{https://youtu.be/DHPvhkZ0lUM}).}
+animation is available at (\url{https://youtu.be/DHPvhkZ0lUM}). MSE with
+\(0.090\).}
 
 \end{figure}%
 
