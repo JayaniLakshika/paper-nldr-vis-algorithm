@@ -1126,6 +1126,10 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
 
 ## Deciding on the most suitable fit
 
+The best model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering the AIC plot (@fig-mse-aic-scurve), which revealed the occurrence of the minimum at $420$. Additionally, visually, the model accurately captures the geometry of the S-curve by fitting the points everywhere (@fig-scurve_sc_best).
+
+In contrast, a poor model for the S-curve with UMAP was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the best model. Visually, the model does not fit the points in some places and mismatches the pattern (@fig-scurve_sc_bad).
+
 <!-- Find the best model-->
 ```{r}
 ## To initialize number of bins along the x-axis
@@ -1210,12 +1214,9 @@ aic_scurve_b <- ggplot(error_scurve,
 mse_scurve_b + aic_scurve_b
 ```
 
-The best model for the S-curve with UMAP (n_neighbors: $15$) create with $420$ of total number of bins. Also, the best model made after removing edges which has the length greater than $0.134$. Why this is the best? Because AIC plot shows that the minimum occur at $420$. Visually, the model capture the geometry of the S-curve well. 
-
-On the other hand, a bad model for the S-curve with UMAP is made with $190$ bins, and removing edges which has the length greater than $0.3$. Why this is a bad model? The MSE error is greater than the best model. Visually, the model is not continuously fitted along with the S-curve data, and show some disconnect edges.  
 
 <!--langevitour with best pD model for S-curve-->
-::: {#fig-scurve_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-scurve_sc_best layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_best_1.png)
 
 ![](figures/scurve/sc_best_2.png)
@@ -1226,7 +1227,7 @@ Screen shots of the **langevitour** of the S-curve, shows the model-in-data spac
 :::
 
 <!--langevitour with bad pD model for S-curve-->
-::: {#fig-scurve_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-scurve_sc_bad layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_bad_1.png)
 
 ![](figures/scurve/sc_bad_2.png)

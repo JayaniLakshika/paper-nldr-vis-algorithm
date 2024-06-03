@@ -793,6 +793,20 @@ different benchamrk values to remove long edges: (a) benchmark =
 \section{Deciding on the most suitable
 fit}\label{deciding-on-the-most-suitable-fit}
 
+The best model for the S-curve using UMAP (n\_neighbors: \(15\)) was
+created with \(420\) bins. It was determined to be the best model after
+removing edges with a length greater than \(0.134\). The decision was
+made considering the AIC plot (Figure~\ref{fig-mse-aic-scurve}), which
+revealed the occurrence of the minimum at \(420\). Additionally,
+visually, the model accurately captures the geometry of the S-curve by
+fitting the points everywhere (Figure~\ref{fig-scurve_sc_best}).
+
+In contrast, a poor model for the S-curve with UMAP was created using
+only \(190\) bins and removing edges with a length greater than \(0.3\).
+This model is inadequate as it has a higher MSE compared to the best
+model. Visually, the model does not fit the points in some places and
+mismatches the pattern (Figure~\ref{fig-scurve_sc_bad}).
+
 \begin{figure}[H]
 
 \centering{
@@ -811,18 +825,6 @@ when the \(b\) is set to \(420\), the lowest MSE occurred.}
 
 \end{figure}%
 
-The best model for the S-curve with UMAP (n\_neighbors: \(15\)) create
-with \(420\) of total number of bins. Also, the best model made after
-removing edges which has the length greater than \(0.134\). Why this is
-the best? Because AIC plot shows that the minimum occur at \(420\).
-Visually, the model capture the geometry of the S-curve well.
-
-On the other hand, a bad model for the S-curve with UMAP is made with
-\(190\) bins, and removing edges which has the length greater than
-\(0.3\). Why this is a bad model? The MSE error is greater than the best
-model. Visually, the model is not continuously fitted along with the
-S-curve data, and show some disconnect edges.
-
 \begin{figure}[H]
 
 \begin{minipage}{0.33\linewidth}
@@ -834,10 +836,10 @@ S-curve data, and show some disconnect edges.
 \begin{minipage}{0.33\linewidth}
 \includegraphics{figures/scurve/sc_best_3.png}\end{minipage}%
 
-\caption{\label{fig-scurve_sc}Screen shots of the \textbf{langevitour}
-of the S-curve, shows the model-in-data space, a video of the tour
-animation is available at (\url{https://youtu.be/4RFNENX_fXk}). MSE with
-\(0.035\).}
+\caption{\label{fig-scurve_sc_best}Screen shots of the
+\textbf{langevitour} of the S-curve, shows the model-in-data space, a
+video of the tour animation is available at
+(\url{https://youtu.be/4RFNENX_fXk}). MSE with \(0.035\).}
 
 \end{figure}%
 
@@ -852,10 +854,10 @@ animation is available at (\url{https://youtu.be/4RFNENX_fXk}). MSE with
 \begin{minipage}{0.33\linewidth}
 \includegraphics{figures/scurve/sc_bad_3.png}\end{minipage}%
 
-\caption{\label{fig-scurve_sc}Screen shots of the \textbf{langevitour}
-of the S-curve, shows the model-in-data space, a video of the tour
-animation is available at (\url{https://youtu.be/DHPvhkZ0lUM}). MSE with
-\(0.090\).}
+\caption{\label{fig-scurve_sc_bad}Screen shots of the
+\textbf{langevitour} of the S-curve, shows the model-in-data space, a
+video of the tour animation is available at
+(\url{https://youtu.be/DHPvhkZ0lUM}). MSE with \(0.090\).}
 
 \end{figure}%
 
