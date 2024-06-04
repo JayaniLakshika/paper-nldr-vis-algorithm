@@ -793,37 +793,18 @@ different benchamrk values to remove long edges: (a) benchmark =
 \section{Deciding on the most suitable
 fit}\label{deciding-on-the-most-suitable-fit}
 
-The best model for the S-curve using UMAP (n\_neighbors: \(15\)) was
-created with \(420\) bins. It was determined to be the best model after
-removing edges with a length greater than \(0.134\). The decision was
-made considering the AIC plot (Figure~\ref{fig-mse-aic-scurve}), which
-revealed the occurrence of the minimum at \(420\). Additionally,
-visually, the model accurately captures the geometry of the S-curve by
-fitting the points everywhere (Figure~\ref{fig-scurve_sc_best}).
+The appropriate model for the S-curve using UMAP (n\_neighbors: \(15\))
+was created with \(420\) bins. It was determined to be the best model
+after removing edges with a length greater than \(0.134\). The decision
+was made considering that the model accurately captures the geometry of
+the S-curve by fitting the points everywhere
+(Figure~\ref{fig-scurve_sc_best}).
 
 In contrast, a poor model for the S-curve with UMAP was created using
 only \(190\) bins and removing edges with a length greater than \(0.3\).
-This model is inadequate as it has a higher MSE compared to the best
-model. Visually, the model does not fit the points in some places and
-mismatches the pattern (Figure~\ref{fig-scurve_sc_bad}).
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-aic-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-mse-aic-scurve}MSE from UMAP applied to S-curve
-dataset with diffferent \(b\) choices. What is the effective \(b\) to
-create the model? The MSE plot have a steep slope at the beginning,
-indicating that a smaller \(b\) causes a larger amount of MSE. Then, the
-slope gradually declines or level off, indicating that a higher \(b\)
-generates a smaller MSE. Using the elbow method, it was observed that
-when the \(b\) is set to \(420\), the lowest MSE occurred.}
-
-\end{figure}%
+This model is inadequate as it has a higher MSE compared to the
+appropriate model. Visually, the model does not fit the points in some
+places and mismatches the pattern (Figure~\ref{fig-scurve_sc_bad}).
 
 \begin{figure}[H]
 
