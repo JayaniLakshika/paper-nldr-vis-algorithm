@@ -572,7 +572,7 @@ $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$
 Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids.
 
 <!--langevitour with pD model for S-curve-->
-::: {#fig-scurve_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-scurve-sc layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_1.png)
 
 ![](figures/scurve/sc_2.png)
@@ -1128,10 +1128,10 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
 
 The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve by fitting the points everywhere (@fig-scurve_sc_best).
 
-In contrast, a poor model for the S-curve with UMAP was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model does not fit the points in some places and mismatches the pattern (@fig-scurve_sc_bad).
+In contrast, a poor model for the S-curve with UMAP was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model does not fit the points in some places and mismatches the pattern (@fig-scurve-sc-bad).
 
 <!--langevitour with best pD model for S-curve-->
-::: {#fig-scurve_sc_best layout-ncol="3" fig-pos="H"}
+::: {#fig-scurve-sc-best layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_best_1.png)
 
 ![](figures/scurve/sc_best_2.png)
@@ -1142,7 +1142,7 @@ Screen shots of the **langevitour** of the S-curve, shows the model-in-data spac
 :::
 
 <!--langevitour with bad pD model for S-curve-->
-::: {#fig-scurve_sc_bad layout-ncol="3" fig-pos="H"}
+::: {#fig-scurve-sc-bad layout-ncol="3" fig-pos="H"}
 ![](figures/scurve/sc_bad_1.png)
 
 ![](figures/scurve/sc_bad_2.png)
@@ -1531,9 +1531,9 @@ trimesh_removed_gau1 + trimesh_removed_gau2 +
 
 <!--add three screenshots from each technique with you tube links-->
 
-To investigate which is the reasonable representation to visualize the five spherical Gaussian cluster data or all NLDR methods provide equivalent information, we visualize all the models in \pD{} space. Models from all NLDR methods show five well-separated clusters (see @fig-gau1_sc, @fig-gau2_sc, @fig-gau3_sc, @fig-gau4_sc, and @fig-gau5_sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE displays clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1_sc). On the other hand, both UMAP, PHATE, PaCMAP and TriMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau2_sc, @fig-gau3_sc, @fig-gau4_sc and @fig-gau5_sc). Therefore, UMAP, PHATE, PaCMAP and TriMAP do not capture the local structure as effectively as other methods.
+To investigate which is the reasonable representation to visualize the five spherical Gaussian cluster data or all NLDR methods provide equivalent information, we visualize all the models in \pD{} space. Models from all NLDR methods show five well-separated clusters (see @fig-gau1-sc, @fig-gau2-sc, @fig-gau3-sc, @fig-gau4-sc, and @fig-gau5-sc). This suggests that for the five Gaussian cluster dataset, all NLDR methods effectively preserve the global structure. tSNE displays clusters with varying densities, indicating their ability to capture within-cluster variation (see @fig-gau1-sc). On the other hand, both UMAP, PHATE, PaCMAP and TriMAP show clusters with flat surfaces, suggesting a failure to capture within-cluster variation (see @fig-gau2-sc, @fig-gau3-sc, @fig-gau4-sc and @fig-gau5-sc). Therefore, UMAP, PHATE, PaCMAP and TriMAP do not capture the local structure as effectively as other methods.
 
-::: {#fig-gau1_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-gau1-sc layout-ncol="3" fig-pos="H"}
 ![](figures/five_gau_clusters/sc_tsne_1.png)
 
 ![](figures/five_gau_clusters/sc_tsne_2.png)
@@ -1543,7 +1543,7 @@ To investigate which is the reasonable representation to visualize the five sphe
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with tSNE in \pD{}, a video of the tour animation is available at (<https://youtu.be/RASEE7N5MbM>).
 :::
 
-::: {#fig-gau2_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-gau2-sc layout-ncol="3" fig-pos="H"}
 ![](figures/five_gau_clusters/sc_umap_1.png)
 
 ![](figures/five_gau_clusters/sc_umap_2.png)
@@ -1553,7 +1553,7 @@ Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with UMAP in \pD{}, a video of the tour animation is available at (<https://youtu.be/iG4bCPkJilw>).
 :::
 
-::: {#fig-gau3_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-gau3-sc layout-ncol="3" fig-pos="H"}
 ![](figures/five_gau_clusters/sc_phate_1.png)
 
 ![](figures/five_gau_clusters/sc_phate_2.png)
@@ -1563,7 +1563,7 @@ Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PHATE in \pD{}, a video of the tour animation is available at (<https://youtu.be/L_PVLGwfOS0>).
 :::
 
-::: {#fig-gau4_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-gau4-sc layout-ncol="3" fig-pos="H"}
 ![](figures/five_gau_clusters/sc_pacmap_1.png)
 
 ![](figures/five_gau_clusters/sc_pacmap_2.png)
@@ -1573,7 +1573,7 @@ Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows
 Screen shots of the **langevitour** of the five Gaussian clusters dataset, shows the model with PaCMAP in \pD{}, a video of the tour animation is available at (<https://youtu.be/z07cKXi8EJQ>).
 :::
 
-::: {#fig-gau5_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-gau5-sc layout-ncol="3" fig-pos="H"}
 ![](figures/five_gau_clusters/sc_trimap_1.png)
 
 ![](figures/five_gau_clusters/sc_trimap_2.png)
@@ -1625,7 +1625,7 @@ umap_pbmc <- umap_pbmc_scaled |>
 umap_pbmc 
 ```
 
-To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the \pD{} data. The figures in @fig-pbmc1_sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umap-author). However, as shown in @fig-pbmc1_sc, these clusters are close to each other in \pD{}. Also, non-linear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1_sc). Therefore, the suggested UMAP representation (see @fig-umap-author) does not accurately preserve the local structure of the PBMC3k dataset.  
+To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the \pD{} data. The figures in @fig-pbmc1-sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umap-author). However, as shown in @fig-pbmc1-sc, these clusters are close to each other in \pD{}. Also, non-linear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1-sc). Therefore, the suggested UMAP representation (see @fig-umap-author) does not accurately preserve the local structure of the PBMC3k dataset.  
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -1726,7 +1726,7 @@ trimesh_removed_pbmc + error_plot_pbmc +
   theme(legend.position='bottom')
 ```
 
-::: {#fig-pbmc1_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-pbmc1-sc layout-ncol="3" fig-pos="H"}
 ![](figures/pbmc3k/sc_1.png)
 
 ![](figures/pbmc3k/sc_2.png)
@@ -1814,7 +1814,7 @@ tsne_pbmc <- tsne_pbmc_scaled |>
 tsne_pbmc 
 ```
 
-We then fit the model for tSNE, and visualize the resultant model in the \pD{} data space. The model shows a quirk, as shown in @fig-pbmc2_sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data.
+We then fit the model for tSNE, and visualize the resultant model in the \pD{} data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data.
 
 <!--Fit the best model and compute error-->
 ```{r}
@@ -1919,7 +1919,7 @@ trimesh_removed_pbmc + error_plot_pbmc +
   theme(legend.position='bottom')
 ```
 
-::: {#fig-pbmc2_sc layout-ncol="3" fig-pos="H"}
+::: {#fig-pbmc2-sc layout-ncol="3" fig-pos="H"}
 ![](figures/pbmc3k/sc_4.png)
 
 ![](figures/pbmc3k/sc_5.png)
@@ -2150,16 +2150,16 @@ trimesh_removed_mnist + error_plot_mnist +
   theme(legend.position='bottom')
 ```
 
-According to @fig-mnist1_sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (see @fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (see @fig-mnist1_sc2), which is an additional pattern not visible in the \gD{} representation (see @fig-pacmap-author). Furthermore, as shown in @fig-mnist1_sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data. Because PaCMAP preserves the local structure. 
+According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (see @fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (see @fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (see @fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data. Because PaCMAP preserves the local structure. 
 
 <!--add langevitour screenshots and youtube animation link-->
 
-::: {#fig-mnist1_sc layout-ncol="3" fig-pos="H"}
-![](figures/mnist/sc_1.png){#fig-mnist1_sc1}
+::: {#fig-mnist1-sc layout-ncol="3" fig-pos="H"}
+![](figures/mnist/sc_1.png){#fig-mnist1-sc1}
 
-![](figures/mnist/sc_2.png){#fig-mnist1_sc2}
+![](figures/mnist/sc_2.png){#fig-mnist1-sc2}
 
-![](figures/mnist/sc_3.png){#fig-mnist1_sc3}
+![](figures/mnist/sc_3.png){#fig-mnist1-sc3}
 
 Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/zcg_GXBmqjA>).
 :::
