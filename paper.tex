@@ -441,11 +441,13 @@ bins, (c) bin centroids, and (d) triangulated centroids.}
 \end{figure}%
 
 To illustrate the method, we use \(7\text{-}D\) simulated data, which we
-call the ``S-curve''. It is constructed by setting
-\(X_1 = \sin(a), X_2 = U(0, 2), X_3 = \text{sign}(a) \times (\cos(a) - 1), \forall a \in [-3\pi/2, 3\pi/2]\).
-The remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error,
-with small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
-true model.
+call the ``S-curve''. It is constructed by simulating \(n=750\)
+observations from \(\theta \sim U(-3\pi/2, 3\pi/2)\),
+\(X_1 = \sin(\theta)\), \(X_2 \sim U(0, 2)\) (adding thickness to the
+S), \(X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)\). The
+remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error, with
+small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
+geometric structure (true model) that we hope to capture.
 
 \subsubsection{Scaling the data}\label{scaling-the-data}
 
