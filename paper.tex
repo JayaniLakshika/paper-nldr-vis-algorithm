@@ -496,17 +496,16 @@ hexagon grid with notation.}
 
 \subsubsection{Binning the data}\label{binning-the-data}
 
-We define the function
-\(u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}\), which
-generates the model by assigning the points to bin centroids.
-
-For the \(i^{th}\) point,
+Observations are grouped into bins based on their nearest centroid. This
+can be defined using the function
+\(u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}\), where
 \(u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2}\),
-and falls in \(H_h = \{i| u(i) = h\}\).
+mapping observation \(i\) into \(H_h = \{i| u(i) = h\}\).
 
-When \(k = 2\), the hexagonal bin centroid is one representation of a
-bin (Figure~\ref{fig-NLDR-scurve} (c)). Additionally, it can be the mean
-of the points within each hexagon.
+When \(k = 2\), the hexagonal bin centroid is used
+(Figure~\ref{fig-NLDR-scurve} (c)). Any measure of center, such as a
+mean or weighted mean of the points within each hexagon, could be used
+to represent the hexagon.
 
 \subsubsection{Indicating neighbors by line segments connecting
 centroids}\label{indicating-neighbors-by-line-segments-connecting-centroids}
