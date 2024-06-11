@@ -316,7 +316,7 @@ $C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagonal bin 
 ```{r}
 #| label: tbl-notation
 #| tbl-cap: "Summary of notation for describing new methodology."
-# Notations used in the paper
+# Notation used in the paper
 
 notation_df <- read_csv("misc/notation.csv")
 
@@ -482,6 +482,7 @@ The \gD{} hexagon grid is defined by the number of bins in each direction $(b_1,
 The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$. 
 
 ```{r}
+# Code to draw illustration for notation
 hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
     geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
     geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354", size = 0.9) +
@@ -489,25 +490,25 @@ hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) +
     geom_rect(aes(xmin = 0 - 0.03, xmax = 1 - 0.03, ymin = 0 - 0.05, ymax = r2- 0.05), fill = "white", color = "black", alpha = 0, linewidth = 0.7) +
     geom_segment(x = 0 - 0.03, y = -0.35, xend = 1 - 0.03, yend = -0.35,
                  arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+
-    annotate("text", x=0.5, y=-0.45, label= "r1", color = "black") +
+    annotate("text", x=0.5, y=-0.45, label= expression(r[1]), color = "black") +
     geom_segment(x = -0.25, y = 0 - 0.05, xend = -0.25, yend = r2 - 0.05,
                  arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ 
-    annotate("text", x=-0.35, y=1, label= "r2", color = "black") +
+    annotate("text", x=-0.35, y=1, label= expression(r[2]), color = "black") +
     geom_segment(x = -0.1 + 0.2087578, y = -0.15, xend = -0.1 + 0.2087578*2, yend = -0.15,
                    arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a1 = 0.2087578
-    annotate("text", x=0.2, y=-0.25, label= "a1", color = "black") +
+    annotate("text", x=0.2, y=-0.25, label= expression(a[1]), color = "black") +
     geom_segment(x = -0.15, y = -0.1*r2 + 0.1807896*2, xend = -0.15, yend = -0.1*r2 + 0.1807896*3,
                      arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.1807896
-    annotate("text", x=-0.15, y=0.45, label= "a2", color = "black") +
-    annotate("text", x=-0.18, y=-0.45, label= "(s1, s2)", color = "black") ## starting point
+    annotate("text", x=-0.15, y=0.45, label= expression(a[2]), color = "black") +
+    annotate("text", x=-0.18, y=-0.25, label= expression(group("(", list(s[1], s[2]), ")")), color = "black") ## starting point
 ```
 
 ```{r}
 #| label: fig-hex-param
-#| fig-cap: "Notations for hexagonal grid configurations."
+#| fig-cap: "Illustration of the components of the hexagon grid showing the notation used in explanations."
 #| out-height: 30%
-#| fig-width: 2
-#| fig-height: 3
+#| fig-width: 3
+#| fig-height: 4.5
 #| fig-pos: H
  
 hex_param_vis
@@ -1115,7 +1116,7 @@ trimesh_lg_scurve3 <- vis_rmlg_mesh(
 #| echo: false
 #| label: fig-lg-scurve
 #| fig-pos: H
-#| fig-cap: "$2\\text{-}D$ model generated for different benchamrk values to remove long edges: (a) benchmark = $0.201$ (default), (b) benchmark = $0.35$, and (c) benchmark = $1.1$. What is the effective benchmark value to remove long edges?"
+#| fig-cap: "$2\\text{-}D$ model generated for different benchmark values to remove long edges: (a) benchmark = $0.201$ (default), (b) benchmark = $0.35$, and (c) benchmark = $1.1$. What is the effective benchmark value to remove long edges?"
 #| fig-width: 6
 #| fig-height: 3
 
