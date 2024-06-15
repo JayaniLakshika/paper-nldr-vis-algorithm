@@ -113,4 +113,4 @@ ggplot(error_scurve,
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10, angle = 90))
-## Selected UMAP with b_non_empty = 60 (12 * 22 = 264)
+## Selected UMAP with b_non_empty = 60 (12 * 22 = 264), and q = 0.07

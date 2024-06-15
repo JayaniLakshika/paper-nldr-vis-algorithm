@@ -17,13 +17,14 @@ lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 15
+num_bins_x_scurve <- 12
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
+  q = 0.07,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
@@ -56,7 +57,8 @@ benchmark_scurve <- find_lg_benchmark(
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
-  r2 = r2)
+  r2 = r2,
+  q = 0.07)
 
 umap_data_with_hb_id <- hb_obj_scurve$data_hb_id
 
@@ -89,7 +91,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
 
-bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2)$bin2
+bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2, q = 0.07)$bin2
 
 glance(
   df_bin_centroids = df_bin_centroids_scurve,

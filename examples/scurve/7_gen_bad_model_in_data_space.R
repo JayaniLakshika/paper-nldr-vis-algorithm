@@ -6,39 +6,40 @@ library(langevitour)
 
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 
-umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+phate_scurve <- read_rds(file = "data/s_curve/s_curve_phate.rds")
 
 scurve_scaled_obj <- gen_scaled_data(
-  data = umap_scurve)
+  data = phate_scurve)
 
-umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
+phate_scurve_scaled <- scurve_scaled_obj$scaled_nldr
 lim1 <- scurve_scaled_obj$lim1
 lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 10
+num_bins_x_scurve <- 14
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
-  emb_df = umap_scurve_scaled,
+  emb_df = phate_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
+  q = 0.06,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
 )
 
 df_bin_centroids_scurve <- scurve_model$df_bin_centroids
 df_bin_scurve <- scurve_model$df_bin
 
-benchmark_rm_lwd <- 0.3
-
-df_bin_centroids_scurve <- df_bin_centroids_scurve |>
-  filter(std_counts > benchmark_rm_lwd)
-
-df_bin_scurve <- df_bin_scurve |>
-  filter(hb_id %in% df_bin_centroids_scurve$hexID)
+# benchmark_rm_lwd <- 0.3
+#
+# df_bin_centroids_scurve <- df_bin_centroids_scurve |>
+#   filter(std_counts > benchmark_rm_lwd)
+#
+# df_bin_scurve <- df_bin_scurve |>
+#   filter(hb_id %in% df_bin_centroids_scurve$hexID)
 
 ## Triangulate bin centroids
 tr1_object_scurve <- tri_bin_centroids(
@@ -60,18 +61,19 @@ benchmark_scurve <- find_lg_benchmark(
   distance_edges = distance_scurve,
   distance_col = "distance")
 
-benchmark_scurve <- 0.19
+#benchmark_scurve <- 0.19
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
-  data = umap_scurve_scaled,
+  data = phate_scurve_scaled,
   bin1 = num_bins_x_scurve,
-  r2 = r2)
+  r2 = r2,
+  q = 0.06)
 
-umap_data_with_hb_id <- hb_obj_scurve$data_hb_id
+phate_data_with_hb_id <- hb_obj_scurve$data_hb_id
 
 df_all_scurve <- dplyr::bind_cols(training_data_scurve |> dplyr::select(-ID),
-                                  umap_data_with_hb_id)
+                                  phate_data_with_hb_id)
 
 ### Define type column
 df <- df_all_scurve |>
@@ -99,14 +101,14 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
 
-bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2)$bin2
+bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2, q = 0.06)$bin2
 
 glance(
   df_bin_centroids = df_bin_centroids_scurve,
   df_bin = df_bin_scurve,
   training_data = training_data_scurve,
   newdata = NULL,
-  type_NLDR = "UMAP",
+  type_NLDR = "PHATE",
   col_start = "x") |>
   mutate(bin1 = num_bins_x_scurve,
          bin2 = bin2,

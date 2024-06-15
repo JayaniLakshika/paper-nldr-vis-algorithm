@@ -17,13 +17,14 @@ lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 10
+num_bins_x_scurve <- 12
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
+  q = 0.07,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
@@ -56,7 +57,8 @@ benchmark_scurve <- find_lg_benchmark(
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
-  r2 = r2)
+  r2 = r2,
+  q = 0.07)
 
 umap_data_with_hb_id <- hb_obj_scurve$data_hb_id
 
