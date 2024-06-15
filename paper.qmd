@@ -794,10 +794,10 @@ mse_scurve_b <- ggplot(error_scurve,
              color = "black", linewidth=0.8, alpha = 0.5) +
   ylab("log(MSE)") +
   xlab("b") +
-  theme(axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7, angle = 90))
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10, angle = 90))
 ```
 
 ```{r}
@@ -851,10 +851,10 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
   xlab("hexagonal id") + 
   ylab("standardized bin count") +
   geom_hline(yintercept = benchmark1, color = "black", linewidth=0.8, alpha = 0.5) +
-  theme(axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, angle = 90),
-        axis.text.x = element_text(size = 5, angle = 90),
-        axis.text.y = element_text(size = 5))
+  theme(axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10, angle = 90),
+        axis.text.x = element_text(size = 7, angle = 90),
+        axis.text.y = element_text(size = 10))
 ```
 
 ```{r}
@@ -935,10 +935,10 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
             angle=90) +
   ylab("log(MSE)") +
   xlab("benchmark value") +
-  theme(axis.text.x = element_text(size = 5),
-        axis.text.y = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, angle = 90))
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        axis.title.y = element_text(size = 10, angle = 90))
 ```
 
 ```{r}
@@ -1071,8 +1071,8 @@ distance_scurve_plot <- ggplot(distance_scurve,
             colour="black", 
             angle=90) +
   ylab(expression(d^{(2)})) +
-  theme(axis.text.x = element_text(size = 5),
-        axis.title.x = element_text(size = 5))
+  theme(axis.text.x = element_text(size = 10),
+        axis.title.x = element_text(size = 10))
 ```
 
 ```{r}
