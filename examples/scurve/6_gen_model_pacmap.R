@@ -17,7 +17,7 @@ lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 13
+num_bins_x_scurve <- 16
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
@@ -25,7 +25,7 @@ scurve_model <- fit_highd_model(
   bin1 = num_bins_x_scurve,
   r2 = r2,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
 )
 

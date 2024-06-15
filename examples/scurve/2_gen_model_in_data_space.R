@@ -25,7 +25,7 @@ scurve_model <- fit_highd_model(
   bin1 = num_bins_x_scurve,
   r2 = r2,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
 )
 

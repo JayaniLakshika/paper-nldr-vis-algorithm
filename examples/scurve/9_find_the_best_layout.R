@@ -54,40 +54,46 @@ for (nldr in c("tSNE", "UMAP", "PHATE", "PaCMAP", "TriMAP")) {
   r2 <- diff(lim2)/diff(lim1)
 
   for (xbins in bin1_vec_scurve) {
+    for(q in c(0.05, 0.06, 0.07, 0.08, 0.09, 0.1)) {
 
-    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2)$bin2
+      bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = q)$bin2
 
-    scurve_model <- fit_highd_model(
-      training_data = training_data_scurve,
-      emb_df = nldr_scurve_scaled,
-      bin1 = xbins,
-      r2 = r2,
-      is_bin_centroid = TRUE,
-      is_rm_lwd_hex = FALSE,
-      col_start_highd = "x"
-    )
+      scurve_model <- fit_highd_model(
+        training_data = training_data_scurve,
+        emb_df = nldr_scurve_scaled,
+        bin1 = xbins,
+        r2 = r2,
+        q = q,
+        is_bin_centroid = TRUE,
+        is_rm_lwd_hex = TRUE,
+        col_start_highd = "x"
+      )
 
-    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-    df_bin_scurve <- scurve_model$df_bin
+      df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+      df_bin_scurve <- scurve_model$df_bin
 
-    ## Compute error
-    error_df <- glance(
-      df_bin_centroids = df_bin_centroids_scurve,
-      df_bin = df_bin_scurve,
-      training_data = training_data_scurve,
-      newdata = NULL,
-      type_NLDR = nldr,
-      col_start = "x") |>
-      mutate(bin1 = xbins,
-             bin2 = bin2,
-             b = bin1 * bin2,
-             b_non_empty = NROW(df_bin_centroids_scurve),
-             method = nldr)
+      ## Compute error
+      error_df <- glance(
+        df_bin_centroids = df_bin_centroids_scurve,
+        df_bin = df_bin_scurve,
+        training_data = training_data_scurve,
+        newdata = NULL,
+        type_NLDR = nldr,
+        col_start = "x") |>
+        mutate(bin1 = xbins,
+               bin2 = bin2,
+               b = bin1 * bin2,
+               b_non_empty = NROW(df_bin_centroids_scurve),
+               method = nldr,
+               q = q)
 
-    error_scurve <- bind_rows(error_scurve, error_df)
+      error_scurve <- bind_rows(error_scurve, error_df)
+
+
+
+    }
 
   }
-
 
 }
 
@@ -107,4 +113,4 @@ ggplot(error_scurve,
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10, angle = 90))
-## Selected PaCMAP with b_non_empty = 42 (11 * 12 = 132)
+## Selected UMAP with b_non_empty = 60 (12 * 22 = 264)
