@@ -1131,9 +1131,9 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
 
 ## Deciding on the most suitable fit
 
-The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve by fitting the points everywhere (@fig-scurve_sc_best).
+The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best).
 
-In contrast, a poor model for the S-curve with UMAP was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model does not fit the points in some places and mismatches the pattern (@fig-scurve-sc-bad).
+In contrast, a poor model for the S-curve with PHATE was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model squeezed to the middle of the geometry of the S-curve (@fig-scurve-sc-bad).
 
 
 <!--langevitour with best pD model for S-curve--> 
