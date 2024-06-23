@@ -731,10 +731,10 @@ hex_grid_with_counts_s_curve1 <- full_join(
     by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve1 <- ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
+  # geom_point(data = umap_scurve_scaled, 
+  #            aes(x = UMAP1, y = UMAP2), 
+  #            alpha = 0.5,
+  #            size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve1, 
     aes(x = x, y = y,
@@ -772,10 +772,10 @@ hex_grid_with_counts_s_curve2 <- full_join(
   by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve2 <- ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
+  # geom_point(data = umap_scurve_scaled, 
+  #            aes(x = UMAP1, y = UMAP2), 
+  #            alpha = 0.5,
+  #            size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve2, 
     aes(x = x, y = y, 
@@ -815,10 +815,10 @@ hex_grid_with_counts_s_curve3 <- full_join(hex_grid3,
                                           by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve3 <-  ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
+  # geom_point(data = umap_scurve_scaled, 
+  #            aes(x = UMAP1, y = UMAP2), 
+  #            alpha = 0.5,
+  #            size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve3, 
     aes(x = x, y = y, 
