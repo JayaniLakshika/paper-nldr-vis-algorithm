@@ -159,7 +159,7 @@
 \hypersetup{
   pdftitle={Looking at Non-Linear Dimension Reductions as Models in the Data Space},
   pdfauthor={Jayani P.G. Lakshika; Dianne Cook; Paul Harrison; Michael Lydeamore; Thiyanga S. Talagala},
-  pdfkeywords={high-dimensional data, dimension reduction, hexagonal
+  pdfkeywords={high-dimensional data, dimension reduction, hexagon
 binning, low-dimensional manifold, tour, data vizualization, model in
 the data space},
   colorlinks=true,
@@ -216,7 +216,7 @@ quirks.
 \end{abstract}
 
 \noindent%
-{\it Keywords:} high-dimensional data, dimension reduction, hexagonal
+{\it Keywords:} high-dimensional data, dimension reduction, hexagon
 binning, low-dimensional manifold, tour, data vizualization, model in
 the data space
 \vfill
@@ -420,7 +420,7 @@ With our goal being to make a representation of this \gD{} layout that
 can be lifted into high-dimensional space, the layout needs to be
 augmented to include neighbour information. A simple approach would be
 to triangulate the points and add edges. A more stable approach is to
-first hexagonally bin the data, reducing it from \(n\) to \(m\leq n\)
+first hexagonly bin the data, reducing it from \(n\) to \(m\leq n\)
 observations, and connect the bin centroids. This process serves to
 reduce some noisiness in the resulting surface shown in \pD{}. The steps
 in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
@@ -605,15 +605,15 @@ Section~\ref{sec-summary}).
 
 \subsubsection{Choice of bins}\label{choice-of-bins}
 
-The number of hexagonal bins in the hexagonal grid has a considerable
-impact on the construction of the \gD{} model, serving as the initial
-step. The chosen total number of bins must effectively capture the
-structure of the NLDR data. If the number of bins is too low, the model
-may not be able to capture the structure of the NLDR data effectively
-(see Figure~\ref{fig-bins-scurve} (a)), while if there are too many
-bins, it may result in over-fitting the individual points of the NLDR
-data (see Figure~\ref{fig-bins-scurve} (c)). Therefore, it is important
-to determine an effective number of bins to construct a reasonable model
+The number of hexagon bins in the hexagon grid has a considerable impact
+on the construction of the \gD{} model, serving as the initial step. The
+chosen total number of bins must effectively capture the structure of
+the NLDR data. If the number of bins is too low, the model may not be
+able to capture the structure of the NLDR data effectively (see
+Figure~\ref{fig-bins-scurve} (a)), while if there are too many bins, it
+may result in over-fitting the individual points of the NLDR data (see
+Figure~\ref{fig-bins-scurve} (c)). Therefore, it is important to
+determine an effective number of bins to construct a reasonable model
 (see Figure~\ref{fig-bins-scurve} (b)).
 
 \begin{figure}[H]
@@ -639,33 +639,15 @@ the range between the minimum and approximate maximum \(b_1\), because
 while the maximum number is estimated by taking the square root of
 \(\frac{n}{2}\). The analysis evaluates the MSE across varying \(b\)
 within this range, covering the minimum to maximum values along both
-axes (see Figure~\ref{fig-mse-scurve-b}).
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-b-1.pdf}
-
-}
-
-\caption{\label{fig-mse-scurve-b}MSE from UMAP applied to S-curve
-dataset with diffferent \(b\) choices. What is the effective \(b\) to
-create the model? The residual plot have a steep slope at the beginning,
-indicating that a smaller \(b\) causes a larger amount of MSE. Then, the
-slope gradually declines or level off, indicating that a higher \(b\)
-generates a smaller MSE. Using the elbow method, it was observed that
-when the \(b\) is set to \(190\), the lowest MSE occurred.}
-
-\end{figure}%
+axes (see \textbf{?@fig-mse-scurve-b}).
 
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
 
-Once setting up the hexagonal grid with an appropriate number of bins,
-some hexagonal bins may have few or no data points within them (see
+Once setting up the hexagon grid with an appropriate number of bins,
+some hexagon bins may have few or no data points within them (see
 Figure~\ref{fig-bins-scurve} (b)). To ensure comprehensive coverage of
-the NLDR data, it is necessary to select hexagonal bins with a
+the NLDR data, it is necessary to select hexagon bins with a
 considerable number of data points. This involves calculating the number
 of points within each hexagon. Then, the standard count is computed by
 dividing the number of points within each hexagon by the maximum number
@@ -680,53 +662,21 @@ low-density hexagons:
 \tightlist
 \item
   Plot the distribution of the standardized counts (see
-  Figure~\ref{fig-stdcts-scurve}).
+  \textbf{?@fig-stdcts-scurve}).
 \item
   Examine the distribution of counts.
 \item
   Select the first quantile value if the distribution is skewed.
 \end{enumerate}
 
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-stdcts-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-stdcts-scurve}Distribution of standardize counts by
-hexagons.}
-
-\end{figure}%
-
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
 model performance, it's essential to observe the change in MSE as the
-benchmark value increases (see Figure~\ref{fig-mse-scurve-lwd}). The MSE
+benchmark value increases (see \textbf{?@fig-mse-scurve-lwd}). The MSE
 shows a gradual increase as the benchmark value progresses from \(0\) to
 \(1\). Evaluating this rate of increase is important. If the increment
 is not considerable, the decision might lean towards retaining
 low-density hexagons.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-mse-scurve-lwd-1.pdf}
-
-}
-
-\caption{\label{fig-mse-scurve-lwd}MSE from UMAP applied to S-curve
-dataset with diffferent bechmark choices. What is the effective bechmark
-value to remove low density hexagons? The residual plot have a steep
-slope at the end, indicating that a smaller bechmark value causes a
-small amount of MSE. Then, the slope gradually increases or level up,
-indicating that a higher bechmark value generates a higher MSE. Using
-the elbow method, it was observed that when the bechmark value is set to
-\(0.242\), the lowest MSE occurred.}
-
-\end{figure}%
 
 Furthermore, selecting the benchmark value for removing low-density
 hexagons is important. Removing unnecessary bins may lead to the
@@ -767,7 +717,7 @@ following steps provide an approach to identifying a suitable threshold:
 \tightlist
 \item
   Plot the distribution of the 2D Euclidean distances (see
-  Figure~\ref{fig-dist-scurve}).
+  \textbf{?@fig-dist-scurve}).
 \item
   Identify the first largest difference between consecutive distance
   values.
@@ -778,15 +728,14 @@ following steps provide an approach to identifying a suitable threshold:
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-dist-scurve-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-31-1.pdf}
 
 }
 
-\caption{\label{fig-dist-scurve}Distribution of \(2\text{-}D\) Euclidean
-distances between bin centroids of the triangular mesh generated with
-S-curve UMAP data.}
+\caption{Various plots to help assess best number of bins, low density
+bin and large edge removal. Both (a) and (c) show MSE, against number of
+bins and standardised count. A good benchmark value for these parameters
+is when the MSE drops and then flattens out.}
 
 \end{figure}%
 

@@ -64,8 +64,8 @@ tbl-cap-location: bottom
 abstract: |
   Nonlinear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional (high-D) data using non-linear transformation. The methods and parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of high-D distributions. To help evaluate the NLDR we have developed an algorithm to show the 2D NLDR model in the high-D space, viewed with a tour. One can see if the model fits everywhere or better in some subspaces, or completely mismatches the data. It is used to evaluate which 2D layout is the best representation of the high-D distribution and see how different methods may have similar summaries or quirks.
   
-keywords: [high-dimensional data, dimension reduction, hexagonal binning, low-dimensional manifold, tour, data vizualization, model in the data space]
-keywords-formatted: [high-dimensional data, dimension reduction, hexagonal binning, low-dimensional manifold, tour, data vizualization, model in the data space]
+keywords: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional manifold, tour, data vizualization, model in the data space]
+keywords-formatted: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional manifold, tour, data vizualization, model in the data space]
 
 bibliography: bibliography.bib  
 header-includes: | 
@@ -312,7 +312,7 @@ $Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \
 
 $C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$
 
-$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagonal bin centroids of the $k^{th}$ hexagon
+$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagon bin centroids of the $k^{th}$ hexagon
 
 -->
 
@@ -336,7 +336,7 @@ kable(notation_df,
 
 We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
 
-With our goal being to make a representation of this \gD{}    layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonally bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
+With our goal being to make a representation of this \gD{}    layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonly bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
 
 
 <!--UMAP applied for Scurve data-->
@@ -364,13 +364,13 @@ nldr_scurve <- umap_scurve_scaled |>
   interior_annotation("a", sc_ltr_pos)
 ```
 
-<!--Full hexagonal grid with UMAP data-->
+<!--Full hexagon grid with UMAP data-->
 
 ```{r}
 ## Compute hexbin parameters
 num_bins_x_scurve <- 6
 
-## Hexagonal binning to have regular hexagons
+## hexagon binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = num_bins_x_scurve, 
@@ -620,7 +620,7 @@ hex_param_vis
 <!-- a_2 = \frac{r_2 + q_2}{0.75 \times b_2}. -->
 <!-- $$ -->
 
-<!-- To define a hexagonal grid across the \kD{} space, with hexagons of fixed height ($a_1$), width ($a_2$),  it is necessary to determine how many hexagons should be represented along each axis in the \kD{} space.
+<!-- To define a hexagon grid across the \kD{} space, with hexagons of fixed height ($a_1$), width ($a_2$),  it is necessary to determine how many hexagons should be represented along each axis in the \kD{} space.
 
 When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$, is computed by considering the scaling factors ${r_1, r_2}$, along with the offset along the axes ($q_1$, $q_2$), and the height ($a_1$) and width ($a_2$) of a regular hexagon (@fig-NLDR-scurve (b)). ($b_1 = \frac{r_1 + q_1}{a_2}$, and $b_2 = \frac{r_2 + q_2}{0.75 \times a_1}$) where $0.75 \times a_1$ accommodate to have hexagons fill the entire 2D space without leaving any gaps between them.)-->
 
@@ -641,12 +641,12 @@ By default, the bin centroid is used for describing a hexagon (as done in @fig-N
 <!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
 
 <!--
-Define a hexagonal grid across the \kD{} space, using hexagons with fixed height ($a_2$), width ($a_1$). Each of the \kD{} points will belong to a hexagonal bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. This identification is done finding the nearest bin centroid for the \kD{} points by considering the \kD{} Euclidean distance.    
+Define a hexagon grid across the \kD{} space, using hexagons with fixed height ($a_2$), width ($a_1$). Each of the \kD{} points will belong to a hexagon bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. This identification is done finding the nearest bin centroid for the \kD{} points by considering the \kD{} Euclidean distance.    
 
 When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the grid. This is the bottom left bin centroid. By starting from there, points are generated to fill the grid accounting $b_1$, $b_2$, $a_1$, and $a_2$. 
 -->
 
-<!--We deliberately separate out the creation of the hexagonal grid from the mapping of points on the grid.-->
+<!--We deliberately separate out the creation of the hexagon grid from the mapping of points on the grid.-->
 
 #### Indicating neighborhood
 
@@ -701,12 +701,12 @@ The performance and robustness of our model depend on three key parameters: (i) 
 
 #### Choice of bins
 
-The number of hexagonal bins in the hexagonal grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-bins-scurve (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-bins-scurve (c)). Therefore, it is important to determine an effective number of bins to construct a reasonable model (see @fig-bins-scurve (b)).
+The number of hexagon bins in the hexagon grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-bins-scurve (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-bins-scurve (c)). Therefore, it is important to determine an effective number of bins to construct a reasonable model (see @fig-bins-scurve (b)).
 
 <!--add three choice of bins 7, 10, 14-->
 
 ```{r}
-## Hexagonal binning to have regular hexagons
+## hexagon binning to have regular hexagons
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 7, 
@@ -747,7 +747,7 @@ hex_grid_coloured_scurve1 <- ggplot() +
 ```
 
 ```{r}
-## Hexagonal binning to have regular hexagons
+## hexagon binning to have regular hexagons
 hb_obj_scurve2 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 10, 
@@ -791,7 +791,7 @@ hex_grid_coloured_scurve2 <- ggplot() +
 ```
 
 ```{r}
-## Hexagonal binning to have regular hexagons
+## hexagon binning to have regular hexagons
 hb_obj_scurve3 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 14, 
@@ -902,10 +902,14 @@ mse_scurve_b <- ggplot(error_scurve,
              color = "black", linewidth=0.8, alpha = 0.5) +
   ylab("log(MSE)") +
   xlab("b") +
-  theme(axis.text.x = element_text(size = 10),
+  ggtitle("(a)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10, angle = 90))
+        axis.title.y = element_text(size = 10, 
+            angle=90),
+        title = element_text(size = 36))
 ```
 
 ```{r}
@@ -913,13 +917,14 @@ mse_scurve_b <- ggplot(error_scurve,
 #| label: fig-mse-scurve-b
 #| fig-pos: H
 #| out-height: 50%
+#| eval: false
 
 mse_scurve_b
 ```
 
 #### Removal of low density bins
 
-Once setting up the hexagonal grid with an appropriate number of bins, some hexagonal bins may have few or no data points within them (see @fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagonal bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (see @fig-lwd-scurve (a)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
+Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (see @fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (see @fig-lwd-scurve (a)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
 
 1. Plot the distribution of the standardized counts (see @fig-stdcts-scurve).
 2. Examine the distribution of counts.
@@ -956,13 +961,17 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
                                             -std_counts), 
                                 y = std_counts)) + 
   geom_quasirandom() + 
-  xlab("hexagonal id") + 
-  ylab("standardized bin count") +
   geom_hline(yintercept = benchmark1, color = "black", linewidth=0.8, alpha = 0.5) +
-  theme(axis.title.x = element_text(size = 10),
+  xlab("hexagon id (re-ordered)") + 
+  ylab("standardized bin count") +
+  ggtitle("(b)") +
+  theme(aspect.ratio = 0.75,
+        axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10, angle = 90),
-        axis.text.x = element_text(size = 7, angle = 90),
-        axis.text.y = element_text(size = 10))
+        #axis.text.x = element_text(size = 7, angle = 90),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(size = 10),
+        title = element_text(size = 36))
 ```
 
 ```{r}
@@ -971,6 +980,7 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
 #| label: fig-stdcts-scurve
 #| out-height: 50%
 #| fig-pos: H
+#| eval: false
 
 cell_count_scurve
 ```
@@ -1041,12 +1051,17 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
                 y=y), 
             colour="black", 
             angle=90) +
+  scale_x_continuous("standardized bin count", 
+         transform = "reverse") + 
   ylab("log(MSE)") +
-  xlab("benchmark value") +
-  theme(axis.text.x = element_text(size = 10),
+  ggtitle("(c)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 10),
         axis.text.y = element_text(size = 10),
         axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10, angle = 90))
+        axis.title.y = element_text(size = 10, 
+            angle=90),
+        title = element_text(size = 36))
 ```
 
 ```{r}
@@ -1054,6 +1069,7 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
 #| label: fig-mse-scurve-lwd
 #| fig-pos: H
 #| out-height: 50%
+#| eval: false
 
 mse_scurve_lwd
 ```
@@ -1170,8 +1186,9 @@ distance_scurve_plot <- ggplot(distance_scurve,
   geom_quasirandom() + 
   ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
   coord_flip() + 
-  geom_hline(yintercept = benchmark_scurve, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
+  geom_hline(yintercept = benchmark_scurve,
+     linetype="solid", 
+     color = "black", linewidth=0.8, alpha = 0.5) +
   geom_text(data = benchmark_label_df, 
             aes(x=x, 
                 label= label, 
@@ -1179,18 +1196,26 @@ distance_scurve_plot <- ggplot(distance_scurve,
             colour="black", 
             angle=90) +
   ylab(expression(d^{(2)})) +
-  theme(axis.text.x = element_text(size = 10),
-        axis.title.x = element_text(size = 10))
+  ggtitle("(d)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 10),
+        axis.title.x = element_text(size = 10),
+        title = element_text(size = 36))
 ```
 
 ```{r}
 #| echo: false
-#| fig-cap: "Distribution of $2\\text{-}D$ Euclidean distances between bin centroids of the triangular mesh generated with S-curve UMAP data."
+#| fig-cap: "Various plots to help assess best number of bins, low density bin and large edge removal. Both (a) and (c) show MSE, against number of bins and standardised count. A good benchmark value for these parameters is when the MSE drops and then flattens out."
+# Distribution of $2\\text{-}D$ Euclidean distances between bin centroids of the triangular mesh generated with S-curve UMAP data.
 #| label: fig-dist-scurve
-#| out-height: 50%
+#| out-width: 100%
+#| fig-width: 8
+#| fig-height: 6
 #| fig-pos: H
 
-distance_scurve_plot
+mse_scurve_b + cell_count_scurve + 
+mse_scurve_lwd + 
+distance_scurve_plot + plot_layout(ncol=2)
 ```
 
 <!--trimesh with different benchmark values-->
