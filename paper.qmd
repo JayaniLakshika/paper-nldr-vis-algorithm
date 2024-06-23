@@ -104,6 +104,7 @@ knitr::opts_chunk$set(
 #| warning: false
 #| echo: false
 library(quollr)
+library(tibble)
 library(dplyr)
 # remotes::install_github("jlmelville/snedata")
 library(snedata)
@@ -125,6 +126,8 @@ library(langevitour)
 library(colorspace)
 library(kableExtra)
 library(grid)
+library(conflicted)
+conflicts_prefer(dplyr::filter)
 ```
 
 ```{r}
@@ -387,9 +390,9 @@ df_bin_centroids <- extract_hexbin_centroids(
   filter(drop_empty == FALSE)
 
 hex_grid_with_counts <- 
-  dplyr::left_join(hex_grid,
-                   counts_df, 
-                   by = c("hex_poly_id" = "hb_id"))
+  left_join(hex_grid,
+            counts_df, 
+            by = c("hex_poly_id" = "hb_id"))
 
 hex_grid_scurve <- ggplot(
   data = hex_grid_with_counts, 
@@ -458,7 +461,7 @@ trimesh_removed_scurve <- vis_rmlg_mesh(
 ```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
-#| fig-cap: "Key steps for constructing the model on the UMAP layout ($k=2$) of the S-curve data: (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids."
+#| fig-cap: "Key steps for constructing the model on the UMAP layout ($k=2$): (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The S-curve data is shown."
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
@@ -473,7 +476,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 
 #### Scaling the data
 
-It is beneficial to define the algorithm on data having a standard scale. Here the variables are scaled to [0, 1], but the upper bound can incorporate the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$, by setting them to $(y_{1,\text{max}}, y_{2,\text{max}}, ..., y_{k,\text{max}})$. When $k=2$ which is assumed for hexagon binning, $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}$, as observed in @fig-NLDR-scurve. <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
+Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. When the aspect ratio of the NLDR $(r_1, r_2, ..., r_k)$ is meaningful, the data can be scaled to take this into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}$ (@fig-NLDR-scurve). <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
 
 #### Computing hexagon grid configurations
 
@@ -483,32 +486,121 @@ The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of 
 
 ```{r}
 # Code to draw illustration for notation
-hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
-    geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
-    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354", size = 0.9) +
-    geom_point(data = all_centroids_df |> dplyr::filter(hexID == 1), aes(x = c_x, y = c_y), color = "black") + ## starting point
-    geom_rect(aes(xmin = 0 - 0.03, xmax = 1 - 0.03, ymin = 0 - 0.05, ymax = r2- 0.05), fill = "white", color = "black", alpha = 0, linewidth = 0.7) +
-    geom_segment(x = 0 - 0.03, y = -0.35, xend = 1 - 0.03, yend = -0.35,
-                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+
-    annotate("text", x=0.5, y=-0.45, label= expression(r[1]), color = "black") +
-    geom_segment(x = -0.25, y = 0 - 0.05, xend = -0.25, yend = r2 - 0.05,
-                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ 
-    annotate("text", x=-0.35, y=1, label= expression(r[2]), color = "black") +
-    geom_segment(x = -0.1 + 0.2087578, y = -0.15, xend = -0.1 + 0.2087578*2, yend = -0.15,
-                   arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a1 = 0.2087578
-    annotate("text", x=0.2, y=-0.25, label= expression(a[1]), color = "black") +
-    geom_segment(x = -0.15, y = -0.1*r2 + 0.1807896*2, xend = -0.15, yend = -0.1*r2 + 0.1807896*3,
-                     arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.1807896
-    annotate("text", x=-0.15, y=0.45, label= expression(a[2]), color = "black") +
-    annotate("text", x=-0.18, y=-0.25, label= expression(group("(", list(s[1], s[2]), ")")), color = "black") ## starting point
+start_pt <- all_centroids_df |> 
+  filter(hexID == 1)
+d_rect <- tibble(x1min = 0, 
+                 x1max = 1,
+                 x2min = 0,
+                 x2max = r2)
+c_start <- tibble(s1 = 0.03, s2 = 0.05)
+a1 <- tibble(x = all_centroids_df$c_x[21],
+             xend = all_centroids_df$c_x[22],
+             y = all_centroids_df$c_y[21],
+             yend = all_centroids_df$c_y[21],
+             label = expression(a[1]))
+a2 <- tibble(x = all_centroids_df$c_x[27],
+             xend = all_centroids_df$c_x[27],
+             y = all_centroids_df$c_y[27],
+             yend = all_centroids_df$c_y[33],
+             label = expression(a[2]))
+hex_param_vis <- ggplot() + 
+    geom_polygon(data = hex_grid, 
+                        aes(x = x, 
+                            y = y, 
+                            group = hex_poly_id),
+                 fill = "white", 
+                 color = "#bdbdbd") +
+    geom_point(data = all_centroids_df, aes(
+      x = c_x, 
+      y = c_y), 
+      color = "#31a354", size = 0.9) +
+    geom_point(data = start_pt, aes(x = c_x, 
+                                    y = c_y), 
+               color = "black") + 
+    geom_rect(data=d_rect, 
+              aes(xmin = x1min - c_start$s1,# - c_start$s1, 
+                  xmax = x1max - c_start$s1,# - c_start$s1, 
+                  ymin = x2min - c_start$s2,# - c_start$s2, 
+                  ymax = x2max - c_start$s2),# - c_start$s2), 
+              fill = "white", 
+              color = "black", 
+              alpha = 0, 
+              linewidth = 0.7) +
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1max - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2max - c_start$s2)) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,0)", 
+             hjust=-0.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1max - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,1)", 
+             hjust=1.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2max - c_start$s2,
+                     label = expression(group("(", 
+                        list(0, y[2][max]),")")), 
+            hjust=-0.1, vjust=1.2) + 
+    geom_segment(data=d_rect, aes(
+      x = x1min  - c_start$s1, # 0 - 0.03, 
+      y = -0.35, 
+      xend = x1max - c_start$s1, #1 - 0.03, 
+      yend = -0.35), #-0.35),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+                 color = "black")+
+    annotate("text", x=0.5, y=-0.45, 
+             label = expression(r[1]), color = "black") +
+    geom_segment(data=d_rect, aes(
+      x = -0.25, 
+      y = x2min - c_start$s2, #0 - 0.05, 
+      xend = -0.25, 
+      yend = x2max - c_start$s2), #r2 - 0.05),
+      arrow = arrow(length = unit(0.03, "npc"),
+                       ends = "both"), 
+                 color = "black")+ 
+    annotate("text", x=-0.35, y=1, 
+             label = expression(r[2]), color = "black") +
+    geom_segment(data = a1, aes(
+      x = x, #-0.1 + 0.2087578, 
+      y = y, #-0.15, 
+      xend = xend, #-0.1 + 0.2087578*2, 
+      yend = yend), #-0.15),
+      arrow = arrow(length = unit(0.03, "npc"),
+        ends = "both"), 
+        color = "black")+ # a1 = 0.2087578
+    annotate("text", 
+             x=(a1$x+a1$xend)/2, 
+             y=a1$y, 
+             label = expression(a[1]), 
+             color = "black",
+             vjust = 1.2) +
+    geom_segment(data = a2, aes(
+      x = x, #-0.15, 
+      y = y, #-0.1*r2 + 0.1807896*2, 
+      xend = xend, #-0.15, 
+      yend = yend), #-0.1*r2 + 0.1807896*3),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+      color = "black") + # a2 = 0.1807896
+    annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
+             label = expression(a[2]), 
+             color = "black", hjust=-0.2) +
+    annotate("text", x=-0.18, y=-0.25, 
+      label = expression(group("(", list(s[1], s[2]), ")")),
+      color = "black") 
 ```
 
 ```{r}
 #| label: fig-hex-param
-#| fig-cap: "Illustration of the components of the hexagon grid with notation."
+#| fig-cap: "The components of the hexagon grid illustrating notation."
 #| out-height: 30%
-#| fig-width: 3
-#| fig-height: 4.5
+#| fig-width: 2.5
+#| fig-height: 3.75
 #| fig-pos: H
  
 hex_param_vis

@@ -435,8 +435,8 @@ documented below.
 }
 
 \caption{\label{fig-NLDR-scurve}Key steps for constructing the model on
-the UMAP layout (\(k=2\)) of the S-curve data: (a) data, (b) hexagon
-bins, (c) bin centroids, and (d) triangulated centroids.}
+the UMAP layout (\(k=2\)): (a) data, (b) hexagon bins, (c) bin
+centroids, and (d) triangulated centroids. The S-curve data is shown.}
 
 \end{figure}%
 
@@ -451,14 +451,13 @@ geometric structure (true model) that we hope to capture.
 
 \subsubsection{Scaling the data}\label{scaling-the-data}
 
-It is beneficial to define the algorithm on data having a standard
-scale. Here the variables are scaled to {[}0, 1{]}, but the upper bound
-can incorporate the aspect ratio produced by the NLDR
-\((r_1, r_2, ..., r_k)\), by setting them to
-\((y_{1,\text{max}}, y_{2,\text{max}}, ..., y_{k,\text{max}})\). When
-\(k=2\) which is assumed for hexagon binning, \(y_{1,\text{max}}=1\) and
-\(y_{2,\text{max}} = \frac{r_2}{r_1}\), as observed in
-Figure~\ref{fig-NLDR-scurve}.
+Because we are working with distances between points, starting with data
+having a standard scale, e.g.~{[}0, 1{]}, is recommended. When the
+aspect ratio of the NLDR \((r_1, r_2, ..., r_k)\) is meaningful, the
+data can be scaled to take this into account. When \(k=2\), as in
+hexagon binning, the default range is \([0, y_{i,\text{max}}], i=1,2\),
+where \(y_{1,\text{max}}=1\) and \(y_{2,\text{max}} = \frac{r_2}{r_1}\)
+(Figure~\ref{fig-NLDR-scurve}).
 
 \subsubsection{Computing hexagon grid
 configurations}\label{computing-hexagon-grid-configurations}
@@ -491,8 +490,8 @@ the NLDR, \(a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}\), because
 
 }
 
-\caption{\label{fig-hex-param}Illustration of the components of the
-hexagon grid with notation.}
+\caption{\label{fig-hex-param}The components of the hexagon grid
+illustrating notation.}
 
 \end{figure}%
 
