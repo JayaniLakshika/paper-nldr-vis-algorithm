@@ -723,7 +723,8 @@ hex_grid1 <- hb_obj_scurve1$hex_poly
 counts_df1 <- hb_obj_scurve1$std_cts
 df_bin_centroids1 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df1, 
-  counts_df = counts_df1)
+  counts_df = counts_df1) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve1 <- full_join(
   hex_grid1, 
@@ -764,7 +765,8 @@ hex_grid2 <- hb_obj_scurve2$hex_poly
 counts_df2 <- hb_obj_scurve2$std_cts
 df_bin_centroids2 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df2, 
-  counts_df = counts_df2)
+  counts_df = counts_df2) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve2 <- full_join(
   hex_grid2, 
@@ -808,7 +810,8 @@ hex_grid3 <- hb_obj_scurve3$hex_poly
 counts_df3 <- hb_obj_scurve3$std_cts
 df_bin_centroids3 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df3, 
-  counts_df = counts_df3)
+  counts_df = counts_df3) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
                                           df_bin_centroids3 |> select(hexID, std_counts), 
@@ -1138,7 +1141,7 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 #| echo: false
 #| label: fig-lwd-scurve
 #| fig-pos: H
-#| fig-cap: "(a) Identification of low-density hexagons using a benchmark value of $0.242$, and (c) Identification of low-density hexagons considering neighboring bins."
+#| fig-cap: "Two approaches to identify low-density hexagons. Hexagon grid (a) marks hexagons with a standardized count less than $0.25$. Hexagon grid (b) marks hexagons by considering the densities of neighboring bins. Removing hexagons by also investigating the densities of neighboring bins is more reliable for preserving the structure."
 #| fig-width: 9
 #| fig-height: 6
 
