@@ -900,7 +900,7 @@ mse_scurve_b <- ggplot(error_scurve,
   geom_point(size = 1) +
   geom_line() + 
   geom_vline(xintercept = 264, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
+             color = "black", linewidth=0.5, alpha = 0.5) +
   ylab("log(MSE)") +
   xlab("b") +
   ggtitle("(a)") +
@@ -965,8 +965,11 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
                             aes(x = reorder(as.factor(hexID), 
                                             -std_counts), 
                                 y = std_counts)) + 
-  geom_quasirandom() + 
-  geom_hline(yintercept = benchmark1, color = "black", linewidth=0.8, alpha = 0.5) +
+  geom_quasirandom(
+    size = 0.3,
+    alpha = 0.5
+  ) + 
+  geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
   xlab("hexagon id (re-ordered)") + 
   ylab("standardized bin count") +
   ggtitle("(b)") +
@@ -1035,13 +1038,7 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
   geom_point(size = 1) +
   geom_line() + 
   geom_vline(xintercept = benchmark1, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_text(data = benchmark_label_df, 
-            aes(x=x, 
-                label= label, 
-                y=y), 
-            colour="black", 
-            angle=90) +
+             color = "black", linewidth=0.5, alpha = 0.5) +
   scale_x_continuous("standardized bin count", 
          transform = "reverse") + 
   ylab("log(MSE)") +
@@ -1181,18 +1178,15 @@ distance_scurve$group <- "1"
 distance_scurve_plot <- ggplot(distance_scurve, 
                         aes(x = group, 
                             y = distance)) + 
-  geom_quasirandom() + 
+  geom_quasirandom(
+    size = 0.5, 
+    alpha = 0.3
+  ) + 
   ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
   coord_flip() + 
   geom_hline(yintercept = benchmark_scurve,
      linetype="solid", 
-     color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_text(data = benchmark_label_df, 
-            aes(x=x, 
-                label= label, 
-                y=y), 
-            colour="black", 
-            angle=90) +
+     color = "black", linewidth=0.5, alpha = 0.5) +
   ylab(expression(d^{(2)})) +
   ggtitle("(d)") +
   theme(aspect.ratio = 0.75,
