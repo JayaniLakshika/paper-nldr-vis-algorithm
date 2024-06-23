@@ -353,7 +353,7 @@ r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.96)
 sc_xlims <- c(-0.25, 1.25)
-sc_ylims <- c(-0.4, 1.9)
+sc_ylims <- c(-0.2, 1.9)
 # sc_xlims <- c(-0.25, 1.25)
 # sc_ylims <- c(-0.25, 2)
 
@@ -725,22 +725,25 @@ df_bin_centroids1 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df1, 
   counts_df = counts_df1)
 
-hex_grid_with_counts_s_curve1 <- full_join(hex_grid1, 
-                                          df_bin_centroids1 |> select(hexID, std_counts), 
-                                          by = c("hex_poly_id" = "hexID")) 
+hex_grid_with_counts_s_curve1 <- full_join(
+  hex_grid1, 
+  df_bin_centroids1 |> select(hexID, std_counts), 
+    by = c("hex_poly_id" = "hexID")) 
 
-hex_grid_coloured_scurve1 <-  ggplot(
-  data = hex_grid_with_counts_s_curve1, 
-  aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+hex_grid_coloured_scurve1 <- ggplot() + 
   geom_point(data = umap_scurve_scaled, 
              aes(x = UMAP1, y = UMAP2), 
              alpha = 0.5,
              size = 0.5) + 
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  interior_annotation("a") #+
-  #xlim(sc_xlims_b) + ylim(sc_ylims_b)
-   
+  geom_polygon(
+    data = hex_grid_with_counts_s_curve1, 
+    aes(x = x, y = y,
+      group = hex_poly_id, 
+      fill = std_counts), color = "grey70", linewidth=0.2) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "C") +
+  interior_annotation("a") +
+  xlim(sc_xlims) + ylim(sc_ylims)
 ```
 
 ```{r}
@@ -763,19 +766,25 @@ df_bin_centroids2 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df2, 
   counts_df = counts_df2)
 
-hex_grid_with_counts_s_curve2 <- full_join(hex_grid2, 
-                                          df_bin_centroids2 |> select(hexID, std_counts), 
-                                          by = c("hex_poly_id" = "hexID")) 
+hex_grid_with_counts_s_curve2 <- full_join(
+  hex_grid2, 
+  df_bin_centroids2 |> select(hexID, std_counts), 
+  by = c("hex_poly_id" = "hexID")) 
 
-hex_grid_coloured_scurve2 <-  ggplot(
-  data = hex_grid_with_counts_s_curve2, 
-  aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+hex_grid_coloured_scurve2 <- ggplot() + 
   geom_point(data = umap_scurve_scaled, 
              aes(x = UMAP1, y = UMAP2), 
              alpha = 0.5,
              size = 0.5) + 
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  geom_polygon(
+    data = hex_grid_with_counts_s_curve2, 
+    aes(x = x, y = y, 
+        group = hex_poly_id, 
+        fill = std_counts), 
+        color = "grey70", 
+        linewidth=0.2) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "C") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b")
 
@@ -805,14 +814,17 @@ hex_grid_with_counts_s_curve3 <- full_join(hex_grid3,
                                           df_bin_centroids3 |> select(hexID, std_counts), 
                                           by = c("hex_poly_id" = "hexID")) 
 
-hex_grid_coloured_scurve3 <-  ggplot(
-  data = hex_grid_with_counts_s_curve3, 
-  aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+hex_grid_coloured_scurve3 <-  ggplot() + 
   geom_point(data = umap_scurve_scaled, 
              aes(x = UMAP1, y = UMAP2), 
              alpha = 0.5,
              size = 0.5) + 
+  geom_polygon(
+    data = hex_grid_with_counts_s_curve3, 
+    aes(x = x, y = y, 
+        group = hex_poly_id, 
+        fill = std_counts), 
+        color = "grey70", linewidth=0.2) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c")
