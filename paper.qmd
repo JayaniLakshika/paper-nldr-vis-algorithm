@@ -861,13 +861,14 @@ error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_scurve) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
 
   scurve_model <- fit_highd_model(
     training_data = training_data_scurve,
     emb_df = umap_scurve_scaled,
     bin1 = xbins,
     r2 = r2,
+    q = 0.07, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "x"
@@ -934,15 +935,19 @@ Once setting up the hexagon grid with an appropriate number of bins, some hexago
 
 ```{r}
 ## To initialize effective bins along x
-effective_bin1_scurve <- 10
+effective_bin1_scurve <- 12
 
-effective_bin2_scurve <- calc_bins_y(bin1 = effective_bin1_scurve, r2 = r2)$bin2
+effective_bin2_scurve <- calc_bins_y(
+  bin1 = effective_bin1_scurve, 
+  r2 = r2, 
+  q = 0.07)$bin2
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = effective_bin1_scurve,
   r2 = r2,
+  q = 0.07,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x"
@@ -968,7 +973,6 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
   theme(aspect.ratio = 0.75,
         axis.title.x = element_text(size = 10),
         axis.title.y = element_text(size = 10, angle = 90),
-        #axis.text.x = element_text(size = 7, angle = 90),
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 10),
         title = element_text(size = 36))
@@ -1001,6 +1005,7 @@ scurve_model <- fit_highd_model(
   emb_df = umap_scurve_scaled,
   bin1 = effective_bin1_scurve,
   r2 = r2,
+  q = 0.07, 
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x"
@@ -1078,7 +1083,32 @@ Furthermore, selecting the benchmark value for removing low-density hexagons is 
 
 <!--Using first quantile as the benchmark value-->
 ```{r}
-hex_grid_with_low_counts <- full_join(hex_grid2, 
+## hexagon binning to have regular hexagons
+hb_obj_scurve4 <- hex_binning(
+  data = umap_scurve_scaled, 
+  bin1 = 12, 
+  r2 = r2,
+  q = 0.07)
+
+## Data set with all centroids
+all_centroids_df4 <- hb_obj_scurve4$centroids
+
+## Generate all coordinates of hexagons
+hex_grid4 <- hb_obj_scurve4$hex_poly
+
+## To obtain the standardise counts within hexbins
+counts_df4 <- hb_obj_scurve4$std_cts
+df_bin_centroids4 <- extract_hexbin_centroids(
+  centroids_df = all_centroids_df4, 
+  counts_df = counts_df4) |> 
+  filter(drop_empty == FALSE)
+
+hex_grid_with_counts_s_curve4 <- full_join(
+  hex_grid4, 
+  df_bin_centroids4 |> select(hexID, std_counts), 
+  by = c("hex_poly_id" = "hexID"))
+
+hex_grid_with_low_counts <- full_join(hex_grid4, 
     df_bin_centroids_scurve, 
     by = c("hex_poly_id" = "hexID")) |>
   filter(!is.na(std_counts)) |>
@@ -1086,7 +1116,7 @@ hex_grid_with_low_counts <- full_join(hex_grid2,
   filter(type == "low")
 
 hex_grid_rm_lwd_scurve1 <-  ggplot(
-  data = hex_grid_with_counts_s_curve2, 
+  data = hex_grid_with_counts_s_curve4, 
   aes(x = x, y = y)) + 
   geom_polygon(aes(group = hex_poly_id, fill = std_counts), 
             color = "grey70", linewidth=0.2) +
@@ -1101,19 +1131,19 @@ hex_grid_rm_lwd_scurve1 <-  ggplot(
 <!--Observing neighboring bins as well-->
 ```{r}
 ## First define low density bins using first quantile
-df_bin_centroids_low <- df_bin_centroids_scurve |> 
+df_bin_centroids_low <- df_bin_centroids4 |> 
   filter(std_counts <= benchmark1)
 
 ## Check neighboring bins
-remove_id <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids_scurve, 
+remove_id <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids4, 
                                bin1 = effective_bin1_scurve, 
                                df_bin_centroids_low = df_bin_centroids_low)
 
 ## Remove the identified bins
-df_bin_centroids_scurve_removed <- df_bin_centroids_scurve |>
+df_bin_centroids_scurve_removed <- df_bin_centroids4 |>
   filter(hexID %in%remove_id)
 
-df_bin_centroids_scurve_keep  <- df_bin_centroids_scurve |>
+df_bin_centroids_scurve_keep  <- df_bin_centroids4 |>
   filter(!(hexID %in%remove_id))
 
 hex_grid_with_low_counts_neighbor <- right_join(hex_grid, 
@@ -1121,7 +1151,7 @@ hex_grid_with_low_counts_neighbor <- right_join(hex_grid,
                                              by = c("hex_poly_id" = "hexID"))
 
 hex_grid_rm_lwd_scurve2 <-  ggplot(
-  data = hex_grid_with_counts_s_curve2, 
+  data = hex_grid_with_counts_s_curve4, 
   aes(x = x, y = y)) + 
   geom_polygon(aes(group = hex_poly_id, fill = std_counts), 
             color = "grey70", linewidth=0.2) +
