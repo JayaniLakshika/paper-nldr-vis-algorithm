@@ -897,8 +897,12 @@ for (xbins in bin1_vec_scurve) {
 mse_scurve_b <- ggplot(error_scurve, 
                      aes(x = b, 
                          y = log(MSE))) + 
-  geom_point(size = 1) +
-  geom_line() + 
+  geom_point(
+    size = 0.6
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
   geom_vline(xintercept = 264, linetype="solid", 
              color = "black", linewidth=0.5, alpha = 0.5) +
   ylab("log(MSE)") +
@@ -1035,8 +1039,12 @@ benchmark_label_df <- tibble(x = 0.2, y = 0.1,
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
                      aes(x = benchmark_rm_lwd, 
                          y = log(MSE))) + 
-  geom_point(size = 1) +
-  geom_line() + 
+  geom_point(
+    size = 0.6
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
   geom_vline(xintercept = benchmark1, linetype="solid", 
              color = "black", linewidth=0.5, alpha = 0.5) +
   scale_x_continuous("standardized bin count", 
