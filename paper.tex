@@ -624,12 +624,14 @@ determine an effective number of bins to construct a reasonable model
 
 }
 
-\caption{\label{fig-bins-scurve}Hexbin plots from different number of
-bins for the UMAP applied to S-curve data: (a) \(b = 91\) (7, 13), (b)
-\(b = 190\) (10, 19), and (c) \(b = 364\) (14, 26). The hexbins are
-colored based on the density of points, with darker colors indicating
-higher density and yellow color representing lower density within each
-bin. What is the number of bins that would be effective?}
+\caption{\label{fig-bins-scurve}Hexbin density plots of UMAP layout of
+the S-curve data, using three different bin inputs: (a) \(b = 91\) (7,
+13), (b) \(b = 190\) (10, 19), and (c) \(b = 364\) (14, 26). Color
+indicates standardized counts, dark indicating high count and light
+indicates low count. At the smallest bin size the data segregates into
+two separate groups, suggesting this is too many bins. Using the MSE of
+the model fit in \(p-D\) helps decide on a useful choice of number of
+bins.}
 
 \end{figure}%
 
