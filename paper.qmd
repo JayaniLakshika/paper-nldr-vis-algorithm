@@ -723,7 +723,8 @@ hex_grid1 <- hb_obj_scurve1$hex_poly
 counts_df1 <- hb_obj_scurve1$std_cts
 df_bin_centroids1 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df1, 
-  counts_df = counts_df1)
+  counts_df = counts_df1) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve1 <- full_join(
   hex_grid1, 
@@ -731,15 +732,15 @@ hex_grid_with_counts_s_curve1 <- full_join(
     by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve1 <- ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve1, 
     aes(x = x, y = y,
       group = hex_poly_id, 
       fill = std_counts), color = "grey70", linewidth=0.2) +
+  geom_point(data = umap_scurve_scaled,
+             aes(x = UMAP1, y = UMAP2),
+             alpha = 0.3,
+             size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
   interior_annotation("a") +
@@ -750,9 +751,9 @@ hex_grid_coloured_scurve1 <- ggplot() +
 ## hexagon binning to have regular hexagons
 hb_obj_scurve2 <- hex_binning(
   data = umap_scurve_scaled, 
-  bin1 = 10, 
+  bin1 = 12, 
   r2 = r2,
-  q = 0.05)
+  q = 0.07)
 
 ## Data set with all centroids
 all_centroids_df2 <- hb_obj_scurve2$centroids
@@ -764,7 +765,8 @@ hex_grid2 <- hb_obj_scurve2$hex_poly
 counts_df2 <- hb_obj_scurve2$std_cts
 df_bin_centroids2 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df2, 
-  counts_df = counts_df2)
+  counts_df = counts_df2) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve2 <- full_join(
   hex_grid2, 
@@ -772,10 +774,6 @@ hex_grid_with_counts_s_curve2 <- full_join(
   by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve2 <- ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve2, 
     aes(x = x, y = y, 
@@ -783,6 +781,10 @@ hex_grid_coloured_scurve2 <- ggplot() +
         fill = std_counts), 
         color = "grey70", 
         linewidth=0.2) +
+  geom_point(data = umap_scurve_scaled,
+           aes(x = UMAP1, y = UMAP2),
+           alpha = 0.3,
+           size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
   xlim(sc_xlims) + ylim(sc_ylims) +
@@ -808,23 +810,24 @@ hex_grid3 <- hb_obj_scurve3$hex_poly
 counts_df3 <- hb_obj_scurve3$std_cts
 df_bin_centroids3 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df3, 
-  counts_df = counts_df3)
+  counts_df = counts_df3) |>
+  filter(drop_empty == FALSE)
 
 hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
                                           df_bin_centroids3 |> select(hexID, std_counts), 
                                           by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_scurve3 <-  ggplot() + 
-  geom_point(data = umap_scurve_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5,
-             size = 0.5) + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve3, 
     aes(x = x, y = y, 
         group = hex_poly_id, 
         fill = std_counts), 
         color = "grey70", linewidth=0.2) +
+  geom_point(data = umap_scurve_scaled,
+           aes(x = UMAP1, y = UMAP2),
+           alpha = 0.3,
+           size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c")
@@ -861,13 +864,14 @@ error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_scurve) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
 
   scurve_model <- fit_highd_model(
     training_data = training_data_scurve,
     emb_df = umap_scurve_scaled,
     bin1 = xbins,
     r2 = r2,
+    q = 0.07, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "x"
@@ -908,10 +912,10 @@ mse_scurve_b <- ggplot(error_scurve,
   xlab("b") +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10, 
+        axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 5),
+        axis.title.x = element_text(size = 5),
+        axis.title.y = element_text(size = 5, 
             angle=90),
         title = element_text(size = 72))
 ```
@@ -938,15 +942,19 @@ Once setting up the hexagon grid with an appropriate number of bins, some hexago
 
 ```{r}
 ## To initialize effective bins along x
-effective_bin1_scurve <- 10
+effective_bin1_scurve <- 12
 
-effective_bin2_scurve <- calc_bins_y(bin1 = effective_bin1_scurve, r2 = r2)$bin2
+effective_bin2_scurve <- calc_bins_y(
+  bin1 = effective_bin1_scurve, 
+  r2 = r2, 
+  q = 0.07)$bin2
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = effective_bin1_scurve,
   r2 = r2,
+  q = 0.07,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x"
@@ -964,18 +972,20 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
                             aes(x = reorder(as.factor(hexID), 
                                             -std_counts), 
                                 y = std_counts)) + 
-  geom_quasirandom() + 
-  geom_hline(yintercept = benchmark1, color = "black", linewidth=0.8, alpha = 0.5) +
+  geom_quasirandom(
+    size = 0.3,
+    alpha = 0.5
+  ) + 
+  geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
   xlab("hexagon id (re-ordered)") + 
   ylab("standardized bin count") +
   ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
-        axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10, angle = 90),
-        #axis.text.x = element_text(size = 7, angle = 90),
+        axis.title.x = element_text(size = 5),
+        axis.title.y = element_text(size = 5, angle = 90),
         axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 10),
-        title = element_text(size = 72))
+        axis.text.y = element_text(size = 5),
+        title = element_text(size = 36))
 ```
 
 ```{r}
@@ -999,19 +1009,6 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 benchmark_rm_hex_vec <- append(seq(0, 0.99, by=0.1), c(benchmark1, 0.99))
 
 error_rm_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
-
-scurve_model <- fit_highd_model(
-  training_data = training_data_scurve,
-  emb_df = umap_scurve_scaled,
-  bin1 = effective_bin1_scurve,
-  r2 = r2,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
-)
-
-df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-df_bin_scurve <- scurve_model$df_bin
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
   
@@ -1045,25 +1042,23 @@ benchmark_label_df <- tibble(x = 0.2, y = 0.1,
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
                      aes(x = benchmark_rm_lwd, 
                          y = log(MSE))) + 
-  geom_point(size = 1) +
-  geom_line() + 
+  geom_point(
+    size = 0.6
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
   geom_vline(xintercept = benchmark1, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_text(data = benchmark_label_df, 
-            aes(x=x, 
-                label= label, 
-                y=y), 
-            colour="black", 
-            angle=90) +
+             color = "black", linewidth=0.5, alpha = 0.5) +
   scale_x_continuous("standardized bin count", 
          transform = "reverse") + 
   ylab("log(MSE)") +
   ggtitle("(c)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10),
-        axis.text.y = element_text(size = 10),
-        axis.title.x = element_text(size = 10),
-        axis.title.y = element_text(size = 10, 
+        axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 5),
+        axis.title.x = element_text(size = 5),
+        axis.title.y = element_text(size = 5, 
             angle=90),
         title = element_text(size = 72))
 ```
@@ -1082,6 +1077,11 @@ Furthermore, selecting the benchmark value for removing low-density hexagons is 
 
 <!--Using first quantile as the benchmark value-->
 ```{r}
+hex_grid_with_counts_s_curve2 <- full_join(
+  hex_grid2, 
+  df_bin_centroids_scurve |> select(hexID, std_counts), 
+  by = c("hex_poly_id" = "hexID"))
+
 hex_grid_with_low_counts <- full_join(hex_grid2, 
     df_bin_centroids_scurve, 
     by = c("hex_poly_id" = "hexID")) |>
@@ -1092,7 +1092,8 @@ hex_grid_with_low_counts <- full_join(hex_grid2,
 hex_grid_rm_lwd_scurve1 <-  ggplot(
   data = hex_grid_with_counts_s_curve2, 
   aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_polygon(aes(group = hex_poly_id, fill = std_counts), 
+            color = "grey70", linewidth=0.2) +
   geom_text(data = hex_grid_with_low_counts, 
             color = "black", 
             aes(x = c_x, y = c_y, group = hex_poly_id, label = "X", size = 1)) +
@@ -1126,7 +1127,8 @@ hex_grid_with_low_counts_neighbor <- right_join(hex_grid,
 hex_grid_rm_lwd_scurve2 <-  ggplot(
   data = hex_grid_with_counts_s_curve2, 
   aes(x = x, y = y)) + 
-  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_polygon(aes(group = hex_poly_id, fill = std_counts), 
+            color = "grey70", linewidth=0.2) +
   geom_text(data = hex_grid_with_low_counts_neighbor, 
             color = "black", 
             aes(x = c_x, y = c_y, group = hex_poly_id, label = "X", size = 1)) +
@@ -1139,7 +1141,7 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 #| echo: false
 #| label: fig-lwd-scurve
 #| fig-pos: H
-#| fig-cap: "(a) Identification of low-density hexagons using a benchmark value of $0.242$, and (c) Identification of low-density hexagons considering neighboring bins."
+#| fig-cap: "Two approaches to identify low-density hexagons. Hexagon grid (a) marks hexagons with a standardized count less than $0.25$. Hexagon grid (b) marks hexagons by considering the densities of neighboring bins. Removing hexagons by also investigating the densities of neighboring bins is more reliable for preserving the structure."
 #| fig-width: 9
 #| fig-height: 6
 
@@ -1187,30 +1189,27 @@ distance_scurve$group <- "1"
 distance_scurve_plot <- ggplot(distance_scurve, 
                         aes(x = group, 
                             y = distance)) + 
-  geom_quasirandom() + 
+  geom_quasirandom(
+    size = 0.5, 
+    alpha = 0.3
+  ) + 
   ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
   coord_flip() + 
   geom_hline(yintercept = benchmark_scurve,
      linetype="solid", 
-     color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_text(data = benchmark_label_df, 
-            aes(x=x, 
-                label= label, 
-                y=y), 
-            colour="black", 
-            angle=90) +
+     color = "black", linewidth=0.5, alpha = 0.5) +
   ylab(expression(d^{(2)})) +
   ggtitle("(d)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10),
-        axis.title.x = element_text(size = 10),
-        title = element_text(size = 72))
+        axis.text.x = element_text(size = 5),
+        axis.title.x = element_text(size = 5),
+        title = element_text(size = 36))
 ```
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best number of bins, low density bin and large edge removal. Both (a) and (c) show MSE, against number of bins and standardised count. A good benchmark value for these parameters is when the MSE drops and then flattens out."
-# Distribution of $2\\text{-}D$ Euclidean distances between bin centroids of the triangular mesh generated with S-curve UMAP data.
+#| fig-cap: "Various plots to help assess best number of bins, low density bin and large edge removal. Both (a) and (c) show MSE, against number of bins and standardised count. A good benchmark value for these parameters is when the MSE drops and then flattens out. Plot (b) shows the distribution of stadardised counts of hexagons. Plot (c) shows the distribution of $2\\text{-}D$ Euclidean distances between bin centroids, with a good benchmark value for removing large edges would being the distance that shows the first large increase."
+
 #| label: fig-dist-scurve
 #| out-width: 100%
 #| fig-width: 12
