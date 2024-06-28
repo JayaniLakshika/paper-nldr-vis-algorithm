@@ -695,7 +695,7 @@ Observations are associated with their bin center, $C_{h}^{(p)}$, which are also
 
 The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the mean squared error (MSE) as:
 
-$$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$$ 
+$$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$${#eq-equation1} 
 
 where $n$ is XXX, $b$ is XXX, $n_h$ is XXX, $p$ is XXX, $\mathbfit{x}_{hij}$ is XXX. MAKE THIS A NUMBERED EQUATION, SO WE CAN REFER TO IT LATER
 
@@ -869,7 +869,7 @@ training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 <!--To generate errors for different total number of bins-->
 ```{r}
 ## To initialize number of bins along the x-axis
-bin1_vec_scurve <- 2:19 #sqrt(NROW(training_data_scurve)/2)
+bin1_vec_scurve <- 4:19 #sqrt(NROW(training_data_scurve)/2)
 
 error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
