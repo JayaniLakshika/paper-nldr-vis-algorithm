@@ -458,6 +458,11 @@ trimesh_removed_scurve <- vis_rmlg_mesh(
   interior_annotation("d", sc_ltr_pos) 
 ```
 
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by simulating $n=750$ observations from $\theta \sim U(-3\pi/2, 3\pi/2)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the S), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the geometric structure (true model) that we hope to capture.
+
+XXX SHOW THE S-CURVE DATA WITH THE TRUE MODEL OVERLAID HERE, BEFORE THE NLDR VIEWS.
+
+
 ```{r}
 #| label: fig-NLDR-scurve
 #| echo: false
@@ -471,8 +476,6 @@ nldr_scurve + hex_grid_scurve +
   trimesh_removed_scurve +
   plot_layout(ncol = 4)
 ```
-
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by simulating $n=750$ observations from $\theta \sim U(-3\pi/2, 3\pi/2)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the S), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the geometric structure (true model) that we hope to capture.
 
 #### Scaling the data
 
@@ -675,24 +678,32 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 ![](figures/scurve/sc_3.png)
 
-Projections of the $7\text{-}D$ S-curve data (purple points) overlaid with the model (black grid with green points indicating bin means) constructed from the UMAP layout, with 60 non-empty bins (using the **langevitour** software). The model closely fits the shape of this data. A video of the full tour is available at (<https://youtu.be/G1m4q9k--v4>).
+XXX Model in 2D, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/G1m4q9k--v4>). NEED TO CHANGE FIRST PLOT TO BE 2D WIREFRAME.
 :::
 
 
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
- 
-#### Fitted values
 
-The fitted values of the points in $H_h$ refers to the \pD{} mapping $C_{h}^{(p)}$ of the corresponding \kD{} model point $C_{h}^{(2)}$. 
+The model here is similar to a confirmatory factor analysis model (REF), $\widehat{T}(X_1, X_2, X_3) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are $7\text{-}D$. 
 
-#### Residuals and error
+<!--#### Fitted values-->
 
-To assess how well our method captures and represents the underlying structure of the \pD{} data, residuals are important. Residuals are computed by taking the squared \pD{} Euclidean distance, $\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2$. Additionally, Mean Squared Error (MSE), $\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2$, is computed based on residuals. 
+Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. These can also be denoted as $\widehat{X}$. <!--The fitted values of the points in $H_h$ refers to the \pD{} mapping $C_{h}^{(p)}$ of the corresponding \kD{} model point $C_{h}^{(2)}$.-->
 
-### Prediction
+<!--#### Error-->
 
-The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.   
+The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the mean squared error (MSE) as:
+
+$$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$$ 
+
+where $n$ is XXX, $b$ is XXX, $n_h$ is XXX, $p$ is XXX, $\mathbfit{x}_{hij}$ is XXX. MAKE THIS A NUMBERED EQUATION, SO WE CAN REFER TO IT LATER
+
+### Prediction into \gD{}
+
+A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin center in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
+
+<!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
 
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
@@ -1137,6 +1148,7 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
   interior_annotation("b")
 ```
 
+<!--
 ```{r}
 #| echo: false
 #| label: fig-lwd-scurve
@@ -1149,6 +1161,7 @@ hex_grid_rm_lwd_scurve1 + hex_grid_rm_lwd_scurve2 +
   plot_layout(guides='collect', ncol = 2) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
+-->
 
 #### Removing long edges
 
@@ -1263,12 +1276,21 @@ trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
-## Deciding on the most suitable fit
+## Best fit
+
+Deciding on the best fit relies on several elements: 
+
+- the choice of NLDR method, and the parameters used to create it, and
+- model fit parameters: bin size, low density bin removal, long edge removal.
+
+Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.  
 
 The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best).
 
 In contrast, a poor model for the S-curve with PHATE was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model squeezed to the middle of the geometry of the S-curve (@fig-scurve-sc-bad).
 
+XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR. 
+SHOW THE SEVERAL SUB-OPTIMAL FITS.
 
 <!--langevitour with best pD model for S-curve--> 
 <!-- ::: {#fig-scurve-sc-best layout-ncol="3" fig-pos="H"} -->
@@ -1307,7 +1329,9 @@ In contrast, a poor model for the S-curve with PHATE was created using only $190
 
 <!-- add MSE values for the screenshot figure names-->
 
-## Illustration on simulated data
+## A curious difference between t-SNE and UMAP revealer
+
+XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY INTERESTING EXAMPLE WHEN THE FILLED OUT VS FLAT SHAPES ARE DISCUSSED.
 
 In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation.
 

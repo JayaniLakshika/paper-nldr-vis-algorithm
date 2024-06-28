@@ -426,6 +426,18 @@ reduce some noisiness in the resulting surface shown in \pD{}. The steps
 in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
 documented below.
 
+To illustrate the method, we use \(7\text{-}D\) simulated data, which we
+call the ``S-curve''. It is constructed by simulating \(n=750\)
+observations from \(\theta \sim U(-3\pi/2, 3\pi/2)\),
+\(X_1 = \sin(\theta)\), \(X_2 \sim U(0, 2)\) (adding thickness to the
+S), \(X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)\). The
+remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error, with
+small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
+geometric structure (true model) that we hope to capture.
+
+XXX SHOW THE S-CURVE DATA WITH THE TRUE MODEL OVERLAID HERE, BEFORE THE
+NLDR VIEWS.
+
 \begin{figure}
 
 \centering{
@@ -439,15 +451,6 @@ the UMAP layout (\(k=2\)): (a) data, (b) hexagon bins, (c) bin
 centroids, and (d) triangulated centroids. The S-curve data is shown.}
 
 \end{figure}%
-
-To illustrate the method, we use \(7\text{-}D\) simulated data, which we
-call the ``S-curve''. It is constructed by simulating \(n=750\)
-observations from \(\theta \sim U(-3\pi/2, 3\pi/2)\),
-\(X_1 = \sin(\theta)\), \(X_2 \sim U(0, 2)\) (adding thickness to the
-S), \(X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)\). The
-remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error, with
-small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
-geometric structure (true model) that we hope to capture.
 
 \subsubsection{Scaling the data}\label{scaling-the-data}
 
@@ -556,42 +559,48 @@ segments in \pD{} by connecting the \pD{} means of the corresponding
 \begin{minipage}{0.25\linewidth}
 \includegraphics{figures/scurve/sc_3.png}\end{minipage}%
 
-\caption{\label{fig-scurve-sc}Projections of the \(7\text{-}D\) S-curve
-data (purple points) overlaid with the model (black grid with green
-points indicating bin means) constructed from the UMAP layout, with 60
-non-empty bins (using the \textbf{langevitour} software). The model
-closely fits the shape of this data. A video of the full tour is
-available at (\url{https://youtu.be/G1m4q9k--v4}).}
+\caption{\label{fig-scurve-sc}XXX Model in 2D, on the UMAP layout, and
+three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data. The model closely fits the shape, but it has breaks which
+means that it does not adequately capture the surface. (The
+\textbf{langevitour} software is used to view the data with a tour, and
+the full video is available at (\url{https://youtu.be/G1m4q9k--v4}).
+NEED TO CHANGE FIRST PLOT TO BE 2D WIREFRAME.}
 
 \end{figure}%
 
 \subsection{Measuring the fit}\label{sec-summary}
 
-\subsubsection{Fitted values}\label{fitted-values}
+The model here is similar to a confirmatory factor analysis model (REF),
+\(\widehat{T}(X_1, X_2, X_3) + \Epsilon\). The difference between the
+fitted model and observed values would be considered to be residuals,
+and for this problem are \(7\text{-}D\).
 
-The fitted values of the points in \(H_h\) refers to the \pD{} mapping
-\(C_{h}^{(p)}\) of the corresponding \kD{} model point \(C_{h}^{(2)}\).
+Observations are associated with their bin center, \(C_{h}^{(p)}\),
+which are also considered to be the \emph{fitted values}. These can also
+be denoted as \(\widehat{X}\).
 
-\subsubsection{Residuals and error}\label{residuals-and-error}
+The error is computed by taking the squared \pD{} Euclidean distance,
+corresponding to computing the mean squared error (MSE) as:
 
-To assess how well our method captures and represents the underlying
-structure of the \pD{} data, residuals are important. Residuals are
-computed by taking the squared \pD{} Euclidean distance,
-\(\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2\).
-Additionally, Mean Squared Error (MSE),
-\(\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{P} (x_{hij} - C^{(p)}_{hj})^2\),
-is computed based on residuals.
+\[\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2\]
 
-\subsection{Prediction}\label{prediction}
+where \(n\) is XXX, \(b\) is XXX, \(n_h\) is XXX, \(p\) is XXX,
+\(\mathbfit{x}_{hij}\) is XXX. MAKE THIS A NUMBERED EQUATION, SO WE CAN
+REFER TO IT LATER
 
-The prediction approach involves finding the nearest \kD{} model point
-for a new \pD{} point. We define the function
-\(z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}\), where
-\(z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{P}(x_{iv} - C^{(p)}_{jv})^2}\)
-maps each \pD{} point to its nearest \pD{} mapping of the model.
-Therefore, the new observation \(i\) falls in the hexagon,
+\subsection{\texorpdfstring{Prediction into
+\gD{}}{Prediction into }}\label{prediction-into}
+
+A new benefit of this fitted model is that it allows us to now predict a
+new observation's value in the NLDR, for any method. The steps are to
+determine the closest bin center in \pD{}, \(C^{(p)}_{h}\) and predict
+it to be the centroid of this bin in \gD{}, \(C^{(2)}_{h}\). This can be
+written as, let
+\(z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}\),
+then the new observation \(i\) falls in the hexagon,
 \(H_h = \{i| z(i) = h\}\) and the corresponding \kD{} bin centroids,
-\(C_{h}^{(2)} = (c_{h1}, c_{h2})\) be the predicted values.
+\(C_{h}^{(2)} = (c_{h1}, c_{h2})\).
 
 \subsection{Tuning}\label{tuning}
 
@@ -654,7 +663,7 @@ considerable number of data points. This involves calculating the number
 of points within each hexagon. Then, the standard count is computed by
 dividing the number of points within each hexagon by the maximum number
 of points in the grid. Next, bins with a standard count less than a
-benchmark value are removed (see Figure~\ref{fig-lwd-scurve} (a)). There
+benchmark value are removed (see \textbf{?@fig-lwd-scurve} (a)). There
 is no specific rule for selecting a benchmark value. However, the
 following steps can help determine a suitable value for removing
 low-density hexagons:
@@ -686,26 +695,9 @@ formation of long edges and an uneven \gD{} model. Hence, rather than
 solely relying on the benchmark value to identify hexagons for removal,
 it's essential to consider the standard number of points in the
 neighboring hexagons of the identified low-density bins (see
-Figure~\ref{fig-lwd-scurve} (b)). If neighboring bins also show low
+\textbf{?@fig-lwd-scurve} (b)). If neighboring bins also show low
 counts, only those bins will be removed. The remaining bins are used to
 construct the \gD{} model.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-lwd-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-lwd-scurve}Two approaches to identify low-density
-hexagons. Hexagon grid (a) marks hexagons with a standardized count less
-than \(0.25\). Hexagon grid (b) marks hexagons by considering the
-densities of neighboring bins. Removing hexagons by also investigating
-the densities of neighboring bins is more reliable for preserving the
-structure.}
-
-\end{figure}%
 
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
@@ -763,8 +755,25 @@ different benchmark values to remove long edges: (a) benchmark =
 
 \end{figure}%
 
-\section{Deciding on the most suitable
-fit}\label{deciding-on-the-most-suitable-fit}
+\section{Best fit}\label{best-fit}
+
+Deciding on the best fit relies on several elements:
+
+\begin{itemize}
+\tightlist
+\item
+  the choice of NLDR method, and the parameters used to create it, and
+\item
+  model fit parameters: bin size, low density bin removal, long edge
+  removal.
+\end{itemize}
+
+Comparing the MSE to obtain the best fit is suitable if one starts from
+the same NLDR representation. In theory, because the MSE is computed on
+\pD{} measuring the fit between model and data it might still be useful
+to compare different NLDR representations. A good NLDR representation
+should produce a good fit, producing a low MSE if the model fits the
+data well. However, it technically might be quite variable.
 
 The appropriate model for the S-curve using UMAP (n\_neighbors: \(15\))
 was created with \(420\) bins. It was determined to be the best model
@@ -779,8 +788,14 @@ This model is inadequate as it has a higher MSE compared to the
 appropriate model. Visually, the model squeezed to the middle of the
 geometry of the S-curve (\textbf{?@fig-scurve-sc-bad}).
 
-\section{Illustration on simulated
-data}\label{illustration-on-simulated-data}
+XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR. SHOW THE SEVERAL
+SUB-OPTIMAL FITS.
+
+\section{A curious difference between t-SNE and UMAP
+revealer}\label{a-curious-difference-between-t-sne-and-umap-revealer}
+
+XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY
+INTERESTING EXAMPLE WHEN THE FILLED OUT VS FLAT SHAPES ARE DISCUSSED.
 
 In this section, the effectiveness of the algorithm is described using a
 simulated dataset. The dataset consists of five spherical Gaussian
