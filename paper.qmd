@@ -460,7 +460,20 @@ trimesh_removed_scurve <- vis_rmlg_mesh(
 
 To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "S-curve". It is constructed by simulating $n=750$ observations from $\theta \sim U(-3\pi/2, 3\pi/2)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the S), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the geometric structure (true model) that we hope to capture.
 
-XXX SHOW THE S-CURVE DATA WITH THE TRUE MODEL OVERLAID HERE, BEFORE THE NLDR VIEWS.
+<!-- XXX SHOW THE S-CURVE DATA WITH THE TRUE MODEL OVERLAID HERE, BEFORE THE NLDR VIEWS. -->
+
+<!--langevitour with true model for S-curve-->
+::: {#fig-scurve-true-sc layout-ncol="3" fig-pos="H"}
+
+![](figures/scurve/sc_true_1.png)
+
+![](figures/scurve/sc_true_2.png)
+
+![](figures/scurve/sc_true_3.png)
+
+Three views of the true model in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/bcQg4XcRjhc>). 
+:::
+
 
 
 ```{r}
@@ -704,6 +717,47 @@ where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the
 A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin center in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
 
 <!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
+
+<!--To generate prediction for true-model of S-curve-->
+```{r}
+true_model_df <- read_rds("data/s_curve/true_model.rds")
+true_model_df <- true_model_df |>
+  mutate(ID = row_number())
+
+training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+
+## To initialize effective bins along x
+effective_bin1_scurve <- 12
+
+scurve_model <- fit_highd_model(
+  training_data = training_data_scurve,
+  emb_df = umap_scurve_scaled,
+  bin1 = effective_bin1_scurve,
+  r2 = r2,
+  q = 0.07,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "x"
+)
+
+df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+df_bin_scurve <- scurve_model$df_bin
+
+true_pred_df <- predict_emb(
+  test_data = true_model_df, 
+  df_bin_centroids = df_bin_centroids_scurve, 
+  df_bin = df_bin_scurve, 
+  type_NLDR = "UMAP"
+  )
+
+true_pred_df |>
+    ggplot(aes(x = pred_UMAP_1,
+               y = pred_UMAP_2)) +
+    geom_point(
+      alpha=0.5,
+      color = "#33a02c"
+      )
+```
 
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->

@@ -53,6 +53,12 @@ benchmark_scurve <- find_lg_benchmark(
   distance_edges = distance_scurve,
   distance_col = "distance")
 
+vis_rmlg_mesh(
+  distance_edges = distance_scurve,
+  benchmark_value = benchmark_scurve,
+  tr_coord_df = tr_from_to_df_scurve,
+  distance_col = "distance")
+
 ## Hexagonal binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled,

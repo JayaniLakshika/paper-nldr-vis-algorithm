@@ -394,8 +394,8 @@ df <- dplyr::bind_rows(true_model, training_data)
 
 langevitour(df |> dplyr::select(-type), lineFrom = append(point_connect_df$from, point_connect_df_dir_2$from),
             lineTo = append(point_connect_df$to, point_connect_df_dir_2$to),
-            group = df$type, pointSize = 3, levelColors = c("#6a3d9a", "#d95f02"),
-            lineColors = rep("#e41a1c", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
+            group = df$type, pointSize = append(rep(2, NROW(true_model)), rep(0.8, NROW(training_data))), levelColors = c("#000000", "#969696"),
+            lineColors = rep("#969696", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
 
 
 ######################with high-D model
