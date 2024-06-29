@@ -288,7 +288,7 @@ It happens because these methods and parameter choices provide different lenses 
 The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables which are linear combinations of the original variables. Tours, defined by @lee2021, broaden the scope by providing movies of linear projections, that provide views the data from all directions. @lee2021 provides an review of the main developments in tours. There are many tour algorithms implemented, with many available in the R package `tourr` [@wickham2011], and versions enabling better interactivity in `langevitour` [@harisson2024] and `detourr` [@hart2022]. Linear projections are a safe way to view high-dimensional data, because they do not warp the space, so they are more faithful representations of the structure. 
 However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from \pD{}   suffers from piling [@laa2022], where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data. 
 
-The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what @wickham2015 describes as *model-in-the-data-space*. The fitted model should be overlaid on the data, to examine the fit relative the spread of the observations. While this is straightforward, and commonly done when data is 2D, it is also possible in \pD{}, for many models, when a tour is used. 
+The solution is to use the tour to examine how the NLDR is warping the space. This approach follows what @wickham2015 describes as *model-in-the-data-space*. The fitted model should be overlaid on the data, to examine the fit relative the spread of the observations. While this is straightforward, and commonly done when data is \gD{}, it is also possible in \pD{}, for many models, when a tour is used. 
 
 @wickham2015 provides several examples of models overlaid on the data in \pD{}. In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by $(p-1)\text{-}D$ ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the \kD{} plane of the reduced dimension using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in \pD{}.
 
@@ -678,7 +678,7 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 ![](figures/scurve/sc_3.png)
 
-XXX Model in 2D, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/G1m4q9k--v4>). NEED TO CHANGE FIRST PLOT TO BE 2D WIREFRAME.
+XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/G1m4q9k--v4>). NEED TO CHANGE FIRST PLOT TO BE 2D WIREFRAME.
 :::
 
 
@@ -697,7 +697,7 @@ The error is computed by taking the squared \pD{} Euclidean distance, correspond
 
 $$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$${#eq-equation1} 
 
-where $n$ is XXX, $b$ is XXX, $n_h$ is XXX, $p$ is XXX, $\mathbfit{x}_{hij}$ is XXX. MAKE THIS A NUMBERED EQUATION, SO WE CAN REFER TO IT LATER
+where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. 
 
 ### Prediction into \gD{}
 
@@ -1335,7 +1335,7 @@ XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY INTERESTING EX
 
 In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation.
 
-In the 2D layouts generated by various NLDR techniques, as shown in @fig-NLDR-variety-gau, five well-separated clusters are shown. In tSNE (see @fig-NLDR-variety-gau (a)), these clusters appear closely. UMAP arranges all clusters in a parallel manner, with three aligned in one line and the other two in a separate line (see @fig-NLDR-variety-gau (b)). In contrast, PHATE shows two closely positioned clusters and three more distant ones (see @fig-NLDR-variety-gau (c)). In TriMAP, two clusters are close, though not as tightly as PHATE, while the other three are well-separated (see @fig-NLDR-variety-gau (d)). Finally, PaCMAP shows one central cluster and the remaining four spread out in different directions (see @fig-NLDR-variety-gau (e)). 
+In the \gD{} layouts generated by various NLDR techniques, as shown in @fig-NLDR-variety-gau, five well-separated clusters are shown. In tSNE (see @fig-NLDR-variety-gau (a)), these clusters appear closely. UMAP arranges all clusters in a parallel manner, with three aligned in one line and the other two in a separate line (see @fig-NLDR-variety-gau (b)). In contrast, PHATE shows two closely positioned clusters and three more distant ones (see @fig-NLDR-variety-gau (c)). In TriMAP, two clusters are close, though not as tightly as PHATE, while the other three are well-separated (see @fig-NLDR-variety-gau (d)). Finally, PaCMAP shows one central cluster and the remaining four spread out in different directions (see @fig-NLDR-variety-gau (e)). 
 
 <!-- five Gaussian clusters with different NLDR techniques-->
 ```{r}
