@@ -27,7 +27,7 @@ reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_T
 
 source("nldr_code.R", local = TRUE)
 
-data <- read_csv("data/s_curve.csv")
+data <- read_rds("data/s_curve.rds")
 
 data <- data |>
   mutate(ID = row_number())
