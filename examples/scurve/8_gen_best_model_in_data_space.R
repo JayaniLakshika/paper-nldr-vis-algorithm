@@ -57,7 +57,9 @@ vis_rmlg_mesh(
   distance_edges = distance_scurve,
   benchmark_value = benchmark_scurve,
   tr_coord_df = tr_from_to_df_scurve,
-  distance_col = "distance")
+  distance_col = "distance") +
+  geom_point(data = umap_scurve_scaled,
+             aes(x = UMAP1, y = UMAP2), alpha = 0.2)
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
@@ -94,7 +96,7 @@ distance_df_small_edges <- distance_scurve |>
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges$from,
                          lineTo = distance_df_small_edges$to,
-                         group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(0.8, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
 
 bin2 <- calc_bins_y(bin1 = num_bins_x_scurve, r2 = r2, q = 0.07)$bin2
