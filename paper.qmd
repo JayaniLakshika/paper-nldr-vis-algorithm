@@ -1308,7 +1308,7 @@ Deciding on the best fit relies on several elements:
 
 Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
 
-@fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`).
+@fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed. 
 
 <!--langevitour with pD model for S-curve-->
 ::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"}
@@ -1320,7 +1320,7 @@ Comparing the MSE to obtain the best fit is suitable if one starts from the same
 
 ![](figures/scurve/sc_trimap_best_3.png)
 
-Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, and it adequately captures the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/zEz2MUCtADM>). 
+Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/zEz2MUCtADM>). 
 :::
 
 
