@@ -806,21 +806,34 @@ to compare different NLDR representations. A good NLDR representation
 should produce a good fit, producing a low MSE if the model fits the
 data well. However, it technically might be quite variable.
 
-The appropriate model for the S-curve using UMAP (n\_neighbors: \(15\))
-was created with \(420\) bins. It was determined to be the best model
-after removing edges with a length greater than \(0.134\). The decision
-was made considering that the model accurately captures the geometry of
-the S-curve. But better in some places only
-(\textbf{?@fig-scurve\_sc\_best}).
+Figure~\ref{fig-scurve-sc-best} shows one of the best fits for S-curve
+data. TriMAP with \(15\) nearest neighbors for forming the nearest
+neighbor triplet (\texttt{n\_inliers}), \(3\) outliers for forming the
+nearest neighbor triplets (\texttt{n\_outliers}), \(3\) random triplets
+per point (\texttt{n\_random}).
 
-In contrast, a poor model for the S-curve with PHATE was created using
-only \(190\) bins and removing edges with a length greater than \(0.3\).
-This model is inadequate as it has a higher MSE compared to the
-appropriate model. Visually, the model squeezed to the middle of the
-geometry of the S-curve (\textbf{?@fig-scurve-sc-bad}).
+\begin{figure}[H]
 
-XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR. SHOW THE SEVERAL
-SUB-OPTIMAL FITS.
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_best_trimap_trimesh.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_trimap_best_1.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_trimap_best_2.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_trimap_best_3.png}\end{minipage}%
+
+\caption{\label{fig-scurve-sc-best}Model in \gD{}, on the TriMAP layout,
+and three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data. The model closely fits the shape, and it adequately
+captures the surface. (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
+(\url{https://youtu.be/zEz2MUCtADM}).}
+
+\end{figure}%
 
 \section{A curious difference between t-SNE, UMAP and PaCMAP
 revealer}\label{a-curious-difference-between-t-sne-umap-and-pacmap-revealer}

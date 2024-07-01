@@ -1306,14 +1306,30 @@ Deciding on the best fit relies on several elements:
 - the choice of NLDR method, and the parameters used to create it, and
 - model fit parameters: bin size, low density bin removal, long edge removal.
 
-Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.  
+Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
 
-The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best).
+@fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`).
 
-In contrast, a poor model for the S-curve with PHATE was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model squeezed to the middle of the geometry of the S-curve (@fig-scurve-sc-bad).
+<!--langevitour with pD model for S-curve-->
+::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"}
+![](figures/scurve/sc_best_trimap_trimesh.png)
 
-XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR. 
-SHOW THE SEVERAL SUB-OPTIMAL FITS.
+![](figures/scurve/sc_trimap_best_1.png)
+
+![](figures/scurve/sc_trimap_best_2.png)
+
+![](figures/scurve/sc_trimap_best_3.png)
+
+Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, and it adequately captures the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/zEz2MUCtADM>). 
+:::
+
+
+<!-- The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best). -->
+
+<!-- In contrast, a poor model for the S-curve with PHATE was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model squeezed to the middle of the geometry of the S-curve (@fig-scurve-sc-bad). -->
+
+<!-- XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR.  -->
+<!-- SHOW THE SEVERAL SUB-OPTIMAL FITS. -->
 
 <!--langevitour with best pD model for S-curve--> 
 <!-- ::: {#fig-scurve-sc-best layout-ncol="3" fig-pos="H"} -->
