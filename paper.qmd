@@ -465,11 +465,11 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 <!--langevitour with true model for S-curve-->
 ::: {#fig-scurve-true-sc layout-ncol="3" fig-pos="H"}
 
-![](figures/scurve/sc_true_1.png)
+![](figures/scurve/sc_true_1.png){width="150" fig-align="center"}
 
-![](figures/scurve/sc_true_2.png)
+![](figures/scurve/sc_true_2.png){width="150" fig-align="center"}
 
-![](figures/scurve/sc_true_3.png)
+![](figures/scurve/sc_true_3.png){width="150" fig-align="center"}
 
 Three views of the true model in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/tYATMiSlCXQ>). 
 :::
@@ -746,8 +746,7 @@ The number of hexagon bins in the hexagon grid has a considerable impact on the 
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 7, 
-  r2 = r2,
-  q = 0.05)
+  r2 = r2)
 
 ## Data set with all centroids
 all_centroids_df1 <- hb_obj_scurve1$centroids
@@ -874,9 +873,9 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| echo: false
 #| label: fig-bins-scurve
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91$ (7, 13), (b) $b = 190$ (10, 19), and (c) $b = 364$ (14, 26). Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 70$ (7, 10), (b) $b = 240$ (12, 20), and (c) $b = 322$ (14, 23). Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
 #| fig-width: 6
-#| fig-height: 3
+#| fig-height: 2.5
 
 hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve3 +
   plot_layout(guides='collect', ncol = 3) &
