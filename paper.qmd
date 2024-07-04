@@ -510,9 +510,11 @@ d_rect <- tibble(x1min = 0,
                  x1max = 1,
                  x2min = 0,
                  x2max = r2)
-c_start <- tibble(s1 = 0.03, s2 = 0.05)
-a1 <- tibble(x = all_centroids_df$c_x[21],
-             xend = all_centroids_df$c_x[22],
+#c_start <- tibble(s1 = 0.03, s2 = 0.05)
+c_start <- tibble(s1 = 0.03, s2 = -0.05)
+
+a1 <- tibble(x = all_centroids_df$c_x[4],
+             xend = all_centroids_df$c_x[5],
              y = all_centroids_df$c_y[21],
              yend = all_centroids_df$c_y[21],
              label = expression(a[1]))
@@ -618,7 +620,7 @@ hex_param_vis <- ggplot() +
 #| fig-cap: "The components of the hexagon grid illustrating notation."
 #| out-height: 30%
 #| fig-width: 2.5
-#| fig-height: 3.75
+#| fig-height: 3.3
 #| fig-pos: H
  
 hex_param_vis
