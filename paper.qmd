@@ -122,6 +122,7 @@ library(Rtsne)
 library(uwot)
 library(phateR)
 library(patchwork)
+library(png)
 library(langevitour)
 library(colorspace)
 library(kableExtra)
@@ -1776,24 +1777,37 @@ mnist_scaled_obj <- gen_scaled_data(
   data = pacmap_minst)
 pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr 
 
-position_df <- pacmap_minst_scaled |> 
-  filter(ID %in% c(6475, 3311, 6489, 2347, 387, 
-                          5239, 728, 517, 6369, 3055, 6345, 1761)) |>
-  mutate(position = c(5, 9, 7, 8, 4, 11, 2, 6, 12, 10, 1, 3))
-
 pacmap_plot_mnist <- pacmap_minst_scaled |> 
   ggplot(aes(x = PaCMAP1, 
              y = PaCMAP2)) + 
-  geom_point(alpha=0.1) #+ 
-  # geom_text(data = position_df, 
-  #           aes(x = PaCMAP1, y = PaCMAP2, label = position), 
-  #           colour = "red", 
-  #           size = 5)  
+  geom_point(alpha=0.1) 
+
+# read the png file from device 
+left_top_img <- readPNG("figures/mnist/mnist_digit1_img_lt.png", native = TRUE)
+center_img <- readPNG("figures/mnist/mnist_digit1_img_c.png", native = TRUE)
+right_bottom_img <- readPNG("figures/mnist/mnist_digit1_img_rb.png", native = TRUE)
+
+pacmap_plot_mnist <- pacmap_plot_mnist +
+    inset_element(p = left_top_img, 
+                  left = 0.8, 
+                  bottom = 0.85, 
+                  right = 0, 
+                  top = 0.95) +
+    inset_element(p = center_img, 
+                  left = 1.2, 
+                  bottom = 0.6, 
+                  right = 0, 
+                  top = 0.7) +
+    inset_element(p = right_bottom_img, 
+                  left = 1.7, 
+                  bottom = 0.48, 
+                  right = 0, 
+                  top = 0.58)
 ```
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. Is this the best representation of the digit 1? The parameter setting is n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0."
+#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset with a specific parameter settings. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right. Is this the best representation of the digit 1?"
 #| label: fig-pacmap-author
 #| fig-pos: H
 #| out-height: 22%
