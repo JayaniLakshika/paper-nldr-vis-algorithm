@@ -1420,7 +1420,7 @@ The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\
 - Illustrate how to use our method to get a better representation
 -->
 
-In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. Analysts often turn to NLDR techniques to verify and identify these clusters and explore developmental trajectories. To illustrate the importance of NLDR techniques and parameter selection in identifying clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset [@chen2023] is used. In a study by @chen2023, this dataset was used to demonstrate how UMAP represents clusters (see @fig-umap-author). As shown in @fig-umap-author, there are three distant and well-separated clusters. 
+In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR is commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). @fig-umap-author is a reproduction of the published plot. It shows three well-separated clusters. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -1442,7 +1442,7 @@ umap_pbmc <- umap_pbmc_scaled |>
 
 <!-- UMAP parameters suggested by the author (n_neighbors = 30, min_dist = 0.3)-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. Is this a best representation of the original data? The parameter setting is n_neighbors = 30, min_dist = 0.3."
+#| fig-cap: "Reproduction of plot published in Chen et al. (2023) showing a $2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. The parameter settings, beyond the defaults, are n_neighbors = 30 and min_dist = 0.3. The question is whether this is an accurate representation of structure in the high-dimensional data."
 #| label: fig-umap-author
 #| out-height: 30%
 #| fig-pos: H

@@ -943,14 +943,11 @@ expression}\label{single-cell-gene-expression}
 
 In the field of single-cell studies, a common analytical task involves
 clustering to identify groups of cells with similar expression profiles.
-Analysts often turn to NLDR techniques to verify and identify these
-clusters and explore developmental trajectories. To illustrate the
-importance of NLDR techniques and parameter selection in identifying
-clusters, Human Peripheral Blood Mononclear Cells (PBMC3k) dataset
-\citep{chen2023} is used. In a study by \citet{chen2023}, this dataset
-was used to demonstrate how UMAP represents clusters (see
-Figure~\ref{fig-umap-author}). As shown in Figure~\ref{fig-umap-author},
-there are three distant and well-separated clusters.
+NLDR is commonly used to display clusters, and help to verify the
+results. For example, \citet{chen2023} illustrates the use of UMAP to
+identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k).
+Figure~\ref{fig-umap-author} is a reproduction of the published plot. It
+shows three well-separated clusters.
 
 \begin{figure}[H]
 
@@ -960,9 +957,11 @@ there are three distant and well-separated clusters.
 
 }
 
-\caption{\label{fig-umap-author}\(2\text{-}D\) layout from UMAP applied
-for the PBMC3k dataset. Is this a best representation of the original
-data? The parameter setting is n\_neighbors = 30, min\_dist = 0.3.}
+\caption{\label{fig-umap-author}Reproduction of plot published in Chen
+et al.~(2023) showing a \(2\text{-}D\) layout from UMAP applied for the
+PBMC3k dataset. The parameter settings, beyond the defaults, are
+n\_neighbors = 30 and min\_dist = 0.3. The question is whether this is
+an accurate representation of structure in the high-dimensional data.}
 
 \end{figure}%
 
