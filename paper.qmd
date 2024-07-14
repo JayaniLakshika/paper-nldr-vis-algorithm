@@ -103,6 +103,7 @@ knitr::opts_chunk$set(
 #| label: load-libraries
 #| warning: false
 #| echo: false
+# remotes::install_github("JayaniLakshika/quollr")
 library(quollr)
 library(tibble)
 library(dplyr)
@@ -491,15 +492,17 @@ nldr_scurve + hex_grid_scurve +
   plot_layout(ncol = 4)
 ```
 
-#### Scaling the data
+### Algorithm to represent the model in 2D  
 
-Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. When the aspect ratio of the NLDR $(r_1, r_2, ..., r_k)$ is meaningful, the data can be scaled to take this into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}$ (@fig-NLDR-scurve). <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
+#### Scale the data
+
+Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = \frac{r_2}{r_1}$ (@fig-NLDR-scurve). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1$. <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
 
 #### Computing hexagon grid configuration
 
-The \gD{} hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, giving total number of bins as $b = b_1 \times b_2$, and a unique hexagon id, $h = 1, \dots, b$. Each hexagon, $H_h$ is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$.  (Note that, we detail the algorithm for constructing the grid and binning the data because we found that there was no readily available implementation that could produce what was needed for this project.)
+The \gD{} hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, giving total number of bins as $b = b_1 \times b_2$, and a unique hexagon id, $h = 1, \dots, b$. Each hexagon, $H_h$ is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$.  (Note that, we explain the algorithm for constructing the grid and binning the data here because, surprisingly, there is no readily available implementation that could produce everything needed for this project.)
 
-To make the grid, a buffer parameter ($q$) is set as a proportion of the plot space. By default this is 0.1. A value should be chosen to provide at buffer of a full hexagon width ($a_1$) and height ($a_2$) for the grid to extend beyond the data. The lower left position where the grid starts is defined as $(s_1, s_2)$, corresponding to the centroid of the lowest left hexagon, which should be below the minimum data value. This is computed as one buffer unit, $q$ below the minimum data value, by default. The user provides the preferred number of bins in the horizontal direction, $b_1$, and the algorithm computes the appropriate number of bins in the vertical direction, $b_2$. 
+To make the grid, a buffer parameter ($q$) is set as a proportion of the plot space. By default this is 0.1. A value should be chosen to provide at buffer of a full hexagon width ($a_1$) and height ($a_2$) for the grid to extend beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon. This must be smaller than the minimum data value. This is computed as one buffer unit, $q$ below the minimum data value, by default. The user provides the preferred number of bins in the horizontal direction, $b_1$, and the algorithm computes the appropriate number of bins in the vertical direction, $b_2$. 
 
 The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$. 
 
