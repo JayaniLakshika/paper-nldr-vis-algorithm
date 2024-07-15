@@ -51,56 +51,160 @@ theme_set(theme_linedraw() +
 Given range of embedding component, $r_2$, number of bins along the x-axis, $b_1$, and buffer proportion, $q$, hexagonal starting point coordinates, $s_1 = -q$, and $s_2 = -q \times r_2$. The purpose is to find width of the hexagon. $a_1$, and number of bins along the y-axis, $b_2$.
 
 ```{r}
-# umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
-# 
-# scurve_scaled_obj <- gen_scaled_data(
-#   data = umap_scurve)
-# 
-# umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
-# lim1 <- scurve_scaled_obj$lim1
-# lim2 <- scurve_scaled_obj$lim2
-# r2 <- diff(lim2)/diff(lim1)
-# 
-# a1 <- calc_bins_y(bin1 = 6, q = 0.1, r2 = r2)$a1
-r2 <- 1.643542
-a1 <- 0.2087578
+umap_scurve <- read_rds(file = here::here("data/s_curve/s_curve_umap.rds")) 
+
+scurve_scaled_obj <- gen_scaled_data(
+  data = umap_scurve)
+
+umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
+lim1 <- scurve_scaled_obj$lim1
+lim2 <- scurve_scaled_obj$lim2
+r2 <- diff(lim2)/diff(lim1)
+
+sc_ltr_pos <- c(0.08, 0.96)
+sc_xlims <- c(-0.5, 1.47)
+sc_ylims <- c(-0.32, 2.1)
+```
+
+<!--Full hexagon grid with UMAP data-->
+
+```{r}
+## Compute hexbin parameters
+num_bins_x_scurve <- 7
+
+## hexagon binning to have regular hexagons
+hb_obj_scurve <- hex_binning(
+  data = umap_scurve_scaled, 
+  bin1 = num_bins_x_scurve, 
+  r2 = r2)
+
+## Data set with all centroids
+all_centroids_df <- hb_obj_scurve$centroids
+
+## Generate all coordinates of hexagons
+hex_grid <- hb_obj_scurve$hex_poly
 ```
 
 ```{r}
-all_centroids_df <- gen_centroids(bin1 = 6, r2 = r2)
-```
+# Code to draw illustration for notation
+start_pt <- all_centroids_df |> 
+  filter(hexID == 1)
+d_rect <- tibble(x1min = 0, 
+                 x1max = 1,
+                 x2min = 0,
+                 x2max = r2)
 
-```{r}
-hex_grid <- gen_hex_coord(all_centroids_df, a1 = a1)
-```
+c_start <- tibble(s1 = 0.03, s2 = -0.05)
 
-```{r}
-hex_param_vis <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
-    geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
-    geom_point(data = all_centroids_df, aes(x = c_x, y = c_y), color = "#31a354", size = 0.9) +
-    geom_point(data = all_centroids_df |> dplyr::filter(hexID == 1), aes(x = c_x, y = c_y), color = "black") + ## starting point
-    geom_rect(aes(xmin = 0 - 0.03, xmax = 1 - 0.03, ymin = 0 - 0.05, ymax = r2 - 0.05), fill = "white", color = "black", alpha = 0, linewidth = 0.7) +
-    geom_segment(x = 0 - 0.03, y = -0.35, xend = 1 - 0.03, yend = -0.35,
-                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+
-    annotate("text", x=0.5, y=-0.45, label= "r1", color = "black") +
-    geom_segment(x = -0.25, y = 0 - 0.05, xend = -0.25, yend = r2 - 0.05,
-                 arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ 
-    annotate("text", x=-0.35, y=1, label= "r2", color = "black") +
-    geom_segment(x = -0.1 + 0.2087578, y = -0.15, xend = -0.1 + 0.2087578*2, yend = -0.15,
-                   arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a1 = 0.2087578
-    annotate("text", x=0.2, y=-0.25, label= "a1", color = "black") +
-    geom_segment(x = -0.15, y = -0.1*r2 + 0.1807896*2, xend = -0.15, yend = -0.1*r2 + 0.1807896*3,
-                     arrow = arrow(length = unit(0.03, "npc"), ends = "both"), color = "black")+ # a2 = 0.1807896
-    annotate("text", x=-0.15, y=0.45, label= "a2", color = "black") +
-    annotate("text", x=-0.18, y=-0.45, label= "(s1, s2)", color = "black") ## starting point
+a1 <- tibble(x = all_centroids_df$c_x[4],
+             xend = all_centroids_df$c_x[5],
+             y = all_centroids_df$c_y[21],
+             yend = all_centroids_df$c_y[21],
+             label = expression(a[1]))
+a2 <- tibble(x = all_centroids_df$c_x[27],
+             xend = all_centroids_df$c_x[27],
+             y = all_centroids_df$c_y[27],
+             yend = all_centroids_df$c_y[33],
+             label = expression(a[2]))
+hex_param_vis <- ggplot() + 
+    geom_polygon(data = hex_grid, 
+                        aes(x = x, 
+                            y = y, 
+                            group = hex_poly_id),
+                 fill = "white", 
+                 color = "#bdbdbd") +
+    geom_point(data = all_centroids_df, aes(
+      x = c_x, 
+      y = c_y), 
+      color = "#31a354", size = 0.9) +
+    geom_point(data = start_pt, aes(x = c_x, 
+                                    y = c_y), 
+               color = "black") + 
+    geom_rect(data=d_rect, 
+              aes(xmin = x1min - c_start$s1,# - c_start$s1, 
+                  xmax = x1max - c_start$s1,# - c_start$s1, 
+                  ymin = x2min - c_start$s2,# - c_start$s2, 
+                  ymax = x2max - c_start$s2),# - c_start$s2), 
+              fill = "white", 
+              color = "black", 
+              alpha = 0, 
+              linewidth = 0.7) +
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1max - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2max - c_start$s2)) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,0)", 
+             hjust=-0.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1max - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,1)", 
+             hjust=1.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2max - c_start$s2,
+                     label = expression(group("(", 
+                        list(0, y[2][max]),")")), 
+            hjust=-0.1, vjust=1.2) + 
+    geom_segment(data=d_rect, aes(
+      x = x1min  - c_start$s1, # 0 - 0.03, 
+      y = -0.35, 
+      xend = x1max - c_start$s1, #1 - 0.03, 
+      yend = -0.35), #-0.35),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+                 color = "black")+
+    annotate("text", x=0.5, y=-0.45, 
+             label = expression(r[1]), color = "black") +
+    geom_segment(data=d_rect, aes(
+      x = -0.25, 
+      y = x2min - c_start$s2, #0 - 0.05, 
+      xend = -0.25, 
+      yend = x2max - c_start$s2), #r2 - 0.05),
+      arrow = arrow(length = unit(0.03, "npc"),
+                       ends = "both"), 
+                 color = "black")+ 
+    annotate("text", x=-0.35, y=1, 
+             label = expression(r[2]), color = "black") +
+    geom_segment(data = a1, aes(
+      x = x, #-0.1 + 0.2087578, 
+      y = y, #-0.15, 
+      xend = xend, #-0.1 + 0.2087578*2, 
+      yend = yend), #-0.15),
+      arrow = arrow(length = unit(0.03, "npc"),
+        ends = "both"), 
+        color = "black")+ # a1 = 0.2087578
+    annotate("text", 
+             x=(a1$x+a1$xend)/2, 
+             y=a1$y, 
+             label = expression(a[1]), 
+             color = "black",
+             vjust = 1.2) +
+    geom_segment(data = a2, aes(
+      x = x, #-0.15, 
+      y = y, #-0.1*r2 + 0.1807896*2, 
+      xend = xend, #-0.15, 
+      yend = yend), #-0.1*r2 + 0.1807896*3),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+      color = "black") + # a2 = 0.1807896
+    annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
+             label = expression(a[2]), 
+             color = "black", hjust=-0.2) +
+    annotate("text", x=-0.18, y=-0.25, 
+      label = expression(group("(", list(s[1], s[2]), ")")),
+      color = "black") 
 ```
 
 ```{r}
 #| label: fig-hex-param
-#| fig-cap: "Notations for hexagonal grid configurations."
+#| fig-cap: "The components of the hexagon grid illustrating notation."
+#| out-height: 30%
+#| fig-width: 2.5
+#| fig-height: 3.3
 #| fig-pos: H
-#| fig-width: 2
-#| fig-height: 3
 
 hex_param_vis
 ```
@@ -194,9 +298,9 @@ Therefore, if this equality is true, then $a_1 = \frac{(1+q)}{(b_1 - 1)}$, other
 Points are assigned to the bin they fall into based on the nearest centroid. If a point is equidistant from multiple centroids, it is assigned to the centroid with the lowest hexagonal bin ID.
 
 ```{r}
-all_centroids_df <- gen_centroids(bin1 = 3, r2 = r2)
+all_centroids_df <- gen_centroids(bin1 = 4, r2 = r2, q = 0.1)
 
-hex_grid <- gen_hex_coord(all_centroids_df, a1 = 0.5218947)
+hex_grid <- gen_hex_coord(all_centroids_df, a1 = 1.043789)
 
 ## Data to generate circle
 circles <- data.frame(
