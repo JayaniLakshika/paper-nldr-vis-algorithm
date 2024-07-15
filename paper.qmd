@@ -476,6 +476,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 Three views of the true model in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/tYATMiSlCXQ>). 
 :::
 
+XXX The points on the "theoretical model" should be equidistant along the S. They are still to bunched in some spots and too far apart in others.
 
 
 ```{r}
@@ -500,9 +501,11 @@ Because we are working with distances between points, starting with data having 
 
 #### Computing hexagon grid configuration
 
-The \gD{} hexagon grid is defined by the number of bins in each direction $(b_1, b_2)$, giving total number of bins as $b = b_1 \times b_2$, and a unique hexagon id, $h = 1, \dots, b$. Each hexagon, $H_h$ is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$.  (Note that, we explain the algorithm for constructing the grid and binning the data here because, surprisingly, there is no readily available implementation that could produce everything needed for this project.)
+Although there are several implementations of hexagon binning (REF), and a published paper (REF), surprisingly, none has sufficient detail or components that produce everything needed for this project. So we described the process used here. @fig-hex-param illustrates the notation used. 
 
-To make the grid, a buffer parameter ($q$) is set as a proportion of the plot space. By default this is 0.1. A value should be chosen to provide at buffer of a full hexagon width ($a_1$) and height ($a_2$) for the grid to extend beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon. This must be smaller than the minimum data value. This is computed as one buffer unit, $q$ below the minimum data value, by default. The user provides the preferred number of bins in the horizontal direction, $b_1$, and the algorithm computes the appropriate number of bins in the vertical direction, $b_2$. 
+The \gD{} hexagon grid is defined by its bin centroids. Each hexagon, $H_h$ ($h = 1, \dots, b$) is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The number of bins in each direction is denoted as $(b_1, b_2)$, with  $b = b_1 \times b_2$ being the total number of bins. We expect the user to provide just $b_1$ and we calculate $b_2$ using the NLDR ratio, to compute the grid. 
+
+To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = -q$ and $s_2 = -r_2*q$. 
 
 The value for $b_2$ is computed by fixing $b_1$. Considering the lower bound of the NLDR, $a_1 > -2q$, and $a_1 > \frac{1+q}{b_1 -1}$. Similarly, according to the upper bound of the NLDR, $a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}$, because $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons. Therefore, $b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil$. 
 
@@ -672,9 +675,11 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 
 #### Indicating neighborhood
 
-Delaunay triangulation [@lee1980] is used to connect neighboring centroids, which is needed to preserve neighborhood information when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980] (XXXREF what R package are you using?) is used to connect neighboring centroids. The edges are needed to preserve neighborhood information when the model is lifted into \pD{}. 
 
 <!-- When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$. -->
+
+When shapes are non-linear in the NLDR layout, some edges could be long. It is unlikely 
 
 It can also happen that distant centroids can be connected, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments must be removed (@fig-NLDR-scurve (d)).
 
@@ -700,6 +705,9 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/N6iWEj3aVps>). 
 :::
 
+XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too. 
+
+XXX Should there be a second long edge removal? You can compute the edges in \pD{} now, and if there are long edges maybe these should be pruned, and we re-plot the \gD{} view. 
 
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
@@ -733,6 +741,8 @@ A new benefit of this fitted model is that it allows us to now predict a new obs
 
 A view of the true model in projections from $7\text{-}D$, and predictions of the true model in \gD{}, for the S-curve data. The predictions fits the UMAP layout which means that it capture the geometry of S-curve with UMAP.
 :::
+
+XXX Prediction should have a jitter option, to spread the predicted points out fully in the hexagons.
 
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
@@ -1445,7 +1455,7 @@ umap_pbmc <- umap_pbmc_scaled |>
 
 <!-- UMAP parameters suggested by the author (n_neighbors = 30, min_dist = 0.3)-->
 ```{r}
-#| fig-cap: "Reproduction of plot published in Chen et al. (2023) showing a $2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. The parameter settings, beyond the defaults, are n_neighbors = 30 and min_dist = 0.3. The question is whether this is an accurate representation of structure in the high-dimensional data."
+#| fig-cap: "Reproduction of plot published in Chen et al. (2023) showing a $2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. The parameter settings, beyond the defaults, are 30 nearest neighbors and minimum distance equal to 0.3. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading."
 #| label: fig-umap-author
 #| out-height: 30%
 #| fig-pos: H

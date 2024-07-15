@@ -463,6 +463,10 @@ data with a tour, and the full video is available at
 
 \end{figure}%
 
+XXX The points on the ``theoretical model'' should be equidistant along
+the S. They are still to bunched in some spots and too far apart in
+others.
+
 \begin{figure}
 
 \centering{
@@ -494,26 +498,28 @@ set \(y_ {2,\text{max}} = 1\).
 \subsubsection{Computing hexagon grid
 configuration}\label{computing-hexagon-grid-configuration}
 
-The \gD{} hexagon grid is defined by the number of bins in each
-direction \((b_1, b_2)\), giving total number of bins as
-\(b = b_1 \times b_2\), and a unique hexagon id, \(h = 1, \dots, b\).
-Each hexagon, \(H_h\) is uniquely described by centroid,
-\(C_{h}^{(2)} = (c_{h1}, c_{h2})\). (Note that, we explain the algorithm
-for constructing the grid and binning the data here because,
-surprisingly, there is no readily available implementation that could
-produce everything needed for this project.)
+Although there are several implementations of hexagon binning (REF), and
+a published paper (REF), surprisingly, none has sufficient detail or
+components that produce everything needed for this project. So we
+described the process used here. Figure~\ref{fig-hex-param} illustrates
+the notation used.
 
-To make the grid, a buffer parameter (\(q\)) is set as a proportion of
-the plot space. By default this is 0.1. A value should be chosen to
-provide at buffer of a full hexagon width (\(a_1\)) and height (\(a_2\))
-for the grid to extend beyond the data, in all directions. The lower
-left position where the grid starts is defined as \((s_1, s_2)\), and
-corresponds to the centroid of the lowest left hexagon. This must be
-smaller than the minimum data value. This is computed as one buffer
-unit, \(q\) below the minimum data value, by default. The user provides
-the preferred number of bins in the horizontal direction, \(b_1\), and
-the algorithm computes the appropriate number of bins in the vertical
-direction, \(b_2\).
+The \gD{} hexagon grid is defined by its bin centroids. Each hexagon,
+\(H_h\) (\(h = 1, \dots, b\)) is uniquely described by centroid,
+\(C_{h}^{(2)} = (c_{h1}, c_{h2})\). The number of bins in each direction
+is denoted as \((b_1, b_2)\), with \(b = b_1 \times b_2\) being the
+total number of bins. We expect the user to provide just \(b_1\) and we
+calculate \(b_2\) using the NLDR ratio, to compute the grid.
+
+To ensure that the grid covers the range of data values a buffer
+parameter (\(q\)) is set as a proportion of the range. By default,
+\(q=0.1\). The buffer should be extending a full hexagon width (\(a_1\))
+and height (\(a_2\)) beyond the data, in all directions. The lower left
+position where the grid starts is defined as \((s_1, s_2)\), and
+corresponds to the centroid of the lowest left hexagon,
+\(C_{1}^{(2)} = (c_{11}, c_{12})\). This must be smaller than the
+minimum data value. Because it is one buffer unit, \(q\) below the
+minimum data values, \(s_1 = -q\) and \(s_2 = -r_2*q\).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 lower bound of the NLDR, \(a_1 > -2q\), and
@@ -553,9 +559,13 @@ components needed to render the model representation in high dimensions.
 
 \subsubsection{Indicating neighborhood}\label{indicating-neighborhood}
 
-Delaunay triangulation \citep{lee1980} is used to connect neighboring
-centroids, which is needed to preserve neighborhood information when the
-model is lifted into \pD{}.
+Delaunay triangulation \citep{lee1980} (XXXREF what R package are you
+using?) is used to connect neighboring centroids. The edges are needed
+to preserve neighborhood information when the model is lifted into
+\pD{}.
+
+When shapes are non-linear in the NLDR layout, some edges could be long.
+It is unlikely
 
 It can also happen that distant centroids can be connected, which can
 result in long line segments. In order to generate a smooth surface in
@@ -597,6 +607,14 @@ means that it does not adequately capture the surface. (The
 the full video is available at (\url{https://youtu.be/N6iWEj3aVps}).}
 
 \end{figure}%
+
+XXX You need to have consistent colouring. In langevitour the points
+corresponding to observations are purple. They should be purple in the
+\gD{} view too.
+
+XXX Should there be a second long edge removal? You can compute the
+edges in \pD{} now, and if there are long edges maybe these should be
+pruned, and we re-plot the \gD{} view.
 
 \subsection{Measuring the fit}\label{sec-summary}
 
@@ -652,6 +670,9 @@ projections from \(7\text{-}D\), and predictions of the true model in
 means that it capture the geometry of S-curve with UMAP.}
 
 \end{figure}%
+
+XXX Prediction should have a jitter option, to spread the predicted
+points out fully in the hexagons.
 
 \subsection{Tuning}\label{tuning}
 
@@ -964,9 +985,11 @@ shows three well-separated clusters.
 
 \caption{\label{fig-umap-author}Reproduction of plot published in Chen
 et al.~(2023) showing a \(2\text{-}D\) layout from UMAP applied for the
-PBMC3k dataset. The parameter settings, beyond the defaults, are
-n\_neighbors = 30 and min\_dist = 0.3. The question is whether this is
-an accurate representation of structure in the high-dimensional data.}
+PBMC3k dataset. The parameter settings, beyond the defaults, are 30
+nearest neighbors and minimum distance equal to 0.3. We use our
+model-in-the-data-space to assess whether this is an accurate
+representation of structure present in the high-dimensional data, or if
+it is misleading.}
 
 \end{figure}%
 
