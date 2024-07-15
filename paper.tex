@@ -522,11 +522,14 @@ minimum data value. Because it is one buffer unit, \(q\) below the
 minimum data values, \(s_1 = -q\) and \(s_2 = -r_2*q\).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
-lower bound of the NLDR, \(a_1 > -2q\), and
-\(a_1 > \frac{1+q}{b_1 -1}\). Similarly, according to the upper bound of
-the NLDR, \(a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 1)}\), because
-\(a_2 = \frac{\sqrt(3)}{2}a_1\) for regular hexagons. Therefore,
-\(b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil\).
+upper bound of the first NLDR component, \(a_1 > \frac{1+q}{b_1 -3}\).
+Similarly, for the second NLDR component,
+\(a_2 > \frac{r_2(1 + q)}{(b_2 - 2)}\). Since
+\(a_2 = \frac{\sqrt(3)}{2}a_1\) for regular hexagons,
+\(a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 2)}\). This is a linear
+optimization problem. Therefore, the optimal solution must occur on a
+vertex. Therefore,
+\(b_2 = \Big\lceil2 +\frac{2r_2(b_1 - 3)}{\sqrt{3}}\Big\rceil\).
 
 \begin{figure}[H]
 
