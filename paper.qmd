@@ -354,10 +354,10 @@ lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.96)
-sc_xlims <- c(-0.5, 1.47)
-sc_ylims <- c(-0.32, 2.1)
-# sc_xlims <- c(-0.25, 1.25)
-# sc_ylims <- c(-0.25, 2)
+# sc_xlims <- c(-0.5, 1.47)
+# sc_ylims <- c(-0.32, 2.1)
+sc_xlims <- c(-0.25, 1.25)
+sc_ylims <- c(-0.3, 2)
 
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
@@ -754,14 +754,15 @@ The performance and robustness of our model depend on three key parameters: (i) 
 
 The number of hexagon bins in the hexagon grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-bins-scurve (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-bins-scurve (c)). Therefore, it is important to determine an effective number of bins to construct a reasonable model (see @fig-bins-scurve (b)).
 
-<!--add three choice of bins 8, 11, 14-->
+<!--add three choice of bins 7, 11, 14-->
 
 ```{r}
 ## hexagon binning to have regular hexagons
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
-  bin1 = 8, 
-  r2 = r2)
+  bin1 = 7, 
+  r2 = r2,
+  q = 0.12)
 
 ## Data set with all centroids
 all_centroids_df1 <- hb_obj_scurve1$centroids
@@ -793,8 +794,8 @@ hex_grid_coloured_scurve1 <- ggplot() +
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  interior_annotation("a") +
-  xlim(sc_xlims) + ylim(sc_ylims)
+  interior_annotation("a", position = c(0.92, 0.93)) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
 ```
 
 ```{r}
@@ -837,7 +838,7 @@ hex_grid_coloured_scurve2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("b")
 
 ```
@@ -846,9 +847,9 @@ hex_grid_coloured_scurve2 <- ggplot() +
 ## hexagon binning to have regular hexagons
 hb_obj_scurve3 <- hex_binning(
   data = umap_scurve_scaled, 
-  bin1 = 14, 
+  bin1 = 17, 
   r2 = r2,
-  q = 0.065)
+  q = 0.05)
 
 ## Data set with all centroids
 all_centroids_df3 <- hb_obj_scurve3$centroids
@@ -879,7 +880,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("c")
   
 ```
@@ -888,9 +889,9 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| echo: false
 #| label: fig-bins-scurve
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 112 \\text{ } (8, \\text{ }14)  \\text{ }(q = 0.1)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.075)$, and (c) $b = 322 \\text{ } (14, \\text{ }26) \\text{ }(q = 0.065)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)  \\text{ }(q = 0.12)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.075)$, and (c) $b = 527 \\text{ } (17, \\text{ }31) \\text{ }(q = 0.05)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
 #| fig-width: 6
-#| fig-height: 2.5
+#| fig-height: 3
 
 hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve3 +
   plot_layout(guides='collect', ncol = 3) &
