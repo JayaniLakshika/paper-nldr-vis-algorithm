@@ -2226,7 +2226,7 @@ Screen shots of the **langevitour** of the PBMC3k data set, shows the model in h
 - Demonstrate that it is, except for the anomalies 
 -->
 
-The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to demonstrate how PaCMAP preserves local structure. We selected the \gD{} embedding of PaCMAP for the handwritten digit 1 to assess whether this is a reasonable representation using our method. As shown in @fig-pacmap-author-img, the angle of the digit 1 images varies along the \gD{} structure.
+The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to demonstrate how PaCMAP preserves non-linear structure in \pD{}. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure.
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -2271,83 +2271,12 @@ pacmap_plot_mnist <- pacmap_plot_mnist +
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset with a specific parameter settings. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right. Is this the best representation of the digit 1?"
+#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset with a specific parameter settings. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right. Is this a reasonable representation of the digit 1?"
 #| label: fig-pacmap-author
 #| fig-pos: H
 #| out-height: 22%
 
 pacmap_plot_mnist
-```
-
-<!--Render the images in different selected location in 2D layout-->
-```{r}
-## Data with pixel values
-mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c(3710, 2391, 2385, 5030, 6475,
-                         7679, 3568, 1312, 3311, 1097,
-                         3552, 7853, 6489, 7689, 6690,
-                        1380, 6057, 2347, 5946, 3355,
-                        4175, 3997, 5378, 387, 1854,
-                        614, 3079, 1762, 5239, 3723,
-                        5748, 728, 7419, 7794, 6233,
-                        33, 2485, 5998, 318, 1761,
-                        5690, 165, 517, 6935, 2682,
-                        4962, 2264, 5563, 6369, 559,
-                        5188, 4849, 2666, 3448, 3055,
-                        3120, 6869, 6345, 4470, 7147)) |>
-  mutate(instance.labs =  case_when(
-    instance %in% c(3710, 2391, 2385, 5030, 6475) ~ "1",
-    instance %in% c(7679, 3568, 1312, 3311, 1097) ~ "2",
-    instance %in% c(3552, 7853, 6489, 7689, 6690) ~ "3",
-    instance %in% c(1380, 6057, 2347, 5946, 3355) ~ "4",
-    instance %in% c(4175, 3997, 5378, 387, 1854) ~ "5",
-    instance %in% c(614, 3079, 1762, 5239, 372) ~ "6",
-    instance %in% c(5748, 728, 7419, 7794, 6233) ~ "7",
-    instance %in% c(5690, 165, 517, 6935, 2682) ~ "8",
-    instance %in% c(4962, 2264, 5563, 6369, 559) ~ "9",
-    instance %in% c(5188, 4849, 2666, 3448, 3055) ~ "10",
-    instance %in% c(3120, 6869, 6345, 4470, 7147) ~ "11",
-    .default = "12"
-    )) 
-
-## To generate labels
-instance.labs <- as.character(rep(1:12, each = 5))
-
-img_sample <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +
-  facet_wrap(~ factor(instance, levels = c(3710, 2391, 2385, 5030, 6475,
-                         7679, 3568, 1312, 3311, 1097,
-                         3552, 7853, 6489, 7689, 6690,
-                        1380, 6057, 2347, 5946, 3355,
-                        4175, 3997, 5378, 387, 1854,
-                        614, 3079, 1762, 5239, 3723,
-                        5748, 728, 7419, 7794, 6233,
-                        33, 2485, 5998, 318, 1761,
-                        5690, 165, 517, 6935, 2682,
-                        4962, 2264, 5563, 6369, 559,
-                        5188, 4849, 2666, 3448, 3055,
-                        3120, 6869, 6345, 4470, 7147)), nrow = 5) +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(), 
-        legend.position = "none")
-```
-
-```{r}
-#| fig-cap: "Images of the handwritten digit 1 are ordered from the bottom-right to the top-left of the $2\\text{-}D$ structure. The angle of the digit varies along this structure. Images at the bottom-right of the $2\\text{-}D$ layout show the digit 1 angled more to the right, while images at the top-left show the digit 1 angled more to the left. This demonstrates how the angle changes from right to left along the $2\\text{-}D$ structure."
-#| label: fig-pacmap-author-img
-#| fig-pos: H
-#| out-height: 50%
-
-img_sample
 ```
 
 <!-- Fit the model and compute error-->
@@ -2452,7 +2381,7 @@ trimesh_removed_mnist + error_plot_mnist +
   theme(legend.position='bottom')
 ```
 
-According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (see @fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (see @fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (see @fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data. Because PaCMAP preserves the local structure. 
+According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (@fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data, because PaCMAP preserves the non-linear structure present in the \pD{} data. 
 
 <!--add langevitour screenshots and youtube animation link-->
 
@@ -2467,12 +2396,15 @@ Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the mod
 :::
 <!-- need to update the youtube recording-->
 
-There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (see @fig-model-mnist (b)). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist-anomalies (a). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (see @fig-mnist-anomalies (b)). 
+There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (@fig-model-mnist (b)). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist-anomalies (a). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist-anomalies (b)). 
 
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
 ```{r}
+## Data with pixel values
+mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
+
 pixels_gathered <-  mnist_data |>
   mutate(instance = row_number()) |>
   gather(pixel, value, -Label, -instance) |>

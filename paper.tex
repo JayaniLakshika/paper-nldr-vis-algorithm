@@ -1157,11 +1157,11 @@ animation is available at (\url{https://youtu.be/5Y1hE4i7N2k}).}
 
 The MNIST dataset consists of grayscale images of handwritten digits
 \citep{lecun2010}. \citet{yingfan2021} used this dataset to demonstrate
-how PaCMAP preserves local structure. We selected the \gD{} embedding of
-PaCMAP for the handwritten digit 1 to assess whether this is a
-reasonable representation using our method. As shown in
-Figure~\ref{fig-pacmap-author-img}, the angle of the digit 1 images
-varies along the \gD{} structure.
+how PaCMAP preserves non-linear structure in \pD{}. To evaluate whether
+PaCMAP provides a reasonable representation of the data, the \gD{}
+embedding of the handwritten digit 1 was selected. As shown in
+Figure~\ref{fig-pacmap-author}, the angle of the digit 1 images varies
+along the \gD{} structure.
 
 \begin{figure}[H]
 
@@ -1176,26 +1176,8 @@ applied for the digit 1 of the MNIST dataset with a specific parameter
 settings. The angle of the digit 1 varies along this structure. Images
 at the top-left of the \(2\text{-}D\) layout show the digit 1 angled
 more to the left, while images at the bottom-right show the digit 1
-angled more to the right. Is this the best representation of the digit
-1?}
-
-\end{figure}%
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-pacmap-author-img-1.pdf}
-
-}
-
-\caption{\label{fig-pacmap-author-img}Images of the handwritten digit 1
-are ordered from the bottom-right to the top-left of the \(2\text{-}D\)
-structure. The angle of the digit varies along this structure. Images at
-the bottom-right of the \(2\text{-}D\) layout show the digit 1 angled
-more to the right, while images at the top-left show the digit 1 angled
-more to the left. This demonstrates how the angle changes from right to
-left along the \(2\text{-}D\) structure.}
+angled more to the right. Is this a reasonable representation of the
+digit 1?}
 
 \end{figure}%
 
@@ -1217,18 +1199,18 @@ upper edge.}
 \end{figure}%
 
 According to Figure~\ref{fig-mnist1-sc1}, the non-linear continuous
-structure observed in the \gD{} representation of PaCMAP (see
-Figure~\ref{fig-pacmap-author}) is also visible when visualizing the
+structure observed in the \gD{} representation of PaCMAP
+(Figure~\ref{fig-pacmap-author}) is also visible when visualizing the
 model overlaid on the data space. This indicates that PaCMAP accurately
 captures the structure of the \pD{} data. Additionally, the model shows
-a twisted pattern within the non-linear structure in \pD{} space (see
-Figure~\ref{fig-mnist1-sc2}), which is an additional pattern not visible
-in the \gD{} representation (see Figure~\ref{fig-pacmap-author}).
+a twisted pattern within the non-linear structure in \pD{} space
+(Figure~\ref{fig-mnist1-sc2}), which is an additional pattern not
+visible in the \gD{} representation (Figure~\ref{fig-pacmap-author}).
 Furthermore, as shown in Figure~\ref{fig-mnist1-sc3}, some long edges
 exist in the \pD{} space that are not recognized as long edges in the
 \gD{} representation. However, PaCMAP is a reasonable \gD{}
-representation of MNIST digit 1 data. Because PaCMAP preserves the local
-structure.
+representation of MNIST digit 1 data, because PaCMAP preserves the
+non-linear structure present in the \pD{} data.
 
 \begin{figure}[H]
 
@@ -1277,15 +1259,15 @@ the tour animation is available at
 
 There are certain data points that exhibit high error rates due to their
 deviation from the usual \pD{} data structure, which makes them
-anomalies (see Figure~\ref{fig-model-mnist} (b)). These anomalies can be
+anomalies (Figure~\ref{fig-model-mnist} (b)). These anomalies can be
 classified into two types: those that are anomalies within the
 non-linear structure and those that lie outside of it. The images
 associated with high model error points within the non-linear structure
 display different patterns of the digit 1, as shown in
 Figure~\ref{fig-mnist-anomalies} (a). However, when comparing these
 images to the ones found outside of the non-linear structure, it becomes
-evident that the latter display different patterns of the digit 1 (see
-Figure~\ref{fig-mnist-anomalies} (b)).
+evident that the latter display different patterns of the digit 1
+(Figure~\ref{fig-mnist-anomalies} (b)).
 
 \begin{figure}[H]
 
