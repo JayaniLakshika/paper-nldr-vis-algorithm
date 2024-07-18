@@ -41,14 +41,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -147,6 +161,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
+
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -168,6 +183,7 @@ the data space},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
+
 
 
 \begin{document}
@@ -223,6 +239,7 @@ the data space
 
 \newpage
 \spacingset{1.9} % DON'T change the spacing!
+
 
 \spacingset{1.0}
 
@@ -708,8 +725,10 @@ determine an effective number of bins to construct a reasonable model
 }
 
 \caption{\label{fig-bins-scurve}Hexbin density plots of UMAP layout of
-the S-curve data, using three different bin inputs: (a) \(b = 70\) (7,
-10), (b) \(b = 240\) (12, 20), and (c) \(b = 322\) (14, 23). Color
+the S-curve data, using three different bin inputs: (a)
+\(b = 112 \text{ } (8, \text{ }14)  \text{ }(q = 0.1)\), (b)
+\(b = 220 \text{ } (11, \text{ }20) \text{ }(q = 0.075)\), and (c)
+\(b = 322 \text{ } (14, \text{ }26) \text{ }(q = 0.065)\). Color
 indicates standardized counts, dark indicating high count and light
 indicates low count. At the smallest bin size the data segregates into
 two separate groups, suggesting this is too many bins. Using the MSE of
@@ -1216,7 +1235,7 @@ structure.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_1.png}
+\includegraphics{figures/mnist/sc_1.png}
 
 }
 
@@ -1228,7 +1247,7 @@ structure.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_2.png}
+\includegraphics{figures/mnist/sc_2.png}
 
 }
 
@@ -1240,7 +1259,7 @@ structure.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_3.png}
+\includegraphics{figures/mnist/sc_3.png}
 
 }
 
@@ -1352,6 +1371,7 @@ Code, and data for reproducing this paper are available at
 \bibliography{bibliography.bib}
 
 \newpage{}
+
 
 
 

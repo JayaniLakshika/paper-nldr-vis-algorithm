@@ -518,8 +518,9 @@ d_rect <- tibble(x1min = 0,
                  x1max = 1,
                  x2min = 0,
                  x2max = r2)
-#c_start <- tibble(s1 = 0.03, s2 = 0.05)
-c_start <- tibble(s1 = 0.03, s2 = -0.05)
+
+# To move the rectangle to ignore the overlap with the centroids
+rect_adj <- tibble(x1 = 0.03, x2 = 0.03)
 
 a1 <- tibble(x = all_centroids_df$c_x[4],
              xend = all_centroids_df$c_x[5],
@@ -546,37 +547,37 @@ hex_param_vis <- ggplot() +
                                     y = c_y), 
                color = "black") + 
     geom_rect(data=d_rect, 
-              aes(xmin = x1min - c_start$s1,# - c_start$s1, 
-                  xmax = x1max - c_start$s1,# - c_start$s1, 
-                  ymin = x2min - c_start$s2,# - c_start$s2, 
-                  ymax = x2max - c_start$s2),# - c_start$s2), 
+              aes(xmin = x1min - rect_adj$x1,# - rect_adj$s1, 
+                  xmax = x1max - rect_adj$x1,# - rect_adj$s1, 
+                  ymin = x2min - rect_adj$x2,# - rect_adj$s2, 
+                  ymax = x2max - rect_adj$x2),# - rect_adj$s2), 
               fill = "white", 
               color = "black", 
               alpha = 0, 
               linewidth = 0.7) +
-    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
-                                y=x2min - c_start$s2)) + 
-    geom_point(data=d_rect, aes(x=x1max - c_start$s1, 
-                                y=x2min - c_start$s2)) + 
-    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
-                                y=x2max - c_start$s2)) + 
-    annotate("text", x=d_rect$x1min - c_start$s1, 
-                     y=d_rect$x2min - c_start$s2,
+    geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                                y=x2min - rect_adj$x2)) + 
+    geom_point(data=d_rect, aes(x=x1max - rect_adj$x1, 
+                                y=x2min - rect_adj$x2)) + 
+    geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                                y=x2max - rect_adj$x2)) + 
+    annotate("text", x=d_rect$x1min - rect_adj$x1, 
+                     y=d_rect$x2min - rect_adj$x2,
                      label = "(0,0)", 
              hjust=-0.1, vjust=-0.3) + 
-    annotate("text", x=d_rect$x1max - c_start$s1, 
-                     y=d_rect$x2min - c_start$s2,
+    annotate("text", x=d_rect$x1max - rect_adj$x1, 
+                     y=d_rect$x2min - rect_adj$x2,
                      label = "(0,1)", 
              hjust=1.1, vjust=-0.3) + 
-    annotate("text", x=d_rect$x1min - c_start$s1, 
-                     y=d_rect$x2max - c_start$s2,
+    annotate("text", x=d_rect$x1min - rect_adj$x1, 
+                     y=d_rect$x2max - rect_adj$x2,
                      label = expression(group("(", 
                         list(0, y[2][max]),")")), 
             hjust=-0.1, vjust=1.2) + 
     geom_segment(data=d_rect, aes(
-      x = x1min  - c_start$s1, # 0 - 0.03, 
+      x = x1min  - rect_adj$x1, # 0 - 0.03, 
       y = -0.35, 
-      xend = x1max - c_start$s1, #1 - 0.03, 
+      xend = x1max - rect_adj$x1, #1 - 0.03, 
       yend = -0.35), #-0.35),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
@@ -585,9 +586,9 @@ hex_param_vis <- ggplot() +
              label = expression(r[1]), color = "black") +
     geom_segment(data=d_rect, aes(
       x = -0.25, 
-      y = x2min - c_start$s2, #0 - 0.05, 
+      y = x2min - rect_adj$x2, #0 - 0.05, 
       xend = -0.25, 
-      yend = x2max - c_start$s2), #r2 - 0.05),
+      yend = x2max - rect_adj$x2), #r2 - 0.05),
       arrow = arrow(length = unit(0.03, "npc"),
                        ends = "both"), 
                  color = "black")+ 
@@ -753,13 +754,13 @@ The performance and robustness of our model depend on three key parameters: (i) 
 
 The number of hexagon bins in the hexagon grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-bins-scurve (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-bins-scurve (c)). Therefore, it is important to determine an effective number of bins to construct a reasonable model (see @fig-bins-scurve (b)).
 
-<!--add three choice of bins 7, 10, 14-->
+<!--add three choice of bins 8, 11, 14-->
 
 ```{r}
 ## hexagon binning to have regular hexagons
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
-  bin1 = 7, 
+  bin1 = 8, 
   r2 = r2)
 
 ## Data set with all centroids
@@ -800,9 +801,9 @@ hex_grid_coloured_scurve1 <- ggplot() +
 ## hexagon binning to have regular hexagons
 hb_obj_scurve2 <- hex_binning(
   data = umap_scurve_scaled, 
-  bin1 = 12, 
+  bin1 = 11, 
   r2 = r2,
-  q = 0.07)
+  q = 0.075)
 
 ## Data set with all centroids
 all_centroids_df2 <- hb_obj_scurve2$centroids
@@ -847,7 +848,7 @@ hb_obj_scurve3 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 14, 
   r2 = r2,
-  q = 0.05)
+  q = 0.065)
 
 ## Data set with all centroids
 all_centroids_df3 <- hb_obj_scurve3$centroids
@@ -887,7 +888,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| echo: false
 #| label: fig-bins-scurve
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 70$ (7, 10), (b) $b = 240$ (12, 20), and (c) $b = 322$ (14, 23). Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 112 \\text{ } (8, \\text{ }14)  \\text{ }(q = 0.1)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.075)$, and (c) $b = 322 \\text{ } (14, \\text{ }26) \\text{ }(q = 0.065)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
 #| fig-width: 6
 #| fig-height: 2.5
 
@@ -907,20 +908,20 @@ training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 <!--To generate errors for different total number of bins-->
 ```{r}
 ## To initialize number of bins along the x-axis
-bin1_vec_scurve <- 4:19 #sqrt(NROW(training_data_scurve)/2)
+bin1_vec_scurve <- 2:19 #sqrt(NROW(training_data_scurve)/2)
 
 error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_scurve) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
 
   scurve_model <- fit_highd_model(
     training_data = training_data_scurve,
     emb_df = umap_scurve_scaled,
     bin1 = xbins,
     r2 = r2,
-    q = 0.07, 
+    q = 0.1, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "x"
@@ -951,11 +952,11 @@ mse_scurve_b <- ggplot(error_scurve,
                          y = log(MSE))) + 
   geom_point(size = 1) +
   geom_line() + 
-  geom_vline(xintercept = 240, linetype="solid", 
+  geom_vline(xintercept = 220, linetype="solid", 
              color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_vline(xintercept = 96, linetype=2, 
+  geom_vline(xintercept = 112, linetype=2, 
              color = "black", linewidth=0.8, alpha = 0.5) +
-  geom_vline(xintercept = 375, linetype=2, 
+  geom_vline(xintercept = 350, linetype=2, 
              color = "black", linewidth=0.8, alpha = 0.5) +
   ylab("log(MSE)") +
   xlab("b") +
