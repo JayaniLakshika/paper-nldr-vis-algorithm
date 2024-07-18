@@ -2282,7 +2282,7 @@ pacmap_plot_mnist
 <!-- Fit the model and compute error-->
 ```{r}
 ## Compute hexbin parameters
-num_bins_x_mnist <- 37
+num_bins_x_mnist <- 22
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1) 
@@ -2369,7 +2369,7 @@ error_plot_mnist <- error_df |>
   interior_annotation("b", sc_ltr_pos_mnist)
 ```
 
-<!--bin1 = 37, bin2 = 26, b = 962, non_empty = 398-->
+<!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 ```{r}
 #| echo: false
 #| fig-cap: "(a) Model generated in $2\\text{-}D$, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows a non-linear continuous structure. Most low $p\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most high p-D model errors are concentrated along the upper edge."
@@ -2396,80 +2396,20 @@ Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the mod
 :::
 <!-- need to update the youtube recording-->
 
-There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (@fig-model-mnist (b)). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist-anomalies (a). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist-anomalies (b)). 
-
+There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (@fig-model-mnist b). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out). 
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
-```{r}
-## Data with pixel values
-mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
-
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% c( 4699, 4785, 5173, 6671, 2186, 4636, 4882, 
-                          773, 2825, 6169, 6948, 5987, 1282, 7715, 
-                          622, 2989, 6912, 4370, 1227, 4042, 2444, 
-                          836, 1654)) 
-
-imge_error_sample_within <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ factor(instance, levels = c( 4699, 4785, 5173, 6671, 2186, 4636, 
-                                            4882, 773, 2825, 6169, 6948, 5987, 
-                                            1282, 7715, 622, 2989, 6912, 4370, 
-                                            1227, 4042, 2444, 836, 1654)), 
-             ncol = 4) +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none")
-```
-
 <!--outside the nonlinear structure-->
-```{r}
-img_error <- error_df |> 
-  filter(row_wise_abs_error >= 8) |> 
-  filter((!ID %in% c(4699, 4785, 5173, 6671, 2186, 4636, 4882, 773, 
-                            2825, 6169, 6948, 5987, 1282, 7715, 622, 2989, 
-                            6912, 4370, 1227, 4042, 2444, 836, 1654))) |>
-  pull(ID)
 
-pixels_gathered <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
-  filter(instance %in% img_error) 
+::: {#fig-mnist-anomalies layout-ncol="2" fig-pos="H"}
+![](figures/mnist/img_error_sample_within.png){#fig-mnist1-within}
 
-imge_error_sample <- pixels_gathered |> 
-  ggplot(aes(x, y, fill = value)) +  
-  geom_tile() +  
-  facet_wrap(~ instance, ncol = 2) +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none") 
-```
+![](figures/mnist/img_error_sample_out.png){#fig-mnist1-out}
 
-```{r}
-#| echo: false
-#| fig-cap: "Some images of handwritten digit 1 which occur high model error (a) within the non-linear strcuture, and (b) outside the non-linear structure. The images shows different patterns of digit 1."
-#| label: fig-mnist-anomalies
-#| out-height: 35%
-#| fig-pos: H
+Some images of handwritten digit 1 which occur high model error (a) within the non-linear structure, and (b) outside the non-linear structure. The images shows different patterns of digit 1.
+:::
 
-imge_error_sample_within + imge_error_sample +
-  plot_layout(ncol=2) +
-  plot_annotation(tag_levels = 'a')
-```
-
-     
 ## Discussion {#sec-discussion}
 
 <!-- - Summarise contributions -->

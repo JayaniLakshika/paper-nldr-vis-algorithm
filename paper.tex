@@ -1259,26 +1259,44 @@ the tour animation is available at
 
 There are certain data points that exhibit high error rates due to their
 deviation from the usual \pD{} data structure, which makes them
-anomalies (Figure~\ref{fig-model-mnist} (b)). These anomalies can be
+anomalies (Figure~\ref{fig-model-mnist} b). These anomalies can be
 classified into two types: those that are anomalies within the
 non-linear structure and those that lie outside of it. The images
 associated with high model error points within the non-linear structure
 display different patterns of the digit 1, as shown in
-Figure~\ref{fig-mnist-anomalies} (a). However, when comparing these
-images to the ones found outside of the non-linear structure, it becomes
-evident that the latter display different patterns of the digit 1
-(Figure~\ref{fig-mnist-anomalies} (b)).
+Figure~\ref{fig-mnist1-within}. However, when comparing these images to
+the ones found outside of the non-linear structure, it becomes evident
+that the latter display different patterns of the digit 1
+(Figure~\ref{fig-mnist1-out}).
 
 \begin{figure}[H]
 
+\begin{minipage}{0.50\linewidth}
+
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.35\textheight]{paper_files/figure-pdf/fig-mnist-anomalies-1.pdf}
+\includegraphics{figures/mnist/img_error_sample_within.png}
 
 }
 
+\subcaption{\label{fig-mnist1-within}}
+
+\end{minipage}%
+%
+\begin{minipage}{0.50\linewidth}
+
+\centering{
+
+\includegraphics{figures/mnist/img_error_sample_out.png}
+
+}
+
+\subcaption{\label{fig-mnist1-out}}
+
+\end{minipage}%
+
 \caption{\label{fig-mnist-anomalies}Some images of handwritten digit 1
-which occur high model error (a) within the non-linear strcuture, and
+which occur high model error (a) within the non-linear structure, and
 (b) outside the non-linear structure. The images shows different
 patterns of digit 1.}
 

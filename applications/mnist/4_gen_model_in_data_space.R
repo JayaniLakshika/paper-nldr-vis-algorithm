@@ -16,7 +16,7 @@ mnist_scaled_obj <- gen_scaled_data(
 pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_mnist <- 37
+num_bins_x_mnist <- 22
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1)
@@ -88,4 +88,4 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges$from,
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c("#6a3d9a", "#33a02c"))
+                         levelColors = c("#000000", "#33a02c"))

@@ -56,3 +56,52 @@ img_sample <- pixels_gathered |>
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none")
+
+
+pixels_gathered <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  tidyr::extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% c( 4699, 4785, 5173, 6671, 2186, 4636, 4882,
+                          773, 2825, 6169, 6948, 5987, 1282, 7715,
+                          622, 2989, 6912, 4370, 1227, 4042, 2444,
+                          836, 1654))
+
+imge_error_sample_within <- pixels_gathered |>
+  ggplot(aes(x, y, fill = value)) +
+  geom_tile() +
+  facet_wrap(~ factor(instance, levels = c( 4699, 4785, 5173, 6671, 2186, 4636,
+                                            4882, 773, 2825, 6169, 6948, 5987,
+                                            1282, 7715, 622, 2989, 6912, 4370,
+                                            1227, 4042, 2444, 836, 1654)),
+             ncol = 8) +
+  coord_fixed() +
+  scale_fill_continuous_sequential(palette = "Grays") +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position = "none")
+
+img_error <- error_df |>
+  filter(row_wise_abs_error >= 8) |>
+  filter((!ID %in% c(4699, 4785, 5173, 6671, 2186, 4636, 4882, 773,
+                     2825, 6169, 6948, 5987, 1282, 7715, 622, 2989,
+                     6912, 4370, 1227, 4042, 2444, 836, 1654))) |>
+  pull(ID)
+
+pixels_gathered <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% img_error)
+
+imge_error_sample <- pixels_gathered |>
+  ggplot(aes(x, y, fill = value)) +
+  geom_tile() +
+  facet_wrap(~ instance, ncol = 8) +
+  coord_fixed() +
+  scale_fill_continuous_sequential(palette = "Grays") +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position = "none")
