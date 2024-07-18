@@ -498,11 +498,11 @@ set \(y_ {2,\text{max}} = 1\).
 \subsubsection{Computing hexagon grid
 configuration}\label{computing-hexagon-grid-configuration}
 
-Although there are several implementations of hexagon binning (REF), and
-a published paper (REF), surprisingly, none has sufficient detail or
-components that produce everything needed for this project. So we
-described the process used here. Figure~\ref{fig-hex-param} illustrates
-the notation used.
+Although there are several implementations of hexagon binning
+\citep{carr1987}, and a published paper \citep{dan2023}, surprisingly,
+none has sufficient detail or components that produce everything needed
+for this project. So we described the process used here.
+Figure~\ref{fig-hex-param} illustrates the notation used.
 
 The \gD{} hexagon grid is defined by its bin centroids. Each hexagon,
 \(H_h\) (\(h = 1, \dots, b\)) is uniquely described by centroid,
@@ -562,10 +562,9 @@ components needed to render the model representation in high dimensions.
 
 \subsubsection{Indicating neighborhood}\label{indicating-neighborhood}
 
-Delaunay triangulation \citep{lee1980} (XXXREF what R package are you
-using?) is used to connect neighboring centroids. The edges are needed
-to preserve neighborhood information when the model is lifted into
-\pD{}.
+Delaunay triangulation \citep{lee1980, alb2024} is used to connect
+neighboring centroids. The edges are needed to preserve neighborhood
+information when the model is lifted into \pD{}.
 
 When shapes are non-linear in the NLDR layout, some edges could be long.
 It is unlikely
@@ -607,7 +606,7 @@ and three views of the fit in projections from \(7\text{-}D\), for the
 S-curve data. The model closely fits the shape, but it has breaks which
 means that it does not adequately capture the surface. (The
 \textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at (\url{https://youtu.be/N6iWEj3aVps}).}
+the full video is available at \url{https://youtu.be/N6iWEj3aVps}).}
 
 \end{figure}%
 
@@ -621,10 +620,10 @@ pruned, and we re-plot the \gD{} view.
 
 \subsection{Measuring the fit}\label{sec-summary}
 
-The model here is similar to a confirmatory factor analysis model (REF),
-\(\widehat{T}(X_1, X_2, X_3) + \Epsilon\). The difference between the
-fitted model and observed values would be considered to be residuals,
-and for this problem are \(7\text{-}D\).
+The model here is similar to a confirmatory factor analysis model
+\citep{brown2015}, \(\widehat{T}(X_1, X_2, X_3) + \Epsilon\). The
+difference between the fitted model and observed values would be
+considered to be residuals, and for this problem are \(7\text{-}D\).
 
 Observations are associated with their bin center, \(C_{h}^{(p)}\),
 which are also considered to be the \emph{fitted values}. These can also

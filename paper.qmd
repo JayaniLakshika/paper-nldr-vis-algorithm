@@ -376,7 +376,8 @@ num_bins_x_scurve <- 7
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = num_bins_x_scurve, 
-  r2 = r2)
+  r2 = r2,
+  q = 0.1)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
@@ -501,7 +502,7 @@ Because we are working with distances between points, starting with data having 
 
 #### Computing hexagon grid configuration
 
-Although there are several implementations of hexagon binning (REF), and a published paper (REF), surprisingly, none has sufficient detail or components that produce everything needed for this project. So we described the process used here. @fig-hex-param illustrates the notation used. 
+Although there are several implementations of hexagon binning [@carr1987], and a published paper [@dan2023], surprisingly, none has sufficient detail or components that produce everything needed for this project. So we described the process used here. @fig-hex-param illustrates the notation used. 
 
 The \gD{} hexagon grid is defined by its bin centroids. Each hexagon, $H_h$ ($h = 1, \dots, b$) is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The number of bins in each direction is denoted as $(b_1, b_2)$, with  $b = b_1 \times b_2$ being the total number of bins. We expect the user to provide just $b_1$ and we calculate $b_2$ using the NLDR ratio, to compute the grid. 
 
@@ -525,9 +526,9 @@ a1 <- tibble(x = all_centroids_df$c_x[4],
              y = all_centroids_df$c_y[21],
              yend = all_centroids_df$c_y[21],
              label = expression(a[1]))
-a2 <- tibble(x = all_centroids_df$c_x[27],
-             xend = all_centroids_df$c_x[27],
-             y = all_centroids_df$c_y[27],
+a2 <- tibble(x = all_centroids_df$c_x[25],
+             xend = all_centroids_df$c_x[25],
+             y = all_centroids_df$c_y[25],
              yend = all_centroids_df$c_y[33],
              label = expression(a[2]))
 hex_param_vis <- ggplot() + 
@@ -619,15 +620,14 @@ hex_param_vis <- ggplot() +
              color = "black", hjust=-0.2) +
     annotate("text", x=-0.18, y=-0.25, 
       label = expression(group("(", list(s[1], s[2]), ")")),
-      color = "black") 
+      color = "black") +
+  coord_equal()
 ```
 
 ```{r}
 #| label: fig-hex-param
 #| fig-cap: "The components of the hexagon grid illustrating notation."
 #| out-height: 30%
-#| fig-width: 2.5
-#| fig-height: 3.3
 #| fig-pos: H
  
 hex_param_vis
@@ -675,7 +675,7 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 
 #### Indicating neighborhood
 
-Delaunay triangulation [@lee1980] (XXXREF what R package are you using?) is used to connect neighboring centroids. The edges are needed to preserve neighborhood information when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980;@alb2024] is used to connect neighboring centroids. The edges are needed to preserve neighborhood information when the model is lifted into \pD{}. 
 
 <!-- When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$. -->
 
@@ -702,7 +702,7 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 ![](figures/scurve/sc_3.png)
 
-XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/N6iWEj3aVps>). 
+XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>). 
 :::
 
 XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too. 
@@ -712,7 +712,7 @@ XXX Should there be a second long edge removal? You can compute the edges in \pD
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
 
-The model here is similar to a confirmatory factor analysis model (REF), $\widehat{T}(X_1, X_2, X_3) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are $7\text{-}D$. 
+The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T}(X_1, X_2, X_3) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are $7\text{-}D$. 
 
 <!--#### Fitted values-->
 
