@@ -376,7 +376,8 @@ num_bins_x_scurve <- 7
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = num_bins_x_scurve, 
-  r2 = r2)
+  r2 = r2,
+  q = 0.1)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
@@ -525,9 +526,9 @@ a1 <- tibble(x = all_centroids_df$c_x[4],
              y = all_centroids_df$c_y[21],
              yend = all_centroids_df$c_y[21],
              label = expression(a[1]))
-a2 <- tibble(x = all_centroids_df$c_x[27],
-             xend = all_centroids_df$c_x[27],
-             y = all_centroids_df$c_y[27],
+a2 <- tibble(x = all_centroids_df$c_x[25],
+             xend = all_centroids_df$c_x[25],
+             y = all_centroids_df$c_y[25],
              yend = all_centroids_df$c_y[33],
              label = expression(a[2]))
 hex_param_vis <- ggplot() + 
@@ -702,7 +703,7 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 ![](figures/scurve/sc_3.png)
 
-XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/N6iWEj3aVps>). 
+XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>). 
 :::
 
 XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too. 
