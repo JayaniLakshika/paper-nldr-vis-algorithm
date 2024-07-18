@@ -539,14 +539,14 @@ minimum data value. Because it is one buffer unit, \(q\) below the
 minimum data values, \(s_1 = -q\) and \(s_2 = -qr_2\).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
-upper bound of the first NLDR component, \(a_1 > \frac{1+q}{b_1 -3}\).
+upper bound of the first NLDR component, \(a_1 > \frac{1+2q}{b_1 -1}\).
 Similarly, for the second NLDR component,
-\(a_2 > \frac{r_2(1 + q)}{(b_2 - 2)}\). Since
+\(a_2 > \frac{r_2 + q(1 + r_2)}{(b_2 - 1)}\). Since
 \(a_2 = \frac{\sqrt(3)}{2}a_1\) for regular hexagons,
-\(a_1 > \frac{2r_2(1 + q)}{\sqrt{3}(b_2 - 2)}\). This is a linear
-optimization problem. Therefore, the optimal solution must occur on a
-vertex. Therefore,
-\(b_2 = \Big\lceil2 +\frac{2r_2(b_1 - 3)}{\sqrt{3}}\Big\rceil\).
+\(a_1 > \frac{2[r_2 + q(1 + r_2)]}{\sqrt{3}(b_2 - 1)}\). This is a
+linear optimization problem. Therefore, the optimal solution must occur
+on a vertex. Therefore,
+\(b_2 = \Big\lceil1 +\frac{2[r_2 + q(1 + r_2)](b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil\).
 
 \begin{figure}[H]
 
@@ -727,7 +727,7 @@ determine an effective number of bins to construct a reasonable model
 \caption{\label{fig-bins-scurve}Hexbin density plots of UMAP layout of
 the S-curve data, using three different bin inputs: (a)
 \(b = 91 \text{ } (7, \text{ }13)  \text{ }(q = 0.12)\), (b)
-\(b = 220 \text{ } (11, \text{ }20) \text{ }(q = 0.075)\), and (c)
+\(b = 220 \text{ } (11, \text{ }20) \text{ }(q = 0.07)\), and (c)
 \(b = 527 \text{ } (17, \text{ }31) \text{ }(q = 0.05)\). Color
 indicates standardized counts, dark indicating high count and light
 indicates low count. At the smallest bin size the data segregates into
