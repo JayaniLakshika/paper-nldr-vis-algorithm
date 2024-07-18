@@ -230,7 +230,7 @@ nldr4 <- tsne_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("d")
 
-tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_51.rds")
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 
 nldr5 <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
@@ -268,7 +268,7 @@ nldr8 <- pacmap_pbmc |>
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
-# (a) UMAP (n_neighbors = 30, min_dist = 0.3), (b) UMAP (n_neighbors = 5, min_dist = 0.01), (c) UMAP (n_neighbors = 15, min_dist = 0.99), (f) tSNE (perplexity = 5), (g) tSNE (perplexity = 51), (l) TriMAP (n_inliers = 12, n_outliers = 4, n_random = 3), (q) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.9, FP_ratio = 5)
+# (a) UMAP (n_neighbors = 30, min_dist = 0.3), (b) UMAP (n_neighbors = 5, min_dist = 0.01), (c) UMAP (n_neighbors = 15, min_dist = 0.99), (f) tSNE (perplexity = 5), (g) tSNE (perplexity = 30), (l) TriMAP (n_inliers = 12, n_outliers = 4, n_random = 3), (q) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.9, FP_ratio = 5)
 nldr1 + nldr2 + nldr3 + nldr4 +
   nldr5 + nldr6 + nldr7 + nldr8 +
   plot_layout(ncol = 4)
@@ -1457,7 +1457,7 @@ umap_pbmc <- umap_pbmc_scaled |>
 
 <!-- UMAP parameters suggested by the author (n_neighbors = 30, min_dist = 0.3)-->
 ```{r}
-#| fig-cap: "Reproduction of plot published in Chen et al. (2023) showing a $2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. The parameter settings, beyond the defaults, are 30 nearest neighbors and minimum distance equal to 0.3. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading."
+#| fig-cap: "Reproduction of plot published in Chen et al. (2023) showing a $2\\text{-}D$ layout from UMAP applied for the PBMC3k dataset. The (hyper-)parameter settings, beyond the defaults, are 30 nearest neighbors and minimum distance equal to 0.3. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading."
 #| label: fig-umap-author
 #| out-height: 30%
 #| fig-pos: H
@@ -1465,7 +1465,7 @@ umap_pbmc <- umap_pbmc_scaled |>
 umap_pbmc 
 ```
 
-To determine whether the UMAP representation with the parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the \pD{} data. The figures in @fig-pbmc1-sc show three well-separated clusters, indicating that the suggested UMAP representation preserves the global structure (see @fig-umap-author). However, as shown in @fig-pbmc1-sc, these clusters are close to each other in \pD{}. Also, non-linear continuity patterns and high-density patches within the clusters are observed (see @fig-pbmc1-sc). Therefore, the suggested UMAP representation (see @fig-umap-author) does not accurately preserve the local structure of the PBMC3k dataset.  
+To determine whether the UMAP representation with the (hyper-)parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the \pD{} data. The @fig-umap-author shows three well-separated clusters. However, as shown in @fig-pbmc1-sc, there is no big separation between three clusters in \pD{}. Therefore, the suggested UMAP representation (@fig-umap-author) does not accurately represent the structure(s) present in PBMC3k dataset. But, when visualizing the model-in-th-data-space some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-pbmc1-sc).  
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -1554,6 +1554,8 @@ error_plot_pbmc <- error_df |>
 
 ```
 
+XXXX I think we can remove the error figure, it's not part of the story
+
 <!--bin1 = 30, bin2 = 29, b = 870, non_empty = 132-->
 ```{r}
 #| echo: false
@@ -1576,58 +1578,505 @@ trimesh_removed_pbmc + error_plot_pbmc +
 Screen shots of the **langevitour** of the PBMC3k data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/VqqWuE0Jj6A>).
 :::
 
-In order to find a reasonable NLDR representation for the PBMC3k dataset, we calculated the absolute error for different numbers of non-empty bins using various NLDR techniques and different parameter settings (see @fig-pbmc-abserror). After analyzing the results, we found that tSNE with a perplexity set to $30$ had the lowest error when the number of non-empty bins was $137$. Therefore, tSNE with a perplexity of $30$, which is the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
+In order to find a reasonable NLDR representation for the PBMC3k dataset, the absolute error for different numbers of non-empty bins using various NLDR techniques and different (hyper-)parameter settings (@fig-pbmc-abserror) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error when there were $124$ number of non-empty bins. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
 
 <!--compute absolute error for different parameter choices-->
+
 ```{r}
-error_df_umap <- read_csv("data/pbmc3k/error_df_umap.csv", col_names = FALSE)
-names(error_df_umap) <- c("error", "mse", "bin1", "bin2", "b", "b_non_empty", 
-                     "method", "n_neighbors", "min_dist")
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
-error_df_umap <- error_df_umap |>
-  mutate(type = paste0("n_neighbors: ", n_neighbors, ", min_dist: ", min_dist)) |>
-  select(-c(n_neighbors, min_dist))
+## For umap
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
+pbmc_scaled_obj_umap <- gen_scaled_data(
+  data = umap_pbmc)
+umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
 
-error_df_tsne <- read_csv("data/pbmc3k/error_df_tsne.csv", col_names = FALSE)
-names(error_df_tsne) <- c("error", "mse", "bin1", "bin2", "b", "b_non_empty", 
-                          "method", "perplexity")
+lim1 <- pbmc_scaled_obj_umap$lim1
+lim2 <- pbmc_scaled_obj_umap$lim2
+r2_umap <- diff(lim2)/diff(lim1) 
 
-error_df_tsne <- error_df_tsne |>
-  mutate(type = paste0("perplexity: ", perplexity)) |>
-  select(-perplexity)
+error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 
-error_df <- bind_rows(error_df_umap, error_df_tsne)
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = umap_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_umap,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "UMAP_30_min_dist_0.3")
+  
+  error_pbmc_umap <- bind_rows(error_pbmc_umap, error_df)
+  
+}
 
-error_plot_pbmc <- ggplot(error_df, 
-                              aes(x = b_non_empty, 
-                                  y = log(error), 
-                                  group = type, 
-                                  colour = type)) + 
-  geom_point(size = 1) +
-  geom_line() + 
-  geom_vline(xintercept = 137, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#984ea3',
-                              '#ff7f00','#a6cee3','#a65628','#f781bf')) +
-  ylab("log(absolute error)") +
-  xlab("number of non-empty bins") +
-  theme(axis.text.x = element_text(size = 5),
-        axis.text.y = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, angle = 90))
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
+
+## For umap
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
+pbmc_scaled_obj_umap <- gen_scaled_data(
+  data = umap_pbmc)
+umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_umap$lim1
+lim2 <- pbmc_scaled_obj_umap$lim2
+r2_umap <- diff(lim2)/diff(lim1) 
+
+error_pbmc_umap2 <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = umap_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_umap,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "UMAP_5_min_dist_0.01")
+  
+  error_pbmc_umap2 <- bind_rows(error_pbmc_umap2, error_df)
+  
+}
+
+## For umap
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:23 #sqrt(NROW(training_data_pbmc)/2)
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
+pbmc_scaled_obj_umap <- gen_scaled_data(
+  data = umap_pbmc)
+umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_umap$lim1
+lim2 <- pbmc_scaled_obj_umap$lim2
+r2_umap <- diff(lim2)/diff(lim1) 
+
+error_pbmc_umap3 <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = umap_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_umap,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "UMAP_15_min_dist_0.99")
+  
+  error_pbmc_umap3 <- bind_rows(error_pbmc_umap3, error_df)
+  
+}
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:22 #sqrt(NROW(training_data_pbmc)/2)
+
+## For tsne
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
+pbmc_scaled_obj_tsne <- gen_scaled_data(
+  data = tsne_pbmc)
+tsne_pbmc_scaled <- pbmc_scaled_obj_tsne$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_tsne$lim1
+lim2 <- pbmc_scaled_obj_tsne$lim2
+r2_tsne <- diff(lim2)/diff(lim1) 
+
+error_pbmc_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = tsne_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_tsne,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "tSNE",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "tsne_5")
+  
+  error_pbmc_tsne <- bind_rows(error_pbmc_tsne, error_df)
+  
+}
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:26 #sqrt(NROW(training_data_pbmc)/2)
+
+## For tsne
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
+pbmc_scaled_obj_tsne <- gen_scaled_data(
+  data = tsne_pbmc)
+tsne_pbmc_scaled <- pbmc_scaled_obj_tsne$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_tsne$lim1
+lim2 <- pbmc_scaled_obj_tsne$lim2
+r2_tsne <- diff(lim2)/diff(lim1) 
+
+error_pbmc_tsne2 <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = tsne_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_tsne,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "tSNE",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "tsne_30")
+  
+  error_pbmc_tsne2 <- bind_rows(error_pbmc_tsne2, error_df)
+  
+}
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:46 #sqrt(NROW(training_data_pbmc)/2)
+
+## For phate
+phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
+pbmc_scaled_obj_phate <- gen_scaled_data(
+  data = phate_pbmc)
+phate_pbmc_scaled <- pbmc_scaled_obj_phate$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_phate$lim1
+lim2 <- pbmc_scaled_obj_phate$lim2
+r2_phate <- diff(lim2)/diff(lim1) 
+
+error_pbmc_phate <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = phate_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_phate,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "PHATE",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "phate_5")
+  
+  error_pbmc_phate <- bind_rows(error_pbmc_phate, error_df)
+  
+}
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
+
+## For trimap
+trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
+pbmc_scaled_obj_trimap <- gen_scaled_data(
+  data = trimap_pbmc)
+trimap_pbmc_scaled <- pbmc_scaled_obj_trimap$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_trimap$lim1
+lim2 <- pbmc_scaled_obj_trimap$lim2
+r2_trimap <- diff(lim2)/diff(lim1) 
+
+error_pbmc_trimap <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = trimap_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_trimap,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "TriMAP",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "trimap_12_4_3")
+  
+  error_pbmc_trimap <- bind_rows(error_pbmc_trimap, error_df)
+  
+}
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:43 #sqrt(NROW(training_data_pbmc)/2)
+
+## For pacmap
+pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
+pbmc_scaled_obj_pacmap <- gen_scaled_data(
+  data = pacmap_pbmc)
+pacmap_pbmc_scaled <- pbmc_scaled_obj_pacmap$scaled_nldr
+
+lim1 <- pbmc_scaled_obj_pacmap$lim1
+lim2 <- pbmc_scaled_obj_pacmap$lim2
+r2_pacmap <- diff(lim2)/diff(lim1) 
+
+error_pbmc_pacmap <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_pbmc) {
+  
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  
+  pbmc_model <- fit_highd_model(
+    training_data = training_data_pbmc,
+    emb_df = pacmap_pbmc_scaled,
+    bin1 = xbins,
+    r2 = r2_pacmap,
+    q = 0.1, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC_"
+  )
+  
+  df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+  df_bin_pbmc <- pbmc_model$df_bin
+  
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_pbmc,
+    df_bin = df_bin_pbmc,
+    training_data = training_data_pbmc,
+    newdata = NULL,
+    type_NLDR = "PaCMAP",
+    col_start = "PC_") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_pbmc),
+           method = "pacmap")
+  
+  error_pbmc_pacmap <- bind_rows(error_pbmc_pacmap, error_df)
+  
+}
 
 ```
 
 ```{r}
-#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $137$, the lowest error occurred with the parameters perplexity: $30$."
+error_pbmc <- bind_rows(error_pbmc_umap, 
+                        error_pbmc_umap2,
+                        error_pbmc_umap3,
+                        error_pbmc_tsne,
+                        error_pbmc_tsne2,
+                        error_pbmc_phate,
+                        error_pbmc_trimap,
+                        error_pbmc_pacmap)
+```
+
+```{r}
+# read the png file from device 
+tsne_5_img <- readPNG("figures/pbmc3k/tsne_5.png", native = TRUE) 
+phate_5_img <- readPNG("figures/pbmc3k/phate_5.png", native = TRUE) 
+umap_img <- readPNG("figures/pbmc3k/author_view.png", native = TRUE) 
+tsne_30_img <- readPNG("figures/pbmc3k/tsne_30.png", native = TRUE)
+
+## Add arrows
+arrow_df_pbmc <- tibble(x = c(94, 245, 101, 150),
+             xend = c(96, 263, 98, 180),
+             y = c(10.06, 9.72, 9.88, 9.855),
+             yend = c(10.14, 9.8, 9.85, 10))
+
+error_plot_pbmc <- ggplot(error_pbmc, 
+                              aes(x = b_non_empty, 
+                                  y = log(Error), 
+                                  colour = method)) + 
+  geom_point(size = 0.8) +
+  geom_line(linewidth = 0.3) + 
+  geom_vline(xintercept = 124, linetype="solid", 
+             color = "black", linewidth=0.8, alpha = 0.5) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
+                              '#984ea3','#999999','#a65628','#f781bf')) +
+  ylab("log(absolute error)") +
+  xlab("number of non-empty bins")+
+    geom_segment(data = arrow_df_pbmc, aes(
+      x = x,  
+      y = y,  
+      xend = xend, 
+      yend = yend), 
+      arrow = arrow(length = unit(0.01, "npc"),
+        ends = "first"), 
+        color = "black") +
+    inset_element(p = tsne_5_img, 
+                  left = 1.7, 
+                  bottom = 0.16, 
+                  right = 0, 
+                  top = 0.31) +                   
+    inset_element(p = phate_5_img, 
+                  left = 0.6, 
+                  bottom = 0.5, 
+                  right = 0, 
+                  top = 0.65) +                   
+    inset_element(p = umap_img, 
+                  left = 1.3, 
+                  bottom = 0.3, 
+                  right = 0, 
+                  top = 0.5) +
+    inset_element(p = tsne_30_img, 
+                  left = 0.6, 
+                  bottom = 0.03, 
+                  right = 0, 
+                  top = 0.23) +
+  theme(#aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, angle = 90),
+        legend.position = "none",
+        legend.text = element_text(size = 7))
+
+```
+
+```{r}
+#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $124$, the lowest error occurred with the parameters perplexity: $30$."
 #| label: fig-pbmc-abserror
 #| fig-pos: H
-#| out-width: 50%
+#| out-width: 70%
 
 error_plot_pbmc
 ```
 
-As shown in @fig-tsne-suggest, there are three well-separated clusters, although they are located close to each other. Additionally, non-linear structures can also be observed within the clusters (see @fig-model-pbmc (a)). In this manner, tSNE was able to capture the data structure for the PBMC3k dataset that UMAP failed to do.
+As shown in @fig-tsne-suggest, there are three well-separated clusters, although they are located close to each other. Additionally, non-linear structures can also be observed within the clusters (@fig-tsne-suggest). This demonstrates that tSNE accurately captures the data structure of the PBMC3k dataset, which UMAP did not achieve.
 
 <!--best choice-->
 
@@ -1659,7 +2108,7 @@ We then fit the model for tSNE, and visualize the resultant model in the \pD{} d
 <!--Fit the best model and compute error-->
 ```{r}
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 15
+num_bins_x_pbmc <- 16
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1) 
@@ -1696,7 +2145,7 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
-benchmark_pbmc <- 0.1
+#benchmark_pbmc <- 0.1
 
 trimesh_removed_pbmc <- vis_rmlg_mesh(
   distance_edges = distance_pbmc,

@@ -1006,26 +1006,27 @@ shows three well-separated clusters.
 
 \caption{\label{fig-umap-author}Reproduction of plot published in Chen
 et al.~(2023) showing a \(2\text{-}D\) layout from UMAP applied for the
-PBMC3k dataset. The parameter settings, beyond the defaults, are 30
-nearest neighbors and minimum distance equal to 0.3. We use our
+PBMC3k dataset. The (hyper-)parameter settings, beyond the defaults, are
+30 nearest neighbors and minimum distance equal to 0.3. We use our
 model-in-the-data-space to assess whether this is an accurate
 representation of structure present in the high-dimensional data, or if
 it is misleading.}
 
 \end{figure}%
 
-To determine whether the UMAP representation with the parameter choice
-suggested by \citet{chen2023} preserves the original data structure, we
-visualize the model constructed with UMAP overlaid on the \pD{} data.
-The figures in Figure~\ref{fig-pbmc1-sc} show three well-separated
-clusters, indicating that the suggested UMAP representation preserves
-the global structure (see Figure~\ref{fig-umap-author}). However, as
-shown in Figure~\ref{fig-pbmc1-sc}, these clusters are close to each
-other in \pD{}. Also, non-linear continuity patterns and high-density
-patches within the clusters are observed (see
-Figure~\ref{fig-pbmc1-sc}). Therefore, the suggested UMAP representation
-(see Figure~\ref{fig-umap-author}) does not accurately preserve the
-local structure of the PBMC3k dataset.
+To determine whether the UMAP representation with the (hyper-)parameter
+choice suggested by \citet{chen2023} preserves the original data
+structure, we visualize the model constructed with UMAP overlaid on the
+\pD{} data. The Figure~\ref{fig-umap-author} shows three well-separated
+clusters. However, as shown in Figure~\ref{fig-pbmc1-sc}, there is no
+big separation between three clusters in \pD{}. Therefore, the suggested
+UMAP representation (Figure~\ref{fig-umap-author}) does not accurately
+represent the structure(s) present in PBMC3k dataset. But, when
+visualizing the model-in-th-data-space some unobserved structures can be
+seen. Some clusters have non-linear continuity patterns and high-density
+patches (Figure~\ref{fig-pbmc1-sc}).
+
+XXXX I think we can remove the error figure, it's not part of the story
 
 \begin{figure}[H]
 
@@ -1061,20 +1062,20 @@ animation is available at (\url{https://youtu.be/VqqWuE0Jj6A}).}
 \end{figure}%
 
 In order to find a reasonable NLDR representation for the PBMC3k
-dataset, we calculated the absolute error for different numbers of
-non-empty bins using various NLDR techniques and different parameter
-settings (see Figure~\ref{fig-pbmc-abserror}). After analyzing the
-results, we found that tSNE with a perplexity set to \(30\) had the
-lowest error when the number of non-empty bins was \(137\). Therefore,
-tSNE with a perplexity of \(30\), which is the default parameter
-setting, is considered as a reasonable representation for the PBMC3k
-dataset.
+dataset, the absolute error for different numbers of non-empty bins
+using various NLDR techniques and different (hyper-)parameter settings
+(Figure~\ref{fig-pbmc-abserror}) were calculated. After analyzing the
+results, it was found that tSNE with default (hyper-)parameter setting
+(perplexity: \(30\)) achieved the lowest error when there were \(124\)
+number of non-empty bins. Therefore, tSNE with a perplexity value set to
+\(30\), the default parameter setting, is considered as a reasonable
+representation for the PBMC3k dataset.
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-abserror-1.pdf}
+\includegraphics[width=0.7\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-abserror-1.pdf}
 
 }
 
@@ -1085,7 +1086,7 @@ have a steep slope at the beginning, indicating that a smaller number of
 non-empty bins causes a larger amount of error. Then, the slope
 gradually declines or level off, indicating that a higher number of
 non-empty bins generates a smaller error. Using the elbow method, it was
-observed that when the number of non-empty bins is set to \(137\), the
+observed that when the number of non-empty bins is set to \(124\), the
 lowest error occurred with the parameters perplexity: \(30\).}
 
 \end{figure}%
@@ -1093,9 +1094,9 @@ lowest error occurred with the parameters perplexity: \(30\).}
 As shown in Figure~\ref{fig-tsne-suggest}, there are three
 well-separated clusters, although they are located close to each other.
 Additionally, non-linear structures can also be observed within the
-clusters (see Figure~\ref{fig-model-pbmc} (a)). In this manner, tSNE was
-able to capture the data structure for the PBMC3k dataset that UMAP
-failed to do.
+clusters (Figure~\ref{fig-tsne-suggest}). This demonstrates that tSNE
+accurately captures the data structure of the PBMC3k dataset, which UMAP
+did not achieve.
 
 \begin{figure}[H]
 
