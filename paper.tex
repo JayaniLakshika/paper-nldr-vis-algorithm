@@ -515,11 +515,11 @@ set \(y_ {2,\text{max}} = 1\).
 \subsubsection{Computing hexagon grid
 configuration}\label{computing-hexagon-grid-configuration}
 
-Although there are several implementations of hexagon binning (REF), and
-a published paper (REF), surprisingly, none has sufficient detail or
-components that produce everything needed for this project. So we
-described the process used here. Figure~\ref{fig-hex-param} illustrates
-the notation used.
+Although there are several implementations of hexagon binning
+\citep{carr1987}, and a published paper \citep{dan2023}, surprisingly,
+none has sufficient detail or components that produce everything needed
+for this project. So we described the process used here.
+Figure~\ref{fig-hex-param} illustrates the notation used.
 
 The \gD{} hexagon grid is defined by its bin centroids. Each hexagon,
 \(H_h\) (\(h = 1, \dots, b\)) is uniquely described by centroid,
@@ -536,7 +536,7 @@ position where the grid starts is defined as \((s_1, s_2)\), and
 corresponds to the centroid of the lowest left hexagon,
 \(C_{1}^{(2)} = (c_{11}, c_{12})\). This must be smaller than the
 minimum data value. Because it is one buffer unit, \(q\) below the
-minimum data values, \(s_1 = -q\) and \(s_2 = -r_2*q\).
+minimum data values, \(s_1 = -q\) and \(s_2 = -qr_2\).
 
 The value for \(b_2\) is computed by fixing \(b_1\). Considering the
 upper bound of the first NLDR component, \(a_1 > \frac{1+q}{b_1 -3}\).
@@ -579,7 +579,7 @@ components needed to render the model representation in high dimensions.
 
 \subsubsection{Indicating neighborhood}\label{indicating-neighborhood}
 
-Delaunay triangulation \citep[@albrecht2024]{lee1980} is used to connect
+Delaunay triangulation \citep{lee1980, alb2024} is used to connect
 neighboring centroids. The edges are needed to preserve neighborhood
 information when the model is lifted into \pD{}.
 
