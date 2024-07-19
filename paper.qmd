@@ -361,7 +361,7 @@ sc_ylims <- c(-0.3, 2)
 
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
-  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
+  geom_point(alpha=0.5, colour="#6a3d9a", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 ```
@@ -405,7 +405,7 @@ hex_grid_scurve <- ggplot(
                fill = "#ffffff") +
   geom_point(data = umap_scurve_scaled, 
              aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5, size = 0.5) +
+             alpha = 0.5, size = 0.5, color = "#6a3d9a") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos)
 ```
@@ -1452,7 +1452,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 umap_pbmc <- umap_pbmc_scaled |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
-  geom_point(alpha=0.5) 
+  geom_point(alpha=0.3, color = "#6a3d9a") 
 ```
 
 <!-- UMAP parameters suggested by the author (n_neighbors = 30, min_dist = 0.3)-->
@@ -2089,7 +2089,7 @@ tsne_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 tsne_pbmc <- tsne_pbmc_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2)) +
-  geom_point(alpha=0.5)
+  geom_point(alpha=0.3, color = "#6a3d9a")
 ```
 
 <!--tSNE with perplexity:30-->
