@@ -796,7 +796,7 @@ hex_grid_coloured_scurve1 <- ggplot() +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
   interior_annotation("a", position = c(0.92, 0.93)) +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.25, 1.1))
 ```
 
 ```{r}
@@ -839,7 +839,7 @@ hex_grid_coloured_scurve2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.25, 1.1)) +
   interior_annotation("b")
 
 ```
@@ -881,7 +881,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.25, 1.1)) +
   interior_annotation("c")
   
 ```
@@ -891,7 +891,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| label: fig-bins-scurve
 #| fig-pos: H
 #| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)  \\text{ }(q = 0.12)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.07)$, and (c) $b = 527 \\text{ } (17, \\text{ }31) \\text{ }(q = 0.05)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p\\text{-}D$ helps decide on a useful choice of number of bins."
-#| fig-width: 6
+#| fig-width: 9
 #| fig-height: 3
 
 hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve3 +
