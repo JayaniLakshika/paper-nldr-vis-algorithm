@@ -63,7 +63,7 @@ sample_size <- nrow(points)
 # Add noise to other dimensions
 points$x4 <- runif(sample_size, -0.02, 0.02)
 points$x5 <- runif(sample_size, -0.02, 0.02)
-points$x6 <- runif(sample_size, -0.1, 0.1)
+points$x6 <- runif(sample_size, -0.01, 0.01)
 points$x7 <- runif(sample_size, -0.01, 0.01)
 
 # # Add the ID to the s_curve_noise
@@ -81,15 +81,15 @@ points$x7 <- runif(sample_size, -0.01, 0.01)
 #   dplyr::arrange(ID) |>
 #   tibble::as_tibble()
 
-# Combine with the true model for visualization
-# df <- dplyr::bind_rows(true_model, points |> mutate(type = "data"))
-#
-# # Visualize with langevitour
-# langevitour(df |> dplyr::select(-type),
-#             lineFrom = append(point_connect_df$from, point_connect_df_dir_2$from),
-#             lineTo = append(point_connect_df$to, point_connect_df_dir_2$to),
-#             group = df$type,
-#             pointSize = append(rep(2, NROW(true_model)), rep(1, NROW(points))),
-#             levelColors = c("#6a3d9a", "#969696"),
-#             lineColors = rep("#969696", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
+#Combine with the true model for visualization
+df <- dplyr::bind_rows(true_model, points |> mutate(type = "data"))
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = append(point_connect_df$from, point_connect_df_dir_2$from),
+            lineTo = append(point_connect_df$to, point_connect_df_dir_2$to),
+            group = df$type,
+            pointSize = append(rep(2, NROW(true_model)), rep(1, NROW(points))),
+            levelColors = c("#6a3d9a", "#969696"),
+            lineColors = rep("#969696", length(append(point_connect_df$to, point_connect_df_dir_2$from))))
 
