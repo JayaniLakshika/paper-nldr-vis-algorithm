@@ -694,17 +694,17 @@ $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$
 Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids.
 
 <!--langevitour with pD model for S-curve-->
-::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"}
-![](figures/scurve/sc_best_trimesh.png)
+<!-- ::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"} -->
+<!-- ![](figures/scurve/sc_best_trimesh.png) -->
 
-![](figures/scurve/sc_1.png)
+<!-- ![](figures/scurve/sc_1.png) -->
 
-![](figures/scurve/sc_2.png)
+<!-- ![](figures/scurve/sc_2.png) -->
 
-![](figures/scurve/sc_3.png)
+<!-- ![](figures/scurve/sc_3.png) -->
 
-XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>). 
-:::
+<!-- XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>).  -->
+<!-- ::: -->
 
 XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too. 
 
@@ -1273,6 +1273,7 @@ trimesh_lg_scurve3 <- vis_rmlg_mesh(
 #| fig-cap: "$2\\text{-}D$ model generated for different benchmark values to remove long edges: (a) benchmark = $0.201$ (default), (b) benchmark = $0.35$, and (c) benchmark = $1.1$. What is the effective benchmark value to remove long edges?"
 #| fig-width: 6
 #| fig-height: 3
+#| eval: false
 
 trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
   plot_layout(guides='collect', ncol = 3) &
@@ -1288,20 +1289,20 @@ Deciding on the best fit relies on several elements:
 
 Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
 
-@fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed. 
+<!-- @fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed.  -->
 
-<!--langevitour with pD model for S-curve-->
-::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"}
-![](figures/scurve/sc_best_trimap_trimesh.png)
+<!--langevitour with pD model for S-curve--> 
+<!-- ::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"} -->
+<!-- ![](figures/scurve/sc_best_trimap_trimesh.png) -->
 
-![](figures/scurve/sc_trimap_best_1.png)
+<!-- ![](figures/scurve/sc_trimap_best_1.png) -->
 
-![](figures/scurve/sc_trimap_best_2.png)
+<!-- ![](figures/scurve/sc_trimap_best_2.png) -->
 
-![](figures/scurve/sc_trimap_best_3.png)
+<!-- ![](figures/scurve/sc_trimap_best_3.png) -->
 
-Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zEz2MUCtADM>). 
-:::
+<!-- Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zEz2MUCtADM>).  -->
+<!-- ::: -->
 
 
 <!-- The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best). -->

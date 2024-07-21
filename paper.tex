@@ -604,29 +604,6 @@ Furthermore, line segments that exist in the \kD{} model generate line
 segments in \pD{} by connecting the \pD{} means of the corresponding
 \kD{} bin centroids.
 
-\begin{figure}[H]
-
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_best_trimesh.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_1.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_2.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_3.png}\end{minipage}%
-
-\caption{\label{fig-scurve-sc}XXX Model in \gD{}, on the UMAP layout,
-and three views of the fit in projections from \(7\text{-}D\), for the
-S-curve data. The model closely fits the shape, but it has breaks which
-means that it does not adequately capture the surface. (The
-\textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at \url{https://youtu.be/N6iWEj3aVps}).}
-
-\end{figure}%
-
 XXX You need to have consistent colouring. In langevitour the points
 corresponding to observations are purple. They should be purple in the
 \gD{} view too.
@@ -837,21 +814,6 @@ increase.}
 
 \end{figure}%
 
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-lg-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-lg-scurve}\(2\text{-}D\) model generated for
-different benchmark values to remove long edges: (a) benchmark =
-\(0.201\) (default), (b) benchmark = \(0.35\), and (c) benchmark =
-\(1.1\). What is the effective benchmark value to remove long edges?}
-
-\end{figure}%
-
 \section{Best fit}\label{best-fit}
 
 Deciding on the best fit relies on several elements:
@@ -871,37 +833,6 @@ the same NLDR representation. In theory, because the MSE is computed on
 to compare different NLDR representations. A good NLDR representation
 should produce a good fit, producing a low MSE if the model fits the
 data well. However, it technically might be quite variable.
-
-Figure~\ref{fig-scurve-sc-best} shows one of the best fits for S-curve
-data. TriMAP with \(15\) nearest neighbors for forming the nearest
-neighbor triplet (\texttt{n\_inliers}), \(3\) outliers for forming the
-nearest neighbor triplets (\texttt{n\_outliers}), \(3\) random triplets
-per point (\texttt{n\_random}) is used as the NLDR method. The model is
-generated with \(103\) bins, which have a width of \(0.154\) and a
-height of \(0.133\). Edges with lengths greater than \(0.266\) are
-removed.
-
-\begin{figure}[H]
-
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_best_trimap_trimesh.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_trimap_best_1.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_trimap_best_2.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_trimap_best_3.png}\end{minipage}%
-
-\caption{\label{fig-scurve-sc-best}Model in \gD{}, on the TriMAP layout,
-and three views of the fit in projections from \(7\text{-}D\), for the
-S-curve data. The model closely fits the shape, but it has twists. (The
-\textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at \url{https://youtu.be/zEz2MUCtADM}).}
-
-\end{figure}%
 
 \section{A curious difference between t-SNE, UMAP and PaCMAP
 revealer}\label{a-curious-difference-between-t-sne-umap-and-pacmap-revealer}
