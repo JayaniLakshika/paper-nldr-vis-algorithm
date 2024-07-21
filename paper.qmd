@@ -1541,7 +1541,7 @@ trimesh_removed_pbmc + error_plot_pbmc +
 
 ![](figures/pbmc3k/sc_3.png)
 
-Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ 0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>).
+Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>).
 :::
 
 In order to find a reasonable NLDR representation for the PBMC3k dataset, the absolute error for different numbers of non-empty bins using various NLDR techniques and different (hyper-)parameter settings (@fig-pbmc-abserror) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error when there were $136$ number of non-empty bins. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
