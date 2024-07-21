@@ -1064,8 +1064,10 @@ clusters.}
 
 \caption{\label{fig-pbmc1-sc}Model in \gD{}, on the UMAP layout, and
 three views of the fit in projections from \(9\text{-}D\), for the
-PBMC3k data. (The \textbf{langevitour} software is used to view the data
-with a tour, and the full video is available at
+PBMC3k data (\((s_1, \ s_2) = (-0.050, \ 0.041)\),
+\(b = 870 \  (30, \ 29)\), \(m = 135\), benchmark value to remove large
+edges is \(0.099\)). (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
 \url{https://youtu.be/VqqWuE0Jj6A}).}
 
 \end{figure}%
@@ -1115,9 +1117,11 @@ did not achieve.
 
 }
 
-\caption{\label{fig-tsne-suggest}\(2\text{-}D\) layout from tSNE applied
-for the PBMC3k dataset. Is this a best representation of the original
-data? The parameter setting is perplexity: 30.}
+\caption{\label{fig-tsne-suggest}The \(2\text{-}D\) layout from tSNE
+applied for the PBMC3k dataset. The default (hyper-)parameter setting is
+a perplexity \(30\). We use our model-in-the-data-space to assess
+whether this is an accurate representation of structure present in the
+high-dimensional data, or if it is misleading.}
 
 \end{figure}%
 
@@ -1161,8 +1165,10 @@ with tSNE, and (b) \(p\text{-}D\) model error in \(2\text{-}D\). The
 
 \caption{\label{fig-pbmc2-sc}Model in \gD{}, on the tSNE layout, and
 three views of the fit in projections from \(9\text{-}D\), for the
-PBMC3k data. (The \textbf{langevitour} software is used to view the data
-with a tour, and the full video is available at
+PBMC3k data (\((s_1, \ s_2) = (-0.050, \ -0.058)\),
+\(b = 300 \  (15, \ 20)\), \(m = 136\), benchmark value to remove large
+edges is \(0.133\)). (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
 \url{https://youtu.be/5Y1hE4i7N2k}).}
 
 \end{figure}%
@@ -1186,12 +1192,16 @@ along the \gD{} structure.
 }
 
 \caption{\label{fig-pacmap-author}\(2\text{-}D\) layout from PaCMAP
-applied for the digit 1 of the MNIST dataset with a specific parameter
-settings. The angle of the digit 1 varies along this structure. Images
-at the top-left of the \(2\text{-}D\) layout show the digit 1 angled
-more to the left, while images at the bottom-right show the digit 1
-angled more to the right. Is this a reasonable representation of the
-digit 1?}
+applied for the digit 1 of the MNIST dataset. The (hyper-)parameter
+settings, beyond the defaults, are 10 nearest neighbors, ratio of the
+number of mid-near pairs to the number of neighbors equal to 0.5, and
+the ratio of the number of further pairs to the number of neighbors is
+2. We use our model-in-the-data-space to assess whether this is an
+accurate representation of structure present in the high-dimensional
+data, or if it is misleading. The angle of the digit 1 varies along this
+structure. Images at the top-left of the \(2\text{-}D\) layout show the
+digit 1 angled more to the left, while images at the bottom-right show
+the digit 1 angled more to the right.}
 
 \end{figure}%
 
@@ -1278,8 +1288,10 @@ non-linear structure present in the \pD{} data.
 
 \caption{\label{fig-mnist1-sc}Model in \gD{}, on the PaCMAP layout, and
 three views of the fit in projections from \(10\text{-}D\), for the
-digit 1 of MNIST data. (The \textbf{langevitour} software is used to
-view the data with a tour, and the full video is available at
+digit 1 of MNIST data (\((s_1, \ s_2) = (-0.100, \ -0.059)\),
+\(b = 374 \  (22, \ 17)\), \(m = 140\), benchmark value to remove large
+edges is \(0.094\)). (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
 \url{https://youtu.be/zcg_GXBmqjA}).}
 
 \end{figure}%

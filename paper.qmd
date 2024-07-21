@@ -970,14 +970,14 @@ mse_scurve_b <- ggplot(error_scurve,
   labs(x = expression(b), y = "log(MSE)", color = expression(q)) +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 5),
-        axis.text.y = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, 
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, 
             angle=90),
         title = element_text(size = 72),
-        legend.title = element_text(size = 5),
-        legend.text = element_text(size = 3))
+        legend.title = element_text(size = 7),
+        legend.text = element_text(size = 5))
 ```
 
 #### Removal of low density bins
@@ -1541,7 +1541,7 @@ trimesh_removed_pbmc + error_plot_pbmc +
 
 ![](figures/pbmc3k/sc_3.png)
 
-Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>).
+Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ 0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>).
 :::
 
 In order to find a reasonable NLDR representation for the PBMC3k dataset, the absolute error for different numbers of non-empty bins using various NLDR techniques and different (hyper-)parameter settings (@fig-pbmc-abserror) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error when there were $136$ number of non-empty bins. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
@@ -2061,7 +2061,7 @@ tsne_pbmc <- tsne_pbmc_scaled |>
 <!--tSNE with perplexity:30-->
 ```{r}
 #| echo: false
-#| fig-cap: "$2\\text{-}D$ layout from tSNE applied for the PBMC3k dataset.  Is this a best representation of the original data? The parameter setting is perplexity: 30."
+#| fig-cap: "The $2\\text{-}D$ layout from tSNE applied for the PBMC3k dataset. The default (hyper-)parameter setting is a perplexity $30$. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading."
 #| label: fig-tsne-suggest
 #| fig-pos: H
 #| out-width: 40%
@@ -2166,7 +2166,7 @@ error_plot_pbmc <- error_df |>
 
 ```
 
-<!--bin1 = 15, bin2 = 28, b = 420, non_empty = 136-->
+<!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136-->
 ```{r}
 #| echo: false
 #| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster."
@@ -2188,7 +2188,7 @@ trimesh_removed_pbmc + error_plot_pbmc +
 
 ![](figures/pbmc3k/sc_6.png)
 
-Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>).
+Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>).
 :::
 
 
@@ -2244,7 +2244,7 @@ pacmap_plot_mnist <- pacmap_plot_mnist +
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset with a specific parameter settings. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right. Is this a reasonable representation of the digit 1?"
+#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are 10 nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to 0.5, and the ratio of the number of further pairs to the number of neighbors is 2. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right."
 #| label: fig-pacmap-author
 #| fig-pos: H
 #| out-height: 22%
@@ -2367,7 +2367,7 @@ According to @fig-mnist1-sc1, the non-linear continuous structure observed in th
 
 ![](figures/mnist/sc_3.png){#fig-mnist1-sc3}
 
-Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>).
+Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data ($(s_1, \ s_2) = (-0.100, \ -0.059)$, $b = 374 \  (22, \ 17)$, $m = 140$, benchmark value to remove large edges is $0.094$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>).
 
 
 :::
