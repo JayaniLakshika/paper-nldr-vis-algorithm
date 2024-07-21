@@ -1480,6 +1480,7 @@ pbmc_model <- fit_highd_model(
   emb_df = umap_pbmc_scaled,
   bin1 = num_bins_x_pbmc,
   r2 = r2_pbmc,
+  q = 0.05,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "PC_"
@@ -1556,7 +1557,7 @@ error_plot_pbmc <- error_df |>
 
 XXXX I think we can remove the error figure, it's not part of the story
 
-<!--bin1 = 30, bin2 = 29, b = 870, non_empty = 132-->
+<!--bin1 = 30, bin2 = 29, b = 870, non_empty = 135-->
 ```{r}
 #| echo: false
 #| fig-cap: "(a) Model generated in $2\\text{-}D$ with UMAP, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters."
@@ -1600,14 +1601,14 @@ error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1651,14 +1652,14 @@ error_pbmc_umap2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1702,14 +1703,14 @@ error_pbmc_umap3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1753,14 +1754,14 @@ error_pbmc_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1804,14 +1805,14 @@ error_pbmc_tsne2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1855,14 +1856,14 @@ error_pbmc_phate <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = phate_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_phate,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1906,14 +1907,14 @@ error_pbmc_trimap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = trimap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_trimap,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -1957,14 +1958,14 @@ error_pbmc_pacmap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
   
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.05)$bin2
   
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = pacmap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_pacmap,
-    q = 0.1, 
+    q = 0.05, 
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -2023,7 +2024,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
                                   colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
-  geom_vline(xintercept = 124, linetype="solid", 
+  geom_vline(xintercept = 136, linetype="solid", 
              color = "black", linewidth=0.8, alpha = 0.5) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
@@ -2068,7 +2069,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 ```
 
 ```{r}
-#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $124$, the lowest error occurred with the parameters perplexity: $30$."
+#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $136$, the lowest error occurred with the parameters perplexity: $30$."
 #| label: fig-pbmc-abserror
 #| fig-pos: H
 #| out-width: 70%
@@ -2108,7 +2109,7 @@ We then fit the model for tSNE, and visualize the resultant model in the \pD{} d
 <!--Fit the best model and compute error-->
 ```{r}
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 16
+num_bins_x_pbmc <- 15
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1) 
@@ -2118,6 +2119,7 @@ pbmc_model <- fit_highd_model(
   emb_df = tsne_pbmc_scaled,
   bin1 = num_bins_x_pbmc,
   r2 = r2_pbmc,
+  q = 0.05,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "PC_"
@@ -2145,7 +2147,6 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
-#benchmark_pbmc <- 0.1
 
 trimesh_removed_pbmc <- vis_rmlg_mesh(
   distance_edges = distance_pbmc,
@@ -2195,7 +2196,7 @@ error_plot_pbmc <- error_df |>
 
 ```
 
-<!--bin1 = 15, bin2 = 20, b = 300, non_empty = 137-->
+<!--bin1 = 15, bin2 = 28, b = 420, non_empty = 136-->
 ```{r}
 #| echo: false
 #| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster."
