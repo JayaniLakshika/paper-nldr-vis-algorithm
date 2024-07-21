@@ -2148,6 +2148,11 @@ benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
 
+## Remove an edge that exist as long edge in p-D
+# tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  filter(row_number() != 360)
+
 trimesh_removed_pbmc <- vis_rmlg_mesh(
   distance_edges = distance_pbmc,
   benchmark_value = benchmark_pbmc,
