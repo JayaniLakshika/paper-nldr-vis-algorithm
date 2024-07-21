@@ -8,7 +8,7 @@ set.seed(20230531)
 
 ## Assign n_samples and num_y_points 3:1
 # Number of points along the S-curve
-n_samples <- 60
+n_samples <- 50
 
 # Generate uniform parameter t
 t <- seq(-0.5, 0.5, length.out = n_samples)
@@ -19,7 +19,7 @@ z <- sign(t) * (cos(3 * pi * t) - 1)
 
 # Set band thickness for the S-curve in the third dimension (y)
 band_thickness <- 2.0
-num_y_points <- n_samples/3  # Number of points along the y direction for each (x, z) pair
+num_y_points <- 10  # Number of points along the y direction for each (x, z) pair
 
 # Jitter parameters
 #jitter_strength <- 0.01  # Adjust the jitter strength as needed
