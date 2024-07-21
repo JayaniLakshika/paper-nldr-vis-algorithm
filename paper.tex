@@ -749,14 +749,14 @@ range for different \(q\), helps to determine an appropriate values for
 bins}\label{removal-of-low-density-bins}
 
 Once setting up the hexagon grid with an appropriate number of bins,
-some hexagon bins may have few or no data points within them (see
-Figure~\ref{fig-bins-scurve} (b)). To ensure comprehensive coverage of
+some hexagon bins may have few or no data points within them
+(Figure~\ref{fig-bins-scurve} (b)). To ensure comprehensive coverage of
 the NLDR data, it is necessary to select hexagon bins with a
 considerable number of data points. This involves calculating the number
 of points within each hexagon. Then, the standard count is computed by
 dividing the number of points within each hexagon by the maximum number
 of points in the grid. Next, bins with a standard count less than a
-benchmark value are removed (see \textbf{?@fig-lwd-scurve} (a)). There
+benchmark value are removed (Figure~\ref{fig-param-scurve} (c)). There
 is no specific rule for selecting a benchmark value. However, the
 following steps can help determine a suitable value for removing
 low-density hexagons:
@@ -765,8 +765,8 @@ low-density hexagons:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the standardized counts (see
-  \textbf{?@fig-stdcts-scurve}).
+  Plot the distribution of the standardized counts
+  (Figure~\ref{fig-param-scurve} (b)).
 \item
   Examine the distribution of counts.
 \item
@@ -794,20 +794,20 @@ construct the \gD{} model.
 
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
-To create a smooth \gD{} representation (see
-Figure~\ref{fig-NLDR-scurve} (d)), it is necessary to remove edges that
-connect distant bin centroids in the triangular mesh. These edges only
-exist in the \gD{} model and do not extend into \pD{}, so their removal
-does not impact the model in \pD{}. Although there are no specific
-criteria for determining the benchmark value to remove long edges, the
-following steps provide an approach to identifying a suitable threshold:
+To create a smooth \gD{} representation (Figure~\ref{fig-NLDR-scurve}
+(d)), it is necessary to remove edges that connect distant bin centroids
+in the triangular mesh. These edges only exist in the \gD{} model and do
+not extend into \pD{}, so their removal does not impact the model in
+\pD{}. Although there are no specific criteria for determining the
+benchmark value to remove long edges, the following steps provide an
+approach to identifying a suitable threshold:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the 2D Euclidean distances (see
-  \textbf{?@fig-dist-scurve}).
+  Plot the distribution of the 2D Euclidean distances
+  (Figure~\ref{fig-param-scurve} (d)).
 \item
   Identify the first largest difference between consecutive distance
   values.
@@ -899,7 +899,7 @@ removed.
 and three views of the fit in projections from \(7\text{-}D\), for the
 S-curve data. The model closely fits the shape, but it has twists. (The
 \textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at (\url{https://youtu.be/zEz2MUCtADM}).}
+the full video is available at \url{https://youtu.be/zEz2MUCtADM}).}
 
 \end{figure}%
 
@@ -1050,18 +1050,23 @@ clusters.}
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/pbmc3k/umap_trimesh_plot.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_1.png}\end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_2.png}\end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_3.png}\end{minipage}%
 
-\caption{\label{fig-pbmc1-sc}Screen shots of the \textbf{langevitour} of
-the PBMC3k data set, shows the model-in-data space, a video of the tour
-animation is available at (\url{https://youtu.be/VqqWuE0Jj6A}).}
+\caption{\label{fig-pbmc1-sc}Model in \gD{}, on the UMAP layout, and
+three views of the fit in projections from \(9\text{-}D\), for the
+PBMC3k data. (The \textbf{langevitour} software is used to view the data
+with a tour, and the full video is available at
+\url{https://youtu.be/VqqWuE0Jj6A}).}
 
 \end{figure}%
 
@@ -1070,7 +1075,7 @@ dataset, the absolute error for different numbers of non-empty bins
 using various NLDR techniques and different (hyper-)parameter settings
 (Figure~\ref{fig-pbmc-abserror}) were calculated. After analyzing the
 results, it was found that tSNE with default (hyper-)parameter setting
-(perplexity: \(30\)) achieved the lowest error when there were \(124\)
+(perplexity: \(30\)) achieved the lowest error when there were \(136\)
 number of non-empty bins. Therefore, tSNE with a perplexity value set to
 \(30\), the default parameter setting, is considered as a reasonable
 representation for the PBMC3k dataset.
@@ -1112,7 +1117,7 @@ did not achieve.
 
 \caption{\label{fig-tsne-suggest}\(2\text{-}D\) layout from tSNE applied
 for the PBMC3k dataset. Is this a best representation of the original
-data? The parameter setting is perplexity=30.}
+data? The parameter setting is perplexity: 30.}
 
 \end{figure}%
 
@@ -1142,18 +1147,23 @@ with tSNE, and (b) \(p\text{-}D\) model error in \(2\text{-}D\). The
 
 \begin{figure}[H]
 
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/pbmc3k/tsne_trimesh_plot.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_4.png}\end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_5.png}\end{minipage}%
 %
-\begin{minipage}{0.33\linewidth}
+\begin{minipage}{0.25\linewidth}
 \includegraphics{figures/pbmc3k/sc_6.png}\end{minipage}%
 
-\caption{\label{fig-pbmc2-sc}Screen shots of the \textbf{langevitour} of
-the PBMC3k data set, shows the model in high-D, a video of the tour
-animation is available at (\url{https://youtu.be/5Y1hE4i7N2k}).}
+\caption{\label{fig-pbmc2-sc}Model in \gD{}, on the tSNE layout, and
+three views of the fit in projections from \(9\text{-}D\), for the
+PBMC3k data. (The \textbf{langevitour} software is used to view the data
+with a tour, and the full video is available at
+\url{https://youtu.be/5Y1hE4i7N2k}).}
 
 \end{figure}%
 
@@ -1266,10 +1276,11 @@ non-linear structure present in the \pD{} data.
 
 \end{minipage}%
 
-\caption{\label{fig-mnist1-sc}Screen shots of the \textbf{langevitour}
-of the MNIST digit 1 data set, shows the model-in-data space, a video of
-the tour animation is available at
-(\url{https://youtu.be/zcg_GXBmqjA}).}
+\caption{\label{fig-mnist1-sc}Model in \gD{}, on the PaCMAP layout, and
+three views of the fit in projections from \(10\text{-}D\), for the
+digit 1 of MNIST data. (The \textbf{langevitour} software is used to
+view the data with a tour, and the full video is available at
+\url{https://youtu.be/zcg_GXBmqjA}).}
 
 \end{figure}%
 

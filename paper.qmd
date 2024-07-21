@@ -982,9 +982,9 @@ mse_scurve_b <- ggplot(error_scurve,
 
 #### Removal of low density bins
 
-Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (see @fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (see @fig-lwd-scurve (a)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
+Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (@fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (@fig-param-scurve (c)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
 
-1. Plot the distribution of the standardized counts (see @fig-stdcts-scurve).
+1. Plot the distribution of the standardized counts (@fig-param-scurve (b)).
 2. Examine the distribution of counts.
 3. Select the first quantile value if the distribution is skewed.
 
@@ -992,7 +992,7 @@ Once setting up the hexagon grid with an appropriate number of bins, some hexago
 
 ```{r}
 ## To initialize effective bins along x
-effective_bin1_scurve <- 12
+effective_bin1_scurve <- 11
 
 effective_bin2_scurve <- calc_bins_y(
   bin1 = effective_bin1_scurve, 
@@ -1036,17 +1036,6 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 5),
         title = element_text(size = 36))
-```
-
-```{r}
-#| echo: false
-#| fig-cap: "Distribution of standardize counts by hexagons."
-#| label: fig-stdcts-scurve
-#| out-height: 50%
-#| fig-pos: H
-#| eval: false
-
-cell_count_scurve
 ```
 
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (see @fig-mse-scurve-lwd). The MSE shows a gradual increase as the benchmark value progresses from $0$ to $1$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
@@ -1113,15 +1102,6 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
         title = element_text(size = 72))
 ```
 
-```{r}
-#| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent bechmark choices. What is the effective bechmark value to remove low density hexagons? The residual plot have a steep slope at the end, indicating that a smaller bechmark value causes a small amount of MSE. Then, the slope gradually increases or level up, indicating that a higher bechmark value generates a higher MSE. Using the elbow method, it was observed that when the bechmark value is set to $0.242$, the lowest MSE occurred."
-#| label: fig-mse-scurve-lwd
-#| fig-pos: H
-#| out-height: 50%
-#| eval: false
-
-mse_scurve_lwd
-```
 
 Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.   
 
@@ -1187,26 +1167,11 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
   interior_annotation("b")
 ```
 
-<!--
-```{r}
-#| echo: false
-#| label: fig-lwd-scurve
-#| fig-pos: H
-#| fig-cap: "Two approaches to identify low-density hexagons. Hexagon grid (a) marks hexagons with a standardized count less than $0.25$. Hexagon grid (b) marks hexagons by considering the densities of neighboring bins. Removing hexagons by also investigating the densities of neighboring bins is more reliable for preserving the structure."
-#| fig-width: 9
-#| fig-height: 6
-
-hex_grid_rm_lwd_scurve1 + hex_grid_rm_lwd_scurve2 +
-  plot_layout(guides='collect', ncol = 2) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
-```
--->
-
 #### Removing long edges
 
-To create a smooth \gD{} representation (see @fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
+To create a smooth \gD{} representation (@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
 
-1. Plot the distribution of the 2D Euclidean distances (see @fig-dist-scurve).
+1. Plot the distribution of the 2D Euclidean distances (@fig-param-scurve (d)).
 2. Identify the first largest difference between consecutive distance values.
 3. Take the distance value corresponding to this difference as the benchmark value.
 
@@ -1335,7 +1300,7 @@ Comparing the MSE to obtain the best fit is suitable if one starts from the same
 
 ![](figures/scurve/sc_trimap_best_3.png)
 
-Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/zEz2MUCtADM>). 
+Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zEz2MUCtADM>). 
 :::
 
 
@@ -1567,17 +1532,19 @@ trimesh_removed_pbmc + error_plot_pbmc +
   theme(legend.position='bottom')
 ```
 
-::: {#fig-pbmc1-sc layout-ncol="3" fig-pos="H"}
+::: {#fig-pbmc1-sc layout-ncol="4" fig-pos="H"}
+![](figures/pbmc3k/umap_trimesh_plot.png)
+
 ![](figures/pbmc3k/sc_1.png)
 
 ![](figures/pbmc3k/sc_2.png)
 
 ![](figures/pbmc3k/sc_3.png)
 
-Screen shots of the **langevitour** of the PBMC3k data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/VqqWuE0Jj6A>).
+Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>).
 :::
 
-In order to find a reasonable NLDR representation for the PBMC3k dataset, the absolute error for different numbers of non-empty bins using various NLDR techniques and different (hyper-)parameter settings (@fig-pbmc-abserror) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error when there were $124$ number of non-empty bins. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
+In order to find a reasonable NLDR representation for the PBMC3k dataset, the absolute error for different numbers of non-empty bins using various NLDR techniques and different (hyper-)parameter settings (@fig-pbmc-abserror) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error when there were $136$ number of non-empty bins. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset.
 
 <!--compute absolute error for different parameter choices-->
 
@@ -2022,7 +1989,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
                                   colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
-  geom_vline(xintercept = 136, linetype="solid", 
+  geom_vline(xintercept = 135, linetype="solid", 
              color = "black", linewidth=0.8, alpha = 0.5) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
@@ -2094,7 +2061,7 @@ tsne_pbmc <- tsne_pbmc_scaled |>
 <!--tSNE with perplexity:30-->
 ```{r}
 #| echo: false
-#| fig-cap: "$2\\text{-}D$ layout from tSNE applied for the PBMC3k dataset.  Is this a best representation of the original data? The parameter setting is perplexity=30."
+#| fig-cap: "$2\\text{-}D$ layout from tSNE applied for the PBMC3k dataset.  Is this a best representation of the original data? The parameter setting is perplexity: 30."
 #| label: fig-tsne-suggest
 #| fig-pos: H
 #| out-width: 40%
@@ -2212,14 +2179,16 @@ trimesh_removed_pbmc + error_plot_pbmc +
   theme(legend.position='bottom')
 ```
 
-::: {#fig-pbmc2-sc layout-ncol="3" fig-pos="H"}
+::: {#fig-pbmc2-sc layout-ncol="4" fig-pos="H"}
+![](figures/pbmc3k/tsne_trimesh_plot.png)
+
 ![](figures/pbmc3k/sc_4.png)
 
 ![](figures/pbmc3k/sc_5.png)
 
 ![](figures/pbmc3k/sc_6.png)
 
-Screen shots of the **langevitour** of the PBMC3k data set, shows the model in high-D, a video of the tour animation is available at (<https://youtu.be/5Y1hE4i7N2k>).
+Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>).
 :::
 
 
@@ -2398,7 +2367,9 @@ According to @fig-mnist1-sc1, the non-linear continuous structure observed in th
 
 ![](figures/mnist/sc_3.png){#fig-mnist1-sc3}
 
-Screen shots of the **langevitour** of the MNIST digit 1 data set, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/zcg_GXBmqjA>).
+Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>).
+
+
 :::
 <!-- need to update the youtube recording-->
 
