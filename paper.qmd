@@ -748,11 +748,11 @@ XXX Prediction should have a jitter option, to spread the predicted points out f
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
 
-The performance and robustness of our model depend on three key parameters: (i) the total number of bins ($b$), (ii) a benchmark value used to remove low-density hexagons, and (iii) a benchmark value used to remove long edges. However, there is no analytical formula to calculate an appropriate value for these parameters. The selection of these parameter values depends on the model performance computed by MSE (see @sec-summary). 
+The performance and robustness of our model depend on four key parameters: (i) bin start position $(s_1, \ s_2)$, (ii) the total number of bins ($b$), (iii) a benchmark value used to remove low-density hexagons, and (iv) a benchmark value used to remove long edges. However, there is no analytical formula to calculate appropriate values for these parameters. The selection of these parameter values depends on the model performance computed by MSE (@sec-summary), except for the threshold used to remove long edges. 
 
-#### Choice of bins
+#### Bin start position and number of bins
 
-The number of hexagon bins in the hexagon grid has a considerable impact on the construction of the \gD{} model, serving as the initial step. The chosen total number of bins must effectively capture the structure of the NLDR data. If the number of bins is too low, the model may not be able to capture the structure of the NLDR data effectively (see @fig-bins-scurve (a)), while if there are too many bins, it may result in over-fitting the individual points of the NLDR data (see @fig-bins-scurve (c)). Therefore, it is important to determine an effective number of bins to construct a reasonable model (see @fig-bins-scurve (b)).
+The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model. 
 
 <!--add three choice of bins 7, 11, 14-->
 
@@ -889,7 +889,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| echo: false
 #| label: fig-bins-scurve
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)  \\text{ }(q = 0.12)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.07)$, and (c) $b = 527 \\text{ } (17, \\text{ }31) \\text{ }(q = 0.05)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p-D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)  \\text{ }(q = 0.12)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.07)$, and (c) $b = 527 \\text{ } (17, \\text{ }31) \\text{ }(q = 0.05)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 6
 #| fig-height: 3
 
@@ -898,7 +898,7 @@ hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
-To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. The analysis evaluates the MSE across varying $b$ within this range, covering the minimum to maximum values along both axes (see @fig-mse-scurve-b).
+To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)). 
 
 <!--add MSE vs total number of error plot-->
 
@@ -910,57 +910,64 @@ training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 ```{r}
 ## To initialize number of bins along the x-axis
 bin1_vec_scurve <- 2:19 #sqrt(NROW(training_data_scurve)/2)
+buffer_vec <- seq(0.05, 0.1, by = 0.01)
 
 error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_scurve) {
+  for (buff in buffer_vec) {
+    
+    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$bin2
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
-
-  scurve_model <- fit_highd_model(
-    training_data = training_data_scurve,
-    emb_df = umap_scurve_scaled,
-    bin1 = xbins,
-    r2 = r2,
-    q = 0.07, 
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
-  )
-
-  df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-  df_bin_scurve <- scurve_model$df_bin
-
-  ## Compute error
-  error_df <- glance(
-    df_bin_centroids = df_bin_centroids_scurve,
-    df_bin = df_bin_scurve,
-    training_data = training_data_scurve,
-    newdata = NULL,
-    type_NLDR = "UMAP",
-    col_start = "x") |>
-    mutate(bin1 = xbins,
-           bin2 = bin2,
-           b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_scurve))
-
-  error_scurve <- bind_rows(error_scurve, error_df)
+    scurve_model <- fit_highd_model(
+      training_data = training_data_scurve,
+      emb_df = umap_scurve_scaled,
+      bin1 = xbins,
+      r2 = r2,
+      q = buff, 
+      is_bin_centroid = TRUE,
+      is_rm_lwd_hex = FALSE,
+      col_start_highd = "x"
+    )
+  
+    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+    df_bin_scurve <- scurve_model$df_bin
+  
+    ## Compute error
+    error_df <- glance(
+      df_bin_centroids = df_bin_centroids_scurve,
+      df_bin = df_bin_scurve,
+      training_data = training_data_scurve,
+      newdata = NULL,
+      type_NLDR = "UMAP",
+      col_start = "x") |>
+      mutate(bin1 = xbins,
+             bin2 = bin2,
+             b = bin1 * bin2,
+             b_non_empty = NROW(df_bin_centroids_scurve),
+             buff = buff)
+  
+    error_scurve <- bind_rows(error_scurve, error_df)
+    
+  }
 
 }
 
 mse_scurve_b <- ggplot(error_scurve, 
                      aes(x = b, 
-                         y = log(MSE))) + 
-  geom_point(size = 1) +
-  geom_line() + 
+                         y = log(MSE),
+                         color = buff,
+                         group = buff)) + 
+  geom_point(size = 0.05) +
+  geom_line(linewidth = 0.05) + 
   geom_vline(xintercept = 220, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
+             color = "black", linewidth=0.1) +
   geom_vline(xintercept = 112, linetype=2, 
-             color = "black", linewidth=0.8, alpha = 0.5) +
+             color = "black", linewidth=0.1) +
   geom_vline(xintercept = 364, linetype=2, 
-             color = "black", linewidth=0.8, alpha = 0.5) +
-  ylab("log(MSE)") +
-  xlab("b") +
+             color = "black", linewidth=0.1) +
+  scale_colour_continuous_sequential(palette = "Magenta") +
+  labs(x = expression(b), y = "log(MSE)", color = expression(q)) +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 5),
@@ -968,17 +975,9 @@ mse_scurve_b <- ggplot(error_scurve,
         axis.title.x = element_text(size = 5),
         axis.title.y = element_text(size = 5, 
             angle=90),
-        title = element_text(size = 72))
-```
-
-```{r}
-#| fig-cap: "MSE from UMAP applied to S-curve dataset with diffferent $b$ choices. What is the effective $b$ to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller $b$ causes a larger amount of MSE. Then, the slope gradually declines or level off, indicating that a higher $b$ generates a smaller MSE. Using the elbow method, it was observed that when the $b$ is set to $190$, the lowest MSE occurred."
-#| label: fig-mse-scurve-b
-#| fig-pos: H
-#| out-height: 50%
-#| eval: false
-
-mse_scurve_b
+        title = element_text(size = 72),
+        legend.title = element_text(size = 5),
+        legend.text = element_text(size = 3))
 ```
 
 #### Removal of low density bins
@@ -1261,9 +1260,8 @@ distance_scurve_plot <- ggplot(distance_scurve,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best number of bins, low density bin and large edge removal. Both (a) and (c) show MSE, against number of bins and standardised count. A good benchmark value for these parameters is when the MSE drops and then flattens out. Plot (b) shows the distribution of stadardised counts of hexagons. Plot (c) shows the distribution of $2\\text{-}D$ Euclidean distances between bin centroids, with a good benchmark value for removing large edges would being the distance that shows the first large increase."
-
-#| label: fig-dist-scurve
+#| fig-cap: "Various plots to help assess best bin start position, number of bins, low density bin and large edge removal. Both (a) and (c) show MSE, against number of bins and standardised count, while (a) also shows the change in MSE for different $q$. A good benchmark value for these parameters is when the MSE drops and then flattens out. Plot (b) shows the distribution of stadardised counts of hexagons. Plot (d) shows the distribution of $2\\text{-}D$ Euclidean distances between bin centroids, with a good benchmark value for removing large edges would being the distance that shows the first large increase."
+#| label: fig-param-scurve
 #| out-width: 100%
 #| fig-width: 12
 #| fig-height: 10

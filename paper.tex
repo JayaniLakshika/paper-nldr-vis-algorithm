@@ -695,26 +695,26 @@ points out fully in the hexagons.
 
 \subsection{Tuning}\label{tuning}
 
-The performance and robustness of our model depend on three key
-parameters: (i) the total number of bins (\(b\)), (ii) a benchmark value
-used to remove low-density hexagons, and (iii) a benchmark value used to
-remove long edges. However, there is no analytical formula to calculate
-an appropriate value for these parameters. The selection of these
-parameter values depends on the model performance computed by MSE (see
-Section~\ref{sec-summary}).
+The performance and robustness of our model depend on four key
+parameters: (i) bin start position \((s_1, \ s_2)\), (ii) the total
+number of bins (\(b\)), (iii) a benchmark value used to remove
+low-density hexagons, and (iv) a benchmark value used to remove long
+edges. However, there is no analytical formula to calculate appropriate
+values for these parameters. The selection of these parameter values
+depends on the model performance computed by MSE
+(Section~\ref{sec-summary}), except for the threshold used to remove
+long edges.
 
-\subsubsection{Choice of bins}\label{choice-of-bins}
+\subsubsection{Bin start position and number of
+bins}\label{bin-start-position-and-number-of-bins}
 
-The number of hexagon bins in the hexagon grid has a considerable impact
-on the construction of the \gD{} model, serving as the initial step. The
-chosen total number of bins must effectively capture the structure of
-the NLDR data. If the number of bins is too low, the model may not be
-able to capture the structure of the NLDR data effectively (see
-Figure~\ref{fig-bins-scurve} (a)), while if there are too many bins, it
-may result in over-fitting the individual points of the NLDR data (see
-Figure~\ref{fig-bins-scurve} (c)). Therefore, it is important to
-determine an effective number of bins to construct a reasonable model
-(see Figure~\ref{fig-bins-scurve} (b)).
+The starting position of the hexagonal grid is important because
+different starting points result in different distributions of data
+across bins, even with the same total number of bins. This variation
+affects the model due to the differing number of non-empty bins.
+Therefore, it is necessary to evaluate various starting points with
+different total numbers of bins to determine which configurations are
+more effective at capturing the structure and fitting the model.
 
 \begin{figure}[H]
 
@@ -732,8 +732,8 @@ the S-curve data, using three different bin inputs: (a)
 indicates standardized counts, dark indicating high count and light
 indicates low count. At the smallest bin size the data segregates into
 two separate groups, suggesting this is too many bins. Using the MSE of
-the model fit in \(p-D\) helps decide on a useful choice of number of
-bins.}
+the model fit in \(p\text{-}D\) helps decide on a useful choice of
+number of bins.}
 
 \end{figure}%
 
@@ -741,9 +741,9 @@ To determine the effective \(b\), candidate values are selected based on
 the range between the minimum and approximate maximum \(b_1\), because
 \(b_2\) is computed from \(b_1\). The minimum \(b_1\) is set to \(2\),
 while the maximum number is estimated by taking the square root of
-\(\frac{n}{2}\). The analysis evaluates the MSE across varying \(b\)
-within this range, covering the minimum to maximum values along both
-axes (see \textbf{?@fig-mse-scurve-b}).
+\(\frac{n}{2}\). By evaluating MSE across varying \(b\) within this
+range for different \(q\), helps to determine an appropriate values for
+\(b\) and \(q\) (Figure~\ref{fig-param-scurve} (a)).
 
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
@@ -818,18 +818,22 @@ following steps provide an approach to identifying a suitable threshold:
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-31-1.pdf}
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-scurve-1.pdf}
 
 }
 
-\caption{Various plots to help assess best number of bins, low density
-bin and large edge removal. Both (a) and (c) show MSE, against number of
-bins and standardised count. A good benchmark value for these parameters
-is when the MSE drops and then flattens out. Plot (b) shows the
-distribution of stadardised counts of hexagons. Plot (c) shows the
-distribution of \(2\text{-}D\) Euclidean distances between bin
-centroids, with a good benchmark value for removing large edges would
-being the distance that shows the first large increase.}
+\caption{\label{fig-param-scurve}Various plots to help assess best bin
+start position, number of bins, low density bin and large edge removal.
+Both (a) and (c) show MSE, against number of bins and standardised
+count, while (a) also shows the change in MSE for different \(q\). A
+good benchmark value for these parameters is when the MSE drops and then
+flattens out. Plot (b) shows the distribution of stadardised counts of
+hexagons. Plot (d) shows the distribution of \(2\text{-}D\) Euclidean
+distances between bin centroids, with a good benchmark value for
+removing large edges would being the distance that shows the first large
+increase.}
 
 \end{figure}%
 
