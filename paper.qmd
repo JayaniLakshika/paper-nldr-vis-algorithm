@@ -343,7 +343,7 @@ With our goal being to make a representation of this \gD{}    layout that can be
 
 <!--UMAP applied for Scurve data-->
 ```{r}
-umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
+umap_scurve <- read_rds(file = "data/s_curve/new/s_curve_umap.rds") 
 
 scurve_scaled_obj <- gen_scaled_data(
   data = umap_scurve)
@@ -474,7 +474,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 
 ![](figures/scurve/sc_true_3.png){width="150" fig-align="center"}
 
-Three views of the true model in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/tYATMiSlCXQ>). 
+Three views of the true model in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/tYATMiSlCXQ>). 
 :::
 
 XXX The points on the "theoretical model" should be equidistant along the S. They are still to bunched in some spots and too far apart in others.
@@ -903,7 +903,7 @@ To determine the effective $b$, candidate values are selected based on the range
 <!--add MSE vs total number of error plot-->
 
 ```{r}
-training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+training_data_scurve <- read_rds("data/s_curve/scurve_500.rds")
 ```
 
 <!--To generate errors for different total number of bins-->

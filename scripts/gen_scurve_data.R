@@ -66,6 +66,10 @@ points$x5 <- runif(sample_size, -0.02, 0.02)
 points$x6 <- runif(sample_size, -0.01, 0.01)
 points$x7 <- runif(sample_size, -0.01, 0.01)
 
+points <- points |> mutate(ID = row_number())
+
+write_rds(points, "data/s_curve/scurve_500.rds")
+
 # # Add the ID to the s_curve_noise
 # s_curve_noise <- points |>
 #   dplyr::mutate(ID = dplyr::row_number()) |>
