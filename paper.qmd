@@ -353,7 +353,7 @@ lim1 <- scurve_scaled_obj$lim1
 lim2 <- scurve_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-sc_ltr_pos <- c(0.08, 0.95)
+sc_ltr_pos <- c(0.08, 0.93)
 # sc_xlims <- c(-0.5, 1.47)
 # sc_ylims <- c(-0.32, 2.1)
 sc_xlims <- c(-0.25, 1.25)
@@ -425,7 +425,7 @@ hex_grid_nonempty_scurve <-  ggplot(
   geom_point(data = df_bin_centroids, 
              aes(x = c_x, y = c_y), 
              color = "#33a02c",
-             size = 0.5) +
+             size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c", sc_ltr_pos) 
 ```
