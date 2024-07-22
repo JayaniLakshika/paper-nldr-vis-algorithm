@@ -602,6 +602,33 @@ segments in \pD{} by connecting the \pD{} means of the corresponding
 
 XXXAdd best fit with UMAP and discuss why it's the best fit
 
+\begin{figure}[H]
+
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/umap_trimesh_layout.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_1.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_2.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_3.png}\end{minipage}%
+
+\caption{\label{fig-scurve-sc}Model in \gD{}, on the UMAP layout, and
+three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data (\((s_1, \ s_2) = (-0.160, \ -0.263)\),
+\(b = 405 \  (15, \ 27)\), \(m = 70\), benchmark value to remove low
+density hexagons is \(0.250\), and benchmark value to remove large edges
+is \(0.159\)). MSE is \(0.0462\). The model closely fits the shape, but
+it doesn't fully fill out the width of the S, which means that it does
+not adequately capture the surface (The \textbf{langevitour} software is
+used to view the data with a tour, and the full video is available at
+\url{https://youtu.be/N6iWEj3aVps}).}
+
+\end{figure}%
+
 XXX Should there be a second long edge removal? You can compute the
 edges in \pD{} now, and if there are long edges maybe these should be
 pruned, and we re-plot the \gD{} view.
@@ -828,7 +855,31 @@ to compare different NLDR representations. A good NLDR representation
 should produce a good fit, producing a low MSE if the model fits the
 data well. However, it technically might be quite variable.
 
-XXXAdd best fit and discuss why it's the best fit
+\begin{figure}[H]
+
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/tsne_trimesh_layout.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_1.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_2.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_3.png}\end{minipage}%
+
+\caption{\label{fig-scurve-sc-best}Model in \gD{}, on the tSNE layout,
+and three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data (\((s_1, \ s_2) = (-0.170, \ -0.137)\),
+\(b = 256 \  (16, \ 16)\), \(m = 70\), benchmark value to remove low
+density hexagons is \(0.250\), and benchmark value to remove large edges
+is \(0.180\)). MSE is \(0.0432\). The model closely fits the shape, but
+it has some twists (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
+\url{https://youtu.be/ZuLdp89qJ6g}).}
+
+\end{figure}%
 
 \section{A curious difference between t-SNE, UMAP and PaCMAP
 revealer}\label{a-curious-difference-between-t-sne-umap-and-pacmap-revealer}

@@ -696,18 +696,18 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 XXXAdd best fit with UMAP and discuss why it's the best fit
 
-<!--langevitour with pD model for S-curve-->
-<!-- ::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"} -->
-<!-- ![](figures/scurve/sc_best_trimesh.png) -->
+<!-- langevitour with pD model for S-curve -->
+::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"}
+![](figures/scurve/umap_trimesh_layout.png)
 
-<!-- ![](figures/scurve/sc_1.png) -->
+![](figures/scurve/sc_1.png)
 
-<!-- ![](figures/scurve/sc_2.png) -->
+![](figures/scurve/sc_2.png)
 
-<!-- ![](figures/scurve/sc_3.png) -->
+![](figures/scurve/sc_3.png)
 
-<!-- XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>).  -->
-<!-- ::: -->
+Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data ($(s_1, \ s_2) = (-0.160, \ -0.263)$, $b = 405 \  (15, \ 27)$, $m = 70$, benchmark value to remove low density hexagons is $0.250$, and benchmark value to remove large edges is $0.159$). MSE is $0.0462$. The model closely fits the shape, but it doesn't fully fill out the width of the S, which means that it does not adequately capture the surface (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>).
+:::
 
 <!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
 
@@ -1292,22 +1292,20 @@ Deciding on the best fit relies on several elements:
 
 Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
 
-XXXAdd best fit and discuss why it's the best fit 
-
 <!-- @fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed.  -->
 
-<!--langevitour with pD model for S-curve--> 
-<!-- ::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"} -->
-<!-- ![](figures/scurve/sc_best_trimap_trimesh.png) -->
+<!-- langevitour with pD model for S-curve -->
+::: {#fig-scurve-sc-best layout-ncol="4" fig-pos="H"}
+![](figures/scurve/tsne_trimesh_layout.png)
 
-<!-- ![](figures/scurve/sc_trimap_best_1.png) -->
+![](figures/scurve/sc_tsne_best_1.png)
 
-<!-- ![](figures/scurve/sc_trimap_best_2.png) -->
+![](figures/scurve/sc_tsne_best_2.png)
 
-<!-- ![](figures/scurve/sc_trimap_best_3.png) -->
+![](figures/scurve/sc_tsne_best_3.png)
 
-<!-- Model in \gD{}, on the TriMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has twists. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zEz2MUCtADM>).  -->
-<!-- ::: -->
+Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data ($(s_1, \ s_2) = (-0.170, \ -0.137)$, $b = 256 \  (16, \ 16)$, $m = 70$, benchmark value to remove low density hexagons is $0.250$, and benchmark value to remove large edges is $0.180$). MSE is $0.0432$. The model closely fits the shape, but it has some twists (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/ZuLdp89qJ6g>).
+:::
 
 
 <!-- The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best). -->
