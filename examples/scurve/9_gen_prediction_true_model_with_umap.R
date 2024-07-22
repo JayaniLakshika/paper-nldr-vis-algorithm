@@ -2,21 +2,19 @@ library(readr)
 library(umap)
 library(dplyr)
 
-true_model_df <- read_rds("data/s_curve/true_model.rds")
-true_model_df <- true_model_df |>
-  mutate(ID = row_number())
+true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
 
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 
 ## To initialize effective bins along x
-effective_bin1_scurve <- 11
+effective_bin1_scurve <- 15
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = effective_bin1_scurve,
   r2 = r2,
-  q = 0.07,
+  q = 0.16,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x"
@@ -33,14 +31,14 @@ true_pred_df <- predict_emb(
 )
 
 ## Compute hexbin parameters
-num_bins_x_scurve <- 11
+num_bins_x_scurve <- 15
 
 ## hexagon binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
-  q = 0.07)
+  q = 0.16)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
@@ -62,9 +60,9 @@ hex_grid_nonempty <- hex_grid |>
 ggplot(
   data = hex_grid_nonempty,
   aes(x = x, y = y)) +
-  geom_polygon(color = "black",
-               aes(group = hex_poly_id),
-               fill = "#ffffff") +
+  # geom_polygon(color = "black",
+  #              aes(group = hex_poly_id),
+  #              fill = "#ffffff") +
   geom_jitter(
     data = true_pred_df,
     aes(x = pred_UMAP_1,
