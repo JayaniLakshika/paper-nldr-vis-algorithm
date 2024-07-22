@@ -4,30 +4,30 @@ library(dplyr)
 library(reader)
 
 ## Import S-curve data
-training_data_scurve <- read_rds("data/s_curve/scurve_500.rds")
+training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 
 ## Import layouts data
-tsne_scurve <- read_rds(file = "data/s_curve/new/s_curve_tsne_22.rds") |>
+tsne_scurve <- read_rds(file = "data/s_curve/s_curve_tsne_27.rds") |>
   mutate(method = "tSNE") |>
   rename(c("emb1" = "tSNE1",
            "emb2" = "tSNE2"))
 
-umap_scurve <- read_rds(file = "data/s_curve/new/s_curve_umap.rds") |>
+umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") |>
   mutate(method = "UMAP") |>
   rename(c("emb1" = "UMAP1",
            "emb2" = "UMAP2"))
 
-phate_scurve <- read_rds(file = "data/s_curve/new/s_curve_phate.rds") |>
+phate_scurve <- read_rds(file = "data/s_curve/s_curve_phate.rds") |>
   mutate(method = "PHATE") |>
   rename(c("emb1" = "PHATE1",
            "emb2" = "PHATE2"))
 
-trimap_scurve <- read_rds(file = "data/s_curve/new/s_curve_trimap.rds") |>
+trimap_scurve <- read_rds(file = "data/s_curve/s_curve_trimap.rds") |>
   mutate(method = "TriMAP") |>
   rename(c("emb1" = "TriMAP1",
            "emb2" = "TriMAP2"))
 
-pacmap_scurve <- read_rds(file = "data/s_curve/new/s_curve_pacmap.rds") |>
+pacmap_scurve <- read_rds(file = "data/s_curve/s_curve_pacmap.rds") |>
   mutate(method = "PaCMAP") |>
   rename(c("emb1" = "PaCMAP1",
            "emb2" = "PaCMAP2"))

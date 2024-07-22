@@ -62,10 +62,10 @@ author:
     url: https://thiyanga.netlify.app/
 tbl-cap-location: bottom
 abstract: |
-  Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional (high-D) data using non-linear transformation. The methods and parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of high-D distributions. To help evaluate the NLDR we have developed an algorithm to show the 2D NLDR model in the high-D space, viewed with a tour. One can see if the model fits everywhere or better in some subspaces, or completely mismatches the data. It is used to evaluate which 2D layout is the best representation of the high-D distribution and see how different methods may have similar summaries or quirks.
+  Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional ($p\text{-}D$) data using non-linear transformation. The methods and parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of $p\text{-}D$ distributions. To help evaluate the NLDR we have developed an algorithm to show the $2\text{-}D$ NLDR model in the $p\text{-}D$ space, viewed with a tour. One can see if the model fits everywhere or better in some subspaces, or completely mismatches the data. It is used to evaluate which $2\text{-}D$ layout is the best representation of the $p\text{-}D$ distribution and see how different methods may have similar summaries or quirks.
   
-keywords: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data space]
-keywords-formatted: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data space]
+keywords: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data-space]
+keywords-formatted: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data-space]
 
 bibliography: bibliography.bib  
 header-includes: | 
@@ -694,6 +694,8 @@ The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors t
 $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
 Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids.
 
+XXXAdd best fit with UMAP and discuss why it's the best fit
+
 <!--langevitour with pD model for S-curve-->
 <!-- ::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"} -->
 <!-- ![](figures/scurve/sc_best_trimesh.png) -->
@@ -707,7 +709,7 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 <!-- XXX Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $7\text{-}D$, for the S-curve data. The model closely fits the shape, but it has breaks which means that it does not adequately capture the surface. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/N6iWEj3aVps>).  -->
 <!-- ::: -->
 
-XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too. 
+<!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
 
 XXX Should there be a second long edge removal? You can compute the edges in \pD{} now, and if there are long edges maybe these should be pruned, and we re-plot the \gD{} view. 
 
@@ -1289,6 +1291,8 @@ Deciding on the best fit relies on several elements:
 - model fit parameters: bin size, low density bin removal, long edge removal.
 
 Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
+
+XXXAdd best fit and discuss why it's the best fit 
 
 <!-- @fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed.  -->
 
