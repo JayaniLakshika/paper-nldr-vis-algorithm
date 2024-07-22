@@ -89,6 +89,6 @@ langevitour(df |> dplyr::select(-type),
             lineFrom = connections$from,
             lineTo = connections$to,
             group = df$type,
-            pointSize = append(rep(2, NROW(true_model)), rep(1, NROW(training_data))),
+            pointSize = append(rep(1.5, NROW(true_model)), rep(1, NROW(training_data))),
             levelColors = c("#6a3d9a", "#969696"),
             lineColors = rep("#969696", nrow(connections)))
