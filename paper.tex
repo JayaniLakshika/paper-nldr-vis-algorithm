@@ -175,8 +175,8 @@
   pdftitle={Looking at Non-Linear Dimension Reductions as Models in the Data Space},
   pdfauthor={Jayani P.G. Lakshika; Dianne Cook; Paul Harrison; Michael Lydeamore; Thiyanga S. Talagala},
   pdfkeywords={high-dimensional data, dimension reduction, hexagon
-binning, low-dimensional manifold, tour, data vizualization, model in
-the data space},
+binning, low-dimensional representation, tour, data
+vizualization, model-in-the-data-space},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -214,27 +214,27 @@ Statistics, University of Sri Jayewardenepura\\
 \bigskip
 \bigskip
 \begin{abstract}
-Nonlinear dimension reduction (NLDR) techniques such as tSNE, and UMAP
-provide a low-dimensional representation of high-dimensional (high-D)
-data using non-linear transformation. The methods and parameter choices
-can create wildly different representations, making it difficult to
-decide which is best, or whether any or all are accurate or misleading.
-NLDR often exaggerates random patterns, sometimes due to the samples
-observed. But NLDR views have an important role in data analysis
+Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP
+provide a low-dimensional representation of high-dimensional
+(\(p\text{-}D\)) data using non-linear transformation. The methods and
+parameter choices can create wildly different representations, making it
+difficult to decide which is best, or whether any or all are accurate or
+misleading. NLDR often exaggerates random patterns, sometimes due to the
+samples observed. But NLDR views have an important role in data analysis
 because, if done well, they provide a concise visual (and conceptual)
-summary of high-D distributions. To help evaluate the NLDR we have
-developed an algorithm to show the 2D NLDR model in the high-D space,
-viewed with a tour. One can see if the model fits everywhere or better
-in some subspaces, or completely mismatches the data. It is used to
-evaluate which 2D layout is the best representation of the high-D
-distribution and see how different methods may have similar summaries or
-quirks.
+summary of \(p\text{-}D\) distributions. To help evaluate the NLDR we
+have developed an algorithm to show the \(2\text{-}D\) NLDR model in the
+\(p\text{-}D\) space, viewed with a tour. One can see if the model fits
+everywhere or better in some subspaces, or completely mismatches the
+data. It is used to evaluate which \(2\text{-}D\) layout is the best
+representation of the \(p\text{-}D\) distribution and see how different
+methods may have similar summaries or quirks.
 \end{abstract}
 
 \noindent%
 {\it Keywords:} high-dimensional data, dimension reduction, hexagon
-binning, low-dimensional manifold, tour, data vizualization, model in
-the data space
+binning, low-dimensional representation, tour, data
+vizualization, model-in-the-data-space
 \vfill
 
 \newpage
@@ -476,13 +476,9 @@ geometric structure (true model) that we hope to capture.
 projections from \(7\text{-}D\), for the S-curve data. The model closely
 fits the shape. (The \textbf{langevitour} software is used to view the
 data with a tour, and the full video is available at
-\url{https://youtu.be/tYATMiSlCXQ}).}
+\url{https://youtu.be/I5GL23vLiw0}).}
 
 \end{figure}%
-
-XXX The points on the ``theoretical model'' should be equidistant along
-the S. They are still to bunched in some spots and too far apart in
-others.
 
 \begin{figure}
 
@@ -602,15 +598,37 @@ to a point in \pD{}. Let the \pD{} mean be
 \[C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.\]
 Furthermore, line segments that exist in the \kD{} model generate line
 segments in \pD{} by connecting the \pD{} means of the corresponding
-\kD{} bin centroids.
+\kD{} bin centroids. If additional long edges need to be removed,
+compute the edges in \pD{} and pruned any detected long edges to improve
+the accuracy. Once pruned, re-plot the \gD{} view to ensure it
+accurately captures the data.
 
-XXX You need to have consistent colouring. In langevitour the points
-corresponding to observations are purple. They should be purple in the
-\gD{} view too.
+\begin{figure}[H]
 
-XXX Should there be a second long edge removal? You can compute the
-edges in \pD{} now, and if there are long edges maybe these should be
-pruned, and we re-plot the \gD{} view.
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/umap_trimesh_layout.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_umap_best_1.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_umap_best_2.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_umap_best_3.png}\end{minipage}%
+
+\caption{\label{fig-scurve-sc}Model in \gD{}, on the UMAP layout, and
+three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data (\((s_1, \ s_2) = (-0.160, \ -0.263)\),
+\(b = 405 \  (15, \ 27)\), \(m = 70\), benchmark value to remove low
+density hexagons is \(0.250\), and benchmark value to remove large edges
+is \(0.159\)). MSE is \(0.0462\). The model closely fits the shape, but
+it doesn't fully fill out the width of the S, which means that it does
+not adequately capture the surface (The \textbf{langevitour} software is
+used to view the data with a tour, and the full video is available at
+\url{https://youtu.be/i7F7xpN1Hz8}).}
+
+\end{figure}%
 
 \subsection{Measuring the fit}\label{sec-summary}
 
@@ -666,9 +684,6 @@ projections from \(7\text{-}D\), and predictions of the true model in
 means that it capture the geometry of S-curve with UMAP.}
 
 \end{figure}%
-
-XXX Prediction should have a jitter option, to spread the predicted
-points out fully in the hexagons.
 
 \subsection{Tuning}\label{tuning}
 
@@ -753,21 +768,11 @@ low-density hexagons:
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
 model performance, it's essential to observe the change in MSE as the
-benchmark value increases (see \textbf{?@fig-mse-scurve-lwd}). The MSE
-shows a gradual increase as the benchmark value progresses from \(0\) to
-\(1\). Evaluating this rate of increase is important. If the increment
-is not considerable, the decision might lean towards retaining
-low-density hexagons.
-
-Furthermore, selecting the benchmark value for removing low-density
-hexagons is important. Removing unnecessary bins may lead to the
-formation of long edges and an uneven \gD{} model. Hence, rather than
-solely relying on the benchmark value to identify hexagons for removal,
-it's essential to consider the standard number of points in the
-neighboring hexagons of the identified low-density bins (see
-\textbf{?@fig-lwd-scurve} (b)). If neighboring bins also show low
-counts, only those bins will be removed. The remaining bins are used to
-construct the \gD{} model.
+benchmark value increases (Figure~\ref{fig-param-scurve}). The MSE shows
+a gradual decrease as the benchmark value goes from \(1\) to \(0\).
+Evaluating this rate of increase is important. If the increment is not
+considerable, the decision might lean towards retaining low-density
+hexagons.
 
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
@@ -783,7 +788,7 @@ approach to identifying a suitable threshold:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the 2D Euclidean distances
+  Plot the distribution of the \gD{} Euclidean distances
   (Figure~\ref{fig-param-scurve} (d)).
 \item
   Identify the first largest difference between consecutive distance
@@ -834,8 +839,34 @@ to compare different NLDR representations. A good NLDR representation
 should produce a good fit, producing a low MSE if the model fits the
 data well. However, it technically might be quite variable.
 
-\section{A curious difference between t-SNE, UMAP and PaCMAP
-revealer}\label{a-curious-difference-between-t-sne-umap-and-pacmap-revealer}
+\begin{figure}[H]
+
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/tsne_trimesh_layout.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_1.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_2.png}\end{minipage}%
+%
+\begin{minipage}{0.25\linewidth}
+\includegraphics{figures/scurve/sc_tsne_best_3.png}\end{minipage}%
+
+\caption{\label{fig-scurve-sc-best}Model in \gD{}, on the tSNE layout,
+and three views of the fit in projections from \(7\text{-}D\), for the
+S-curve data (\((s_1, \ s_2) = (-0.170, \ -0.137)\),
+\(b = 256 \  (16, \ 16)\), \(m = 70\), benchmark value to remove low
+density hexagons is \(0.250\), and benchmark value to remove large edges
+is \(0.180\)). MSE is \(0.0432\). The model closely fits the shape, but
+it has some twists (The \textbf{langevitour} software is used to view
+the data with a tour, and the full video is available at
+\url{https://youtu.be/ZuLdp89qJ6g}).}
+
+\end{figure}%
+
+\section{A curious difference between tSNE, UMAP and PaCMAP
+revealer}\label{a-curious-difference-between-tsne-umap-and-pacmap-revealer}
 
 In this section, the effectiveness of the algorithm is described using a
 simulated dataset. The dataset consists of five spherical Gaussian
@@ -874,7 +905,7 @@ view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and tries to
 \emph{filled out} the clusters. (The \textbf{langevitour} software is
 used to view the data with a tour, and the full video is available at
-(\url{https://youtu.be/RASEE7N5MbM}).}
+\url{https://youtu.be/RASEE7N5MbM}).}
 
 \end{figure}%
 
@@ -894,7 +925,7 @@ view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and tries to
 \emph{filled out} the clusters, but not as much as tSNE. (The
 \textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at (\url{https://youtu.be/iG4bCPkJilw}).}
+the full video is available at \url{https://youtu.be/iG4bCPkJilw}).}
 
 \end{figure}%
 
@@ -914,7 +945,7 @@ a view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and shows
 \emph{flat} shaped clusters. (The \textbf{langevitour} software is used
 to view the data with a tour, and the full video is available at
-(\url{https://youtu.be/z07cKXi8EJQ}).}
+\url{https://youtu.be/z07cKXi8EJQ}).}
 
 \end{figure}%
 
