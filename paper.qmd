@@ -692,9 +692,8 @@ It can also happen that distant centroids can be connected, which can result in 
 The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in $H_h$ to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
 
 $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
-Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids.
+Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
 
-XXXAdd best fit with UMAP and discuss why it's the best fit
 
 <!-- langevitour with pD model for S-curve -->
 ::: {#fig-scurve-sc layout-ncol="4" fig-pos="H"}
@@ -711,7 +710,7 @@ Model in \gD{}, on the UMAP layout, and three views of the fit in projections fr
 
 <!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
 
-XXX Should there be a second long edge removal? You can compute the edges in \pD{} now, and if there are long edges maybe these should be pruned, and we re-plot the \gD{} view. 
+<!-- XXX Should there be a second long edge removal? You can compute the edges in \pD{} now, and if there are long edges maybe these should be pruned, and we re-plot the \gD{} view.  -->
 
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
