@@ -960,7 +960,7 @@ mse_scurve_b <- ggplot(error_scurve,
                          y = log(MSE),
                          color = buff,
                          group = buff)) + 
-  geom_point(size = 0.05) +
+  geom_point(size = 1) +
   geom_line(linewidth = 0.05) + 
   geom_vline(xintercept = 220, linetype="solid", 
              color = "black", linewidth=0.1) +
@@ -972,14 +972,17 @@ mse_scurve_b <- ggplot(error_scurve,
   labs(x = expression(b), y = "log(MSE)", color = expression(q)) +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7, 
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
             angle=90),
-        title = element_text(size = 72),
-        legend.title = element_text(size = 7),
-        legend.text = element_text(size = 5))
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.size = unit(1, 'cm'))
 ```
 
 #### Removal of low density bins
@@ -1025,7 +1028,7 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
                                             -std_counts), 
                                 y = std_counts)) + 
   geom_quasirandom(
-    size = 0.3,
+    size = 1,
     alpha = 0.5
   ) + 
   geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
@@ -1033,14 +1036,14 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
   ylab("standardized bin count") +
   ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, angle = 90),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, angle = 90),
         axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 5),
-        title = element_text(size = 36))
+        axis.text.y = element_text(size = 12),
+        plot.title = element_text(size = 12))
 ```
 
-The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (see @fig-mse-scurve-lwd). The MSE shows a gradual increase as the benchmark value progresses from $0$ to $1$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
+The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (@fig-param-scurve). The MSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
 <!--add MSE vs density (0 to 1)-->
 
@@ -1084,7 +1087,7 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
                      aes(x = benchmark_rm_lwd, 
                          y = log(MSE))) + 
   geom_point(
-    size = 0.6
+    size = 1
     ) +
   geom_line(
     linewidth = 0.3
@@ -1096,16 +1099,16 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
   ylab("log(MSE)") +
   ggtitle("(c)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 5),
-        axis.text.y = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5, 
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
             angle=90),
-        title = element_text(size = 72))
+        plot.title = element_text(size = 12))
 ```
 
 
-Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.   
+<!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
 
 <!--Using first quantile as the benchmark value-->
 ```{r}
@@ -1173,7 +1176,7 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 
 To create a smooth \gD{} representation (@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
 
-1. Plot the distribution of the 2D Euclidean distances (@fig-param-scurve (d)).
+1. Plot the distribution of the \gD{} Euclidean distances (@fig-param-scurve (d)).
 2. Identify the first largest difference between consecutive distance values.
 3. Take the distance value corresponding to this difference as the benchmark value.
 
@@ -1209,7 +1212,7 @@ distance_scurve_plot <- ggplot(distance_scurve,
                         aes(x = group, 
                             y = distance)) + 
   geom_quasirandom(
-    size = 0.5, 
+    size = 2, 
     alpha = 0.3
   ) + 
   ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
@@ -1220,9 +1223,9 @@ distance_scurve_plot <- ggplot(distance_scurve,
   ylab(expression(d^{(2)})) +
   ggtitle("(d)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 5),
-        axis.title.x = element_text(size = 5),
-        title = element_text(size = 36))
+        axis.text.x = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        plot.title = element_text(size = 12))
 ```
 
 ```{r}
@@ -1237,49 +1240,6 @@ distance_scurve_plot <- ggplot(distance_scurve,
 mse_scurve_b + cell_count_scurve + 
 mse_scurve_lwd + 
 distance_scurve_plot + plot_layout(ncol=2)
-```
-
-<!--trimesh with different benchmark values-->
-
-```{r}
-## With calculated default: 0.201
-trimesh_lg_scurve1 <- vis_rmlg_mesh(
-  distance_edges = distance_scurve, 
-  benchmark_value = benchmark_scurve, 
-  tr_coord_df = tr_from_to_df_scurve, 
-  distance_col = "distance") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos) 
-
-trimesh_lg_scurve2 <- vis_rmlg_mesh(
-  distance_edges = distance_scurve, 
-  benchmark_value = 0.35, 
-  tr_coord_df = tr_from_to_df_scurve, 
-  distance_col = "distance") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("b", sc_ltr_pos) 
-
-trimesh_lg_scurve3 <- vis_rmlg_mesh(
-  distance_edges = distance_scurve, 
-  benchmark_value = 1.1, 
-  tr_coord_df = tr_from_to_df_scurve, 
-  distance_col = "distance") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c", sc_ltr_pos) 
-```
-
-```{r}
-#| echo: false
-#| label: fig-lg-scurve
-#| fig-pos: H
-#| fig-cap: "$2\\text{-}D$ model generated for different benchmark values to remove long edges: (a) benchmark = $0.201$ (default), (b) benchmark = $0.35$, and (c) benchmark = $1.1$. What is the effective benchmark value to remove long edges?"
-#| fig-width: 6
-#| fig-height: 3
-#| eval: false
-
-trimesh_lg_scurve1 + trimesh_lg_scurve2 + trimesh_lg_scurve3 +
-  plot_layout(guides='collect', ncol = 3) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
 ```
 
 ## Best fit
@@ -1351,7 +1311,7 @@ Model in \gD{}, on the tSNE layout, and three views of the fit in projections fr
 
 <!-- add MSE values for the screenshot figure names-->
 
-## A curious difference between t-SNE, UMAP and PaCMAP revealer
+## A curious difference between tSNE, UMAP and PaCMAP revealer
 
 <!-- XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY INTERESTING EXAMPLE WHEN THE FILLED OUT VS FLAT SHAPES ARE DISCUSSED. -->
 
@@ -1368,7 +1328,7 @@ The tSNE and UMAP shows *filled out* clusters which provide evidence that these 
 
 ![](figures/five_gau_clusters/sc_tsne_3.png)
 
-The tSNE layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/RASEE7N5MbM>). 
+The tSNE layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/RASEE7N5MbM>). 
 :::
 
 ::: {#fig-gau-umap-sc layout-ncol="3" fig-pos="H"}
@@ -1378,7 +1338,7 @@ The tSNE layout, model in \gD{}, and a view of the fit in projections from $4\te
 
 ![](figures/five_gau_clusters/sc_umap_3.png)
 
-The UMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters, but not as much as tSNE. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/iG4bCPkJilw>). 
+The UMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters, but not as much as tSNE. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/iG4bCPkJilw>). 
 :::
 
 ::: {#fig-gau-pacmap-sc layout-ncol="3" fig-pos="H"}
@@ -1388,7 +1348,7 @@ The UMAP layout, model in \gD{}, and a view of the fit in projections from $4\te
 
 ![](figures/five_gau_clusters/sc_pacmap_2.png)
 
-The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and shows *flat* shaped clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at (<https://youtu.be/z07cKXi8EJQ>). 
+The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and shows *flat* shaped clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/z07cKXi8EJQ>). 
 :::
 
 ## Applications {#sec-applications}

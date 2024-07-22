@@ -771,21 +771,11 @@ low-density hexagons:
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
 model performance, it's essential to observe the change in MSE as the
-benchmark value increases (see \textbf{?@fig-mse-scurve-lwd}). The MSE
-shows a gradual increase as the benchmark value progresses from \(0\) to
-\(1\). Evaluating this rate of increase is important. If the increment
-is not considerable, the decision might lean towards retaining
-low-density hexagons.
-
-Furthermore, selecting the benchmark value for removing low-density
-hexagons is important. Removing unnecessary bins may lead to the
-formation of long edges and an uneven \gD{} model. Hence, rather than
-solely relying on the benchmark value to identify hexagons for removal,
-it's essential to consider the standard number of points in the
-neighboring hexagons of the identified low-density bins (see
-\textbf{?@fig-lwd-scurve} (b)). If neighboring bins also show low
-counts, only those bins will be removed. The remaining bins are used to
-construct the \gD{} model.
+benchmark value increases (Figure~\ref{fig-param-scurve}). The MSE shows
+a gradual decrease as the benchmark value goes from \(1\) to \(0\).
+Evaluating this rate of increase is important. If the increment is not
+considerable, the decision might lean towards retaining low-density
+hexagons.
 
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
@@ -801,7 +791,7 @@ approach to identifying a suitable threshold:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Plot the distribution of the 2D Euclidean distances
+  Plot the distribution of the \gD{} Euclidean distances
   (Figure~\ref{fig-param-scurve} (d)).
 \item
   Identify the first largest difference between consecutive distance
@@ -878,8 +868,8 @@ the data with a tour, and the full video is available at
 
 \end{figure}%
 
-\section{A curious difference between t-SNE, UMAP and PaCMAP
-revealer}\label{a-curious-difference-between-t-sne-umap-and-pacmap-revealer}
+\section{A curious difference between tSNE, UMAP and PaCMAP
+revealer}\label{a-curious-difference-between-tsne-umap-and-pacmap-revealer}
 
 In this section, the effectiveness of the algorithm is described using a
 simulated dataset. The dataset consists of five spherical Gaussian
@@ -918,7 +908,7 @@ view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and tries to
 \emph{filled out} the clusters. (The \textbf{langevitour} software is
 used to view the data with a tour, and the full video is available at
-(\url{https://youtu.be/RASEE7N5MbM}).}
+\url{https://youtu.be/RASEE7N5MbM}).}
 
 \end{figure}%
 
@@ -938,7 +928,7 @@ view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and tries to
 \emph{filled out} the clusters, but not as much as tSNE. (The
 \textbf{langevitour} software is used to view the data with a tour, and
-the full video is available at (\url{https://youtu.be/iG4bCPkJilw}).}
+the full video is available at \url{https://youtu.be/iG4bCPkJilw}).}
 
 \end{figure}%
 
@@ -958,7 +948,7 @@ a view of the fit in projections from \(4\text{-}D\), for the five
 Gaussian cluster data. The model fits the separation and shows
 \emph{flat} shaped clusters. (The \textbf{langevitour} software is used
 to view the data with a tour, and the full video is available at
-(\url{https://youtu.be/z07cKXi8EJQ}).}
+\url{https://youtu.be/z07cKXi8EJQ}).}
 
 \end{figure}%
 
