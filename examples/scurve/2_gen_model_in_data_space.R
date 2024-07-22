@@ -24,7 +24,7 @@ scurve_model <- fit_highd_model(
   emb_df = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
-  q = 0.07,
+  q = 0.05,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = TRUE,
   col_start_highd = "x"
@@ -53,6 +53,8 @@ benchmark_scurve <- find_lg_benchmark(
   distance_edges = distance_scurve,
   distance_col = "distance")
 
+benchmark_scurve <- 0.2
+
 trimesh_removed_scurve <- vis_rmlg_mesh(
   distance_edges = distance_scurve,
   benchmark_value = benchmark_scurve,
@@ -64,29 +66,29 @@ hb_obj_scurve <- hex_binning(
   data = umap_scurve_scaled,
   bin1 = num_bins_x_scurve,
   r2 = r2,
-  q = 0.07)
+  q = 0.05)
 
-# ## Data set with all possible centroids in the hexagonal grid
-# all_centroids_df <- hb_obj_scurve$centroids
-# glimpse(all_centroids_df)
-#
-# ## Generate all coordinates of hexagons
-# hex_grid <- hb_obj_scurve$hex_poly
-# glimpse(hex_grid)
-#
-# ## To obtain the standardise counts within hexbins
-# counts_df <- hb_obj_scurve$std_cts
-# df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df,
-#                                              counts_df = counts_df) |>
-#   filter(drop_empty == FALSE)
-#
-# hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
-#
-# ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
-#   geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
-#   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
-#   scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
-#   coord_fixed()
+## Data set with all possible centroids in the hexagonal grid
+all_centroids_df <- hb_obj_scurve$centroids
+glimpse(all_centroids_df)
+
+## Generate all coordinates of hexagons
+hex_grid <- hb_obj_scurve$hex_poly
+glimpse(hex_grid)
+
+## To obtain the standardise counts within hexbins
+counts_df <- hb_obj_scurve$std_cts
+df_bin_centroids <- extract_hexbin_centroids(centroids_df = all_centroids_df,
+                                             counts_df = counts_df) |>
+  filter(drop_empty == FALSE)
+
+hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hb_id"))
+
+ggplot(data = hex_grid_with_counts, aes(x = x, y = y)) +
+  geom_polygon(color = "black", aes(group = hex_poly_id, fill = std_counts)) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID)) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff") +
+  coord_fixed()
 
 umap_data_with_hb_id <- hb_obj_scurve$data_hb_id
 
