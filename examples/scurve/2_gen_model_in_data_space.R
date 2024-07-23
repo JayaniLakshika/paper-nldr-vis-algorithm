@@ -125,7 +125,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 
 ##############################
 
-true_model <- read_rds("scurve_true_model.rds") |>
+true_model <- read_rds("data/s_curve/scurve_true_model.rds") |>
   select(-ID) |>
   mutate(type = "true model")
 
@@ -136,7 +136,7 @@ training_data <- read_rds("data/s_curve/s_curve_training.rds") |>
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(true_model, df_b, training_data)
 
-connections <- read_rds("scurve_true_model_wireframe.rds")
+connections <- read_rds("data/s_curve/scurve_true_model_wireframe.rds")
 
 distance_df_small_edges <- distance_df_small_edges |>
   mutate(from = from + max(connections$from) + 1,
