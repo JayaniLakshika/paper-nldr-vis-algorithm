@@ -47,7 +47,7 @@ nldr_scurve <- shared_df_scurve |>
   )
 
 nldr_scurve_plt <- ggplotly(nldr_scurve, width = as.character(round(600/r2, 0)),
-                            height = "600") |>
+                            height = "600", tooltip = "none") |>
   style(unselected=list(marker=list(opacity=1))) |>
   highlight(on="plotly_selected", off="plotly_deselect") |>
   config(displayModeBar = FALSE)
