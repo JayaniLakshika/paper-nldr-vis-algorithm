@@ -59,6 +59,6 @@ langevitour_output <- langevitour::langevitour(df_exe[1:7],
                                                group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(1, NROW(df))),
                                                levelColors = c("#6a3d9a", "#33a02c"),
                                                link=shared_df_scurve,
-                                               link_filter=TRUE)
+                                               link_filter=FALSE)
 
 bscols(nldr_scurve_plt, langevitour_output)
