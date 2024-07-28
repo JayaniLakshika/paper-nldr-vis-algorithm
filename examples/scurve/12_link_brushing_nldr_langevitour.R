@@ -1,45 +1,64 @@
-library(crosstalk)
-library(plotly)
+df_all_scurve_n <- df_all_scurve |>
+  select(-ID, -hb_id) |>
+  dplyr::mutate(type = "data")
 
-umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
 
-scurve_scaled_obj <- gen_scaled_data(
-  data = umap_scurve)
+df_b <- df_bin_scurve |>
+  dplyr::filter(hb_id %in% df_bin_centroids_scurve$hexID)
 
-umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
-lim1 <- scurve_scaled_obj$lim1
-lim2 <- scurve_scaled_obj$lim2
-r2 <- diff(lim2)/diff(lim1)
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_scurve$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  dplyr::mutate(type = "model")
 
-df_all_scurve <- dplyr::bind_cols(training_data_scurve |> dplyr::select(-ID),
-                                  umap_data_with_hb_id)
-
-# ### Define type column
-# df <- df_all_scurve |>
-#   dplyr::select(tidyselect::starts_with("x")) |>
-#   dplyr::mutate(type = "data") ## original dataset
+# df_bin_centroids_scurve_n <-df_bin_centroids_scurve[match(df_b$hb_id, df_bin_centroids_scurve$hexID),] |>
+#   select(c_x, c_y) |>
+#   rename(c("UMAP1" = "c_x",
+#            "UMAP2" = "c_y"))
 #
-# df_b <- df_bin_scurve |>
-#   dplyr::filter(hb_id %in% df_bin_centroids_scurve$hexID) |>
-#   dplyr::mutate(type = "model") ## Data with summarized mean
-#
-# ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-# df_b <- df_b[match(df_bin_centroids_scurve$hexID, df_b$hb_id),] |>
-#   select(-type)
-#
-# names(df_b)[2:NCOL(df_b)] <- paste0("avg_", names(df_b)[2:NCOL(df_b)])
-#
-# df_all_scurve <- left_join(df_all_scurve, df_b, by = "hb_id")
+# df_b <- bind_cols(df_b, df_bin_centroids_scurve_n) |>
+#   dplyr::select(-hb_id) |>
+#   dplyr::mutate(type = "model")
 
-shared_df_scurve <- SharedData$new(df_all_scurve |> select(-ID, -hb_id))
+df_exe <- dplyr::bind_rows(df_b, df_all_scurve_n)
+
+## Set the maximum difference as the criteria
+distance_df_small_edges <- distance_scurve |>
+  dplyr::filter(distance < benchmark_scurve)
+
+shared_df_scurve <- SharedData$new(df_exe)
+
 
 nldr_scurve <- shared_df_scurve |>
   ggplot(aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha=0.5, colour="#6a3d9a", size = 0.5)
+  geom_point(alpha=0.5, colour="#6a3d9a", size = 0.5) +
+  theme_linedraw() +
+  theme(
+    #aspect.ratio = 1,
+    plot.background = element_rect(fill = 'transparent', colour = NA),
+    plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+    panel.background = element_rect(fill = 'transparent',
+                                    colour = NA),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.title.x = element_blank(), axis.title.y = element_blank(),
+    axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+    axis.text.y = element_blank(), axis.ticks.y = element_blank()
+  )
 
-nldr_scurve_plt <- ggplotly(nldr_scurve)
+nldr_scurve_plt <- ggplotly(nldr_scurve, width = as.character(round(600/r2, 0)),
+                            height = "600", tooltip = "none") |>
+  style(unselected=list(marker=list(opacity=1))) |>
+  highlight(on="plotly_selected", off="plotly_deselect") |>
+  config(displayModeBar = FALSE)
 
-langevitour_output <- langevitour(training_data |> select(-type),
-                                  link=shared_df_scurve)
+
+langevitour_output <- langevitour::langevitour(df_exe[1:7],
+                                               lineFrom = distance_df_small_edges$from,
+                                               lineTo = distance_df_small_edges$to,
+                                               group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(1, NROW(df))),
+                                               levelColors = c("#6a3d9a", "#33a02c"),
+                                               link=shared_df_scurve,
+                                               link_filter=FALSE)
 
 bscols(nldr_scurve_plt, langevitour_output)
