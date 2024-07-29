@@ -909,7 +909,7 @@ hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule @REF-doi:10.1007/BF01025868. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between 2 and $b_1 = \frac{n}{2}$ are allowed. FIG XXX(b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. 
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule @REF-doi:10.1007/BF01025868. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between 2 and $b_1 = \frac{n}{2}$ are allowed. FIG XXX(b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. XXX Are you showing $b_1$ or $b$ here????
 
 <!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)).--> 
 
@@ -998,11 +998,14 @@ mse_scurve_b <- ggplot(error_scurve,
 
 #### Removal of low density bins
 
-Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (@fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (@fig-param-scurve (c)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
+By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. FIG XXXc illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
+
+<!-- Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (@fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (@fig-param-scurve (c)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
 
 1. Plot the distribution of the standardized counts (@fig-param-scurve (b)).
 2. Examine the distribution of counts.
 3. Select the first quantile value if the distribution is skewed.
+-->
 
 <!--add distribution of density and add the first quantile as the benchmark-->
 

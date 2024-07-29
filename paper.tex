@@ -737,34 +737,25 @@ Diaconis-Freedman rule \citet{REF-doi:10.1007/BF01025868}. The value of
 \(b_2\) is determined analytically by \(b_1, q, r_2\). Values of \(b_1\)
 between 2 and \(b_1 = \frac{n}{2}\) are allowed. FIG XXX(b) shows the
 effect of different choices of \(b_1\) on the MSE of the fitted model.
+XXX Are you showing \(b_1\) or \(b\) here????
 
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
 
-Once setting up the hexagon grid with an appropriate number of bins,
-some hexagon bins may have few or no data points within them
-(Figure~\ref{fig-bins-scurve} (b)). To ensure comprehensive coverage of
-the NLDR data, it is necessary to select hexagon bins with a
-considerable number of data points. This involves calculating the number
-of points within each hexagon. Then, the standard count is computed by
-dividing the number of points within each hexagon by the maximum number
-of points in the grid. Next, bins with a standard count less than a
-benchmark value are removed (Figure~\ref{fig-param-scurve} (c)). There
-is no specific rule for selecting a benchmark value. However, the
-following steps can help determine a suitable value for removing
-low-density hexagons:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Plot the distribution of the standardized counts
-  (Figure~\ref{fig-param-scurve} (b)).
-\item
-  Examine the distribution of counts.
-\item
-  Select the first quantile value if the distribution is skewed.
-\end{enumerate}
+By default, when assessing the choice of \(b_1\), the total number of
+bins is measured by the number of \textbf{non-empty} bins. This more
+accurately reflects the hexagon grid relative the MSE than the full
+number of bins in the grid. It may also be beneficial to remove low
+count bins also, in the situation where data is clustered or stringy,
+where the observed data is sparse. In order to decide if this is
+necessary, you would examine the distribution of bin counts, or the
+density which puts the counts on a standard scale. If there is something
+of a gap at low values, this would suggest a potential value to use as a
+cutoff. Alternatively, one could choose to remove based on a percentile,
+the bins with density in the lowest 5\% of all bins, for example. FIG
+XXXc illustrates the effect on the model representation of removing bins
+below different percentages. Generally, we would urge caution in
+removing low count bins.
 
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
