@@ -749,11 +749,21 @@ A view of the true model in projections from $7\text{-}D$, and predictions of th
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
 
-The performance and robustness of our model depend on four key parameters: (i) bin start position $(s_1, \ s_2)$, (ii) the total number of bins ($b$), (iii) a benchmark value used to remove low-density hexagons, and (iv) a benchmark value used to remove long edges. However, there is no analytical formula to calculate appropriate values for these parameters. The selection of these parameter values depends on the model performance computed by MSE (@sec-summary), except for the threshold used to remove long edges. 
+The model fitting can be adjusted using these parameters: 
 
-#### Bin start position and number of bins
+- hexagon bin parameters
+    - bottom left bin position $(s_1, \ s_2)$, 
+    - the total number of bins ($b$), 
+- bin density cutoff, to remove low-density hexagons, and 
+- edge length maximum, remove long edges from \gD{} representation. 
 
-The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model. 
+Default values are provided for each of these, but it is expected that the user will examine the MSE for a range of choices. Choosing these parameters according to MSE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.
+
+#### Hexagon bin parameters
+
+The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer sound the data. The choice of these values can have some effect on the distribution of bin counts. FIG XXX(a) illustrates this. The distribution of bin counts for $s_1$ varying between $-0.1-0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
+
+<!--The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model.--> 
 
 <!--add three choice of bins 7, 11, 14-->
 
@@ -899,7 +909,9 @@ hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
-To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)). 
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule @REF-doi:10.1007/BF01025868. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between 2 and $b_1 = \frac{n}{2}$ are allowed. FIG XXX(b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. 
+
+<!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)).--> 
 
 <!--add MSE vs total number of error plot-->
 
