@@ -1188,7 +1188,9 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 
 #### Removing long edges
 
-To create a smooth \gD{} representation (@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
+Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-scurve-true-sc shows a wire frame of the true model that was used to generate the S-curve example data. The fitted model should come reasonably close to this, if the fitting has been successful. We don't ever have this, of course
+
+(@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
 
 1. Plot the distribution of the \gD{} Euclidean distances (@fig-param-scurve (d)).
 2. Identify the first largest difference between consecutive distance values.
