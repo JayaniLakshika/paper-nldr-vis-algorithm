@@ -807,6 +807,9 @@ hex_grid_coloured_scurve1 <- ggplot() +
     na.value = "#ffffff", option = "C") +
   interior_annotation("a", position = c(0.92, 0.93)) +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
+
+hex_grid_coloured_scurve1_dens <- ggplot(hex_grid_with_counts_s_curve1) +
+  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve1$centroids$c_x[2]-hb_obj_scurve1$centroids$c_x[1])
 ```
 
 ```{r}
@@ -852,6 +855,8 @@ hex_grid_coloured_scurve2 <- ggplot() +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("b")
 
+hex_grid_coloured_scurve2_dens <- ggplot(hex_grid_with_counts_s_curve2) +
+  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve2$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1])
 ```
 
 ```{r}
@@ -893,7 +898,9 @@ hex_grid_coloured_scurve3 <-  ggplot() +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("c")
-  
+ 
+hex_grid_coloured_scurve3_dens <- ggplot(hex_grid_with_counts_s_curve3) +
+  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve3$centroids$c_x[2]-hb_obj_scurve3$centroids$c_x[1]) 
 ```
 
 ```{r}
@@ -902,10 +909,16 @@ hex_grid_coloured_scurve3 <-  ggplot() +
 #| fig-pos: H
 #| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)  \\text{ }(q = 0.12)$, (b) $b = 220 \\text{ } (11, \\text{ }20) \\text{ }(q = 0.07)$, and (c) $b = 527 \\text{ } (17, \\text{ }31) \\text{ }(q = 0.05)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 6
-#| fig-height: 3
+#| fig-height: 5
 
-hex_grid_coloured_scurve1 + hex_grid_coloured_scurve2 + hex_grid_coloured_scurve3 +
-  plot_layout(guides='collect', ncol = 3) &
+hex_grid_coloured_scurve1 + 
+  hex_grid_coloured_scurve2 + 
+  hex_grid_coloured_scurve3 +
+hex_grid_coloured_scurve1_dens +
+  hex_grid_coloured_scurve2_dens +
+  hex_grid_coloured_scurve3_dens +
+  plot_layout(guides='collect', ncol = 3,
+              heights = c(2,1)) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
