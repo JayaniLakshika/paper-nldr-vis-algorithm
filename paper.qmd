@@ -11,7 +11,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-6265-6481
     email: jayani.piyadigamage@monash.edu
@@ -22,7 +22,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-3813-7155
     email: dicook@monash.edu 
@@ -33,7 +33,7 @@ author:
         department: MGBP, BDInstitute
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-3980-268X
     email: 	paul.harrison@monash.edu
@@ -44,7 +44,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0001-6515-827X
     email: michael.lydeamore@monash.edu
@@ -343,6 +343,7 @@ With our goal being to make a representation of this \gD{}    layout that can be
 
 <!--UMAP applied for Scurve data-->
 ```{r}
+#| label: umap-scurve
 umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
 
 scurve_scaled_obj <- gen_scaled_data(
@@ -369,6 +370,7 @@ nldr_scurve <- umap_scurve_scaled |>
 <!--Full hexagon grid with UMAP data-->
 
 ```{r}
+#| label: hexbin-scurve
 ## Compute hexbin parameters
 num_bins_x_scurve <- 7
 
@@ -413,10 +415,11 @@ hex_grid_scurve <- ggplot(
 <!--Non-empty bins with bin centroids-->
 
 ```{r}
+#| label: empty-bin-scurve
 hex_grid_nonempty <- hex_grid |>
   filter(hex_poly_id %in% df_bin_centroids$hexID)
 
-hex_grid_nonempty_scurve <-  ggplot(
+hex_grid_nonempty_scurve <- ggplot(
   data = hex_grid_nonempty, 
   aes(x = x, y = y)) +
   geom_polygon(color = "black", 
@@ -433,6 +436,7 @@ hex_grid_nonempty_scurve <-  ggplot(
 <!--2D model-->
 
 ```{r}
+#| label: triangulate-scurve
 ## Triangulate bin centroids
 tr1_object_scurve <- tri_bin_centroids(
   df_bin_centroids, x = "c_x", y = "c_y")
@@ -511,6 +515,7 @@ To ensure that the grid covers the range of data values a buffer parameter ($q$)
 The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of the first NLDR component, $a_1 > \frac{1+2q}{b_1 -1}$. Similarly, for the second NLDR component, $a_2 > \frac{r_2 + q(1 + r_2)}{(b_2 - 1)}$. Since $a_2 = \frac{\sqrt(3)}{2}a_1$ for regular hexagons, $a_1 > \frac{2[r_2 + q(1 + r_2)]}{\sqrt{3}(b_2 - 1)}$. This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. Therefore, $b_2 = \Big\lceil1 +\frac{2[r_2 + q(1 + r_2)](b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil$.
 
 ```{r}
+#| label: code-illustration
 # Code to draw illustration for notation
 start_pt <- all_centroids_df |> 
   filter(hexID == 1)
@@ -768,6 +773,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 <!--add three choice of bins 7, 11, 14-->
 
 ```{r}
+#| label: hexbin-regular-scurve1
 ## hexagon binning to have regular hexagons
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
@@ -813,6 +819,7 @@ hex_grid_coloured_scurve1_dens <- ggplot(hex_grid_with_counts_s_curve1) +
 ```
 
 ```{r}
+#| label: hexbin-regular-scurve2
 ## hexagon binning to have regular hexagons
 hb_obj_scurve2 <- hex_binning(
   data = umap_scurve_scaled, 
@@ -860,6 +867,7 @@ hex_grid_coloured_scurve2_dens <- ggplot(hex_grid_with_counts_s_curve2) +
 ```
 
 ```{r}
+#| label: hexbin-regular-scurve3
 ## hexagon binning to have regular hexagons
 hb_obj_scurve3 <- hex_binning(
   data = umap_scurve_scaled, 
@@ -929,11 +937,13 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 <!--add MSE vs total number of error plot-->
 
 ```{r}
+#| label: scurve-training
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 ```
 
 <!--To generate errors for different total number of bins-->
 ```{r}
+#| label: errors-scurve
 ## To initialize number of bins along the x-axis
 bin1_vec_scurve <- 2:19 #sqrt(NROW(training_data_scurve)/2)
 buffer_vec <- seq(0.05, 0.1, by = 0.01)
@@ -1023,6 +1033,7 @@ By default, when assessing the choice of $b_1$, the total number of bins is meas
 <!--add distribution of density and add the first quantile as the benchmark-->
 
 ```{r}
+#| label: distribution-scurve
 ## To initialize effective bins along x
 effective_bin1_scurve <- 11
 
@@ -1050,6 +1061,7 @@ benchmark1 <- round(quantile(df_bin_centroids_scurve$std_counts, names = FALSE)[
 ```
 
 ```{r}
+#| label: bin-counts-scurve
 cell_count_scurve <- ggplot(df_bin_centroids_scurve, 
                             aes(x = reorder(as.factor(hexID), 
                                             -std_counts), 
@@ -1076,6 +1088,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 
 <!--To generate errors for different total number of bins-->
 ```{r}
+#| label: bins-scurve
 ## To initialize benchmark values to remove low density hexagons
 benchmark_rm_hex_vec <- append(seq(0, 0.99, by=0.1), c(benchmark1, 0.99))
 
@@ -1139,6 +1152,7 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
 
 <!--Using first quantile as the benchmark value-->
 ```{r}
+#| label: bin-benchmark-scurve
 hex_grid_with_counts_s_curve2 <- full_join(
   hex_grid2, 
   df_bin_centroids_scurve |> select(hexID, std_counts), 
@@ -1166,6 +1180,7 @@ hex_grid_rm_lwd_scurve1 <-  ggplot(
 
 <!--Observing neighboring bins as well-->
 ```{r}
+#| label: bin-neighbours
 ## First define low density bins using first quantile
 df_bin_centroids_low <- df_bin_centroids_scurve |> 
   filter(std_counts <= benchmark1)
@@ -1211,6 +1226,7 @@ Edges define the neighbourhood structure, in order to provide a smooth \gD{} rep
 
 <!--distribution of distance along with the default benchmark-->
 ```{r}
+#| label: triangulate-scurve2
 ## Triangulate bin centroids
 tr1_object_scurve <- tri_bin_centroids(
   df_bin_centroids_scurve_keep, x = "c_x", y = "c_y")
@@ -1394,6 +1410,7 @@ In the field of single-cell studies, a common analytical task involves clusterin
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
+#| label: published-pbmc
 ## Import data
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
@@ -1424,6 +1441,7 @@ To determine whether the UMAP representation with the (hyper-)parameter choice s
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
+#| label: hexbin-pbmc
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 30
 lim1 <- pbmc_scaled_obj$lim1
@@ -1541,6 +1559,7 @@ In order to find a reasonable NLDR representation for the PBMC3k dataset, the ab
 <!--compute absolute error for different parameter choices-->
 
 ```{r}
+#| label: initial-bins-pbmc
 ## To initialize number of bins along the x-axis
 bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
@@ -1952,6 +1971,7 @@ for (xbins in bin1_vec_pbmc) {
 ```
 
 ```{r}
+#| label: combine-data-pbmc
 error_pbmc <- bind_rows(error_pbmc_umap, 
                         error_pbmc_umap2,
                         error_pbmc_umap3,
@@ -1963,6 +1983,7 @@ error_pbmc <- bind_rows(error_pbmc_umap,
 ```
 
 ```{r}
+#| label: tsne-pbmc
 # read the png file from device 
 tsne_5_img <- readPNG("figures/pbmc3k/tsne_5.png", native = TRUE) 
 phate_5_img <- readPNG("figures/pbmc3k/phate_5.png", native = TRUE) 
@@ -2039,6 +2060,7 @@ As shown in @fig-tsne-suggest, there are three well-separated clusters, although
 <!--best choice-->
 
 ```{r}
+#| label: tsne-pbmc-read
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = tsne_pbmc)
@@ -2065,6 +2087,7 @@ We then fit the model for tSNE, and visualize the resultant model in the \pD{} d
 
 <!--Fit the best model and compute error-->
 ```{r}
+#| label: num-bins-pbmc
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 15
 lim1 <- pbmc_scaled_obj$lim1
@@ -2195,6 +2218,7 @@ The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
+#| label: read-mnist
 ## Import data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
@@ -2246,6 +2270,7 @@ pacmap_plot_mnist
 
 <!-- Fit the model and compute error-->
 ```{r}
+#| label: hexbin-mnist
 ## Compute hexbin parameters
 num_bins_x_mnist <- 22
 lim1 <- mnist_scaled_obj$lim1
