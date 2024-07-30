@@ -1271,6 +1271,35 @@ distance_scurve_plot <- ggplot(distance_scurve,
         axis.text.x = element_text(size = 12),
         axis.title.x = element_text(size = 12),
         plot.title = element_text(size = 12))
+
+# Define bin width and starting point
+bin_width <- hb_obj_scurve$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1]
+start_point <- bin_width/2
+
+# Create bins and calculate the mean value for each bin range
+bins <- seq(start_point, max(distance_scurve$distance) + bin_width, 
+            by = bin_width)
+bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
+
+distance_scurve <- distance_scurve |> 
+  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels))
+
+distance_hist <- ggplot(
+  distance_scurve, aes(x = distance)) +
+    geom_histogram(
+      aes(y = after_stat(count) / sum(after_stat(count))), 
+      binwidth = bin_width) +
+  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 3)) +
+  ylab("standardized number of edges") +
+  xlab(expression(d^{(2)})) +
+  ggtitle("(d)") +
+  theme(aspect.ratio = 0.75,
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, angle = 90),
+        axis.text.x = element_text(size = 12, angle = 90),
+        axis.text.y = element_text(size = 12),
+        axis.ticks.x = element_line(), 
+        plot.title = element_text(size = 12))
 ```
 
 ```{r}
@@ -1284,7 +1313,7 @@ distance_scurve_plot <- ggplot(distance_scurve,
 
 mse_scurve_b + cell_count_scurve + 
 mse_scurve_lwd + 
-distance_scurve_plot + plot_layout(ncol=2)
+distance_hist + plot_layout(ncol=2)
 ```
 
 ## Best fit
