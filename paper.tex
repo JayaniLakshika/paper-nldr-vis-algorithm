@@ -41,14 +41,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -147,6 +161,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
+
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -168,6 +183,7 @@ vizualization, model-in-the-data-space},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
+
 
 
 \begin{document}
@@ -223,6 +239,7 @@ vizualization, model-in-the-data-space
 
 \newpage
 \spacingset{1.9} % DON'T change the spacing!
+
 
 \spacingset{1.0}
 
@@ -1202,7 +1219,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/mnist_model_2d.png}
+\includegraphics{figures/mnist/mnist_model_2d.png}
 
 }
 
@@ -1214,7 +1231,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_1.png}
+\includegraphics{figures/mnist/sc_1.png}
 
 }
 
@@ -1226,7 +1243,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_2.png}
+\includegraphics{figures/mnist/sc_2.png}
 
 }
 
@@ -1238,7 +1255,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_3.png}
+\includegraphics{figures/mnist/sc_3.png}
 
 }
 
@@ -1274,7 +1291,7 @@ that the latter display different patterns of the digit 1
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/img_error_sample_within.png}
+\includegraphics{figures/mnist/img_error_sample_within.png}
 
 }
 
@@ -1286,7 +1303,7 @@ that the latter display different patterns of the digit 1
 
 \centering{
 
-\captionsetup{labelsep=none}\includegraphics{figures/mnist/img_error_sample_out.png}
+\includegraphics{figures/mnist/img_error_sample_out.png}
 
 }
 
@@ -1371,6 +1388,7 @@ Code, and data for reproducing this paper are available at
 \bibliography{bibliography.bib}
 
 \newpage{}
+
 
 
 
