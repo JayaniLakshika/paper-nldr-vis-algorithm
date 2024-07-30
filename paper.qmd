@@ -781,6 +781,12 @@ hb_obj_scurve1 <- hex_binning(
   r2 = r2,
   q = 0.12)
 
+a1_1 <- calc_bins_y(
+  bin1 = 7, 
+  r2 = r2,
+  q = 0.12
+)$a1
+
 ## Data set with all centroids
 all_centroids_df1 <- hb_obj_scurve1$centroids
 
@@ -792,7 +798,8 @@ counts_df1 <- hb_obj_scurve1$std_cts
 df_bin_centroids1 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df1, 
   counts_df = counts_df1) |>
-  filter(drop_empty == FALSE)
+  filter(drop_empty == FALSE) |>
+  mutate(a1 = a1_1)
 
 hex_grid_with_counts_s_curve1 <- full_join(
   hex_grid1, 
@@ -837,6 +844,12 @@ hb_obj_scurve2 <- hex_binning(
   r2 = r2,
   q = 0.07)
 
+a1_2 <- calc_bins_y(
+  bin1 = 11, 
+  r2 = r2,
+  q = 0.07
+)$a1
+
 ## Data set with all centroids
 all_centroids_df2 <- hb_obj_scurve2$centroids
 
@@ -848,7 +861,8 @@ counts_df2 <- hb_obj_scurve2$std_cts
 df_bin_centroids2 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df2, 
   counts_df = counts_df2) |>
-  filter(drop_empty == FALSE)
+  filter(drop_empty == FALSE) |>
+  mutate(a1 = a1_2)
 
 hex_grid_with_counts_s_curve2 <- full_join(
   hex_grid2, 
@@ -896,6 +910,12 @@ hb_obj_scurve3 <- hex_binning(
   r2 = r2,
   q = 0.05)
 
+a1_3 <- calc_bins_y(
+  bin1 = 17, 
+  r2 = r2,
+  q = 0.05
+)$a1
+
 ## Data set with all centroids
 all_centroids_df3 <- hb_obj_scurve3$centroids
 
@@ -907,7 +927,8 @@ counts_df3 <- hb_obj_scurve3$std_cts
 df_bin_centroids3 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df3, 
   counts_df = counts_df3) |>
-  filter(drop_empty == FALSE)
+  filter(drop_empty == FALSE) |>
+  mutate(a1 = a1_3)
 
 hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
                                           df_bin_centroids3 |> select(hexID, std_counts), 
@@ -1092,13 +1113,22 @@ benchmark1 <- round(quantile(df_bin_centroids_scurve$std_counts, names = FALSE)[
 
 ```{r}
 #| label: bin-counts-scurve
-cell_count_scurve <- ggplot(df_bin_centroids_scurve, 
+
+df_bin_centroids_all <- bind_rows(
+  df_bin_centroids1,
+  df_bin_centroids2,
+  df_bin_centroids3
+)
+
+cell_count_scurve <- ggplot(df_bin_centroids_all, 
                             aes(x = reorder(as.factor(hexID), 
                                             -std_counts), 
                                 y = std_counts,
-                                group = "1")) + 
+                                group = a1,
+                                color = a1)) + 
   geom_line() + 
   geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
+  scale_colour_continuous_sequential(palette = "Magenta") +
   xlab("hexagon id (re-ordered)") + 
   ylab("standardized bin count") +
   ggtitle("(b)") +
