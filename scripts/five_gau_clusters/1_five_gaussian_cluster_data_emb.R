@@ -17,16 +17,16 @@ library(patchwork)
 
 library(grid)
 
+
 set.seed(20240110)
 
 use_python("~/miniforge3/envs/pcamp_env/bin/python")
 use_condaenv("pcamp_env")
 
-reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_PacMAP_code.py"))
-reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_TriMAP_code.py"))
+reticulate::source_python(here::here("scripts/function_scripts/Fit_PacMAP_code.py"))
+reticulate::source_python(here::here("scripts/function_scripts/Fit_TriMAP_code.py"))
 
-source("quollr_code.R", local = TRUE)
-source("nldr_code.R", local = TRUE)
+source(here::here("scripts/nldr_code.R"))
 
 sample_size <- 5000
 cluster_size <- sample_size/5
