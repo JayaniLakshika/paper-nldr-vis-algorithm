@@ -2,6 +2,7 @@ library(langevitour)
 library(rsample)
 library(scales)
 library(dplyr)
+library(readr)
 
 set.seed(20230531)
 
