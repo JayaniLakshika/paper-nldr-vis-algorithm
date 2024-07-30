@@ -24,7 +24,8 @@ gau1_model <- fit_highd_model(
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
+  col_start_highd = "x",
+  q = 0.16
 )
 
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
@@ -54,7 +55,8 @@ benchmark_gau1 <- find_lg_benchmark(
 hb_obj_gau1 <- hex_binning(
   data = tsne_gau_scaled,
   bin1 = num_bins_x_gau1,
-  r2 = r2_gau1)
+  r2 = r2_gau1,
+  q = 0.16)
 
 tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
 
