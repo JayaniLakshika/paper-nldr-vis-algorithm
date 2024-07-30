@@ -815,7 +815,17 @@ hex_grid_coloured_scurve1 <- ggplot() +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
 
 hex_grid_coloured_scurve1_dens <- ggplot(hex_grid_with_counts_s_curve1) +
-  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve1$centroids$c_x[2]-hb_obj_scurve1$centroids$c_x[1])
+  geom_histogram(aes(x=std_counts), 
+                 breaks=seq(0, 1, 0.05),
+                 fill="slategray4", colour="white")
+
+#hex_grid_coloured_scurve1_dens <- 
+#  hex_grid_with_counts_s_curve1 |>
+#  filter(!is.na(std_counts)) |>
+#  mutate(ord_std_counts = n() - rank(std_counts)) |>
+#  ggplot() +
+#  geom_line(aes(x=ord_std_counts, y=std_counts), 
+#                 colour="slategray4")
 ```
 
 ```{r}
@@ -863,7 +873,18 @@ hex_grid_coloured_scurve2 <- ggplot() +
   interior_annotation("b")
 
 hex_grid_coloured_scurve2_dens <- ggplot(hex_grid_with_counts_s_curve2) +
-  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve2$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1])
+  geom_histogram(aes(x=std_counts), 
+                 breaks=seq(0, 1, 0.05),
+                 fill="slategray4", colour="white")
+
+#hex_grid_coloured_scurve2_dens <- 
+#  hex_grid_with_counts_s_curve2 |>
+#  filter(!is.na(std_counts)) |>
+#  mutate(ord_std_counts = n() - rank(std_counts)) |>
+#  ggplot() +
+#  geom_line(aes(x=ord_std_counts, y=std_counts), 
+#                 colour="slategray4")
+
 ```
 
 ```{r}
@@ -908,7 +929,16 @@ hex_grid_coloured_scurve3 <-  ggplot() +
   interior_annotation("c")
  
 hex_grid_coloured_scurve3_dens <- ggplot(hex_grid_with_counts_s_curve3) +
-  geom_histogram(aes(x=std_counts), binwidth = hb_obj_scurve3$centroids$c_x[2]-hb_obj_scurve3$centroids$c_x[1]) 
+  geom_histogram(aes(x=std_counts), 
+                 breaks=seq(0, 1, 0.05),
+                 fill="slategray4", colour="white") 
+#hex_grid_coloured_scurve3_dens <- 
+#  hex_grid_with_counts_s_curve3 |>
+#  filter(!is.na(std_counts)) |>
+#  mutate(ord_std_counts = n() - rank(std_counts)) |>
+#  ggplot() +
+#  geom_line(aes(x=ord_std_counts, y=std_counts), 
+#                 colour="slategray4")
 ```
 
 ```{r}
