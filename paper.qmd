@@ -1065,11 +1065,9 @@ benchmark1 <- round(quantile(df_bin_centroids_scurve$std_counts, names = FALSE)[
 cell_count_scurve <- ggplot(df_bin_centroids_scurve, 
                             aes(x = reorder(as.factor(hexID), 
                                             -std_counts), 
-                                y = std_counts)) + 
-  geom_quasirandom(
-    size = 1,
-    alpha = 0.5
-  ) + 
+                                y = std_counts,
+                                group = "1")) + 
+  geom_line() + 
   geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
   xlab("hexagon id (re-ordered)") + 
   ylab("standardized bin count") +
@@ -1081,6 +1079,7 @@ cell_count_scurve <- ggplot(df_bin_centroids_scurve,
         axis.text.y = element_text(size = 12),
         plot.title = element_text(size = 12))
 ```
+
 
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (@fig-param-scurve). The MSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
