@@ -28,12 +28,19 @@ reticulate::source_python(here::here("scripts/function_scripts/Fit_TriMAP_code.p
 
 source(here::here("scripts/nldr_code.R"))
 
-cluster_size <- 1000
-df_2 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05),
-                       y=rnorm(cluster_size, mean = 0, sd = 0.05),
-                       z=rnorm(cluster_size, mean = 0, sd = 0.05),
-                       w=rnorm(cluster_size, mean = 0, sd = 0.05))
+sample_size <- 2000
+cluster_size <- sample_size/2
+df1 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      y=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      z=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      w=rnorm(cluster_size, mean = 0, sd = 0.1))
 
+df2 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      y=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      z=rnorm(cluster_size, mean = 0, sd = 0.1),
+                      w=rnorm(cluster_size, mean = 1, sd = 0.1))
+
+df_2 <- bind_rows(df1, df2)
 df_2 <- df_2 |>
   rename(x1 = x, x2 = y, x3 = z, x4 = w)
 

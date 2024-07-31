@@ -1122,11 +1122,11 @@ cell_count_scurve <- ggplot(df_bin_centroids_all,
                             aes(x = reorder(as.factor(hexID), 
                                             -bin_counts), 
                                 y = bin_counts,
-                                group = a1,
-                                color = a1)) + 
+                                group = as.factor(a1),
+                                color = as.factor(a1))) + 
   geom_line() + 
   # geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
-  scale_colour_continuous_sequential(palette = "Magenta") +
+  scale_colour_discrete_qualitative(palette = "Dark 2") +
   xlab("hexagon id (re-ordered)") + 
   ylab("standardized bin count") +
   ggtitle("(b)") +
