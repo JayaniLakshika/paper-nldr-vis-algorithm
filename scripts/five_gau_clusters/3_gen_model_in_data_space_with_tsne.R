@@ -1,8 +1,10 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
+
+set.seed(20240110)
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
 
@@ -37,6 +39,14 @@ tr1_object_gau1 <- tri_bin_centroids(
 tr_from_to_df_gau1 <- gen_edges(
   tri_object = tr1_object_gau1)
 
+# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
+#   filter(row_number() != 76) |>
+#   filter(row_number() != 34)
+
+tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
+  filter(row_number() != 115) |>
+  filter(row_number() != 139)
+
 ## Compute 2D distances
 distance_gau1 <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_gau1,
@@ -50,6 +60,15 @@ distance_gau1 <- cal_2d_dist(
 benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
+
+
+
+trimesh_removed_gau1 <- vis_rmlg_mesh(
+  distance_edges = distance_gau1,
+  benchmark_value = benchmark_gau1,
+  tr_coord_df = tr_from_to_df_gau1,
+  distance_col = "distance")
+
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
@@ -88,3 +107,15 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(1, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+
+## First projection
+projection <- cbind(
+  c(0.10529,0.49742,-0.58629,0.41171),
+  c(0.45146,0.55272,0.22780,-0.45886))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)

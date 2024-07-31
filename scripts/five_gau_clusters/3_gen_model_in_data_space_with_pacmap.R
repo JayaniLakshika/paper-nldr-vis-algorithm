@@ -51,6 +51,12 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
+trimesh_removed_gau1 <- vis_rmlg_mesh(
+  distance_edges = distance_gau1,
+  benchmark_value = benchmark_gau1,
+  tr_coord_df = tr_from_to_df_gau1,
+  distance_col = "distance")
+
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
   data = pacmap_gau_scaled,
@@ -88,3 +94,15 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(0.6, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+
+## First projection
+projection <- cbind(
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)
