@@ -1,7 +1,7 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
 
 training_data_gau <- read_rds("data/one_gau_cluster/data_one_gau_training.rds")
@@ -12,7 +12,7 @@ gau1_scaled_obj <- gen_scaled_data(
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 13
+num_bins_x_gau1 <- 11
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -25,7 +25,7 @@ gau1_model <- fit_highd_model(
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x",
-  q = 0.18
+  q = 0.11
 )
 
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
@@ -56,7 +56,7 @@ hb_obj_gau1 <- hex_binning(
   data = tsne_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
-  q = 0.18)
+  q = 0.11)
 
 tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
 
