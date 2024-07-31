@@ -797,7 +797,7 @@ df_bin_centroids1 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df1, 
   counts_df = counts_df1) |>
   filter(drop_empty == FALSE) |>
-  mutate(a1 = a1_1)
+  mutate(b1 = "b1 = 7")
 
 hex_grid_with_counts_s_curve1 <- full_join(
   hex_grid1, 
@@ -860,7 +860,7 @@ df_bin_centroids2 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df2, 
   counts_df = counts_df2) |>
   filter(drop_empty == FALSE) |>
-  mutate(a1 = a1_2)
+  mutate(b1 = "b1 = 11")
 
 hex_grid_with_counts_s_curve2 <- full_join(
   hex_grid2, 
@@ -926,7 +926,7 @@ df_bin_centroids3 <- extract_hexbin_centroids(
   centroids_df = all_centroids_df3, 
   counts_df = counts_df3) |>
   filter(drop_empty == FALSE) |>
-  mutate(a1 = a1_3)
+  mutate(b1 = "b1 = 17")
 
 hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
                                           df_bin_centroids3 |> select(hexID, std_counts), 
@@ -979,7 +979,7 @@ hex_grid_coloured_scurve1_dens +
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \frac{n}{2}$ are allowed. FIG XXX(b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. XXX Are you showing $b_1$ or $b$ here???? $b$
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \frac{n}{2}$ are allowed. @fig-param-scurve (b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. 
 
 <!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)).--> 
 
@@ -994,47 +994,46 @@ training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 ```{r}
 #| label: errors-scurve
 ## To initialize number of bins along the x-axis
-bin1_vec_scurve <- 2:19 #sqrt(NROW(training_data_scurve)/2)
-buffer_vec <- seq(0.05, 0.1, by = 0.01)
+bin1_vec_scurve <- 2:15 #sqrt(NROW(training_data_scurve)/2)
+#buffer_vec <- seq(0.05, 0.1, by = 0.01)
 
 error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_scurve) {
-  for (buff in buffer_vec) {
+  #for (buff in buffer_vec) {
     
-    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$bin2
+  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
 
-    scurve_model <- fit_highd_model(
-      training_data = training_data_scurve,
-      emb_df = umap_scurve_scaled,
-      bin1 = xbins,
-      r2 = r2,
-      q = buff, 
-      is_bin_centroid = TRUE,
-      is_rm_lwd_hex = FALSE,
-      col_start_highd = "x"
-    )
-  
-    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-    df_bin_scurve <- scurve_model$df_bin
-  
-    ## Compute error
-    error_df <- glance(
-      df_bin_centroids = df_bin_centroids_scurve,
-      df_bin = df_bin_scurve,
-      training_data = training_data_scurve,
-      newdata = NULL,
-      type_NLDR = "UMAP",
-      col_start = "x") |>
-      mutate(bin1 = xbins,
-             bin2 = bin2,
-             b = bin1 * bin2,
-             b_non_empty = NROW(df_bin_centroids_scurve),
-             buff = buff)
-  
-    error_scurve <- bind_rows(error_scurve, error_df)
+  scurve_model <- fit_highd_model(
+    training_data = training_data_scurve,
+    emb_df = umap_scurve_scaled,
+    bin1 = xbins,
+    r2 = r2,
+    q = 0.07, 
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "x"
+  )
+
+  df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+  df_bin_scurve <- scurve_model$df_bin
+
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_scurve,
+    df_bin = df_bin_scurve,
+    training_data = training_data_scurve,
+    newdata = NULL,
+    type_NLDR = "UMAP",
+    col_start = "x") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_scurve))
+
+  error_scurve <- bind_rows(error_scurve, error_df)
     
-  }
+  #}
 
 }
 
@@ -1068,20 +1067,17 @@ for (xbins in bin1_vec_scurve) {
 #         legend.key.size = unit(1, 'cm'))
 
 mse_scurve_b <- ggplot(error_scurve, 
-                     aes(x = b, 
-                         y = MSE,
-                         color = as.factor(buff),
-                         group = as.factor(buff))) + 
+                     aes(x = bin1, 
+                         y = MSE)) + 
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) + 
-  # geom_vline(xintercept = 220, linetype="solid", 
-  #            color = "black", linewidth=0.1) +
-  # geom_vline(xintercept = 112, linetype=2, 
-  #            color = "black", linewidth=0.1) +
-  # geom_vline(xintercept = 364, linetype=2, 
-  #            color = "black", linewidth=0.1) +
-  scale_colour_discrete_qualitative(palette = "Dark 2") +
-  labs(x = expression(b), y = "MSE", color = expression(q)) +
+  geom_vline(xintercept = 11, linetype="solid",
+             color = "#bdbdbd", linewidth=1) +
+  geom_vline(xintercept = 9, linetype=2,
+             color = "#bdbdbd", linewidth=1) +
+  geom_vline(xintercept = 13, linetype=2,
+             color = "#bdbdbd", linewidth=1) +
+  labs(x = expression(b[1]), y = "MSE") +
   ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 12),
@@ -1151,11 +1147,11 @@ cell_count_scurve <- ggplot(df_bin_centroids_all,
                             aes(x = reorder(as.factor(hexID), 
                                             -bin_counts), 
                                 y = bin_counts,
-                                group = as.factor(a1),
-                                color = as.factor(a1))) + 
+                                group = as.factor(b1),
+                                color = as.factor(b1))) + 
   geom_line() + 
   # geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
-  scale_colour_discrete_qualitative(palette = "Dark 2") +
+  scale_colour_discrete_qualitative(palette = "Dark 3") +
   xlab("hexagon id (re-ordered)") + 
   ylab("bin count") +
   ggtitle("(a)") +
@@ -1164,7 +1160,10 @@ cell_count_scurve <- ggplot(df_bin_centroids_all,
         axis.title.y = element_text(size = 12, angle = 90),
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 12),
-        plot.title = element_text(size = 12))
+        plot.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.size = unit(1, 'cm'),
+        legend.key.height = unit(1, 'cm'))
 ```
 
 
@@ -1211,18 +1210,18 @@ benchmark_label_df <- tibble(x = 0.2, y = 0.1,
 
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
                      aes(x = benchmark_rm_lwd, 
-                         y = log(MSE))) + 
+                         y = MSE)) + 
   geom_point(
     size = 1
     ) +
   geom_line(
     linewidth = 0.3
     ) + 
-  geom_vline(xintercept = benchmark1, linetype="solid", 
-             color = "black", linewidth=0.5, alpha = 0.5) +
+  # geom_vline(xintercept = benchmark1, linetype="solid", 
+  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
   scale_x_continuous("standardized bin count", 
          transform = "reverse") + 
-  ylab("log(MSE)") +
+  ylab("MSE") +
   ggtitle("(c)") +
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 12),
