@@ -12,7 +12,7 @@ gau1_scaled_obj <- gen_scaled_data(
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 12
+num_bins_x_gau1 <- 14
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -86,5 +86,5 @@ distance_df_small_edges <- distance_gau1 |>
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges$from,
                          lineTo = distance_df_small_edges$to,
-                         group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.4, NROW(df))),
+                         group = df_exe$type, pointSize = append(rep(2, NROW(df_b)), rep(1, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
