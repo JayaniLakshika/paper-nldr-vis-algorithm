@@ -1,7 +1,7 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
