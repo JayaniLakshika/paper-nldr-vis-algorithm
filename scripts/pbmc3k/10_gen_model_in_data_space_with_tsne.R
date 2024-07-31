@@ -94,3 +94,36 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+## First projection
+projection <- cbind(
+  c(0.038104,-0.001148,0.003905,-0.003332,-0.011747,-0.002688,0.003468,-0.014321,-0.000320),
+  c(-0.000902,0.041414,0.005089,-0.000149,-0.000551,0.000239,-0.008013,-0.005799,-0.001411))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)
+
+## Second projection
+projection <- cbind(
+  c(0.013182,-0.022240,-0.001729,0.026946,-0.005289,0.001235,-0.007784,0.017500,-0.006949),
+  c(0.027138,0.011939,0.009374,-0.004582,-0.004771,-0.027107,-0.005287,-0.002325,-0.007951))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)
+
+## Third projection
+projection <- cbind(
+  c(-0.003540,0.025008,0.023261,-0.012782,-0.011617,-0.006796,0.009566,-0.015022,0.001164),
+  c(0.038201,-0.007751,0.005064,-0.014143,0.003255,-0.001091,0.001611,-0.003674,-0.008314))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)
