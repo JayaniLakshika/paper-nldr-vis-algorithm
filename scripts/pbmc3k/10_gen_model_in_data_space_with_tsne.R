@@ -27,7 +27,8 @@ pbmc_model <- fit_highd_model(
   r2 = r2_pbmc,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "PC"
+  col_start_highd = "PC",
+  q = 0.05
 )
 
 df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -38,6 +39,9 @@ tr1_object_pbmc <- tri_bin_centroids(
   df_bin_centroids_pbmc, x = "c_x", y = "c_y")
 tr_from_to_df_pbmc <- gen_edges(
   tri_object = tr1_object_pbmc)
+
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  filter(row_number() != 360)
 
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(
@@ -57,7 +61,8 @@ benchmark_pbmc <- find_lg_benchmark(
 hb_obj_pbmc <- hex_binning(
   data = tsne_pbmc_scaled,
   bin1 = num_bins_x_pbmc,
-  r2 = r2_pbmc)
+  r2 = r2_pbmc,
+  q = 0.05)
 
 tsne_data_with_hb_id <- hb_obj_pbmc$data_hb_id
 
