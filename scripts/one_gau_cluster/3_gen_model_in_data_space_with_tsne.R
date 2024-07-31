@@ -6,7 +6,7 @@ library(langevitour)
 
 training_data_gau <- read_rds("data/one_gau_cluster/data_one_gau_training.rds")
 
-tsne_data_gau <- read_rds("data/one_gau_cluster/tsne_data_one_gau_27.rds")
+tsne_data_gau <- read_rds("data/one_gau_cluster/tsne_data_one_gau_39.rds")
 gau1_scaled_obj <- gen_scaled_data(
   data = tsne_data_gau)
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
