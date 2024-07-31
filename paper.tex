@@ -41,28 +41,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -161,7 +147,6 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -183,7 +168,6 @@ vizualization, model-in-the-data-space},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
-
 
 
 \begin{document}
@@ -239,7 +223,6 @@ vizualization, model-in-the-data-space
 
 \newpage
 \spacingset{1.9} % DON'T change the spacing!
-
 
 \spacingset{1.0}
 
@@ -437,11 +420,12 @@ With our goal being to make a representation of this \gD{} layout that
 can be lifted into high-dimensional space, the layout needs to be
 augmented to include neighbour information. A simple approach would be
 to triangulate the points and add edges. A more stable approach is to
-first hexagonly bin the data, reducing it from \(n\) to \(m\leq n\)
-observations, and connect the bin centroids. This process serves to
-reduce some noisiness in the resulting surface shown in \pD{}. The steps
-in this process are shown in Figure~\ref{fig-NLDR-scurve}, and
-documented below.
+first bin the data, reducing it from \(n\) to \(m\leq n\) observations,
+and connect the bin centroids. We recommend using a hexagon grid because
+it better reflects the data distribution and has less artifacts than a
+rectangular grid. This process serves to reduce some noisiness in the
+resulting surface shown in \pD{}. The steps in this process are shown in
+Figure~\ref{fig-NLDR-scurve}, and documented below.
 
 To illustrate the method, we use \(7\text{-}D\) simulated data, which we
 call the ``S-curve''. It is constructed by simulating \(n=750\)
@@ -577,16 +561,17 @@ components needed to render the model representation in high dimensions.
 \subsubsection{Indicating neighborhood}\label{indicating-neighborhood}
 
 Delaunay triangulation \citep{lee1980, alb2024} is used to connect
-neighboring centroids. The edges are needed to preserve neighborhood
-information when the model is lifted into \pD{}.
+points so that edges indicate neighbouring observations, in both the
+NLDR layout (Figure~\ref{fig-NLDR-scurve} (d)) and the \pD{} model
+representation. When the data has been binned the triangulation connectd
+centroids. The edges preserve the neighborhood information when the
+model is lifted into \pD{}.
 
 When shapes are non-linear in the NLDR layout, some edges could be long.
-It is unlikely
-
-It can also happen that distant centroids can be connected, which can
-result in long line segments. In order to generate a smooth surface in
-\gD{}, these long line segments must be removed
-(Figure~\ref{fig-NLDR-scurve} (d)).
+It can also happen that distant centroids can be connected, particularly
+if clustering is present, which can result in long line segments. In
+order to generate a smooth surface in \gD{}, these long line segments
+should be removed when tuning the model fit.
 
 \subsection{\texorpdfstring{Rendering the model in
 \pD{}}{Rendering the model in }}\label{rendering-the-model-in}
@@ -788,30 +773,34 @@ hexagons.
 Edges define the neighbourhood structure, in order to provide a smooth
 \gD{} representation of the fitted model.
 Figure~\ref{fig-scurve-true-sc} shows a wire frame of the true model
-that was used to generate the S-curve example data. The fitted model
-should come reasonably close to this, if the fitting has been
-successful. We don't ever have this, of course
+that was used to generate the S-curve example data. The ideal is that
+the representation of the fitted model, at least for this example where
+we know the true model, should look similar to this.
 
-(Figure~\ref{fig-NLDR-scurve} (d)), it is necessary to remove edges that
-connect distant bin centroids in the triangular mesh. These edges only
-exist in the \gD{} model and do not extend into \pD{}, so their removal
-does not impact the model in \pD{}. Although there are no specific
-criteria for determining the benchmark value to remove long edges, the
-following steps provide an approach to identifying a suitable threshold:
+The Delaunay triangulation will ensure that all centroids are connected
+into a triangular mesh. For some structures, like clustered data, or
+highly non-linear shapes, breaks in the mesh are meaningful. When
+separated clusters are present the mesh should be broken across the
+gaps. For non-linear structures like the S-curve, the mesh should run
+unbroken along the S, but there should be no edges connecting the top of
+the S directly to the bottom of the S. For these reasons it is necessary
+to remove edges from the mesh in some applications.
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Plot the distribution of the \gD{} Euclidean distances
-  (Figure~\ref{fig-param-scurve} (d)).
-\item
-  Identify the first largest difference between consecutive distance
-  values.
-\item
-  Take the distance value corresponding to this difference as the
-  benchmark value.
-\end{enumerate}
+The decision on edge length removal is made based on the distribution of
+edge lengths. In particular, a gap between values, where there a
+concentration of small values and then a few larger values, likely
+suggests a cutoff for edge removal. Because the triangulation is
+typically done on the hexagon centroids, there are particular discrete
+edge lengths, based on bin widths. Figure~\ref{fig-NLDR-scurve} XXX
+illustrates edge length distributions.
+
+There is an additional step that is needed. When the model is lifted
+into \pD{}, if the fit is good all the edges should be relatively small
+in this space, too. If this is not the case, then there are several
+possible actions: (1) re-do the NLDR to get a more representative
+layout; (2) identify the edge and remove it from the model, in \gD{} and
+\pD{}; (3) consider different values for the model fit, number of bins,
+initial bin position or removing low density bins.
 
 \begin{figure}[H]
 
@@ -1219,7 +1208,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\includegraphics{figures/mnist/mnist_model_2d.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/mnist_model_2d.png}
 
 }
 
@@ -1231,7 +1220,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\includegraphics{figures/mnist/sc_1.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_1.png}
 
 }
 
@@ -1243,7 +1232,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\includegraphics{figures/mnist/sc_2.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_2.png}
 
 }
 
@@ -1255,7 +1244,7 @@ non-linear structure present in the \pD{} data.
 
 \centering{
 
-\includegraphics{figures/mnist/sc_3.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/sc_3.png}
 
 }
 
@@ -1291,7 +1280,7 @@ that the latter display different patterns of the digit 1
 
 \centering{
 
-\includegraphics{figures/mnist/img_error_sample_within.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/img_error_sample_within.png}
 
 }
 
@@ -1303,7 +1292,7 @@ that the latter display different patterns of the digit 1
 
 \centering{
 
-\includegraphics{figures/mnist/img_error_sample_out.png}
+\captionsetup{labelsep=none}\includegraphics{figures/mnist/img_error_sample_out.png}
 
 }
 
@@ -1388,7 +1377,6 @@ Code, and data for reproducing this paper are available at
 \bibliography{bibliography.bib}
 
 \newpage{}
-
 
 
 

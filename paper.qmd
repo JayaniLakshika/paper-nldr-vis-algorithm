@@ -338,7 +338,7 @@ kable(notation_df,
 
 We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
 
-With our goal being to make a representation of this \gD{}    layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first hexagonly bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
+With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
 
 
 <!--UMAP applied for Scurve data-->
@@ -681,13 +681,11 @@ When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the gri
 
 #### Indicating neighborhood
 
-Delaunay triangulation [@lee1980;@alb2024] is used to connect neighboring centroids. The edges are needed to preserve neighborhood information when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighbouring observations, in both the NLDR layout (@fig-NLDR-scurve (d)) and the \pD{} model representation. When the data has been binned the triangulation connectd centroids. The edges preserve the neighborhood information when the model is lifted into \pD{}. 
 
 <!-- When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-scurve (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$. -->
 
-When shapes are non-linear in the NLDR layout, some edges could be long. It is unlikely 
-
-It can also happen that distant centroids can be connected, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments must be removed (@fig-NLDR-scurve (d)).
+When shapes are non-linear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit.
 
 <!--need to add what is meant by a long edge-->
 
@@ -1275,13 +1273,20 @@ hex_grid_rm_lwd_scurve2 <-  ggplot(
 
 #### Removing long edges
 
-Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-scurve-true-sc shows a wire frame of the true model that was used to generate the S-curve example data. The fitted model should come reasonably close to this, if the fitting has been successful. We don't ever have this, of course
+Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-scurve-true-sc shows a wire frame of the true model that was used to generate the S-curve example data. The ideal is that the representation of the fitted model, at least for this example where we know the true model, should look similar to this. 
 
-(@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
+The Delaunay triangulation will ensure that all centroids are connected into a triangular mesh. For some structures, like clustered data, or highly non-linear shapes, breaks in the mesh are meaningful. When separated clusters are present the mesh should be broken across the gaps. For non-linear structures like the S-curve, the mesh should run unbroken along the S, but there should be no edges connecting the top of the S directly to the bottom of the S. For these reasons it is necessary to remove edges from the mesh in some applications.
+
+The decision on edge length removal is made based on the distribution of edge lengths. In particular, a gap between values, where there a concentration of small values and then a few larger values, likely suggests a cutoff for edge removal. Because the triangulation is typically done on the hexagon centroids, there are particular discrete edge lengths, based on bin widths. @fig-NLDR-scurve XXX illustrates edge length distributions. 
+
+There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
+
+
+<!-- (@fig-NLDR-scurve (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
 
 1. Plot the distribution of the \gD{} Euclidean distances (@fig-param-scurve (d)).
 2. Identify the first largest difference between consecutive distance values.
-3. Take the distance value corresponding to this difference as the benchmark value.
+3. Take the distance value corresponding to this difference as the benchmark value.-->
 
 <!--distribution of distance along with the default benchmark-->
 ```{r}
