@@ -723,11 +723,12 @@ fit.
 The values \((s_1, \ s_2)\) define the position of the centroid of the
 bottom left hexagon. By default, this is at \(s_1 = -q, s_2 = -qr_2\),
 where \(q\) is the buffer sound the data. The choice of these values can
-have some effect on the distribution of bin counts. FIG XXX(a)
-illustrates this. The distribution of bin counts for \(s_1\) varying
-between \(-0.1-0.0\) is shown. Generally, a more uniform distribution
-among these possibilities would indicate that the bins are reliably
-capturing the underlying distribution of observations.
+have some effect on the distribution of bin counts.
+Figure~\ref{fig-param-scurve} (a) illustrates this. The distribution of
+bin counts for \(s_1\) varying between \(-0.1-0.0\) is shown. Generally,
+a more uniform distribution among these possibilities would indicate
+that the bins are reliably capturing the underlying distribution of
+observations.
 
 \begin{figure}[H]
 
@@ -771,10 +772,10 @@ necessary, you would examine the distribution of bin counts, or the
 density which puts the counts on a standard scale. If there is something
 of a gap at low values, this would suggest a potential value to use as a
 cutoff. Alternatively, one could choose to remove based on a percentile,
-the bins with density in the lowest 5\% of all bins, for example. FIG
-XXXc illustrates the effect on the model representation of removing bins
-below different percentages. Generally, we would urge caution in
-removing low count bins.
+the bins with density in the lowest 5\% of all bins, for example.
+Figure~\ref{fig-param-scurve} (c) illustrates the effect on the model
+representation of removing bins below different percentages. Generally,
+we would urge caution in removing low count bins.
 
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
@@ -808,7 +809,7 @@ edge lengths. In particular, a gap between values, where there a
 concentration of small values and then a few larger values, likely
 suggests a cutoff for edge removal. Because the triangulation is
 typically done on the hexagon centroids, there are particular discrete
-edge lengths, based on bin widths. Figure~\ref{fig-NLDR-scurve} XXX
+edge lengths, based on bin widths. Figure~\ref{fig-NLDR-scurve} (d)
 illustrates edge length distributions.
 
 There is an additional step that is needed. When the model is lifted
@@ -1012,8 +1013,6 @@ represent the structure(s) present in PBMC3k dataset. But, when
 visualizing the model-in-th-data-space some unobserved structures can be
 seen. Some clusters have non-linear continuity patterns and high-density
 patches (Figure~\ref{fig-pbmc1-sc}).
-
-XXXX I think we can remove the error figure, it's not part of the story
 
 \begin{figure}[H]
 

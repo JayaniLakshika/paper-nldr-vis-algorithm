@@ -764,7 +764,7 @@ Default values are provided for each of these, but it is expected that the user 
 
 #### Hexagon bin parameters
 
-The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer sound the data. The choice of these values can have some effect on the distribution of bin counts. FIG XXX(a) illustrates this. The distribution of bin counts for $s_1$ varying between $-0.1-0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
+The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer sound the data. The choice of these values can have some effect on the distribution of bin counts. @fig-param-scurve (a) illustrates this. The distribution of bin counts for $s_1$ varying between $-0.1-0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
 
 <!--The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model.--> 
 
@@ -1038,22 +1038,51 @@ for (xbins in bin1_vec_scurve) {
 
 }
 
+# mse_scurve_b <- ggplot(error_scurve, 
+#                      aes(x = b, 
+#                          y = log(MSE),
+#                          color = buff,
+#                          group = buff)) + 
+#   geom_point(size = 1) +
+#   geom_line(linewidth = 0.05) + 
+#   geom_vline(xintercept = 220, linetype="solid", 
+#              color = "black", linewidth=0.1) +
+#   geom_vline(xintercept = 112, linetype=2, 
+#              color = "black", linewidth=0.1) +
+#   geom_vline(xintercept = 364, linetype=2, 
+#              color = "black", linewidth=0.1) +
+#   scale_colour_continuous_sequential(palette = "Magenta") +
+#   labs(x = expression(b), y = "log(MSE)", color = expression(q)) +
+#   ggtitle("(a)") +
+#   theme(aspect.ratio = 0.75,
+#         axis.text.x = element_text(size = 12),
+#         axis.text.y = element_text(size = 12),
+#         axis.title.x = element_text(size = 12),
+#         axis.title.y = element_text(size = 12, 
+#             angle=90),
+#         plot.title = element_text(size = 12),
+#         legend.title = element_text(size = 12),
+#         legend.text = element_text(size = 10),
+#         legend.key.height = unit(1, 'cm'),
+#         legend.key.width = unit(1, 'cm'),
+#         legend.key.size = unit(1, 'cm'))
+
 mse_scurve_b <- ggplot(error_scurve, 
                      aes(x = b, 
-                         y = log(MSE),
-                         color = buff,
-                         group = buff)) + 
+                         y = MSE,
+                         color = as.factor(buff),
+                         group = as.factor(buff))) + 
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) + 
-  geom_vline(xintercept = 220, linetype="solid", 
-             color = "black", linewidth=0.1) +
-  geom_vline(xintercept = 112, linetype=2, 
-             color = "black", linewidth=0.1) +
-  geom_vline(xintercept = 364, linetype=2, 
-             color = "black", linewidth=0.1) +
-  scale_colour_continuous_sequential(palette = "Magenta") +
-  labs(x = expression(b), y = "log(MSE)", color = expression(q)) +
-  ggtitle("(a)") +
+  # geom_vline(xintercept = 220, linetype="solid", 
+  #            color = "black", linewidth=0.1) +
+  # geom_vline(xintercept = 112, linetype=2, 
+  #            color = "black", linewidth=0.1) +
+  # geom_vline(xintercept = 364, linetype=2, 
+  #            color = "black", linewidth=0.1) +
+  scale_colour_discrete_qualitative(palette = "Dark 2") +
+  labs(x = expression(b), y = "MSE", color = expression(q)) +
+  ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
@@ -1070,7 +1099,7 @@ mse_scurve_b <- ggplot(error_scurve,
 
 #### Removal of low density bins
 
-By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. FIG XXXc illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
+By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-scurve (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
 
 <!-- Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (@fig-bins-scurve (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (@fig-param-scurve (c)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
 
@@ -1128,8 +1157,8 @@ cell_count_scurve <- ggplot(df_bin_centroids_all,
   # geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
   scale_colour_discrete_qualitative(palette = "Dark 2") +
   xlab("hexagon id (re-ordered)") + 
-  ylab("standardized bin count") +
-  ggtitle("(b)") +
+  ylab("bin count") +
+  ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, angle = 90),
@@ -1277,7 +1306,7 @@ Edges define the neighbourhood structure, in order to provide a smooth \gD{} rep
 
 The Delaunay triangulation will ensure that all centroids are connected into a triangular mesh. For some structures, like clustered data, or highly non-linear shapes, breaks in the mesh are meaningful. When separated clusters are present the mesh should be broken across the gaps. For non-linear structures like the S-curve, the mesh should run unbroken along the S, but there should be no edges connecting the top of the S directly to the bottom of the S. For these reasons it is necessary to remove edges from the mesh in some applications.
 
-The decision on edge length removal is made based on the distribution of edge lengths. In particular, a gap between values, where there a concentration of small values and then a few larger values, likely suggests a cutoff for edge removal. Because the triangulation is typically done on the hexagon centroids, there are particular discrete edge lengths, based on bin widths. @fig-NLDR-scurve XXX illustrates edge length distributions. 
+The decision on edge length removal is made based on the distribution of edge lengths. In particular, a gap between values, where there a concentration of small values and then a few larger values, likely suggests a cutoff for edge removal. Because the triangulation is typically done on the hexagon centroids, there are particular discrete edge lengths, based on bin widths. @fig-NLDR-scurve (d) illustrates edge length distributions. 
 
 There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
 
@@ -1375,7 +1404,7 @@ distance_hist <- ggplot(
 #| fig-height: 10
 #| fig-pos: H
 
-mse_scurve_b + cell_count_scurve + 
+cell_count_scurve + mse_scurve_b +  
 mse_scurve_lwd + 
 distance_hist + plot_layout(ncol=2)
 ```
@@ -1620,8 +1649,6 @@ error_plot_pbmc <- error_df |>
   interior_annotation("b", sc_ltr_pos)
 
 ```
-
-XXXX I think we can remove the error figure, it's not part of the story
 
 <!--bin1 = 30, bin2 = 29, b = 870, non_empty = 135-->
 ```{r}
