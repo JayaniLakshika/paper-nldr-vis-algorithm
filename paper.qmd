@@ -1708,10 +1708,10 @@ umap_img <- readPNG("figures/pbmc3k/author_view.png", native = TRUE)
 tsne_30_img <- readPNG("figures/pbmc3k/tsne_30.png", native = TRUE)
 
 ## Add arrows
-arrow_df_pbmc <- tibble(x = c(94, 245, 101, 150),
+arrow_df_pbmc <- tibble(x = c(94, 245, 105, 150),
              xend = c(96, 263, 98, 180),
              y = c(10.06, 9.72, 9.88, 9.855),
-             yend = c(10.14, 9.8, 9.85, 10))
+             yend = c(10.14, 10, 9.85, 10))
 
 error_plot_pbmc <- ggplot(error_pbmc, 
                               aes(x = b_non_empty, 
@@ -1733,6 +1733,16 @@ error_plot_pbmc <- ggplot(error_pbmc,
       arrow = arrow(length = unit(0.01, "npc"),
         ends = "first"), 
         color = "black") +
+  theme(#aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7, angle = 90),
+        legend.position = "bottom",
+        legend.text = element_text(size = 7),
+        legend.key.height = unit(0.3, 'cm'),
+        legend.key.width = unit(0.3, 'cm'),
+        legend.key.size = unit(3, 'cm')) +
     inset_element(p = tsne_5_img, 
                   left = 1.7, 
                   bottom = 0.16, 
@@ -1752,14 +1762,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
                   left = 0.6, 
                   bottom = 0.03, 
                   right = 0, 
-                  top = 0.23) +
-  theme(#aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7, angle = 90),
-        legend.position = "none",
-        legend.text = element_text(size = 7))
+                  top = 0.23) 
 
 ```
 
