@@ -1834,6 +1834,9 @@ tr1_object_pbmc <- tri_bin_centroids(
 tr_from_to_df_pbmc <- gen_edges(
   tri_object = tr1_object_pbmc)
 
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  filter(row_number() != 360)
+
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_pbmc,
@@ -1850,16 +1853,25 @@ benchmark_pbmc <- find_lg_benchmark(
 
 ## Remove an edge that exist as long edge in p-D
 # tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
-tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-  filter(row_number() != 360)
 
 trimesh_removed_pbmc <- vis_rmlg_mesh(
   distance_edges = distance_pbmc,
   benchmark_value = benchmark_pbmc,
   tr_coord_df = tr_from_to_df_pbmc,
   distance_col = "distance") +
+  geom_point(
+    data = tsne_pbmc_scaled,
+    aes(
+      x = tSNE1,
+      y = tSNE2
+    ),
+    alpha = 0.3,
+    size = 0.1,
+    color = "#6a3d9a"
+  ) +
+  theme_void() #+
   #xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos)
+  #interior_annotation("a", sc_ltr_pos)
 
 ## Compute error
 error_df <- augment(
@@ -1901,17 +1913,107 @@ error_plot_pbmc <- error_df |>
 
 ```
 
-<!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136-->
+```{r}
+#| label: proj-tsne-pbmc
+
+## Hexagonal binning to have regular hexagons
+hb_obj_pbmc <- hex_binning(
+  data = tsne_pbmc_scaled,
+  bin1 = num_bins_x_pbmc,
+  r2 = r2_pbmc,
+  q = 0.05)
+
+tsne_data_with_hb_id <- hb_obj_pbmc$data_hb_id
+
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
+                                tsne_data_with_hb_id)
+
+### Define type column
+df <- df_all_pbmc |>
+  dplyr::select(tidyselect::starts_with("PC")) |>
+  dplyr::mutate(type = "data") ## original dataset
+
+df_b <- df_bin_pbmc |>
+  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_pbmc$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id)
+
+df_exe <- dplyr::bind_rows(df_b, df)
+
+## Set the maximum difference as the criteria
+distance_df_small_edges <- distance_pbmc |>
+  dplyr::filter(distance < benchmark_pbmc)
+## Since erase brushing is considerd.
+
+## First projection
+projection <- cbind(
+  c(0.038104,-0.001148,0.003905,-0.003332,-0.011747,-0.002688,0.003468,-0.014321,-0.000320),
+  c(-0.000902,0.041414,0.005089,-0.000149,-0.000551,0.000239,-0.008013,-0.005799,-0.001411))
+
+proj1_pbmc_tsne <- gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+) + 
+  theme_void() + 
+  theme(legend.position = "none")
+
+## Second projection
+projection <- cbind(
+  c(0.013182,-0.022240,-0.001729,0.026946,-0.005289,0.001235,-0.007784,0.017500,-0.006949),
+  c(0.027138,0.011939,0.009374,-0.004582,-0.004771,-0.027107,-0.005287,-0.002325,-0.007951))
+
+proj2_pbmc_tsne <- gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+) + 
+  theme_void() + 
+  theme(legend.position = "none")
+
+## Third projection
+projection <- cbind(
+  c(-0.003540,0.025008,0.023261,-0.012782,-0.011617,-0.006796,0.009566,-0.015022,0.001164),
+  c(0.038201,-0.007751,0.005064,-0.014143,0.003255,-0.001091,0.001611,-0.003674,-0.008314))
+
+proj3_pbmc_tsne <- gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+) + 
+  theme_void() + 
+  theme(legend.position = "none")
+
+```
+
+<!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
+<!-- ```{r} -->
+<!-- #| echo: false -->
+<!-- #| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster." -->
+<!-- #| label: fig-model-pbmc -->
+<!-- #| fig-pos: H -->
+<!-- #| out-height: 30% -->
+
+<!-- trimesh_removed_pbmc + error_plot_pbmc +  -->
+<!--   plot_layout(guides='collect', ncol=2) & -->
+<!--   theme(legend.position='bottom') -->
+<!-- ``` -->
+
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster."
-#| label: fig-model-pbmc
+#| fig-cap: "Model in $2\\text{-}D$, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>)."
+#| label: fig-pbmc2-sc
 #| fig-pos: H
-#| out-height: 30%
+#| out-height: 100%
+#| eval: false
 
-trimesh_removed_pbmc + error_plot_pbmc + 
+trimesh_removed_pbmc + proj1_pbmc_tsne + 
+  proj2_pbmc_tsne + proj3_pbmc_tsne +
   plot_layout(guides='collect', ncol=2) &
-  theme(legend.position='bottom')
+  theme(legend.position='none')
 ```
 
 ::: {#fig-pbmc2-sc layout-ncol="2" fig-pos="H"}
