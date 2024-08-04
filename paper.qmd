@@ -1706,12 +1706,16 @@ tsne_5_img <- readPNG("figures/pbmc3k/tsne_5.png", native = TRUE)
 phate_5_img <- readPNG("figures/pbmc3k/phate_5.png", native = TRUE) 
 umap_img <- readPNG("figures/pbmc3k/author_view.png", native = TRUE) 
 tsne_30_img <- readPNG("figures/pbmc3k/tsne_30.png", native = TRUE)
+umap_15_img <- readPNG("figures/pbmc3k/umap_15.png", native = TRUE) 
+pacmap_img <- readPNG("figures/pbmc3k/pacmap.png", native = TRUE) 
+trimap_img <- readPNG("figures/pbmc3k/trimap.png", native = TRUE)
+umap_5_img <- readPNG("figures/pbmc3k/umap_5.png", native = TRUE)
 
 ## Add arrows
-arrow_df_pbmc <- tibble(x = c(94, 273, 101, 150),
-             xend = c(96, 295, 94, 180),
-             y = c(10.06, 9.7, 9.88, 9.855),
-             yend = c(10.14, 9.8, 9.85, 10))
+arrow_df_pbmc <- tibble(x = c(94, 280, 101, 150, 218, 250, 50),
+             xend = c(96, 295, 96, 180, 250, 290, 25),
+             y = c(10.06, 9.69, 9.88, 9.855, 9.82, 9.78, 10),
+             yend = c(10.14, 9.8, 9.8, 10, 10.3, 10, 9.8))
 
 error_plot_pbmc <- ggplot(error_pbmc, 
                               aes(x = b_non_empty, 
@@ -1744,25 +1748,40 @@ error_plot_pbmc <- ggplot(error_pbmc,
         legend.key.width = unit(0.3, 'cm'),
         legend.key.size = unit(3, 'cm')) +
     inset_element(p = tsne_5_img, 
-                  left = 1.7, 
-                  bottom = 0.16, 
+                  left = 1.8, 
+                  bottom = 0.08, 
                   right = 0, 
-                  top = 0.31) +                   
+                  top = 0.25) +                   
     inset_element(p = phate_5_img, 
                   left = 0.6, 
-                  bottom = 0.401, 
+                  bottom = 0.4, 
                   right = 0, 
-                  top = 0.56) +                   
+                  top = 0.55) +                   
     inset_element(p = umap_img, 
-                  left = 1.1, 
+                  left = 1.2, 
+                  bottom = 0.3, 
+                  right = -0.1, 
+                  top = 0.5) +
+    inset_element(p = umap_15_img, 
+                  left = 1.5, 
+                  bottom = 0.5, 
+                  right = 0, 
+                  top = 0.7) +
+    inset_element(p = tsne_30_img, 
+                  left = 0.6, 
+                  bottom = 0.01, 
+                  right = 0, 
+                  top = 0.18) +
+    inset_element(p = pacmap_img, 
+                  left = 1.7, 
                   bottom = 0.3, 
                   right = 0, 
                   top = 0.5) +
-    inset_element(p = tsne_30_img, 
-                  left = 0.41, 
-                  bottom = 0.03, 
-                  right = 0, 
-                  top = 0.23) 
+    inset_element(p = umap_5_img, 
+                  left = 0.4, 
+                  bottom = 0.05, 
+                  right = -0.2, 
+                  top = 0.22) 
 
 ```
 
