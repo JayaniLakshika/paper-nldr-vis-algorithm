@@ -27,7 +27,7 @@ reticulate::source_python(paste0(here::here(), "/examples/function_scripts/Fit_T
 
 source("nldr_code.R", local = TRUE)
 
-training_data <- read_rds("data/s_curve/scurve_500.rds")
+training_data <- read_rds("data/s_curve/s_curve_training.rds")
 
 # training_data <- training_data |>
 #   mutate(ID = row_number())
@@ -40,7 +40,7 @@ tSNE_data <- tSNE_data |>
   select(-ID) |>
   mutate(ID = training_data$ID)
 
-write_rds(tSNE_data, file = paste0("data/s_curve/new/s_curve_tsne_", calculate_effective_perplexity(training_data), ".rds"))
+write_rds(tSNE_data, file = paste0("data/s_curve/s_curve_tsne_", calculate_effective_perplexity(training_data), ".rds"))
 
 ## UMAP
 
@@ -54,7 +54,7 @@ UMAP_data <- UMAP_data |>
   mutate(ID = training_data$ID)
 
 ## Run only once
-write_rds(UMAP_data, file = "data/s_curve/new/s_curve_umap.rds")
+write_rds(UMAP_data, file = "data/s_curve/s_curve_umap.rds")
 
 predict_UMAP_df <- predict(UMAP_fit, test_data |> dplyr::select(-ID)) |>
   as.data.frame()
@@ -65,7 +65,7 @@ predict_UMAP_df <- predict_UMAP_df |>
   mutate(ID = test_data$ID)
 
 ## Run only once
-write_rds(UMAP_data, file = "data/s_curve/new/s_curve_umap_predict.rds")
+write_rds(UMAP_data, file = "data/s_curve/s_curve_umap_predict.rds")
 
 ## PHATE
 
@@ -75,7 +75,7 @@ PHATE_data <- PHATE_data |>
 PHATE_data <- PHATE_data |>
   mutate(ID = training_data$ID)
 
-write_rds(PHATE_data, file = "data/s_curve/new/s_curve_phate.rds")
+write_rds(PHATE_data, file = "data/s_curve/s_curve_phate.rds")
 
 
 ## TriMAP
@@ -92,7 +92,7 @@ Fit_TriMAP(as.integer(2), as.integer(5), as.integer(4), as.integer(3), path, pat
 TriMAP_data <- read_csv(path2)
 TriMAP_data <- TriMAP_data |>
   mutate(ID = training_data$ID)
-write_rds(TriMAP_data, file = "data/s_curve/new/s_curve_trimap.rds")
+write_rds(TriMAP_data, file = "data/s_curve/s_curve_trimap.rds")
 
 ## PaCMAP
 
@@ -110,5 +110,5 @@ PacMAP_data <- read_csv(path2)
 PacMAP_data <- PacMAP_data |>
   mutate(ID = training_data$ID)
 
-write_rds(PacMAP_data, file = "data/s_curve/new/s_curve_pacmap.rds")
+write_rds(PacMAP_data, file = "data/s_curve/s_curve_pacmap.rds")
 
