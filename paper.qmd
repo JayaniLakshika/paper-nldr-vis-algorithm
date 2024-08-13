@@ -737,6 +737,133 @@ A new benefit of this fitted model is that it allows us to now predict a new obs
 
 <!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
 
+```{r}
+#| label: scurve-training
+training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+```
+
+```{r}
+#| label: model-prediction-umap-original
+
+predict_umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap_predict_true.rds")
+
+predict_scurve_obj <- gen_scaled_data(
+    data = predict_umap_scurve)
+
+predict_umap_scurve_scaled <- predict_scurve_obj$scaled_nldr
+
+plot_predict_umap <- ggplot(data = predict_umap_scurve_scaled,
+                            aes(
+                              x = UMAP1,
+                              y = UMAP2
+                            )) +
+  geom_point()
+```
+
+```{r}
+#| label: model-prediction-umap-quollr
+
+true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
+
+# Initialize effective bins along x
+effective_bin1_scurve <- 15
+
+# Fit high-dimensional model
+scurve_model <- fit_highd_model(
+  training_data = training_data_scurve,
+  emb_df = umap_scurve_scaled,
+  bin1 = effective_bin1_scurve,
+  r2 = r2,
+  q = 0.16,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "x"
+)
+
+df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+df_bin_scurve <- scurve_model$df_bin
+
+true_pred_df <- predict_emb(
+  test_data = true_model_df,
+  df_bin_centroids = df_bin_centroids_scurve,
+  df_bin = df_bin_scurve,
+  type_NLDR = "UMAP"
+)
+
+
+# Compute radius r
+a1 <- calc_bins_y(bin1 = 15, r2 = r2, q = 0.16)$a1
+r <- a1 / 2
+
+# Function to jitter points within a circumcircle of a hexagon
+jitter_within_circumcircle <- function(center_x, center_y, radius, num_points) {
+  theta <- runif(num_points, 0, 2 * pi)
+  r <- radius * sqrt(runif(num_points))
+  x <- center_x + r * cos(theta)
+  y <- center_y + r * sin(theta)
+  jittered_points <- data.frame(UMAP1 = x, UMAP2 = y)
+  return(jittered_points)
+}
+
+# Jittered points data frame
+jittered_points_df <- data.frame()
+
+# Iterate through each hexagon and jitter points within the circumcircle
+for (hex_id in unique(hex_grid_nonempty$hex_poly_id)) {
+  hex_points <- hex_grid_nonempty %>% filter(hex_poly_id == hex_id)
+  center_x <- mean(hex_points$x)
+  center_y <- mean(hex_points$y)
+  points_in_hex <- true_pred_df %>% filter(pred_UMAP_1 >= min(hex_points$x) & pred_UMAP_1 <= max(hex_points$x) & pred_UMAP_2 >= min(hex_points$y) & pred_UMAP_2 <= max(hex_points$y))
+
+  if (nrow(points_in_hex) > 0) {
+    jittered_points <- jitter_within_circumcircle(center_x, center_y, r, nrow(points_in_hex))
+    jittered_points_df <- rbind(jittered_points_df, jittered_points)
+  }
+}
+
+plot_predict_umap_model <- ggplot(data = jittered_points_df,
+                            aes(
+                              x = UMAP1,
+                              y = UMAP2
+                            )) +
+  geom_point()
+```
+
+```{r}
+#| label: model-prediction-points-line
+
+predict_umap_scurve_scaled <- predict_umap_scurve_scaled |>
+  mutate(type = "predict_from_umap") |>
+  mutate(point_id = row_number())
+
+jittered_points_df <- jittered_points_df |>
+  mutate(type = "predict_from_model") |>
+  mutate(point_id = row_number())
+
+predict_point_df <- bind_rows(
+  predict_umap_scurve_scaled,
+  jittered_points_df
+)
+
+plot_predict_umap_model_connect <- ggplot(data = predict_point_df,
+                            aes(
+                              x = UMAP1,
+                              y = UMAP2, 
+                              group = point_id
+                            )) +
+  geom_point() +
+  geom_line()
+```
+
+```{r}
+#| echo: false
+#| label: fig-predict-scurve
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 5
+plot_predict_umap + plot_predict_umap_model + plot_predict_umap_model_connect 
+```
+
 <!--prediction for true-model of S-curve-->
 ::: {#fig-scurve-pred-sc layout-ncol="2" fig-pos="H"}
 ![](figures/scurve/sc_true_only.png){width="150" fig-align="center"}
@@ -984,11 +1111,6 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 <!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-scurve (a)).--> 
 
 <!--add MSE vs total number of error plot-->
-
-```{r}
-#| label: scurve-training
-training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
-```
 
 <!--To generate errors for different total number of bins-->
 ```{r}

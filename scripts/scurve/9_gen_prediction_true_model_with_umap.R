@@ -3,10 +3,21 @@ library(readr)
 library(umap)
 library(dplyr)
 library(ggplot2)
+library(quollr)
 
 # Read data
 true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+
+umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds")
+
+scurve_scaled_obj <- gen_scaled_data(
+  data = umap_scurve)
+
+umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
+lim1 <- scurve_scaled_obj$lim1
+lim2 <- scurve_scaled_obj$lim2
+r2 <- diff(lim2)/diff(lim1)
 
 # Initialize effective bins along x
 effective_bin1_scurve <- 15

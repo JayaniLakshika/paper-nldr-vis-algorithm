@@ -44,7 +44,7 @@ write_rds(tSNE_data, file = paste0("data/s_curve/s_curve_tsne_", calculate_effec
 
 ## UMAP
 
-UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 22, n_components =  2)
+UMAP_fit <- umap(training_data |> dplyr::select(-ID), n_neighbors = 50, n_components =  2)
 
 UMAP_data <- UMAP_fit$layout |>
   as.data.frame()
@@ -66,6 +66,16 @@ predict_UMAP_df <- predict_UMAP_df |>
 
 ## Run only once
 write_rds(UMAP_data, file = "data/s_curve/s_curve_umap_predict.rds")
+
+## For true model
+true_model_data <- read_rds("data/s_curve/scurve_true_model.rds")
+
+predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
+  as_tibble()
+
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+
+write_rds(predict_UMAP_df, file = "data/s_curve/s_curve_umap_predict_true.rds")
 
 ## PHATE
 
