@@ -896,6 +896,8 @@ plot_predict_umap_model_connect <- ggplot(data = predict_point_df,
 #| fig-pos: H
 #| fig-width: 9
 #| fig-height: 5
+#| fig-cap: "Comparison of prediction generated using the exiting `umap` prediction method and our method: (a) A view of the true model in projections from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Need to add concluded sentence after changing the data."
+
 proj_plot_scurve_true + plot_predict_umap + 
   plot_predict_umap_model + plot_predict_umap_model_connect +
   plot_layout(ncol = 4)
