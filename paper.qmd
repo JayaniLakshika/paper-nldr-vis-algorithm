@@ -729,18 +729,84 @@ The error is computed by taking the squared \pD{} Euclidean distance, correspond
 
 $$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$${#eq-equation1} 
 
-where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. 
+where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon.
+
+```{r}
+#| label: scurve-training
+training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+```
+
+```{r}
+#| label: best-umap-model-scurve
+
+# Initialize effective bins along x
+effective_bin1_scurve <- 15
+
+# Fit high-dimensional model
+scurve_model <- fit_highd_model(
+  training_data = training_data_scurve,
+  emb_df = umap_scurve_scaled,
+  bin1 = effective_bin1_scurve,
+  r2 = r2,
+  q = 0.16,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "x"
+)
+
+df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+df_bin_scurve <- scurve_model$df_bin
+
+hex_grid_nonempty <- hex_grid |>
+  filter(hex_poly_id %in% df_bin_centroids_scurve$hexID)
+
+```
+
+```{r}
+#| label: p-d-error-in-2d-scurve
+
+## Compute error
+error_df_scurve <- augment(
+  df_bin_centroids = df_bin_centroids_scurve,
+  df_bin = df_bin_scurve,
+  training_data = training_data_scurve,
+  newdata = NULL,
+  type_NLDR = "UMAP",
+  col_start = "x")
+
+error_df_scurve <- error_df_scurve |>
+  mutate(type = case_when(
+    row_wise_abs_error == 0 ~ "no error",
+    row_wise_abs_error <= 0.2 ~ "error 0-0.2",
+    row_wise_abs_error <= 0.4 ~ "error 0.2-0.4",
+    row_wise_abs_error <= 0.6 ~ "error 0.4-0.6",
+    .default = "error greter than 0.6"
+  )) |>
+  mutate(type = factor(type, levels = c(
+    "no error", "error 0-0.2", "error 0.2-0.4", "error 0.4-0.6", "error greter than 0.6")))
+
+
+error_df_scurve <- error_df_scurve |>
+  bind_cols(umap_scurve_scaled |>
+              select(-ID))
+
+error_plot_scurve <- error_df_scurve |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2,
+             color = type)) +
+  geom_point(alpha=0.5) +
+  theme(
+    legend.position = "bottom"
+  )
+
+error_plot_scurve 
+```
 
 ### Prediction into \gD{}
 
 A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
 
 <!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
-
-```{r}
-#| label: scurve-training
-training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
-```
 
 <!--prediction for true-model of S-curve-->
 ```{r}
@@ -765,27 +831,6 @@ plot_predict_umap <- ggplot(data = predict_umap_scurve_scaled,
 #| label: model-prediction-umap-quollr
 
 true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
-
-# Initialize effective bins along x
-effective_bin1_scurve <- 15
-
-# Fit high-dimensional model
-scurve_model <- fit_highd_model(
-  training_data = training_data_scurve,
-  emb_df = umap_scurve_scaled,
-  bin1 = effective_bin1_scurve,
-  r2 = r2,
-  q = 0.16,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
-)
-
-df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-df_bin_scurve <- scurve_model$df_bin
-
-hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids_scurve$hexID)
 
 true_pred_df <- predict_emb(
   test_data = true_model_df,
