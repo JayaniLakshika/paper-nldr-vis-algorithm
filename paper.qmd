@@ -362,7 +362,7 @@ sc_ylims <- c(-0.3, 2)
 
 nldr_scurve <- umap_scurve_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
-  geom_point(alpha=0.5, colour="#6a3d9a", size = 0.5) +
+  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 ```
@@ -407,7 +407,7 @@ hex_grid_scurve <- ggplot(
                fill = "#ffffff") +
   geom_point(data = umap_scurve_scaled, 
              aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5, size = 0.5, color = "#6a3d9a") +
+             alpha = 0.5, size = 0.5, color = "#000000") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos)
 ```
@@ -1771,7 +1771,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 umap_pbmc <- umap_pbmc_scaled |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
-  geom_point(alpha=0.3, color = "#6a3d9a") 
+  geom_point(alpha=0.3, color = "#000000") 
 ```
 
 <!-- UMAP parameters suggested by the author (n_neighbors = 30, min_dist = 0.3)-->
@@ -2035,7 +2035,7 @@ tsne_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 tsne_pbmc <- tsne_pbmc_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2)) +
-  geom_point(alpha=0.3, color = "#6a3d9a")
+  geom_point(alpha=0.3, color = "#000000")
 ```
 
 <!--tSNE with perplexity:30-->
@@ -2113,7 +2113,7 @@ trimesh_removed_pbmc <- vis_rmlg_mesh(
     ),
     alpha = 0.3,
     size = 0.1,
-    color = "#6a3d9a"
+    color = "#000000"
   ) +
   theme_void() #+
   #xlim(sc_xlims) + ylim(sc_ylims) +
@@ -2301,7 +2301,7 @@ pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr
 pacmap_plot_mnist <- pacmap_minst_scaled |> 
   ggplot(aes(x = PaCMAP1, 
              y = PaCMAP2)) + 
-  geom_point(alpha=0.1, color = "#6a3d9a") 
+  geom_point(alpha=0.1, color = "#000000") 
 
 # read the png file from device 
 left_top_img <- readPNG("figures/mnist/mnist_digit1_img_lt.png", native = TRUE)
