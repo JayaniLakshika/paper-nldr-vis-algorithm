@@ -70,10 +70,11 @@ write_rds(UMAP_data, file = "data/s_curve/s_curve_umap_predict.rds")
 ## For true model
 true_model_data <- read_rds("data/s_curve/scurve_true_model.rds")
 
-predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
-  as_tibble()
+predict_UMAP_df <- predict(UMAP_fit, true_model_data |> select(-ID)) |>
+  as_tibble() |>
+  mutate(ID = true_model_data$ID)
 
-names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2", "ID")
 
 write_rds(predict_UMAP_df, file = "data/s_curve/s_curve_umap_predict_true.rds")
 

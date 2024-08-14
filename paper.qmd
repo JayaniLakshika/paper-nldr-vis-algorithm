@@ -757,7 +757,7 @@ plot_predict_umap <- ggplot(data = predict_umap_scurve_scaled,
                               x = UMAP1,
                               y = UMAP2
                             )) +
-  geom_point()
+  geom_point(alpha = 0.5)
 ```
 
 ```{r}
@@ -783,6 +783,9 @@ scurve_model <- fit_highd_model(
 df_bin_centroids_scurve <- scurve_model$df_bin_centroids
 df_bin_scurve <- scurve_model$df_bin
 
+hex_grid_nonempty <- hex_grid |>
+  filter(hex_poly_id %in% df_bin_centroids_scurve$hexID)
+
 true_pred_df <- predict_emb(
   test_data = true_model_df,
   df_bin_centroids = df_bin_centroids_scurve,
@@ -801,7 +804,7 @@ jitter_within_circumcircle <- function(center_x, center_y, radius, num_points) {
   r <- radius * sqrt(runif(num_points))
   x <- center_x + r * cos(theta)
   y <- center_y + r * sin(theta)
-  jittered_points <- data.frame(UMAP1 = x, UMAP2 = y)
+  jittered_points <- data.frame(UMAP1 = x, UMAP2 = y, ID = points_in_hex$ID)
   return(jittered_points)
 }
 
@@ -809,11 +812,22 @@ jitter_within_circumcircle <- function(center_x, center_y, radius, num_points) {
 jittered_points_df <- data.frame()
 
 # Iterate through each hexagon and jitter points within the circumcircle
-for (hex_id in unique(hex_grid_nonempty$hex_poly_id)) {
-  hex_points <- hex_grid_nonempty %>% filter(hex_poly_id == hex_id)
-  center_x <- mean(hex_points$x)
-  center_y <- mean(hex_points$y)
-  points_in_hex <- true_pred_df %>% filter(pred_UMAP_1 >= min(hex_points$x) & pred_UMAP_1 <= max(hex_points$x) & pred_UMAP_2 >= min(hex_points$y) & pred_UMAP_2 <= max(hex_points$y))
+for (hex_id in unique(true_pred_df$pred_hb_id)) {
+  # hex_points <- hex_grid_nonempty %>% filter(hex_poly_id == hex_id)
+  # center_x <- mean(hex_points$x)
+  # center_y <- mean(hex_points$y)
+  # points_in_hex <- true_pred_df %>% filter(pred_UMAP_1 >= min(hex_points$x) & pred_UMAP_1 <= max(hex_points$x) & pred_UMAP_2 >= min(hex_points$y) & pred_UMAP_2 <= max(hex_points$y))
+  
+  points_in_hex <- true_pred_df |>
+    filter(pred_hb_id == hex_id)
+  
+  center_x <- points_in_hex |> 
+    pull(pred_UMAP_1) |> 
+    unique()
+  
+  center_y <- points_in_hex |> 
+    pull(pred_UMAP_2) |> 
+    unique()
 
   if (nrow(points_in_hex) > 0) {
     jittered_points <- jitter_within_circumcircle(center_x, center_y, r, nrow(points_in_hex))
@@ -826,19 +840,17 @@ plot_predict_umap_model <- ggplot(data = jittered_points_df,
                               x = UMAP1,
                               y = UMAP2
                             )) +
-  geom_point()
+  geom_point(alpha = 0.5)
 ```
 
 ```{r}
 #| label: model-prediction-points-line
 
 predict_umap_scurve_scaled <- predict_umap_scurve_scaled |>
-  mutate(type = "predict_from_umap") |>
-  mutate(point_id = row_number())
+  mutate(type = "predict_from_umap") 
 
 jittered_points_df <- jittered_points_df |>
-  mutate(type = "predict_from_model") |>
-  mutate(point_id = row_number())
+  mutate(type = "predict_from_model") 
 
 predict_point_df <- bind_rows(
   predict_umap_scurve_scaled,
@@ -849,10 +861,10 @@ plot_predict_umap_model_connect <- ggplot(data = predict_point_df,
                             aes(
                               x = UMAP1,
                               y = UMAP2, 
-                              group = point_id
+                              group = ID
                             )) +
-  geom_point() +
-  geom_line()
+  geom_point(alpha = 0.6) +
+  geom_line(alpha = 0.3)
 ```
 
 ```{r}
