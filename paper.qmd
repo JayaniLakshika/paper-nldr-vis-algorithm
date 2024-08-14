@@ -1879,8 +1879,16 @@ trimesh_removed_pbmc <- vis_rmlg_mesh(
   benchmark_value = benchmark_pbmc,
   tr_coord_df = tr_from_to_df_pbmc,
   distance_col = "distance") +
-  #xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos)
+  geom_point(
+    data = umap_pbmc_scaled,
+    aes(
+      x = UMAP1,
+      y = UMAP2
+    ),
+    alpha = 0.3,
+    size = 0.1,
+    color = "#000000"
+  ) 
 
 ## Compute error
 error_df <- augment(
@@ -2156,11 +2164,9 @@ trimesh_removed_pbmc <- vis_rmlg_mesh(
       x = tSNE1,
       y = tSNE2
     ),
-    alpha = 0.3,
-    size = 0.1,
+    alpha = 0.2,
     color = "#000000"
-  ) +
-  theme_void() #+
+  ) 
   #xlim(sc_xlims) + ylim(sc_ylims) +
   #interior_annotation("a", sc_ltr_pos)
 
@@ -2248,9 +2254,7 @@ proj1_pbmc_tsne <- gen_proj_langevitour(
   points_df = df_exe,
   projection = projection,
   edge_df = distance_df_small_edges |> select(-distance)
-) + 
-  theme_void() + 
-  theme(legend.position = "none")
+) 
 
 ## Second projection
 projection <- cbind(
@@ -2261,9 +2265,7 @@ proj2_pbmc_tsne <- gen_proj_langevitour(
   points_df = df_exe,
   projection = projection,
   edge_df = distance_df_small_edges |> select(-distance)
-) + 
-  theme_void() + 
-  theme(legend.position = "none")
+) 
 
 ## Third projection
 projection <- cbind(
@@ -2274,9 +2276,7 @@ proj3_pbmc_tsne <- gen_proj_langevitour(
   points_df = df_exe,
   projection = projection,
   edge_df = distance_df_small_edges |> select(-distance)
-) + 
-  theme_void() + 
-  theme(legend.position = "none")
+) 
 
 ```
 
@@ -2299,7 +2299,7 @@ proj3_pbmc_tsne <- gen_proj_langevitour(
 #| label: fig-pbmc2-sc
 #| fig-pos: H
 #| out-height: 100%
-#| eval: false
+#| eval: true
 
 trimesh_removed_pbmc + proj1_pbmc_tsne + 
   proj2_pbmc_tsne + proj3_pbmc_tsne +
@@ -2307,17 +2307,17 @@ trimesh_removed_pbmc + proj1_pbmc_tsne +
   theme(legend.position='none')
 ```
 
-::: {#fig-pbmc2-sc layout-ncol="2" fig-pos="H"}
-![](figures/pbmc3k/tsne_trimesh_plot.png)
+<!-- ::: {#fig-pbmc2-sc layout-ncol="2" fig-pos="H"} -->
+<!-- ![](figures/pbmc3k/tsne_trimesh_plot.png) -->
 
-![](figures/pbmc3k/sc_4.png)
+<!-- ![](figures/pbmc3k/sc_4.png) -->
 
-![](figures/pbmc3k/sc_5.png)
+<!-- ![](figures/pbmc3k/sc_5.png) -->
 
-![](figures/pbmc3k/sc_6.png)
+<!-- ![](figures/pbmc3k/sc_6.png) -->
 
-Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>).
-:::
+<!-- Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>). -->
+<!-- ::: -->
 
 
 ### Hand-written digits
