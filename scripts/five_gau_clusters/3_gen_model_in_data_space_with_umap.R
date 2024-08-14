@@ -86,3 +86,14 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges$to,
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.4, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+## First projection
+projection <- cbind(
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)

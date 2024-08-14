@@ -111,8 +111,8 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 
 ## First projection
 projection <- cbind(
-  c(0.28321,-0.28851,-0.67413,0.39226),
-  c(-0.70800,-0.44269,0.04835,0.26867))
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
 
 gen_proj_langevitour(
   points_df = df_exe,
