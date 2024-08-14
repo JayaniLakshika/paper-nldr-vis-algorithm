@@ -2430,7 +2430,13 @@ trimesh_removed_mnist <- vis_rmlg_mesh(
   benchmark_value = benchmark_mnist, 
   tr_coord_df = tr_from_to_df_mnist, 
   distance_col = "distance") +
-  #xlim(sc_xlims) + ylim(sc_ylims) +
+  geom_point(data = pacmap_minst_scaled,
+             aes(
+               x = PaCMAP1,
+               y = PaCMAP2
+             ),
+             alpha=0.5, 
+             size = 0.1) +
   interior_annotation("a", sc_ltr_pos_mnist)
 
 ## Compute error
@@ -2487,6 +2493,9 @@ trimesh_removed_mnist + error_plot_mnist +
 According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (@fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data, because PaCMAP preserves the non-linear structure present in the \pD{} data. 
 
 <!--add langevitour screenshots and youtube animation link-->
+```{r}
+trimesh_removed_mnist 
+```
 
 ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"}
 ![](figures/mnist/mnist_model_2d.png){#fig-mnist1-model}
