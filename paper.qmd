@@ -157,10 +157,10 @@ theme_set(theme_linedraw() +
      legend.key.width = unit(0.25, 'cm')
    )
 )
-interior_annotation <- function(label, position = c(0.92, 0.92)) {
+interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1) {
   annotation_custom(grid::textGrob(label = label,
       x = unit(position[1], "npc"), y = unit(position[2], "npc"),
-      gp = grid::gpar(cex = 1, col="grey70")))
+      gp = grid::gpar(cex = cex, col="grey70")))
 }
 ```
 
@@ -1904,7 +1904,10 @@ five_gau_proj_tsne_model <- projected_df |>
     color = "#33a02c") +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55))
+  ylim(c(-0.78, -0.55)) +
+  interior_annotation("a", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
 
 # five_gau_proj_tsne_model <- gen_proj_langevitour(
 #   points_df = df_exe,
@@ -2039,7 +2042,10 @@ five_gau_proj_umap_model <- projected_df |>
     color = "#33a02c") +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55))
+  ylim(c(-0.78, -0.55)) +
+  interior_annotation("b", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
 
 # five_gau_proj_umap_model <- gen_proj_langevitour(
 #   points_df = df_exe,
@@ -2182,7 +2188,10 @@ five_gau_proj_pacmap_model <- projected_df |>
     color = "#33a02c") +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55))
+  ylim(c(-0.78, -0.55)) +
+  interior_annotation("c", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
 
 
 # five_gau_proj_pacmap_model <- gen_proj_langevitour(
