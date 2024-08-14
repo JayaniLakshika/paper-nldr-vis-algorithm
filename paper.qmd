@@ -742,6 +742,7 @@ A new benefit of this fitted model is that it allows us to now predict a new obs
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
 ```
 
+<!--prediction for true-model of S-curve-->
 ```{r}
 #| label: model-prediction-umap-original
 
@@ -844,6 +845,28 @@ plot_predict_umap_model <- ggplot(data = jittered_points_df,
 ```
 
 ```{r}
+#| label: true-model-projection-langevitour
+
+true_model_df_rm_id <- true_model_df |>
+  select(-ID)
+
+projection <- cbind(
+    c(0.18390,-0.18443,-0.06860,0.00654,-0.02921,0.02313,-0.08963),
+    c(-0.02902,0.03638,-0.16872,0.22418,0.01146,0.02777,0.01453))
+projected_df <- as.matrix(true_model_df_rm_id) %*% projection |> 
+  as_tibble(.name_repair = "unique") |> 
+  rename(c("proj1" = "...1", 
+           "proj2" = "...2"))
+
+proj_plot_scurve_true <- ggplot(
+  data = projected_df, 
+  aes(
+    x = proj1, 
+    y = proj2)) +
+    geom_point(alpha = 0.5)   
+```
+
+```{r}
 #| label: model-prediction-points-line
 
 predict_umap_scurve_scaled <- predict_umap_scurve_scaled |>
@@ -863,7 +886,7 @@ plot_predict_umap_model_connect <- ggplot(data = predict_point_df,
                               y = UMAP2, 
                               group = ID
                             )) +
-  geom_point(alpha = 0.6) +
+  geom_point(alpha = 0.5) +
   geom_line(alpha = 0.3)
 ```
 
@@ -873,18 +896,20 @@ plot_predict_umap_model_connect <- ggplot(data = predict_point_df,
 #| fig-pos: H
 #| fig-width: 9
 #| fig-height: 5
-plot_predict_umap + plot_predict_umap_model + plot_predict_umap_model_connect 
+proj_plot_scurve_true + plot_predict_umap + 
+  plot_predict_umap_model + plot_predict_umap_model_connect +
+  plot_layout(ncol = 4)
 ```
 
-<!--prediction for true-model of S-curve-->
-::: {#fig-scurve-pred-sc layout-ncol="2" fig-pos="H"}
-![](figures/scurve/sc_true_only.png){width="150" fig-align="center"}
 
-![](figures/scurve/pred_true_view.png){width="150" fig-align="center"}
+<!-- ::: {#fig-scurve-pred-sc layout-ncol="2" fig-pos="H"} -->
+<!-- ![](figures/scurve/sc_true_only.png){width="150" fig-align="center"} -->
+
+<!-- ![](figures/scurve/pred_true_view.png){width="150" fig-align="center"} -->
 
 
-A view of the true model in projections from $7\text{-}D$, and predictions of the true model in \gD{}, for the S-curve data. The predictions fits the UMAP layout which means that it capture the geometry of S-curve with UMAP.
-:::
+<!-- A view of the true model in projections from $7\text{-}D$, and predictions of the true model in \gD{}, for the S-curve data. The predictions fits the UMAP layout which means that it capture the geometry of S-curve with UMAP. -->
+<!-- ::: -->
 
 <!-- XXX Prediction should have a jitter option, to spread the predicted points out fully in the hexagons. -->
 
