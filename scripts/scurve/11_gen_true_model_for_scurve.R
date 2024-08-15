@@ -75,8 +75,10 @@ names(true_model) <- c("x1", "x2", "x3", "ID")
 true_model <- true_model |>
   dplyr::mutate(x4 = mean(runif(NROW(true_model), -0.02, 0.02)),
                 x5 = mean(runif(NROW(true_model), -0.02, 0.02)),
-                x6 = mean(runif(NROW(true_model), -0.1, 0.1)),
+                x6 = mean(runif(NROW(true_model), -0.01, 0.01)),
                 x7 = mean(runif(NROW(true_model), -0.01, 0.01)))
+
+write_rds(true_model, "data/s_curve/true_model.rds")
 
 training_data <- read_rds("data/s_curve/s_curve_training.rds") |>
   dplyr::select(-ID) |>

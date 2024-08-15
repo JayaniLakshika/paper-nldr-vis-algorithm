@@ -12,15 +12,13 @@ s_curve <- function(n_samples = 100) {
   z <- sign(tt) * (cos(tt) - 1)
   X <- cbind(x, y, z)
 
-  data.frame(X, color = linear_color_map(tt), stringsAsFactors = FALSE)
+  data.frame(X, stringsAsFactors = FALSE)
 }
 
 # Simulate some s_curve_noise
 
 sample_size <- 100
 s_curve_noise <- s_curve(n_samples = sample_size)
-s_curve_noise <- s_curve_noise |>
-  dplyr::select(-color)
 names(s_curve_noise) <- c("x1", "x2", "x3")
 
 s_curve_noise$x4 <- runif(sample_size, -0.02, 0.02)
