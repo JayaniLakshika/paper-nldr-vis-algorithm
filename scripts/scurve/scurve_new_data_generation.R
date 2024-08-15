@@ -1,6 +1,6 @@
 # Set the number of samples
 n_samples <- 5000  # Replace with your desired number of samples
-noise <- 0.01      # Replace with your desired noise level
+noise <- 0.0      # Replace with your desired noise level
 
 # Generate the t values
 t <- 3 * pi * (runif(n_samples) - 0.5)
