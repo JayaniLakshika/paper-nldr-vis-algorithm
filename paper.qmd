@@ -559,7 +559,7 @@ scurve_proj1_true_model <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 2.5) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70")
@@ -650,7 +650,7 @@ scurve_proj2_true_model <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 2.5) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70")
@@ -746,12 +746,15 @@ scurve_proj3_true_model <- projected_df |>
 ```{r}
 #| label: fig-scurve-true-sc
 #| fig-cap: "Two views of the true model (grey lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the S-curve data (black points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>)." 
+#| fig-width: 10
+#| fig-height: 7
+#| fig-pos: H
 
 scurve_proj1_true_model + scurve_proj2_true_model + 
   plot_layout(ncol = 2)
 ```
 
-<!-- <!--langevitour with true model for S-curve--> -->
+<!--langevitour with true model for S-curve--> 
 <!-- ::: {#fig-scurve-true-sc layout-ncol="3" fig-pos="H"} -->
 
 <!-- ![](figures/scurve/sc_true_1.png){width="150" fig-align="center"} -->
