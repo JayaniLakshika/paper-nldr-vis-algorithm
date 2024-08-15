@@ -509,6 +509,25 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(proje
 model_df <- dplyr::left_join(model_df, projected_true_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_true_df)):NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(projected_true_df)], "_to")
 
+limits <- 1
+rng <- range(projected)
+projected <- projected/max(abs(rng))
+colnames(projected) <- c("P1", "P2")
+projected <- data.frame(projected)
+obs_labels <- as.character(1:nrow(training_data_scurve))
+
+axis_scale <- 2 * limits/3
+axis_pos <- -0.5 * limits
+
+adj <- function(x) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0), 
+                   y1 = adj(0), 
+                   x2 = adj(projection[, 1]), 
+                   y2 = adj(projection[, 2]))
+
+axis_labels <- colnames(training_data_scurve |> select(-ID))
+rownames(axes) <- axis_labels
+
 scurve_proj1_true_model <- projected_df |>
   ggplot(
     aes(
@@ -525,7 +544,15 @@ scurve_proj1_true_model <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#969696") 
+    color = "#969696") + 
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50")
 
 ```
 
@@ -563,6 +590,26 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(proje
 model_df <- dplyr::left_join(model_df, projected_true_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_true_df)):NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(projected_true_df)], "_to")
 
+limits <- 1
+rng <- range(projected)
+projected <- projected/max(abs(rng))
+colnames(projected) <- c("P1", "P2")
+projected <- data.frame(projected)
+obs_labels <- as.character(1:nrow(training_data_scurve))
+
+axis_scale <- 2 * limits/3
+axis_pos <- -0.5 * limits
+
+adj <- function(x) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0), 
+                   y1 = adj(0), 
+                   x2 = adj(projection[, 1]), 
+                   y2 = adj(projection[, 2]))
+
+axis_labels <- colnames(training_data_scurve |> select(-ID))
+rownames(axes) <- axis_labels
+
+
 scurve_proj2_true_model <- projected_df |>
   ggplot(
     aes(
@@ -579,7 +626,15 @@ scurve_proj2_true_model <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#969696") 
+    color = "#969696") + 
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50")
 
 ```
 
@@ -617,6 +672,26 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(proje
 model_df <- dplyr::left_join(model_df, projected_true_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_true_df)):NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(projected_true_df)], "_to")
 
+limits <- 1
+rng <- range(projected)
+projected <- projected/max(abs(rng))
+colnames(projected) <- c("P1", "P2")
+projected <- data.frame(projected)
+obs_labels <- as.character(1:nrow(training_data_scurve))
+
+axis_scale <- 2 * limits/3
+axis_pos <- -0.5 * limits
+
+adj <- function(x) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0), 
+                   y1 = adj(0), 
+                   x2 = adj(projection[, 1]), 
+                   y2 = adj(projection[, 2]))
+
+axis_labels <- colnames(training_data_scurve |> select(-ID))
+rownames(axes) <- axis_labels
+
+
 scurve_proj3_true_model <- projected_df |>
   ggplot(
     aes(
@@ -633,7 +708,15 @@ scurve_proj3_true_model <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#969696") 
+    color = "#969696") + 
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50")
 
 ```
 
