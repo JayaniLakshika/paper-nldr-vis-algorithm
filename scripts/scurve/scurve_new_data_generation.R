@@ -1,4 +1,5 @@
 # Set the number of samples
+set.seed(20230531)
 n_samples <- 5000  # Replace with your desired number of samples
 noise <- 0.0      # Replace with your desired noise level
 
@@ -27,6 +28,8 @@ df$x5 <- runif(n_samples, -0.02, 0.02)
 df$x6 <- runif(n_samples, -0.01, 0.01)
 df$x7 <- runif(n_samples, -0.01, 0.01)
 langevitour(df)
+
+write_rds(df, "data/s_curve/scurve_simulated_5000.rds")
 
 training_data <- df |>
   dplyr::mutate(type = "data")
