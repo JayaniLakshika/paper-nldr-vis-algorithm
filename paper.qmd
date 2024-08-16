@@ -1496,7 +1496,7 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 ```{r}
 #| label: errors-scurve
 ## To initialize number of bins along the x-axis
-bin1_vec_scurve <- 2:15 #sqrt(NROW(training_data_scurve)/2)
+bin1_vec_scurve <- 5:19 #sqrt(NROW(training_data_scurve)/2)
 #buffer_vec <- seq(0.05, 0.1, by = 0.01)
 
 error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
@@ -1579,6 +1579,7 @@ mse_scurve_b <- ggplot(error_scurve,
              color = "#bdbdbd", linewidth=1) +
   geom_vline(xintercept = 13, linetype=2,
              color = "#bdbdbd", linewidth=1) +
+  scale_x_continuous(breaks = 5:19) +
   labs(x = expression(b[1]), y = "MSE") +
   ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
