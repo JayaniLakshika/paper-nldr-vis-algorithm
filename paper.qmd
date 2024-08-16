@@ -1077,13 +1077,23 @@ error_plot_scurve <- error_df_scurve |>
              y = UMAP2,
              color = type)) +
   geom_point(alpha=0.5) +
+  scale_colour_brewer(
+    type = "qual",
+    palette = 2
+  ) +
   theme(
-    legend.position = "bottom"
-  )
+    legend.position = "right",
+    legend.text = element_text(size = 10)
+  ) +
+  coord_equal()
 ```
 
 ```{r}
 #| label: fig-p-d-error-in-2d-scurve
+#| fig-cap: "error"
+#| out-height: 30%
+#| fig-pos: H
+
 error_plot_scurve
 ```
 
