@@ -1635,6 +1635,20 @@ b7_q_plt2 + b11_q_plt2 + b17_q_plt2
 ```
 
 ```{r}
+#| out-height: 30%
+
+
+centroids_df_scurve |>
+  filter(bin1 == 7) |>
+  ggplot(aes(x = as.factor(hexID), 
+           y = std_counts,
+           group = as.factor(buff),
+           color = as.factor(buff))) + 
+  geom_line() +
+  scale_color_brewer(type = "qual")
+```
+
+```{r}
 ## To initialize number of bins along the x-axis
 bin1_vec_scurve <- 5:19 #sqrt(NROW(training_data_scurve)/2)
 #buffer_vec <- seq(0.05, 0.16, by = 0.01)
@@ -1863,17 +1877,38 @@ df_bin_centroids_all <- bind_rows(
   df_bin_centroids3
 )
 
+# cell_count_scurve <- ggplot(df_bin_centroids_all, 
+#                             aes(x = reorder(as.factor(hexID), 
+#                                             -bin_counts), 
+#                                 y = bin_counts,
+#                                 group = as.factor(b1),
+#                                 color = as.factor(b1))) + 
+#   geom_line() + 
+#   # geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
+#   scale_colour_discrete_qualitative(palette = "Dark 3") +
+#   xlab("hexagon id (re-ordered)") + 
+#   ylab("bin count") +
+#   ggtitle("(a)") +
+#   theme(aspect.ratio = 0.75,
+#         axis.title.x = element_text(size = 12),
+#         axis.title.y = element_text(size = 12, angle = 90),
+#         axis.text.x = element_blank(),
+#         axis.text.y = element_text(size = 12),
+#         plot.title = element_text(size = 12),
+#         legend.text = element_text(size = 10),
+#         legend.key.size = unit(1, 'cm'),
+#         legend.key.height = unit(1, 'cm'))
+
 cell_count_scurve <- ggplot(df_bin_centroids_all, 
-                            aes(x = reorder(as.factor(hexID), 
-                                            -bin_counts), 
-                                y = bin_counts,
+                            aes(x = as.factor(hexID), 
+                                y = std_counts,
                                 group = as.factor(b1),
                                 color = as.factor(b1))) + 
   geom_line() + 
   # geom_hline(yintercept = benchmark1, color = "black", linewidth=0.5, alpha = 0.5) +
   scale_colour_discrete_qualitative(palette = "Dark 3") +
   xlab("hexagon id (re-ordered)") + 
-  ylab("bin count") +
+  ylab("standardised bin count") +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
         axis.title.x = element_text(size = 12),
@@ -1893,6 +1928,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 <!--To generate errors for different total number of bins-->
 ```{r}
 #| label: bins-scurve
+#| eval: false
 ## To initialize benchmark values to remove low density hexagons
 benchmark_rm_hex_vec <- append(seq(0, 0.99, by=0.1), c(benchmark1, 0.99))
 
@@ -1950,6 +1986,90 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
             angle=90),
         plot.title = element_text(size = 12))
 ```
+
+```{r}
+#| label: diff-bins-scurve
+## To initialize benchmark values to remove low density hexagons
+benchmark_rm_hex_vec <- seq(0, 0.8, by=0.1)
+bin1_vec_scurve <- c(7, 11, 17)
+error_rm_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_scurve) {
+  #for (buff in buffer_vec) {
+  
+  for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
+    
+    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
+  
+    scurve_model <- fit_highd_model(
+      training_data = training_data_scurve,
+      emb_df = umap_scurve_scaled,
+      bin1 = xbins,
+      r2 = r2,
+      q = 0.07, 
+      is_bin_centroid = TRUE,
+      is_rm_lwd_hex = FALSE,
+      col_start_highd = "x"
+    )
+  
+    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+    df_bin_scurve <- scurve_model$df_bin
+    
+    df_bin_centroids_scurve_high_dens <- df_bin_centroids_scurve |>
+      filter(std_counts > benchmark_rm_lwd)
+    
+    df_bin_scurve_high_dens <- df_bin_scurve |>
+      filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
+  
+    ## Compute error
+    error_df <- glance(
+      df_bin_centroids = df_bin_centroids_scurve_high_dens,
+      df_bin = df_bin_scurve_high_dens,
+      training_data = training_data_scurve,
+      newdata = NULL,
+      type_NLDR = "UMAP",
+      col_start = "x") |>
+      mutate(benchmark_rm_lwd = benchmark_rm_lwd,
+             bin1 = xbins,
+             b_non_empty = NROW(df_bin_centroids_scurve_high_dens))
+  
+    error_rm_scurve <- bind_rows(error_rm_scurve, error_df)
+  
+  
+  }
+
+}
+
+benchmark_label_df <- tibble(x = 0.2, y = 0.1, 
+                          label = paste0("benchmark is ", benchmark1))
+
+mse_scurve_lwd <- ggplot(error_rm_scurve, 
+                     aes(x = benchmark_rm_lwd, 
+                         y = MSE,
+                         colour = as.factor(bin1),
+                         group = as.factor(bin1))) + 
+  geom_point(
+    size = 1
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
+  scale_color_brewer(type = "qual") +
+  # geom_vline(xintercept = benchmark1, linetype="solid", 
+  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
+  scale_x_continuous("bechmark to remove low-density hexagons", 
+         transform = "reverse") + 
+  ylab("MSE") +
+  ggtitle("(c)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
+            angle=90),
+        plot.title = element_text(size = 12))
+```
+
 
 
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
