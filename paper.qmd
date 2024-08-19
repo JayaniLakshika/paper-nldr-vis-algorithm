@@ -2655,109 +2655,56 @@ error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
 error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
-error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds") 
-error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds") 
-error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds") 
+# error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds") 
+# error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds") 
+# error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds") 
   
 error_pbmc <- bind_rows(error_pbmc_umap, 
                         error_pbmc_umap2,
                         error_pbmc_umap3,
                         error_pbmc_tsne,
-                        error_pbmc_tsne2,
-                        error_pbmc_phate,
-                        error_pbmc_trimap,
-                        error_pbmc_pacmap)
+                        error_pbmc_tsne2)
+
+error_pbmc <- error_pbmc |>
+  filter(bin1 >= 5)
 ```
 
 ```{r}
 #| label: tsne-pbmc
 # read the png file from device 
-tsne_5_img <- readPNG("figures/pbmc3k/tsne_5.png", native = TRUE) 
-phate_5_img <- readPNG("figures/pbmc3k/phate_5.png", native = TRUE) 
-umap_img <- readPNG("figures/pbmc3k/author_view.png", native = TRUE) 
-tsne_30_img <- readPNG("figures/pbmc3k/tsne_30.png", native = TRUE)
-umap_15_img <- readPNG("figures/pbmc3k/umap_15.png", native = TRUE) 
-pacmap_img <- readPNG("figures/pbmc3k/pacmap.png", native = TRUE) 
-trimap_img <- readPNG("figures/pbmc3k/trimap.png", native = TRUE)
-umap_5_img <- readPNG("figures/pbmc3k/umap_5.png", native = TRUE)
 
-## Add arrows
-arrow_df_pbmc <- tibble(x = c(94, 280, 101, 150, 218, 250, 50),
-             xend = c(96, 295, 96, 180, 250, 290, 25),
-             y = c(10.06, 9.69, 9.88, 9.855, 9.82, 9.78, 10),
-             yend = c(10.14, 9.8, 9.8, 10, 10.3, 10, 9.8))
+pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
 
 error_plot_pbmc <- ggplot(error_pbmc, 
-                              aes(x = b_non_empty, 
-                                  y = log(Error), 
-                                  colour = method)) + 
+                          aes(x = b_non_empty, 
+                              y = Error/1000, 
+                              colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
-  geom_vline(xintercept = 135, linetype="solid", 
+  geom_vline(xintercept = 136, linetype="solid", 
              color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
-                              '#984ea3','#999999','#a65628','#f781bf')) +
-  ylab("log(absolute error)") +
-  xlab("number of non-empty bins")+
-    geom_segment(data = arrow_df_pbmc, aes(
-      x = x,  
-      y = y,  
-      xend = xend, 
-      yend = yend), 
-      arrow = arrow(length = unit(0.01, "npc"),
-        ends = "first"), 
-        color = "black",
-      linewidth = 0.1) +
-  theme(#aspect.ratio = 0.75,
+  scale_color_manual(values=c('#ff7f00', '#984ea3', 
+                              '#999999', '#a65628', '#f781bf')) +
+  ylab("absolute error (in thousands)") +
+  xlab("number of non-empty bins") + 
+  theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7),
         axis.title.x = element_text(size = 7),
         axis.title.y = element_text(size = 7, angle = 90),
-        legend.position = "bottom",
-        legend.text = element_text(size = 7),
-        legend.key.height = unit(0.3, 'cm'),
-        legend.key.width = unit(0.3, 'cm'),
-        legend.key.size = unit(3, 'cm')) +
-    inset_element(p = tsne_5_img, 
-                  left = 1.8, 
-                  bottom = 0.08, 
-                  right = 0, 
-                  top = 0.25) +                   
-    inset_element(p = phate_5_img, 
-                  left = 0.6, 
-                  bottom = 0.4, 
-                  right = 0, 
-                  top = 0.55) +                   
-    inset_element(p = umap_img, 
-                  left = 1.2, 
-                  bottom = 0.3, 
-                  right = -0.1, 
-                  top = 0.5) +
-    inset_element(p = umap_15_img, 
-                  left = 1.5, 
-                  bottom = 0.5, 
-                  right = 0, 
-                  top = 0.7) +
-    inset_element(p = tsne_30_img, 
-                  left = 0.6, 
-                  bottom = 0.01, 
-                  right = 0, 
-                  top = 0.18) +
-    inset_element(p = pacmap_img, 
-                  left = 1.7, 
-                  bottom = 0.3, 
-                  right = 0, 
-                  top = 0.5) +
-    inset_element(p = umap_5_img, 
-                  left = 0.4, 
-                  bottom = 0.05, 
-                  right = -0.2, 
-                  top = 0.22) 
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
+        legend.position = "none") +
+  inset_element(p = pbmc_layouts, 
+                left = 1.55, 
+                bottom = 0.35, 
+                right = 0, 
+                top = 1) 
 
 ```
 
 ```{r}
-#| fig-cap: "Absolute error from UMAP and tSNE applied to training PBMC3k dataset with diffferent parameter choices. What is the best parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $136$, the lowest error occurred with the parameters perplexity: $30$."
+#| fig-cap: "Absolute error from UMAP and tSNE applied to PBMC3k dataset with diffferent (hyper-)parameter choices. What is the best (hyper-)parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $136$, the lowest error occurred with the parameters perplexity: $30$."
 #| label: fig-pbmc-abserror
 #| fig-pos: H
 #| out-width: 70%
