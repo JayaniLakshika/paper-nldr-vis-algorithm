@@ -1491,6 +1491,223 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 <!--add MSE vs total number of error plot-->
 
 <!--To generate errors for different total number of bins-->
+
+```{r}
+#| label: bin-counts-scurve-with_buffer
+## To initialize number of bins along the x-axis
+bin1_vec_scurve <- c(7, 11, 17) #sqrt(NROW(training_data_scurve)/2)
+#buffer_vec <- seq(0.05, 0.16, by = 0.01)
+buffer_vec <- c(0.05, 0.07, 0.12)
+
+centroids_df_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_scurve) {
+  for (buff in buffer_vec) {
+    
+    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$bin2
+    
+    scurve_model <- fit_highd_model(
+      training_data = training_data_scurve,
+      emb_df = umap_scurve_scaled,
+      bin1 = xbins,
+      r2 = r2,
+      q = buff, 
+      is_bin_centroid = TRUE,
+      is_rm_lwd_hex = FALSE,
+      col_start_highd = "x"
+    )
+    
+    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+    #df_bin_scurve <- scurve_model$df_bin
+    
+    ## Compute error
+    df_bin_centroids_scurve <- df_bin_centroids_scurve |>
+      mutate(bin1 = xbins,
+             bin2 = bin2,
+             b = bin1 * bin2,
+             b_non_empty = NROW(df_bin_centroids_scurve),
+             buff = buff)
+    
+    centroids_df_scurve <- bind_rows(centroids_df_scurve, df_bin_centroids_scurve)
+      
+  }
+
+}
+
+b7_q_plt <- centroids_df_scurve |>
+  filter(bin1 == 7) |>
+  filter(buff == 0.12) |>
+  ggplot(aes(x = bin_counts)) +
+  geom_density() +
+  xlab("bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5),
+    axis.title.x = element_text(size = 7)
+
+  )
+
+b11_q_plt <- centroids_df_scurve |>
+  filter(bin1 == 11) |>
+  filter(buff == 0.07) |>
+  ggplot(aes(x = bin_counts)) +
+  geom_density() +
+  xlab("bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5), 
+    axis.title.x = element_text(size = 7)
+
+  )
+
+b17_q_plt <- centroids_df_scurve |>
+  filter(bin1 == 17) |>
+  filter(buff == 0.05) |>
+  ggplot(aes(x = bin_counts)) +
+  geom_density() +
+  xlab("bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5),
+    axis.title.x = element_text(size = 7)
+
+  )
+```
+
+```{r}
+#| label: fig-bin-counts-scurve-with_buffer
+#| fig-cap: "Distribution of bin counts for differnt $b_1$ with specific $q$"
+#| out-height: 30%
+
+b7_q_plt + b11_q_plt + 
+  b17_q_plt +
+  plot_layout(ncol = 3)
+
+```
+
+```{r}
+#| out-height: 30%
+
+b7_q_plt2 <- centroids_df_scurve |>
+  filter(bin1 == 7) |>
+  ggplot(aes(x = std_counts,
+             colour = as.factor(buff),
+             group = as.factor(buff))) +
+  geom_density() +
+  scale_color_brewer(type = "qual") +
+  xlab("standardised bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5),
+    axis.title.x = element_text(size = 7)
+
+  )
+
+b11_q_plt2 <- centroids_df_scurve |>
+  filter(bin1 == 11) |>
+  ggplot(aes(x = std_counts,
+             colour = as.factor(buff),
+             group = as.factor(buff))) +
+  geom_density() +
+  scale_color_brewer(type = "qual") +
+  xlab("standardised bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5),
+    axis.title.x = element_text(size = 7)
+  )
+
+b17_q_plt2 <- centroids_df_scurve |>
+  filter(bin1 == 17) |>
+  ggplot(aes(x = std_counts,
+             colour = as.factor(buff),
+             group = as.factor(buff))) +
+  geom_density() +
+  scale_color_brewer(type = "qual") +
+  xlab("standardised bin count") +
+  theme(
+    axis.text.x = element_text(size = 7),
+    axis.ticks.x = element_line(linewidth = 0.5),
+    axis.title.x = element_text(size = 7)
+  )
+
+b7_q_plt2 + b11_q_plt2 + b17_q_plt2
+```
+
+```{r}
+## To initialize number of bins along the x-axis
+bin1_vec_scurve <- 5:19 #sqrt(NROW(training_data_scurve)/2)
+#buffer_vec <- seq(0.05, 0.16, by = 0.01)
+buffer_vec <- c(0.05, 0.07, 0.12)
+
+error_df_scurve_q <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_scurve) {
+  for (buff in buffer_vec) {
+    
+    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$bin2
+    
+    scurve_model <- fit_highd_model(
+      training_data = training_data_scurve,
+      emb_df = umap_scurve_scaled,
+      bin1 = xbins,
+      r2 = r2,
+      q = buff, 
+      is_bin_centroid = TRUE,
+      is_rm_lwd_hex = FALSE,
+      col_start_highd = "x"
+    )
+    
+    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+    df_bin_scurve <- scurve_model$df_bin
+    
+    ## Compute error
+    error_df <- glance(
+      df_bin_centroids = df_bin_centroids_scurve,
+      df_bin = df_bin_scurve,
+      training_data = training_data_scurve,
+      newdata = NULL,
+      type_NLDR = "UMAP",
+      col_start = "x") |>
+      mutate(bin1 = xbins,
+             bin2 = bin2,
+             b = bin1 * bin2,
+             b_non_empty = NROW(df_bin_centroids_scurve),
+             q = buff)
+      
+    error_df_scurve_q <- bind_rows(error_df_scurve_q, error_df)
+      
+  }
+
+}
+
+ggplot(error_df_scurve_q, 
+       aes(x = bin1, 
+           y = MSE,
+           colour = as.factor(q),
+           group = as.factor(q))) + 
+  geom_point(size = 1) +
+  geom_line() +
+  scale_color_brewer(type = "qual") +
+  scale_x_continuous(breaks = 5:19) +
+  labs(x = expression(b[1]), y = "MSE") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
+            angle=90),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.size = unit(1, 'cm'))
+
+```
+
 ```{r}
 #| label: errors-scurve
 ## To initialize number of bins along the x-axis
@@ -1586,6 +1803,8 @@ mse_scurve_b <- ggplot(error_scurve,
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, 
             angle=90),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
         plot.title = element_text(size = 12),
         legend.title = element_text(size = 12),
         legend.text = element_text(size = 10),
