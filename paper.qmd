@@ -1988,9 +1988,9 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
 ```
 
 ```{r}
-#| label: diff-bins-scurve
+#| label: diff-bins-scurve-buff
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.8, by=0.1)
+benchmark_rm_hex_vec <- seq(0, 0.7, by=0.1)
 bin1_vec_scurve <- c(7, 11, 17)
 error_rm_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -1999,7 +1999,7 @@ for (xbins in bin1_vec_scurve) {
   
   for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     
-    bin2 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$bin2
+    a1 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$a1
   
     scurve_model <- fit_highd_model(
       training_data = training_data_scurve,
@@ -2020,6 +2020,23 @@ for (xbins in bin1_vec_scurve) {
     
     df_bin_scurve_high_dens <- df_bin_scurve |>
       filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
+    
+    tr1_object_scurve <- tri_bin_centroids(
+      df_bin_centroids_scurve_high_dens, 
+      x = "c_x", 
+      y = "c_y")
+    
+    tr_from_to_df_scurve <- gen_edges(
+      tri_object = tr1_object_scurve)
+    
+    ## Compute 2D distances
+    distance_scurve <- cal_2d_dist(
+      tr_coord_df = tr_from_to_df_scurve, 
+      start_x = "x_from", 
+      start_y = "y_from", 
+      end_x = "x_to", 
+      end_y = "y_to", 
+      select_vars = c("from", "to", "distance"))
   
     ## Compute error
     error_df <- glance(
@@ -2040,8 +2057,6 @@ for (xbins in bin1_vec_scurve) {
 
 }
 
-benchmark_label_df <- tibble(x = 0.2, y = 0.1, 
-                          label = paste0("benchmark is ", benchmark1))
 
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
                      aes(x = benchmark_rm_lwd, 
@@ -2114,8 +2129,117 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 3. Take the distance value corresponding to this difference as the benchmark value.-->
 
 <!--distribution of distance along with the default benchmark-->
+
+```{r}
+#| label: diff-bins-scurve-buff3
+#| eval: false
+## To initialize benchmark values to remove low density hexagons
+benchmark_rm_hex_vec <- seq(0, 0.7, by=0.1)
+bin1_vec_scurve <- c(7, 11, 17)
+distance_all_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
+#buffer_vec <- 0.07
+
+for (xbins in bin1_vec_scurve) {
+  for (buff in buffer_vec) {
+  
+  #for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
+    
+    a1 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$a1
+  
+    scurve_model <- fit_highd_model(
+      training_data = training_data_scurve,
+      emb_df = umap_scurve_scaled,
+      bin1 = xbins,
+      r2 = r2,
+      q = buff, 
+      is_bin_centroid = TRUE,
+      is_rm_lwd_hex = FALSE,
+      col_start_highd = "x"
+    )
+  
+    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
+    df_bin_scurve <- scurve_model$df_bin
+    
+    df_bin_centroids_scurve_high_dens <- df_bin_centroids_scurve |>
+      filter(std_counts > benchmark_rm_lwd)
+    
+    df_bin_scurve_high_dens <- df_bin_scurve |>
+      filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
+    
+    tr1_object_scurve <- tri_bin_centroids(
+      df_bin_centroids_scurve_high_dens, 
+      x = "c_x", 
+      y = "c_y")
+    
+    tr_from_to_df_scurve <- gen_edges(
+      tri_object = tr1_object_scurve)
+    
+    ## Compute 2D distances
+    distance_scurve <- cal_2d_dist(
+      tr_coord_df = tr_from_to_df_scurve, 
+      start_x = "x_from", 
+      start_y = "y_from", 
+      end_x = "x_to", 
+      end_y = "y_to", 
+      select_vars = c("from", "to", "distance"))
+    
+    start_point <- a1/2
+
+    # Create bins and calculate the mean value for each bin range
+    bins <- seq(start_point, max(distance_scurve$distance) + a1, 
+                by = a1)
+    bin_labels <- bins[-length(bins)] + a1 / 2  # mean of each bin range
+    
+    distance_scurve <- distance_scurve |> 
+      mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels))
+
+  
+    ## Compute error
+    distance_scurve <- distance_scurve |>
+      mutate(q = buff,
+             bin1 = xbins,
+             a1 = a1)
+  
+    distance_all_scurve <- bind_rows(distance_all_scurve, distance_scurve)
+  
+  
+  }
+
+}
+
+# dist_summary_scurve <- distance_all_scurve |>
+#     count(bin1, q, bin)
+
+distance_hist <- distance_all_scurve |>
+  filter(bin1 == 11) |>
+  filter(q == 0.07) |>
+  ggplot(aes(x = distance)) +
+    geom_histogram(
+      aes(y = after_stat(count) / sum(after_stat(count)), 
+      group = as.factor(q),
+      fill = as.factor(q)),
+      binwidth = a1,
+      position = "dodge") +
+  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 3)) +
+  scale_color_brewer(type = "qual") +
+  #facet_wrap(vars(as.factor(bin1)), scale = "free") +
+  ylab("standardized number of edges") +
+  xlab(expression(d^{(2)})) +
+  ggtitle("(d)") +
+  theme(aspect.ratio = 0.75,
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, angle = 90),
+        axis.text.x = element_text(size = 12, angle = 90),
+        axis.text.y = element_text(size = 12),
+        axis.ticks.x = element_line(), 
+        plot.title = element_text(size = 12))
+
+```
+
+
 ```{r}
 #| label: triangulate-scurve2
+
 ## Triangulate bin centroids
 tr1_object_scurve <- tri_bin_centroids(
   df_bin_centroids_scurve_keep, x = "c_x", y = "c_y")
@@ -2162,7 +2286,7 @@ distance_scurve_plot <- ggplot(distance_scurve,
         plot.title = element_text(size = 12))
 
 # Define bin width and starting point
-bin_width <- hb_obj_scurve$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1]
+bin_width <- hb_obj_scurve2$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1]
 start_point <- bin_width/2
 
 # Create bins and calculate the mean value for each bin range
