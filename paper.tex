@@ -940,7 +940,7 @@ NLDR is commonly used to display clusters, and help to verify the
 results. For example, \citet{chen2023} illustrates the use of UMAP to
 identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k).
 Figure~\ref{fig-umap-author} is a reproduction of the published plot. It
-shows three well-separated clusters.
+shows three well-separated clusters with big separations.
 
 \begin{figure}[H]
 
@@ -963,14 +963,15 @@ it is misleading.}
 To determine whether the UMAP representation with the (hyper-)parameter
 choice suggested by \citet{chen2023} preserves the original data
 structure, we visualize the model constructed with UMAP overlaid on the
-\pD{} data. The Figure~\ref{fig-umap-author} shows three well-separated
-clusters. However, as shown in Figure~\ref{fig-pbmc1-sc}, there is no
-big separation between three clusters in \pD{}. Therefore, the suggested
-UMAP representation (Figure~\ref{fig-umap-author}) does not accurately
-represent the structure(s) present in PBMC3k dataset. But, when
-visualizing the model-in-th-data-space some unobserved structures can be
-seen. Some clusters have non-linear continuity patterns and high-density
-patches (Figure~\ref{fig-pbmc1-sc}).
+\(9\text{-}D\) data. The Figure~\ref{fig-umap-author} shows three
+well-separated clusters. However, as shown in Figure~\ref{fig-pbmc1-sc},
+there is no big separation between three clusters in \(9\text{-}D\).
+Therefore, the suggested UMAP representation
+(Figure~\ref{fig-umap-author}) does not accurately represent the
+structure(s) present in PBMC3k dataset. But, when visualizing the
+model-in-th-data-space some unobserved structures can be seen. Some
+clusters have non-linear continuity patterns and high-density patches
+(Figure~\ref{fig-pbmc1-sc}).
 
 \begin{figure}[H]
 
@@ -1006,31 +1007,30 @@ clusters.}
 three views of the fit in projections from \(9\text{-}D\), for the
 PBMC3k data (\((s_1, \ s_2) = (-0.050, \ -0.041)\),
 \(b = 870 \  (30, \ 29)\), \(m = 135\), benchmark value to remove large
-edges is \(0.099\)). (The \textbf{langevitour} software is used to view
+edges is \(0.099\)) (The \textbf{langevitour} software is used to view
 the data with a tour, and the full video is available at
 \url{https://youtu.be/VqqWuE0Jj6A}).}
 
 \end{figure}%
 
 In order to find a reasonable NLDR representation for the PBMC3k
-dataset, the absolute error for different numbers of non-empty bins
-using various NLDR techniques and different (hyper-)parameter settings
-(Figure~\ref{fig-pbmc-abserror}) were calculated. After analyzing the
+dataset, the MSE for different \(b_1\) using UMAP with different
+(hyper-)parameter settings and tSNE with default (hyper-)parameter
+setting (Figure~\ref{fig-pbmc-mse}) were calculated. After analyzing the
 results, it was found that tSNE with default (hyper-)parameter setting
-(perplexity: \(30\)) achieved the lowest error when there were \(136\)
-number of non-empty bins. Therefore, tSNE with a perplexity value set to
-\(30\), the default parameter setting, is considered as a reasonable
-representation for the PBMC3k dataset.
+(perplexity: \(30\)) achieved the lowest error. Therefore, tSNE with a
+perplexity value set to \(30\), the default parameter setting, is
+considered as a reasonable representation for the PBMC3k dataset.
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=0.7\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-abserror-1.pdf}
+\includegraphics[width=0.7\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
 
 }
 
-\caption{\label{fig-pbmc-abserror}MSE from UMAP with diffferent
+\caption{\label{fig-pbmc-mse}MSE from UMAP with diffferent
 (hyper-)parameter choices and tSNE with default (hyper-)parameter
 setting applied to PBMC3k dataset for different number of bins along the
 x-axis (\(b_1\)). Which is the most reasonable representation of the
@@ -1044,11 +1044,11 @@ using the perplexity: \(30\).}
 \end{figure}%
 
 As shown in Figure~\ref{fig-tsne-suggest}, there are three
-well-separated clusters, although they are located close to each other.
-Additionally, non-linear structures can also be observed within the
-clusters (Figure~\ref{fig-tsne-suggest}). This demonstrates that tSNE
-accurately captures the data structure of the PBMC3k dataset, which UMAP
-did not achieve.
+well-separated clusters, although the separation between the clusters
+are small. Additionally, non-linear structures can also be observed
+within the clusters (Figure~\ref{fig-tsne-suggest}). This demonstrates
+that tSNE accurately captures the data structure of the PBMC3k dataset,
+which UMAP did not achieve.
 
 \begin{figure}[H]
 
@@ -1065,14 +1065,6 @@ whether this is an accurate representation of structure present in the
 high-dimensional data, or if it is misleading.}
 
 \end{figure}%
-
-We then fit the model for tSNE, and visualize the resultant model in the
-\pD{} data space. The model shows a quirk, as shown in
-Figure~\ref{fig-pbmc2-sc}. All three clusters are connected by an edge
-except the small and large clusters. Because the clusters are so close
-in \gD{}, they attempt to maintain the structure in \pD{} as well. This
-is evident that tSNE with perplexity \(30\) provides a reasonable
-representation of PBMC3k data.
 
 \begin{figure}[H]
 
