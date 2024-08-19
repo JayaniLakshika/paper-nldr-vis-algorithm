@@ -343,8 +343,6 @@ With our goal being to make a representation of this \gD{} layout that can be li
 ```{r}
 #| label: scurve-training
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
-
-training_data_scurve_n <- read_rds("data/s_curve/scurve_simulated_5000.rds")
 ```
 
 <!--UMAP applied for Scurve data-->
@@ -484,7 +482,7 @@ projection <- cbind(
     c(0.24288,-0.03628,-0.03302,0.12182,-0.04150,0.02344,0.05910),
     c(0.05019,0.07165,-0.20131,-0.16200,-0.05343,0.06854,-0.00551))
 
-projected <- as.matrix(training_data_scurve_n) %*% projection
+projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -516,7 +514,7 @@ rng <- range(projected)
 projected <- projected/max(abs(rng))
 colnames(projected) <- c("P1", "P2")
 projected <- data.frame(projected)
-obs_labels <- as.character(1:nrow(training_data_scurve_n))
+obs_labels <- as.character(1:nrow(training_data_scurve))
 
 axis_scale <- 2 * limits/3
 axis_pos <- -0.6 * limits
@@ -527,7 +525,7 @@ axes <- data.frame(x1 = adj(0),
                    x2 = adj(projection[, 1]), 
                    y2 = adj(projection[, 2]))
 
-axis_labels <- colnames(training_data_scurve_n)
+axis_labels <- colnames(training_data_scurve |> select(-ID))
 rownames(axes) <- axis_labels
 
 axis_scale <- 0.15 * limits
@@ -575,7 +573,7 @@ projection <- cbind(
     c(0.03685,-0.02239,0.08047,0.22415,-0.10295,0.04529,0.10381),
     c(-0.16908,0.11691,0.04886,0.10189,-0.00203,-0.09763,-0.13207))
 
-projected <- as.matrix(training_data_scurve_n) %*% projection
+projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -607,7 +605,7 @@ rng <- range(projected)
 projected <- projected/max(abs(rng))
 colnames(projected) <- c("P1", "P2")
 projected <- data.frame(projected)
-obs_labels <- as.character(1:nrow(training_data_scurve_n))
+obs_labels <- as.character(1:nrow(training_data_scurve))
 
 axis_scale <- 2 * limits/3
 axis_pos <- -0.4 * limits
@@ -618,7 +616,7 @@ axes <- data.frame(x1 = adj(0),
                    x2 = adj(projection[, 1]), 
                    y2 = adj(projection[, 2]))
 
-axis_labels <- colnames(training_data_scurve_n)
+axis_labels <- colnames(training_data_scurve |> select(-ID))
 rownames(axes) <- axis_labels
 
 axis_scale <- 0.1 * limits
@@ -667,7 +665,7 @@ projection <- cbind(
     c(0.11484,0.06997,-0.13638,0.01096,0.01533,0.16257,-0.13615),
     c(0.07805,0.01652,0.17174,-0.07343,0.16177,0.11112,0.04729))
 
-projected <- as.matrix(training_data_scurve_n) %*% projection
+projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
