@@ -119,7 +119,7 @@ write_rds(error_pbmc_umap2, "data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 ## For umap
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:23 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
 pbmc_scaled_obj_umap <- gen_scaled_data(
   data = umap_pbmc)
@@ -227,7 +227,7 @@ write_rds(error_pbmc_tsne, "data/pbmc3k/error_pbmc_tsne_5.rds")
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:26 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")

@@ -2653,7 +2653,7 @@ In order to find a reasonable NLDR representation for the PBMC3k dataset, the ab
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
-error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
+#error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
 # error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds") 
 # error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds") 
@@ -2662,7 +2662,6 @@ error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
 error_pbmc <- bind_rows(error_pbmc_umap, 
                         error_pbmc_umap2,
                         error_pbmc_umap3,
-                        error_pbmc_tsne,
                         error_pbmc_tsne2)
 
 error_pbmc <- error_pbmc |>
@@ -2676,17 +2675,17 @@ error_pbmc <- error_pbmc |>
 pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
 
 error_plot_pbmc <- ggplot(error_pbmc, 
-                          aes(x = b_non_empty, 
-                              y = Error/1000, 
+                          aes(x = bin1, 
+                              y = MSE, 
                               colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
-  geom_vline(xintercept = 136, linetype="solid", 
-             color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_color_manual(values=c('#ff7f00', '#984ea3', 
-                              '#999999', '#a65628', '#f781bf')) +
-  ylab("absolute error (in thousands)") +
-  xlab("number of non-empty bins") + 
+  # geom_vline(xintercept = 15, linetype="solid", 
+  #            color = "black", linewidth=0.8, alpha = 0.5) +
+  scale_color_manual(values=c('#ff7f00', '#999999', 
+                              '#a65628', '#f781bf')) +
+  ylab("MSE") +
+  xlab(expression(b[1])) + 
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7),
@@ -2704,7 +2703,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 ```
 
 ```{r}
-#| fig-cap: "Absolute error from UMAP and tSNE applied to PBMC3k dataset with diffferent (hyper-)parameter choices. What is the best (hyper-)parameter choice to create the model? The residual plot have a steep slope at the beginning, indicating that a smaller number of non-empty bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of non-empty bins generates a smaller error. Using the elbow method, it was observed that when the number of non-empty bins is set to $136$, the lowest error occurred with the parameters perplexity: $30$."
+#| fig-cap: "MSE from UMAP with diffferent (hyper-)parameter choices and tSNE with default (hyper-)parameter setting applied to PBMC3k dataset for different number of bins along the x-axis ($b_1$). Which is the most reasonable representation of the structures present in the PBMC3k data? The residual plot have a steep slope at the beginning, indicating that a smaller $b_1$ causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of $b_1$ generates a smaller error. It was observed that for every $b_1$, the lowest error occurred with tSNE using the perplexity: $30$."
 #| label: fig-pbmc-abserror
 #| fig-pos: H
 #| out-width: 70%
