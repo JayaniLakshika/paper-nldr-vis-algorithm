@@ -1281,13 +1281,11 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 hb_obj_scurve1 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 7, 
-  r2 = r2,
-  q = 0.12)
+  r2 = r2)
 
 a1_1 <- calc_bins_y(
   bin1 = 7, 
-  r2 = r2,
-  q = 0.12
+  r2 = r2
 )$a1
 
 ## Data set with all centroids
@@ -1344,14 +1342,12 @@ hex_grid_coloured_scurve1_dens <- ggplot(hex_grid_with_counts_s_curve1) +
 hb_obj_scurve2 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 11, 
-  r2 = r2,
-  q = 0.07)
+  r2 = r2)
 
 a1_2 <- calc_bins_y(
   bin1 = 11, 
-  r2 = r2,
-  q = 0.07
-)$a1
+  r2 = r2
+  )$a1
 
 ## Data set with all centroids
 all_centroids_df2 <- hb_obj_scurve2$centroids
@@ -1410,13 +1406,11 @@ hex_grid_coloured_scurve2_dens <- ggplot(hex_grid_with_counts_s_curve2) +
 hb_obj_scurve3 <- hex_binning(
   data = umap_scurve_scaled, 
   bin1 = 17, 
-  r2 = r2,
-  q = 0.05)
+  r2 = r2)
 
 a1_3 <- calc_bins_y(
   bin1 = 17, 
-  r2 = r2,
-  q = 0.05
+  r2 = r2
 )$a1
 
 ## Data set with all centroids
@@ -1647,15 +1641,13 @@ effective_bin1_scurve <- 11
 
 effective_bin2_scurve <- calc_bins_y(
   bin1 = effective_bin1_scurve, 
-  r2 = r2, 
-  q = 0.07)$bin2
+  r2 = r2)$bin2
 
 scurve_model <- fit_highd_model(
   training_data = training_data_scurve,
   emb_df = umap_scurve_scaled,
   bin1 = effective_bin1_scurve,
   r2 = r2,
-  q = 0.07,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
   col_start_highd = "x"
@@ -1728,7 +1720,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 <!--To generate errors for different total number of bins-->
 ```{r}
 #| label: bins-scurve
-#| eval: false
+
 ## To initialize benchmark values to remove low density hexagons
 benchmark_rm_hex_vec <- append(seq(0, 0.99, by=0.1), c(benchmark1, 0.99))
 
@@ -1786,106 +1778,6 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
             angle=90),
         plot.title = element_text(size = 12))
 ```
-
-```{r}
-#| label: diff-bins-scurve-buff
-## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.7, by=0.1)
-bin1_vec_scurve <- c(7, 11, 17)
-error_rm_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (xbins in bin1_vec_scurve) {
-  #for (buff in buffer_vec) {
-  
-  for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
-    
-    a1 <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.07)$a1
-  
-    scurve_model <- fit_highd_model(
-      training_data = training_data_scurve,
-      emb_df = umap_scurve_scaled,
-      bin1 = xbins,
-      r2 = r2,
-      q = 0.07, 
-      is_bin_centroid = TRUE,
-      is_rm_lwd_hex = FALSE,
-      col_start_highd = "x"
-    )
-  
-    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-    df_bin_scurve <- scurve_model$df_bin
-    
-    df_bin_centroids_scurve_high_dens <- df_bin_centroids_scurve |>
-      filter(std_counts > benchmark_rm_lwd)
-    
-    df_bin_scurve_high_dens <- df_bin_scurve |>
-      filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
-    
-    tr1_object_scurve <- tri_bin_centroids(
-      df_bin_centroids_scurve_high_dens, 
-      x = "c_x", 
-      y = "c_y")
-    
-    tr_from_to_df_scurve <- gen_edges(
-      tri_object = tr1_object_scurve)
-    
-    ## Compute 2D distances
-    distance_scurve <- cal_2d_dist(
-      tr_coord_df = tr_from_to_df_scurve, 
-      start_x = "x_from", 
-      start_y = "y_from", 
-      end_x = "x_to", 
-      end_y = "y_to", 
-      select_vars = c("from", "to", "distance"))
-  
-    ## Compute error
-    error_df <- glance(
-      df_bin_centroids = df_bin_centroids_scurve_high_dens,
-      df_bin = df_bin_scurve_high_dens,
-      training_data = training_data_scurve,
-      newdata = NULL,
-      type_NLDR = "UMAP",
-      col_start = "x") |>
-      mutate(benchmark_rm_lwd = benchmark_rm_lwd,
-             bin1 = xbins,
-             b_non_empty = NROW(df_bin_centroids_scurve_high_dens))
-  
-    error_rm_scurve <- bind_rows(error_rm_scurve, error_df)
-  
-  
-  }
-
-}
-
-
-mse_scurve_lwd <- ggplot(error_rm_scurve, 
-                     aes(x = benchmark_rm_lwd, 
-                         y = MSE,
-                         colour = as.factor(bin1),
-                         group = as.factor(bin1))) + 
-  geom_point(
-    size = 1
-    ) +
-  geom_line(
-    linewidth = 0.3
-    ) + 
-  scale_color_brewer(type = "qual") +
-  # geom_vline(xintercept = benchmark1, linetype="solid", 
-  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
-  scale_x_continuous("bechmark to remove low-density hexagons", 
-         transform = "reverse") + 
-  ylab("MSE") +
-  ggtitle("(c)") +
-  theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12, 
-            angle=90),
-        plot.title = element_text(size = 12))
-```
-
-
 
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
 
