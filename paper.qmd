@@ -1806,6 +1806,28 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
         axis.title.y = element_text(size = 12, 
             angle=90),
         plot.title = element_text(size = 12))
+
+mse_scurve_lwd2 <- error_rm_scurve |>
+  filter(b_non_empty >= 5) |>
+  ggplot(aes(x = b_non_empty,y = MSE)) + 
+  geom_point(
+    size = 1
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
+  # geom_vline(xintercept = benchmark1, linetype="solid", 
+  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
+  scale_x_continuous("m (b1 = 11)") + 
+  ylab("MSE") +
+  ggtitle("(e)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
+            angle=90),
+        plot.title = element_text(size = 12))
 ```
 
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
@@ -2046,7 +2068,7 @@ distance_hist <- ggplot(
 #| fig-pos: H
 
 b1_m_scurve + mse_scurve_b + b1_m_scurve2 + 
-mse_scurve_lwd + 
+mse_scurve_lwd + mse_scurve_lwd2 +
 distance_hist + plot_layout(ncol=2)
 ```
 
