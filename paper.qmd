@@ -1593,6 +1593,35 @@ mse_scurve_b <- ggplot(error_scurve,
 
 b1_m_scurve <- ggplot(error_scurve, 
                      aes(x = bin1, 
+                         y = b_non_empty/b)) + 
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) + 
+  # geom_vline(xintercept = 11, linetype="solid",
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 9, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 13, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  scale_x_continuous(breaks = 5:19) +
+  labs(x = expression(b[1]), y = expression(frac(m, b))) +
+  ggtitle("(a)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, 
+            angle=90),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.size = unit(1, 'cm'))
+
+b1_m_scurve2 <- ggplot(error_scurve, 
+                     aes(x = bin1, 
                          y = b_non_empty)) + 
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) + 
@@ -1604,7 +1633,7 @@ b1_m_scurve <- ggplot(error_scurve,
   #            color = "#bdbdbd", linewidth=1) +
   scale_x_continuous(breaks = 5:19) +
   labs(x = expression(b[1]), y = expression(m)) +
-  ggtitle("(b)") +
+  ggtitle("(c)") +
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
@@ -2016,7 +2045,7 @@ distance_hist <- ggplot(
 #| fig-height: 10
 #| fig-pos: H
 
-b1_m_scurve + mse_scurve_b +  
+b1_m_scurve + mse_scurve_b + b1_m_scurve2 + 
 mse_scurve_lwd + 
 distance_hist + plot_layout(ncol=2)
 ```
