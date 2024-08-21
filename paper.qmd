@@ -165,6 +165,39 @@ interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1) {
 ```
 
 ```{r}
+#| label: scale-highd-data
+# Center the data by subtracting the mean of each column
+center_data <- function(data) {
+  apply(data, 2, function(col) col - mean(col))
+}
+
+# Function to scale data manually
+scale_data_manual <- function(data) {
+  # Step 1: Center the data (mean 0)
+  data_centered <- center_data(data)
+
+  # Step 2: Calculate the range of each dimension
+  ranges <- apply(data_centered, 2, function(x) max(x) - min(x))
+
+  # Step 3: Find the dimension with the largest range
+  max_range <- max(ranges)
+  scaled_data <- data_centered
+
+  # Step 4: Scale each dimension
+  for (i in seq_along(ranges)) {
+    scaling_factor <- ranges[i] / max_range
+    scaled_data[, i] <- data_centered[, i] / ranges[i] * scaling_factor
+  }
+
+  # Step 5: Rescale the dimension with the largest range to [-1, 1]
+  largest_dim_index <- which.max(ranges)
+  scaled_data[, largest_dim_index] <- scaled_data[, largest_dim_index] * max_range
+
+  return(scaled_data)
+}
+```
+
+```{r}
 #| label: code-setup
 set.seed(20240110)
 #source("nldr_code.R", local = TRUE)
@@ -527,11 +560,25 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
 wireframe_true_model <- read_rds("data/s_curve/scurve_true_model_wireframe.rds")
 
-projection <- cbind(
-    c(0.24288,-0.03628,-0.03302,0.12182,-0.04150,0.02344,0.05910),
-    c(0.05019,0.07165,-0.20131,-0.16200,-0.05343,0.06854,-0.00551))
+# Apply the scaling function to the s_curve_noise data
+scaled_s_curve_noise <- scale_data_manual(
+  training_data_scurve |> select(-ID)) |>
+  as_tibble()
 
-projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
+# Apply the scaling function to the s_curve_noise data
+scaled_s_curve_true <- scale_data_manual(
+  true_model_df |> select(-ID)) |>
+  as_tibble()
+
+# projection <- cbind(
+#     c(0.24288,-0.03628,-0.03302,0.12182,-0.04150,0.02344,0.05910),
+#     c(0.05019,0.07165,-0.20131,-0.16200,-0.05343,0.06854,-0.00551))
+
+projection <- cbind(
+  c(0.5898,-0.4620,-0.1362,0.2047,-0.3680,0.1032,-0.4818),
+  c(0.1756,0.0257,0.3683,0.2400,-0.5518,-0.4573,0.5115))
+
+projected <- as.matrix(scaled_s_curve_noise) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -539,7 +586,7 @@ projected_df <- projected |>
                   "proj2" = "...2")) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_true <- as.matrix(true_model_df |> select(-ID)) %*% projection
+projected_true <- as.matrix(scaled_s_curve_true) %*% projection
 
 projected_true_df <- projected_true |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -563,7 +610,7 @@ rng <- range(projected)
 projected <- projected/max(abs(rng))
 colnames(projected) <- c("P1", "P2")
 projected <- data.frame(projected)
-obs_labels <- as.character(1:nrow(training_data_scurve))
+obs_labels <- as.character(1:nrow(scaled_s_curve_noise))
 
 # axis_scale <- 2 * limits/3
 # axis_pos <- -0.6 * limits
@@ -576,7 +623,7 @@ axes <- data.frame(x1 = adj(0),
                    x2 = adj(projection[, 1]), 
                    y2 = adj(projection[, 2]))
 
-axis_labels <- colnames(training_data_scurve |> select(-ID))
+axis_labels <- colnames(scaled_s_curve_noise)
 rownames(axes) <- axis_labels
 
 # axis_scale <- 0.15 * limits
