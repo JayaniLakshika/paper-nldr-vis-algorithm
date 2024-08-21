@@ -91,3 +91,17 @@ projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70")
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_s_curve_true |> mutate(type = "true model"),
+                       scaled_s_curve_noise |> mutate(type = "data"))
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = wireframe_true_model$from,
+            lineTo = wireframe_true_model$to,
+            group = df$type,
+            pointSize = append(rep(1.5, NROW(scaled_s_curve_true)), rep(1, NROW(scaled_s_curve_noise))),
+            levelColors = c("#6a3d9a", "#969696"),
+            lineColors = rep("#969696", nrow(wireframe_true_model)))
+

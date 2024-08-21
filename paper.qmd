@@ -565,18 +565,20 @@ scaled_s_curve_noise <- scale_data_manual(
   training_data_scurve |> select(-ID)) |>
   as_tibble()
 
-# Apply the scaling function to the s_curve_noise data
+# Scaling the true model and add the mean of scaled noise dimensions
 scaled_s_curve_true <- scale_data_manual(
-  true_model_df |> select(-ID)) |>
-  as_tibble()
-
-# projection <- cbind(
-#     c(0.24288,-0.03628,-0.03302,0.12182,-0.04150,0.02344,0.05910),
-#     c(0.05019,0.07165,-0.20131,-0.16200,-0.05343,0.06854,-0.00551))
+  true_model_df |> 
+    select(-ID) |>
+    select(x1:x3)) |>
+  as_tibble() |>
+  mutate(x4 = mean(scaled_s_curve_noise$x4),
+         x5 = mean(scaled_s_curve_noise$x5),
+         x6 = mean(scaled_s_curve_noise$x6),
+         x7 = mean(scaled_s_curve_noise$x7))
 
 projection <- cbind(
-  c(0.5898,-0.4620,-0.1362,0.2047,-0.3680,0.1032,-0.4818),
-  c(0.1756,0.0257,0.3683,0.2400,-0.5518,-0.4573,0.5115))
+    c(-0.2782,0.2156,0.1410,0.8068,0.0804,-0.0315,0.4449),
+    c(-0.6090,0.3014,-0.1654,-0.3381,-0.0964,0.5900,0.1979))
 
 projected <- as.matrix(scaled_s_curve_noise) %*% projection
 
@@ -668,10 +670,10 @@ scurve_proj1_true_model <- projected_df |>
 #| label: s-curve-true-model-proj2
 
 projection <- cbind(
-    c(0.03685,-0.02239,0.08047,0.22415,-0.10295,0.04529,0.10381),
-    c(-0.16908,0.11691,0.04886,0.10189,-0.00203,-0.09763,-0.13207))
+    c(-0.6296,-0.1452,0.3314,0.2259,-0.4488,-0.0053,-0.4693),
+    c(0.5314,0.4634,0.1431,0.2129,-0.0107,0.1477,-0.6443))
 
-projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
+projected <- as.matrix(scaled_s_curve_noise) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -679,7 +681,7 @@ projected_df <- projected |>
                   "proj2" = "...2")) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_true <- as.matrix(true_model_df |> select(-ID)) %*% projection
+projected_true <- as.matrix(scaled_s_curve_true) %*% projection
 
 projected_true_df <- projected_true |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -703,11 +705,10 @@ rng <- range(projected)
 projected <- projected/max(abs(rng))
 colnames(projected) <- c("P1", "P2")
 projected <- data.frame(projected)
-obs_labels <- as.character(1:nrow(training_data_scurve))
+obs_labels <- as.character(1:nrow(scaled_s_curve_noise))
 
 # axis_scale <- 2 * limits/3
-# axis_pos <- -0.4 * limits
-
+# axis_pos <- -0.6 * limits
 axis_scale <- limits/6
 axis_pos <- -2/3 * limits
 
@@ -717,11 +718,11 @@ axes <- data.frame(x1 = adj(0),
                    x2 = adj(projection[, 1]), 
                    y2 = adj(projection[, 2]))
 
-axis_labels <- colnames(training_data_scurve |> select(-ID))
+axis_labels <- colnames(scaled_s_curve_noise)
 rownames(axes) <- axis_labels
 
-# axis_scale <- 0.1 * limits
-# axis_pos <- -0.4 * limits
+# axis_scale <- 0.15 * limits
+# axis_pos <- -0.6 * limits
 # adj <- function(x) axis_pos + x * axis_scale
 theta <- seq(0, 2 * pi, length = 50)
 circle <- data.frame(c1 = adj(cos(theta)), c2 = adj(sin(theta)))
