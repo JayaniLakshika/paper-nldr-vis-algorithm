@@ -184,7 +184,7 @@ write_rds(error_pbmc_umap3, "data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:22 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
@@ -302,7 +302,7 @@ write_rds(error_pbmc_tsne2, "data/pbmc3k/error_pbmc_tsne_30.rds")
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:46 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
 ## For phate
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
@@ -421,7 +421,7 @@ write_rds(error_pbmc_trimap, "data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:43 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 
 ## For pacmap
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")

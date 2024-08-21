@@ -2901,7 +2901,7 @@ error_pbmc <- error_pbmc |>
 
 error_plot_pbmc <- ggplot(error_pbmc, 
                           aes(x = a1, 
-                              y = MSE, 
+                              y = log(MSE), 
                               colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
@@ -2909,9 +2909,9 @@ error_plot_pbmc <- ggplot(error_pbmc,
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
-  ylab("MSE") +
+  ylab("log(MSE)") +
   xlab(expression(a[1])) + 
-  theme(aspect.ratio = 0.75,
+  theme(#aspect.ratio = 0.75,
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7),
         axis.title.x = element_text(size = 7),
@@ -2928,7 +2928,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 ```
 
 ```{r}
-#| fig-cap: "MSE from UMAP with diffferent (hyper-)parameter choices and tSNE with default (hyper-)parameter setting applied to PBMC3k dataset for different number of bins along the x-axis ($b_1$). Which is the most reasonable representation of the structures present in the PBMC3k data? The residual plot have a steep slope at the beginning, indicating that a smaller $b_1$ causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of $b_1$ generates a smaller error. It was observed that for every $b_1$, the lowest error occurred with tSNE using the perplexity: $30$."
+#| fig-cap: "MSE from UMAP, tSNE, PHATE, PaCMAP, and TriMAP wwith diffferent (hyper-)parameter choices applied to PBMC3k dataset for different number of bin widths along the x-axis ($a_1$). Which is the most reasonable representation of the structures present in the PBMC3k data? The residual plot have a steep slope at the beginning, indicating that a smaller $a_1$ causes a smaller amount of error. Then, the slope gradually increases or level up, indicating that a higher number of $a_1$ generates a larger error. It was observed that for every $a_1$, the lowest error occurred with tSNE using the perplexity: $30$."
 #| label: fig-pbmc-mse
 #| fig-pos: H
 #| out-height: 100%
