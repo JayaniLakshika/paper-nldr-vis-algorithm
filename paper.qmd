@@ -2825,16 +2825,20 @@ In order to find a reasonable NLDR representation for the PBMC3k dataset, the MS
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
-#error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
+error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
-# error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds") 
-# error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds") 
-# error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds") 
-  
+error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
+error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
+error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds")
+
 error_pbmc <- bind_rows(error_pbmc_umap, 
                         error_pbmc_umap2,
                         error_pbmc_umap3,
-                        error_pbmc_tsne2)
+                        error_pbmc_tsne,
+                        error_pbmc_tsne2,
+                        error_pbmc_phate,
+                        error_pbmc_trimap,
+                        error_pbmc_pacmap)
 
 error_pbmc <- error_pbmc |>
   filter(bin1 >= 5)
@@ -2844,20 +2848,20 @@ error_pbmc <- error_pbmc |>
 #| label: tsne-pbmc
 # read the png file from device 
 
-pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
+#pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
 
 error_plot_pbmc <- ggplot(error_pbmc, 
-                          aes(x = bin1, 
+                          aes(x = a1, 
                               y = MSE, 
                               colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_color_manual(values=c('#ff7f00', '#999999', 
-                              '#a65628', '#f781bf')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
+                              '#984ea3','#999999','#a65628','#f781bf')) +
   ylab("MSE") +
-  xlab(expression(b[1])) + 
+  xlab(expression(a[1])) + 
   theme(aspect.ratio = 0.75,
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7),
@@ -2865,12 +2869,12 @@ error_plot_pbmc <- ggplot(error_pbmc,
         axis.title.y = element_text(size = 7, angle = 90),
         axis.ticks.x = element_line(linewidth = 0.5),
         axis.ticks.y = element_line(linewidth = 0.5),
-        legend.position = "none") +
-  inset_element(p = pbmc_layouts, 
-                left = 1.55, 
-                bottom = 0.35, 
-                right = 0, 
-                top = 1) 
+        legend.position = "none") #+
+  # inset_element(p = pbmc_layouts, 
+  #               left = 1.55, 
+  #               bottom = 0.35, 
+  #               right = 0, 
+  #               top = 1) 
 
 ```
 

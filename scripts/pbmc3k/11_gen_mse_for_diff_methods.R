@@ -23,14 +23,17 @@ error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -51,7 +54,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "UMAP_30_min_dist_0.3")
+           method = "UMAP_30_min_dist_0.3",
+           a1 = a1)
 
   error_pbmc_umap <- bind_rows(error_pbmc_umap, error_df)
 
@@ -78,14 +82,17 @@ error_pbmc_umap2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -106,7 +113,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "UMAP_5_min_dist_0.01")
+           method = "UMAP_5_min_dist_0.01",
+           a1 = a1)
 
   error_pbmc_umap2 <- bind_rows(error_pbmc_umap2, error_df)
 
@@ -133,14 +141,17 @@ error_pbmc_umap3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_umap, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = umap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_umap,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -161,7 +172,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "UMAP_15_min_dist_0.99")
+           method = "UMAP_15_min_dist_0.99",
+           a1 = a1)
 
   error_pbmc_umap3 <- bind_rows(error_pbmc_umap3, error_df)
 
@@ -188,14 +200,17 @@ error_pbmc_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_tsne, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_tsne, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -216,7 +231,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "tsne_5")
+           method = "tsne_5",
+           a1 = a1)
 
   error_pbmc_tsne <- bind_rows(error_pbmc_tsne, error_df)
 
@@ -243,14 +259,17 @@ error_pbmc_tsne2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_tsne, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_tsne, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -271,7 +290,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "tsne_30")
+           method = "tsne_30",
+           a1 = a1)
 
   error_pbmc_tsne2 <- bind_rows(error_pbmc_tsne2, error_df)
 
@@ -298,14 +318,17 @@ error_pbmc_phate <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_phate, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_phate, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = phate_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_phate,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -326,7 +349,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "phate_5")
+           method = "phate_5",
+           a1 = a1)
 
   error_pbmc_phate <- bind_rows(error_pbmc_phate, error_df)
 
@@ -353,14 +377,18 @@ error_pbmc_trimap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_trimap, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_trimap, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
+
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = trimap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_trimap,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -381,7 +409,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "trimap_12_4_3")
+           method = "trimap_12_4_3",
+           a1 = a1)
 
   error_pbmc_trimap <- bind_rows(error_pbmc_trimap, error_df)
 
@@ -408,14 +437,17 @@ error_pbmc_pacmap <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec_pbmc) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_pacmap, q = 0.05)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_pacmap, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
     training_data = training_data_pbmc,
     emb_df = pacmap_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_pacmap,
-    q = 0.05,
+    q = 0.1,
     is_bin_centroid = TRUE,
     is_rm_lwd_hex = FALSE,
     col_start_highd = "PC_"
@@ -436,7 +468,8 @@ for (xbins in bin1_vec_pbmc) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_pbmc),
-           method = "pacmap")
+           method = "pacmap",
+           a1 = a1)
 
   error_pbmc_pacmap <- bind_rows(error_pbmc_pacmap, error_df)
 
