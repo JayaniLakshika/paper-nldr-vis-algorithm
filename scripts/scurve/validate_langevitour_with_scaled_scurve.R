@@ -35,3 +35,59 @@ scaled_s_curve_noise <- scale_data_manual(training_data_scurve |> select(-ID)) |
   as_tibble()
 
 langevitour(scaled_s_curve_noise, scale = 1)
+
+
+projection <- cbind(
+  c(0.5898,-0.4620,-0.1362,0.2047,-0.3680,0.1032,-0.4818),
+  c(0.1756,0.0257,0.3683,0.2400,-0.5518,-0.4573,0.5115))
+projected <- as.matrix(scaled_s_curve_noise) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+limits <- 1
+rng <- range(projected)
+projected <- projected/max(abs(rng))
+colnames(projected) <- c("P1", "P2")
+projected <- data.frame(projected)
+obs_labels <- as.character(1:nrow(training_data_scurve))
+
+axis_scale <- limits/6
+axis_pos <- -2/3 * limits
+
+adj <- function(x) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0),
+                   y1 = adj(0),
+                   x2 = adj(projection[, 1]),
+                   y2 = adj(projection[, 2]))
+
+axis_labels <- colnames(training_data_scurve |> select(-ID))
+rownames(axes) <- axis_labels
+
+theta <- seq(0, 2 * pi, length = 50)
+circle <- data.frame(c1 = adj(cos(theta)), c2 = adj(sin(theta)))
+
+projected_df |>
+  ggplot(
+    aes(
+      x = proj1,
+      y = proj2)) +
+  geom_point(
+    size = 0.8,
+    alpha = 0.5,
+    color = "#000000") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2, label=rownames(axes)),
+    colour="grey50",
+    size = 5) +
+  geom_path(
+    data=circle,
+    aes(x=c1, y=c2), colour="grey70")
