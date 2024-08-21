@@ -195,7 +195,7 @@ Non-linear dimension reduction (NLDR) is popular for making a convenient low-dim
 -->
 
 ```{r}
-# label: read-pbmc-nldr
+#| label: read-pbmc-nldr
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio
 clr_choice <- "#0077A3"
@@ -207,6 +207,12 @@ nldr1 <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("a")
 
+nldr1c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a")
+
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
 
 nldr2 <- umap_pbmc |>
@@ -215,11 +221,24 @@ nldr2 <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("b")
 
+nldr2c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  interior_annotation("b")
+
+
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
 nldr3 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("c")
+
+nldr3c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("c")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
@@ -230,12 +249,24 @@ nldr4 <- tsne_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("d")
 
+nldr4c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("d")
+
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 
 nldr5 <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("e")
+
+nldr5c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("e")
 
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
@@ -245,6 +276,12 @@ nldr6 <- phate_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("f")
 
+nldr6c <- phate_pbmc |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("f")
+
 trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
 nldr7 <- trimap_pbmc |>
   ggplot(aes(x = TriMAP1,
@@ -252,11 +289,23 @@ nldr7 <- trimap_pbmc |>
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("g")
 
+nldr7c <- trimap_pbmc |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("g")
+
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
 nldr8 <- pacmap_pbmc |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
+  interior_annotation("h")
+
+nldr8c <- pacmap_pbmc |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("h")
 ```
 
@@ -2882,9 +2931,10 @@ error_plot_pbmc <- ggplot(error_pbmc,
 #| fig-cap: "MSE from UMAP with diffferent (hyper-)parameter choices and tSNE with default (hyper-)parameter setting applied to PBMC3k dataset for different number of bins along the x-axis ($b_1$). Which is the most reasonable representation of the structures present in the PBMC3k data? The residual plot have a steep slope at the beginning, indicating that a smaller $b_1$ causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of $b_1$ generates a smaller error. It was observed that for every $b_1$, the lowest error occurred with tSNE using the perplexity: $30$."
 #| label: fig-pbmc-mse
 #| fig-pos: H
-#| out-width: 70%
+#| out-height: 100%
 
-error_plot_pbmc
+free(error_plot_pbmc) / wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+           nldr5c, nldr6c, nldr7c, nldr8c, ncol = 4)
 ```
 
 As shown in @fig-tsne-suggest, there are three well-separated clusters, although the separation between the clusters are small. Additionally, non-linear structures can also be observed within the clusters (@fig-tsne-suggest). This demonstrates that tSNE accurately captures the data structure of the PBMC3k dataset, which UMAP did not achieve.
