@@ -1630,8 +1630,7 @@ for (xbins in bin1_vec_scurve) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_scurve),
-           a1 = a1,
-           mean_counts = sum(df_bin_centroids_scurve$bin_counts)/NROW(df_bin_centroids_scurve))
+           a1 = a1)
 
   error_scurve <- bind_rows(error_scurve, error_df)
     
@@ -1745,43 +1744,6 @@ a1_m_scurve <- ggplot(error_scurve,
         legend.key.width = unit(1, 'cm'),
         legend.key.size = unit(1, 'cm'))
 
-count_mse_scurve <- ggplot(error_scurve,
-                     aes(x = mean_counts,
-                         y = MSE)) +
-  geom_point(size = 1) +
-  geom_line(linewidth = 0.05) +
-  # geom_vline(xintercept = 0.116,
-  #          linetype=2,
-  #          color = "#bdbdbd",
-  #          linewidth=1) +
-  # geom_hline(yintercept = 52,
-  #          linetype=2,
-  #          color = "#bdbdbd",
-  #          linewidth=1) +
-  # geom_vline(xintercept = 11, linetype="solid",
-  #            color = "#bdbdbd", linewidth=1) +
-  # geom_vline(xintercept = 9, linetype=2,
-  #            color = "#bdbdbd", linewidth=1) +
-  # geom_vline(xintercept = 13, linetype=2,
-  #            color = "#bdbdbd", linewidth=1) +
-  labs(x = expression(mean(n[h])), y = "MSE") +
-  ggtitle("(c)") +
-  theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10,
-                                   angle = 90),
-        axis.text.y = element_text(size = 11),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12,
-            angle=90),
-        axis.ticks.x = element_line(linewidth = 0.5),
-        axis.ticks.y = element_line(linewidth = 0.5),
-        plot.title = element_text(size = 12),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 10),
-        legend.key.height = unit(1, 'cm'),
-        legend.key.width = unit(1, 'cm'),
-        legend.key.size = unit(1, 'cm'))
-
 # 
 # b1_m_scurve2 <- ggplot(error_scurve, 
 #                      aes(x = bin1, 
@@ -1829,7 +1791,7 @@ By default, when assessing the choice of $b_1$, the total number of bins is meas
 ```{r}
 #| label: distribution-scurve
 ## To initialize effective bins along x
-effective_bin1_scurve <- 14
+effective_bin1_scurve <- 11
 
 effective_bin2_scurve <- calc_bins_y(
   bin1 = effective_bin1_scurve, 
@@ -1854,6 +1816,7 @@ benchmark1 <- round(quantile(df_bin_centroids_scurve$std_counts, names = FALSE)[
 
 ```{r}
 #| label: bin-counts-scurve
+#| eval: false
 
 df_bin_centroids_all <- bind_rows(
   df_bin_centroids1,
@@ -1938,7 +1901,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
            bin1 = effective_bin1_scurve,
            bin2 = effective_bin2_scurve,
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_scurve_high_dens))
+           b_non_empty = NROW(df_bin_centroids_scurve_high_dens),
+           mean_counts = sum(df_bin_centroids_scurve_high_dens$bin_counts)/NROW(df_bin_centroids_scurve_high_dens))
 
   error_rm_scurve <- bind_rows(error_rm_scurve, error_df)
 
@@ -1947,8 +1911,12 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 benchmark_label_df <- tibble(x = 0.2, y = 0.1, 
                           label = paste0("benchmark is ", benchmark1))
 
+error_rm_scurve <- error_rm_scurve |>
+  mutate(mean_counts = round(mean_counts, 0)) |>
+  filter(b_non_empty >= 5)
+
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
-                     aes(x = benchmark_rm_lwd, 
+                     aes(x = mean_counts, 
                          y = MSE)) + 
   geom_point(
     size = 1
@@ -1958,8 +1926,10 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
     ) + 
   # geom_vline(xintercept = benchmark1, linetype="solid", 
   #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
-  scale_x_continuous("standardized bin count", 
-         transform = "reverse") + 
+  # scale_x_continuous("standardized bin count", 
+  #        transform = "reverse") + 
+  scale_x_continuous(breaks = unique(error_rm_scurve$mean_counts)) +
+  xlab(expression(mean(n[h]))) +
   ylab("MSE") +
   ggtitle("(c)") +
   theme(aspect.ratio = 0.75,
@@ -1968,7 +1938,9 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, 
             angle=90),
-        plot.title = element_text(size = 12))
+        plot.title = element_text(size = 12),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5))
 
 # mse_scurve_lwd2 <- error_rm_scurve |>
 #   filter(b_non_empty >= 5) |>
@@ -2129,7 +2101,7 @@ distance_scurve_summary <- distance_scurve |>
 #| fig-pos: H
 
 mse_scurve_b + a1_m_scurve +
-  count_mse_scurve + distance_hist + 
+  mse_scurve_lwd + distance_hist + 
   plot_layout(ncol=2)
 ```
 
