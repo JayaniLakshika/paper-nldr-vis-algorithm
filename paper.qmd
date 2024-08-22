@@ -1667,28 +1667,30 @@ for (xbins in bin1_vec_scurve) {
 #         legend.key.width = unit(1, 'cm'),
 #         legend.key.size = unit(1, 'cm'))
 
-diaconis_bin_width <- calc_bins_y(
-    bin1 = ceiling(NROW(training_data_scurve)^(1/3)),
-    r2 = r2,
-    q = 0.1)$a1
+# diaconis_bin_width <- calc_bins_y(
+#     bin1 = ceiling(NROW(training_data_scurve)^(1/3)),
+#     r2 = r2,
+#     q = 0.1)$a1
 
 mse_scurve_b <- ggplot(error_scurve, 
                      aes(x = a1, 
                          y = MSE)) + 
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) + 
-  # geom_vline(xintercept = 11, linetype="solid",
-  #            color = "#bdbdbd", linewidth=1) +
-  geom_vline(xintercept = diaconis_bin_width, 
-             linetype=2, color = "#bdbdbd", 
+  geom_vline(xintercept = 0.096, linetype=2,
+             color = "#bdbdbd", linewidth=1) +
+  geom_vline(xintercept = 0.116,
+             linetype="solid",
+             color = "#bdbdbd",
              linewidth=1) +
-  # geom_vline(xintercept = 13, linetype=2,
-  #            color = "#bdbdbd", linewidth=1) +
-  #scale_x_continuous(breaks = 5:19) +
+  geom_vline(xintercept = 0.184, linetype=2,
+             color = "#bdbdbd", linewidth=1) +
+  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 3)))) +
   labs(x = expression(a[1]), y = "MSE") +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
+        axis.text.x = element_text(size = 10,
+                                   angle = 90),
         axis.text.y = element_text(size = 12),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, 
@@ -1703,34 +1705,44 @@ mse_scurve_b <- ggplot(error_scurve,
         legend.key.size = unit(1, 'cm'))
 
 
-# b1_m_scurve <- ggplot(error_scurve, 
-#                      aes(x = bin1, 
-#                          y = b_non_empty/b)) + 
-#   geom_point(size = 1) +
-#   geom_line(linewidth = 0.05) + 
-#   # geom_vline(xintercept = 11, linetype="solid",
-#   #            color = "#bdbdbd", linewidth=1) +
-#   # geom_vline(xintercept = 9, linetype=2,
-#   #            color = "#bdbdbd", linewidth=1) +
-#   # geom_vline(xintercept = 13, linetype=2,
-#   #            color = "#bdbdbd", linewidth=1) +
-#   scale_x_continuous(breaks = 5:19) +
-#   labs(x = expression(b[1]), y = expression(frac(m, b))) +
-#   ggtitle("(a)") +
-#   theme(aspect.ratio = 0.75,
-#         axis.text.x = element_text(size = 12),
-#         axis.text.y = element_text(size = 12),
-#         axis.title.x = element_text(size = 12),
-#         axis.title.y = element_text(size = 12, 
-#             angle=90),
-#         axis.ticks.x = element_line(linewidth = 0.5),
-#         axis.ticks.y = element_line(linewidth = 0.5),
-#         plot.title = element_text(size = 12),
-#         legend.title = element_text(size = 12),
-#         legend.text = element_text(size = 10),
-#         legend.key.height = unit(1, 'cm'),
-#         legend.key.width = unit(1, 'cm'),
-#         legend.key.size = unit(1, 'cm'))
+a1_m_scurve <- ggplot(error_scurve,
+                     aes(x = a1,
+                         y = b_non_empty)) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
+  geom_vline(xintercept = 0.116,
+           linetype=2,
+           color = "#bdbdbd",
+           linewidth=1) +
+  geom_hline(yintercept = 52,
+           linetype=2,
+           color = "#bdbdbd",
+           linewidth=1) +
+  # geom_vline(xintercept = 11, linetype="solid",
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 9, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 13, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  scale_y_continuous(breaks = sort(unique(error_scurve$b_non_empty))) +
+  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 3)))) +
+  labs(x = expression(a[1]), y = expression(m)) +
+  ggtitle("(b)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 10,
+                                   angle = 90),
+        axis.text.y = element_text(size = 11),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12,
+            angle=90),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.size = unit(1, 'cm'))
 # 
 # b1_m_scurve2 <- ggplot(error_scurve, 
 #                      aes(x = bin1, 
@@ -1919,27 +1931,27 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
             angle=90),
         plot.title = element_text(size = 12))
 
-mse_scurve_lwd2 <- error_rm_scurve |>
-  filter(b_non_empty >= 5) |>
-  ggplot(aes(x = b_non_empty,y = MSE)) + 
-  geom_point(
-    size = 1
-    ) +
-  geom_line(
-    linewidth = 0.3
-    ) + 
-  # geom_vline(xintercept = benchmark1, linetype="solid", 
-  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
-  scale_x_continuous("m (b1 = 14)") + 
-  ylab("MSE") +
-  ggtitle("(e)") +
-  theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12, 
-            angle=90),
-        plot.title = element_text(size = 12))
+# mse_scurve_lwd2 <- error_rm_scurve |>
+#   filter(b_non_empty >= 5) |>
+#   ggplot(aes(x = b_non_empty,y = MSE)) + 
+#   geom_point(
+#     size = 1
+#     ) +
+#   geom_line(
+#     linewidth = 0.3
+#     ) + 
+#   # geom_vline(xintercept = benchmark1, linetype="solid", 
+#   #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
+#   scale_x_continuous("m (b1 = 14)") + 
+#   ylab("MSE") +
+#   ggtitle("(e)") +
+#   theme(aspect.ratio = 0.75,
+#         axis.text.x = element_text(size = 12),
+#         axis.text.y = element_text(size = 12),
+#         axis.title.x = element_text(size = 12),
+#         axis.title.y = element_text(size = 12, 
+#             angle=90),
+#         plot.title = element_text(size = 12))
 ```
 
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
@@ -2179,8 +2191,8 @@ distance_hist <- ggplot(
 #| fig-height: 10
 #| fig-pos: H
 
-mse_scurve_b + mse_scurve_lwd + 
-  mse_scurve_lwd2 + distance_hist + 
+mse_scurve_b + a1_m_scurve +
+  mse_scurve_lwd + distance_hist + 
   plot_layout(ncol=2)
 ```
 
