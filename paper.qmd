@@ -2423,9 +2423,10 @@ df_exe <- dplyr::bind_rows(df_b, df)
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
+## First projection
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+    c(0.18827,-0.28588,-0.20848,-0.78132),
+    c(0.71366,0.00788,-0.42630,0.28283))
 
 points_only_df <- df_exe |>
     dplyr::select(-type)
@@ -2452,7 +2453,7 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)]
 model_df <- dplyr::left_join(model_df, proj_model, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(proj_model)):NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)], "_to")
 
-five_gau_proj_umap_model <- projected_df |>
+five_gau_proj_umap_model1 <- projected_df |>
   filter(type == "data") |>
   ggplot(
     aes(
@@ -2470,7 +2471,60 @@ five_gau_proj_umap_model <- projected_df |>
     color = "#33a02c") +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55)) +
+  ylim(c(-0.12, 0.12)) +
+  interior_annotation("b", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
+
+## Second projection
+projection <- cbind(
+  c(0.58453,-0.38194,0.05395,0.52974),
+  c(0.29917,0.29629,-0.76964,-0.03810))
+
+points_only_df <- df_exe |>
+    dplyr::select(-type)
+
+projected <- as.matrix(points_only_df) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+proj_model <- projected_df |>
+  dplyr::filter(type == "model")
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges |> select(-distance), 
+  proj_model, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)], "_from")
+
+model_df <- dplyr::left_join(model_df, proj_model, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(proj_model)):NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)], "_to")
+
+five_gau_proj_umap_model2 <- projected_df |>
+  filter(type == "data") |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+      geom_point(
+        alpha = 0.3) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  xlim(c(-0.16, 0.1)) +
+  ylim(c(-0.1, 0.1)) +
   interior_annotation("b", 
                       position = c(0.08, 0.9),
                       cex = 3)
@@ -2633,12 +2687,15 @@ five_gau_proj_pacmap_model <- projected_df |>
 
 ```{r}
 #| label: fig-five-gau-projs
-#| fig-height: 6
-#| fig-width: 18
 #| fig-cap: "(a) tSNE, (b) UMAP, and (c) PaCMAP"
 
-five_gau_proj_tsne_model + five_gau_proj_umap_model + five_gau_proj_pacmap_model +
-  plot_layout(guides = "collect", ncol = 3) &
+# fig-height: 6 
+# fig-width: 18 
+
+five_gau_proj_tsne_model + five_gau_proj_tsne_model +
+  five_gau_proj_umap_model1 + five_gau_proj_umap_model2 +
+  five_gau_proj_pacmap_model + five_gau_proj_pacmap_model +
+  plot_layout(guides = "collect", ncol = 2) &
   theme(legend.position='none')
 ```
 
