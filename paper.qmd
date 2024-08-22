@@ -1630,7 +1630,8 @@ for (xbins in bin1_vec_scurve) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_scurve),
-           a1 = a1)
+           a1 = a1,
+           mean_counts = sum(df_bin_centroids_scurve$bin_counts)/NROW(df_bin_centroids_scurve))
 
   error_scurve <- bind_rows(error_scurve, error_df)
     
@@ -1743,6 +1744,44 @@ a1_m_scurve <- ggplot(error_scurve,
         legend.key.height = unit(1, 'cm'),
         legend.key.width = unit(1, 'cm'),
         legend.key.size = unit(1, 'cm'))
+
+count_mse_scurve <- ggplot(error_scurve,
+                     aes(x = mean_counts,
+                         y = MSE)) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
+  # geom_vline(xintercept = 0.116,
+  #          linetype=2,
+  #          color = "#bdbdbd",
+  #          linewidth=1) +
+  # geom_hline(yintercept = 52,
+  #          linetype=2,
+  #          color = "#bdbdbd",
+  #          linewidth=1) +
+  # geom_vline(xintercept = 11, linetype="solid",
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 9, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  # geom_vline(xintercept = 13, linetype=2,
+  #            color = "#bdbdbd", linewidth=1) +
+  labs(x = expression(mean(n[h])), y = "MSE") +
+  ggtitle("(c)") +
+  theme(aspect.ratio = 0.75,
+        axis.text.x = element_text(size = 10,
+                                   angle = 90),
+        axis.text.y = element_text(size = 11),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12,
+            angle=90),
+        axis.ticks.x = element_line(linewidth = 0.5),
+        axis.ticks.y = element_line(linewidth = 0.5),
+        plot.title = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'),
+        legend.key.size = unit(1, 'cm'))
+
 # 
 # b1_m_scurve2 <- ggplot(error_scurve, 
 #                      aes(x = bin1, 
@@ -1996,114 +2035,6 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 3. Take the distance value corresponding to this difference as the benchmark value.-->
 
 <!--distribution of distance along with the default benchmark-->
-
-```{r}
-#| label: diff-bins-scurve-buff3
-#| eval: false
-## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.7, by=0.1)
-bin1_vec_scurve <- c(7, 11, 17)
-distance_all_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
-#buffer_vec <- 0.07
-
-for (xbins in bin1_vec_scurve) {
-  for (buff in buffer_vec) {
-  
-  #for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
-    
-    a1 <- calc_bins_y(bin1 = xbins, r2 = r2, q = buff)$a1
-  
-    scurve_model <- fit_highd_model(
-      training_data = training_data_scurve,
-      emb_df = umap_scurve_scaled,
-      bin1 = xbins,
-      r2 = r2,
-      q = buff, 
-      is_bin_centroid = TRUE,
-      is_rm_lwd_hex = FALSE,
-      col_start_highd = "x"
-    )
-  
-    df_bin_centroids_scurve <- scurve_model$df_bin_centroids
-    df_bin_scurve <- scurve_model$df_bin
-    
-    df_bin_centroids_scurve_high_dens <- df_bin_centroids_scurve |>
-      filter(std_counts > benchmark_rm_lwd)
-    
-    df_bin_scurve_high_dens <- df_bin_scurve |>
-      filter(hb_id %in% df_bin_centroids_scurve_high_dens$hexID)
-    
-    tr1_object_scurve <- tri_bin_centroids(
-      df_bin_centroids_scurve_high_dens, 
-      x = "c_x", 
-      y = "c_y")
-    
-    tr_from_to_df_scurve <- gen_edges(
-      tri_object = tr1_object_scurve)
-    
-    ## Compute 2D distances
-    distance_scurve <- cal_2d_dist(
-      tr_coord_df = tr_from_to_df_scurve, 
-      start_x = "x_from", 
-      start_y = "y_from", 
-      end_x = "x_to", 
-      end_y = "y_to", 
-      select_vars = c("from", "to", "distance"))
-    
-    start_point <- a1/2
-
-    # Create bins and calculate the mean value for each bin range
-    bins <- seq(start_point, max(distance_scurve$distance) + a1, 
-                by = a1)
-    bin_labels <- bins[-length(bins)] + a1 / 2  # mean of each bin range
-    
-    distance_scurve <- distance_scurve |> 
-      mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels))
-
-  
-    ## Compute error
-    distance_scurve <- distance_scurve |>
-      mutate(q = buff,
-             bin1 = xbins,
-             a1 = a1)
-  
-    distance_all_scurve <- bind_rows(distance_all_scurve, distance_scurve)
-  
-  
-  }
-
-}
-
-# dist_summary_scurve <- distance_all_scurve |>
-#     count(bin1, q, bin)
-
-distance_hist <- distance_all_scurve |>
-  filter(bin1 == 11) |>
-  filter(q == 0.07) |>
-  ggplot(aes(x = distance)) +
-    geom_histogram(
-      aes(y = after_stat(count) / sum(after_stat(count)), 
-      group = as.factor(q),
-      fill = as.factor(q)),
-      binwidth = a1,
-      position = "dodge") +
-  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 3)) +
-  scale_color_brewer(type = "qual") +
-  #facet_wrap(vars(as.factor(bin1)), scale = "free") +
-  ylab("standardized number of edges") +
-  xlab(expression(d^{(2)})) +
-  ggtitle("(d)") +
-  theme(aspect.ratio = 0.75,
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12, angle = 90),
-        axis.text.x = element_text(size = 12, angle = 90),
-        axis.text.y = element_text(size = 12),
-        axis.ticks.x = element_line(), 
-        plot.title = element_text(size = 12))
-
-```
-
-
 ```{r}
 #| label: triangulate-scurve2
 
@@ -2180,6 +2111,12 @@ distance_hist <- ggplot(
         axis.text.y = element_text(size = 12),
         axis.ticks.x = element_line(), 
         plot.title = element_text(size = 12))
+
+distance_scurve_summary <- distance_scurve |>
+  group_by(bin) |>
+  summarise(count = n()) |>
+  mutate(std_counts = count/sum(count))
+
 ```
 
 ```{r}
@@ -2192,7 +2129,7 @@ distance_hist <- ggplot(
 #| fig-pos: H
 
 mse_scurve_b + a1_m_scurve +
-  mse_scurve_lwd + distance_hist + 
+  count_mse_scurve + distance_hist + 
   plot_layout(ncol=2)
 ```
 
