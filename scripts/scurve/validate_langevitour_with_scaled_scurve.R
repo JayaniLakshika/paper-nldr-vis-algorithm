@@ -8,24 +8,25 @@ scale_data_manual <- function(data) {
   # Step 1: Center the data (mean 0)
   data_centered <- center_data(data)
 
-  # Step 2: Calculate the range of each dimension
-  ranges <- apply(data_centered, 2, function(x) max(x) - min(x))
+  # Step 2: Calculate the standard deviation of each dimension
+  sds <- apply(data_centered, 2, sd)
 
-  # Step 3: Find the dimension with the largest range
-  max_range <- max(ranges)
-  scaled_data <- data_centered
+  # Step 3: Scale each dimension to have the range [0, 1]
+  data_scaled <- apply(data_centered, 2, function(col) col / max(abs(col)))
 
-  # Step 4: Scale each dimension
-  for (i in seq_along(ranges)) {
-    scaling_factor <- ranges[i] / max_range
-    scaled_data[, i] <- data_centered[, i] / ranges[i] * scaling_factor
+  # Step 4: Scale dimensions according to their variation
+  # The dimension with the highest standard deviation is scaled to [-1, 1]
+  # Other dimensions are scaled to smaller ranges based on their standard deviations
+  max_sd <- max(sds)
+
+  # Normalize the standard deviations to get scaling factors
+  scaling_factors <- sds / max_sd
+
+  for (i in seq_along(scaling_factors)) {
+    data_scaled[, i] <- data_scaled[, i] * scaling_factors[i]
   }
 
-  # Step 5: Rescale the dimension with the largest range to [-1, 1]
-  largest_dim_index <- which.max(ranges)
-  scaled_data[, largest_dim_index] <- scaled_data[, largest_dim_index] * max_range
-
-  return(scaled_data)
+  return(data_scaled)
 }
 
 training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
