@@ -12,7 +12,7 @@ gau1_scaled_obj <- gen_scaled_data(
 pacmap_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 13
+num_bins_x_gau1 <- 21
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)

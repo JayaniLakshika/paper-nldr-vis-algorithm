@@ -12,7 +12,7 @@ gau_scaled_obj <- gen_scaled_data(
 umap_gau_scaled <- gau_scaled_obj$scaled_nldr
 
 ## To initialise number of bins along the x-axis
-bin1_vec <- 2:43
+bin1_vec <- 2:46
 
 lim1 <- gau_scaled_obj$lim1
 lim2 <- gau_scaled_obj$lim2
@@ -50,7 +50,8 @@ for (xbins in bin1_vec) {
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_gau))
+           b_non_empty = NROW(df_bin_centroids_gau),
+           a1 = a1)
 
   error_gau <- bind_rows(error_gau, error_df)
 

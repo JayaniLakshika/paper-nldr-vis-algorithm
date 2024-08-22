@@ -53,7 +53,8 @@ for (xbins in bin1_vec) {
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_gau))
+           b_non_empty = NROW(df_bin_centroids_gau),
+           a1 = a1)
 
   error_gau <- bind_rows(error_gau, error_df)
 
