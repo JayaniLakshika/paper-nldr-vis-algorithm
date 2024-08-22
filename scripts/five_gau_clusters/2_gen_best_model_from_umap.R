@@ -12,7 +12,7 @@ gau_scaled_obj <- gen_scaled_data(
 umap_gau_scaled <- gau_scaled_obj$scaled_nldr
 
 ## To initialise number of bins along the x-axis
-bin1_vec <- 2:61
+bin1_vec <- 2:43
 
 lim1 <- gau_scaled_obj$lim1
 lim2 <- gau_scaled_obj$lim2
@@ -22,7 +22,9 @@ error_gau <- data.frame(matrix(nrow = 0, ncol = 0))
 
 for (xbins in bin1_vec) {
 
-  bin2 <- calc_bins_y(bin1 = xbins, r2 = r2_gau)$bin2
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_gau, q = 0.1)
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
 
   gau_model <- fit_highd_model(
     training_data = training_data_gau,
@@ -58,9 +60,7 @@ error_gau |>
   arrange(MSE)
 
 
-ggplot(error_gau, aes(x = b_non_empty,
-                       y = log(MSE))) +
+ggplot(error_gau, aes(x = a1,
+                      y = MSE)) +
   geom_point() +
-  geom_line() +
-  geom_vline(xintercept = 66, linetype="solid",
-             color = "black", linewidth=0.8, alpha = 0.5)
+  geom_line()
