@@ -1685,12 +1685,11 @@ mse_scurve_b <- ggplot(error_scurve,
              linewidth=1) +
   geom_vline(xintercept = 0.184, linetype=2,
              color = "#bdbdbd", linewidth=1) +
-  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 3)))) +
+  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(a[1]), y = "MSE") +
   ggtitle("(a)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10,
-                                   angle = 90),
+        axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, 
@@ -1724,13 +1723,12 @@ a1_m_scurve <- ggplot(error_scurve,
   #            color = "#bdbdbd", linewidth=1) +
   # geom_vline(xintercept = 13, linetype=2,
   #            color = "#bdbdbd", linewidth=1) +
-  scale_y_continuous(breaks = sort(unique(error_scurve$b_non_empty))) +
-  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 3)))) +
+  scale_y_continuous(breaks = sort(unique(error_scurve$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(a[1]), y = expression(m)) +
   ggtitle("(b)") +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 10,
-                                   angle = 90),
+        axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 11),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12,
@@ -2072,14 +2070,14 @@ distance_hist <- ggplot(
     geom_histogram(
       aes(y = after_stat(count) / sum(after_stat(count))), 
       binwidth = bin_width) +
-  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 3)) +
+  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 2)) +
   ylab("standardized number of edges") +
   xlab(expression(d^{(2)})) +
   ggtitle("(d)") +
   theme(aspect.ratio = 0.75,
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, angle = 90),
-        axis.text.x = element_text(size = 12, angle = 90),
+        axis.text.x = element_text(size = 12),
         axis.text.y = element_text(size = 12),
         axis.ticks.x = element_line(), 
         plot.title = element_text(size = 12))
