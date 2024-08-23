@@ -642,10 +642,6 @@ scurve_proj1_true_model <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
-      geom_point(
-        size = 0.8,
-        alpha = 0.5,
-        color = "#000000") +
   geom_segment(
     data = model_df, 
     aes(
@@ -654,6 +650,10 @@ scurve_proj1_true_model <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#3182bd") + 
+  geom_point(
+        size = 0.8,
+        alpha = 0.5,
+        color = "#000000") +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -736,10 +736,6 @@ scurve_proj2_true_model <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
-      geom_point(
-        size = 0.8,
-        alpha = 0.5,
-        color = "#000000") +
   geom_segment(
     data = model_df, 
     aes(
@@ -747,7 +743,11 @@ scurve_proj2_true_model <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#3182bd") + 
+    color = "#3182bd") +
+  geom_point(
+        size = 0.8,
+        alpha = 0.5,
+        color = "#000000") +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
