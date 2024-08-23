@@ -199,6 +199,38 @@ scale_data_manual <- function(data) {
 ```
 
 ```{r}
+#| label: gen-axes
+
+gen_axes <- function(data, proj_data, limits = 1) {
+  
+  rng <- range(proj_data)
+  proj_data <- proj_data/max(abs(rng))
+  colnames(proj_data) <- c("P1", "P2")
+  proj_data <- data.frame(proj_data)
+  obs_labels <- as.character(1:nrow(data))
+  
+  axis_scale <- limits/6
+  axis_pos <- -2/3 * limits
+  
+  adj <- function(x) axis_pos + x * axis_scale
+  axes <- data.frame(x1 = adj(0), 
+                     y1 = adj(0), 
+                     x2 = adj(projection[, 1]), 
+                     y2 = adj(projection[, 2]))
+  
+  axis_labels <- colnames(data)
+  rownames(axes) <- axis_labels
+  
+  theta <- seq(0, 2 * pi, length = 50)
+  circle <- data.frame(c1 = adj(cos(theta)), 
+                       c2 = adj(sin(theta)))
+  
+  return(list(axes = axes, circle = circle))
+  
+}
+```
+
+```{r}
 #| label: code-setup
 set.seed(20240110)
 #source("nldr_code.R", local = TRUE)
@@ -2385,6 +2417,14 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
+axes_obj <- gen_axes(
+  data = scaled_gau_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
 five_gau_proj_umap_model1 <- projected_df |>
   ggplot(
     aes(
@@ -2401,6 +2441,19 @@ five_gau_proj_umap_model1 <- projected_df |>
   geom_point(
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
   xlim(c(-0.45, -0.3)) +
   ylim(c(-0.05, 0.2)) +
   interior_annotation("c", 
@@ -2412,33 +2465,42 @@ projection <- cbind(
     c(-0.70767,-0.09092,0.15109,-0.39811),
     c(-0.01312,-0.61805,0.44418,0.33305))
 
-points_only_df <- df_exe |>
-    dplyr::select(-type)
-
-projected <- as.matrix(points_only_df) %*% projection
+projected <- as.matrix(scaled_gau_data) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
-  dplyr::mutate(type = df_exe$type) |>
+  #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-proj_model <- projected_df |>
-  dplyr::filter(type == "model")
+projected_model <- as.matrix(scaled_gau_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
 
 model_df <- dplyr::left_join(
   distance_df_small_edges |> select(-distance), 
-  proj_model, 
+  projected_model_df, 
   by = c("from" = "ID"))
 
-names(model_df)[3:NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)], "_from")
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
 
-model_df <- dplyr::left_join(model_df, proj_model, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(proj_model)):NCOL(model_df)] <- paste0(names(proj_model)[-NCOL(proj_model)], "_to")
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_gau_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
 
 five_gau_proj_umap_model2 <- projected_df |>
-  filter(type == "data") |>
   ggplot(
     aes(
       x = proj1, 
@@ -2454,6 +2516,19 @@ five_gau_proj_umap_model2 <- projected_df |>
   geom_point(
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
   xlim(c(-0.13, 0.13)) +
   ylim(c(-0.13, 0.13)) +
   interior_annotation("d", 
