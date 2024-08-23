@@ -2987,20 +2987,13 @@ error_plot_pbmc <- ggplot(error_pbmc,
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
   ylab("log(MSE)") +
-  xlab(expression(a[1])) + 
-  theme(#aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7, angle = 90),
-        axis.ticks.x = element_line(linewidth = 0.5),
-        axis.ticks.y = element_line(linewidth = 0.5),
-        legend.position = "none") #+
-  # inset_element(p = pbmc_layouts, 
-  #               left = 1.55, 
-  #               bottom = 0.35, 
-  #               right = 0, 
-  #               top = 1) 
+  xlab(expression(a[1])) +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none") 
 
 ```
 
