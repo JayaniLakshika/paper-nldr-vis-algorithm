@@ -87,13 +87,38 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.4, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
 
-## First projection
-projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+#### With scaled data
 
-gen_proj_langevitour(
-  points_df = df_exe,
-  projection = projection,
-  edge_df = distance_df_small_edges |> select(-distance)
-)
+# Apply the scaling
+scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
+  as_tibble()
+
+df_b <- df_bin_gau1 |>
+  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  select(-type)
+
+# Apply the scaling
+scaled_gau_data_model <- scale_data_manual(df_b) |>
+  as_tibble()
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_gau_data_model |> mutate(type = "model"),
+                       scaled_gau_data |> mutate(type = "data"))
+
+## Set the maximum difference as the criteria
+distance_df_small_edges <- distance_gau1 |>
+  dplyr::filter(distance < benchmark_gau1)
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = distance_df_small_edges$from,
+            lineTo = distance_df_small_edges$to,
+            group = df$type,
+            pointSize = append(rep(1.5, NROW(scaled_gau_data_model)), rep(1, NROW(scaled_gau_data))),
+            levelColors = c("#000000", "#33a02c"),
+            lineColors = rep("#33a02c", nrow(distance_df_small_edges)))
