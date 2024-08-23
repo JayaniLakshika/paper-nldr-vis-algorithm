@@ -20,7 +20,7 @@ lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1)
 
 ## To initialise number of bins along the x-axis
-bin1_vec <- 2:50
+bin1_vec <- 2:63
 
 error_minst <- data.frame(matrix(nrow = 0, ncol = 0))
 
