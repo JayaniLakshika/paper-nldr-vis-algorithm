@@ -2391,7 +2391,7 @@ five_gau_proj_umap_model1 <- projected_df |>
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.18, 0.1)) +
   ylim(c(-0.12, 0.12)) +
-  interior_annotation("b", 
+  interior_annotation("c", 
                       position = c(0.08, 0.9),
                       cex = 3)
 
@@ -2444,7 +2444,7 @@ five_gau_proj_umap_model2 <- projected_df |>
   scale_color_manual(values = c("#000000", "#33a02c")) +
   xlim(c(-0.16, 0.1)) +
   ylim(c(-0.1, 0.1)) +
-  interior_annotation("b", 
+  interior_annotation("d", 
                       position = c(0.08, 0.9),
                       cex = 3)
 
@@ -2606,10 +2606,9 @@ five_gau_proj_pacmap_model <- projected_df |>
 
 ```{r}
 #| label: fig-five-gau-projs
+#| fig-height: 12
+#| fig-width: 8
 #| fig-cap: "(a) tSNE, (b) UMAP, and (c) PaCMAP"
-
-# fig-height: 6 
-# fig-width: 18 
 
 five_gau_proj_tsne_model + five_gau_proj_tsne_model +
   five_gau_proj_umap_model1 + five_gau_proj_umap_model2 +
