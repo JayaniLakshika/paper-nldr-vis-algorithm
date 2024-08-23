@@ -2967,7 +2967,11 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_pacmap)
 
 error_pbmc <- error_pbmc |>
-  filter(bin1 >= 5)
+  mutate(a1 = round(a1, 2)) |>
+  filter(bin1 >= 5) |>
+  group_by(method, a1) |>
+  filter(MSE == min(MSE)) |>
+  ungroup()
 ```
 
 ```{r}
@@ -2984,6 +2988,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
   geom_line(linewidth = 0.3) + 
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
+  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 24, 26)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
   ylab("log(MSE)") +
@@ -2993,7 +2998,11 @@ error_plot_pbmc <- ggplot(error_pbmc,
         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        legend.position = "none") 
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7)) 
 
 ```
 
