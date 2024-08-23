@@ -578,8 +578,8 @@ scaled_s_curve_true <- scale_data_manual(
          x7 = mean(scaled_s_curve_noise$x7))
 
 projection <- cbind(
-    c(-0.2782,0.2156,0.1410,0.8068,0.0804,-0.0315,0.4449),
-    c(-0.6090,0.3014,-0.1654,-0.3381,-0.0964,0.5900,0.1979))
+    c(0.45181,0.04747,0.02613,0.25735,0.20622,0.08755,-0.11488),
+    c(0.03231,0.23556,0.35166,-0.11741,0.12730,0.09544,0.34262))
 
 projected <- as.matrix(scaled_s_curve_noise) %*% projection
 
@@ -615,10 +615,11 @@ colnames(projected) <- c("P1", "P2")
 projected <- data.frame(projected)
 obs_labels <- as.character(1:nrow(scaled_s_curve_noise))
 
-# axis_scale <- 2 * limits/3
-# axis_pos <- -0.6 * limits
 axis_scale <- limits/6
 axis_pos <- -2/3 * limits
+
+# axis_scale <- limits/4
+# axis_pos <- -0.5 * limits
 
 adj <- function(x) axis_pos + x * axis_scale
 axes <- data.frame(x1 = adj(0), 
@@ -633,7 +634,8 @@ rownames(axes) <- axis_labels
 # axis_pos <- -0.6 * limits
 # adj <- function(x) axis_pos + x * axis_scale
 theta <- seq(0, 2 * pi, length = 50)
-circle <- data.frame(c1 = adj(cos(theta)), c2 = adj(sin(theta)))
+circle <- data.frame(c1 = adj(cos(theta)), 
+                     c2 = adj(sin(theta)))
 
 scurve_proj1_true_model <- projected_df |>
   ggplot(
@@ -660,10 +662,11 @@ scurve_proj1_true_model <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 5) +
+    size = 3) +
   geom_path(
     data=circle, 
-    aes(x=c1, y=c2), colour="grey70")
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed()
 
 ```
 
@@ -671,8 +674,8 @@ scurve_proj1_true_model <- projected_df |>
 #| label: s-curve-true-model-proj2
 
 projection <- cbind(
-    c(-0.6296,-0.1452,0.3314,0.2259,-0.4488,-0.0053,-0.4693),
-    c(0.5314,0.4634,0.1431,0.2129,-0.0107,0.1477,-0.6443))
+    c(0.03627,0.15991,0.39768,-0.21032,-0.14886,-0.17589,0.23305),
+    c(-0.34731,-0.08183,0.15819,0.31926,0.08105,0.10083,0.25627))
 
 projected <- as.matrix(scaled_s_curve_noise) %*% projection
 
@@ -753,105 +756,20 @@ scurve_proj2_true_model <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 5) +
+    size = 3) +
   geom_path(
     data=circle, 
-    aes(x=c1, y=c2), colour="grey70")
-
-```
-
-```{r}
-#| label: s-curve-true-model-proj3
-#| eval: false
-
-projection <- cbind(
-    c(0.11484,0.06997,-0.13638,0.01096,0.01533,0.16257,-0.13615),
-    c(0.07805,0.01652,0.17174,-0.07343,0.16177,0.11112,0.04729))
-
-projected <- as.matrix(training_data_scurve |> select(-ID)) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_true <- as.matrix(true_model_df |> select(-ID)) %*% projection
-
-projected_true_df <- projected_true |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-
-model_df <- dplyr::left_join(
-  wireframe_true_model, 
-  projected_true_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(projected_true_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_true_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_true_df)):NCOL(model_df)] <- paste0(names(projected_true_df)[-NCOL(projected_true_df)], "_to")
-
-limits <- 1.5
-rng <- range(projected)
-projected <- projected/max(abs(rng))
-colnames(projected) <- c("P1", "P2")
-projected <- data.frame(projected)
-obs_labels <- as.character(1:nrow(training_data_scurve))
-
-axis_scale <- 2 * limits/3
-axis_pos <- -2/3 * limits
-
-adj <- function(x) axis_pos + x * axis_scale
-axes <- data.frame(x1 = adj(0), 
-                   y1 = adj(0), 
-                   x2 = adj(projection[, 1]), 
-                   y2 = adj(projection[, 2]))
-
-axis_labels <- colnames(training_data_scurve |> select(-ID))
-rownames(axes) <- axis_labels
-
-# theta <- seq(0, 2 * pi, length = 50)
-# circle <- data.frame(c1 = adj(cos(theta)), c2 = adj(sin(theta)))
-
-scurve_proj3_true_model <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-      geom_point(
-        size = 0.8,
-        alpha = 0.8,
-        color = "#000000") +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#969696") + 
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50") 
-
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed()
 
 ```
 
 ```{r}
 #| label: fig-scurve-true-sc
 #| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the S-curve data (black points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>)." 
-#| fig-width: 10
-#| fig-height: 6
 #| fig-pos: H
+#| fig-width: 10
+#| fig-height: 5
 
 scurve_proj1_true_model + scurve_proj2_true_model + 
   plot_layout(ncol = 2)
