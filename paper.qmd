@@ -1648,22 +1648,24 @@ mse_scurve_b <- ggplot(error_scurve,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5))
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
 
 
 a1_m_scurve <- ggplot(error_scurve,
                      aes(x = a1,
                          y = b_non_empty)) +
-  geom_point(size = 1) +
-  geom_line(linewidth = 0.05) +
-  geom_vline(xintercept = 0.116,
-           linetype=2,
-           color = "#bdbdbd",
-           linewidth=1) +
+  geom_vline(xintercept = 0.12,
+         linetype=2,
+         color = "#bdbdbd",
+         linewidth=1) +
   geom_hline(yintercept = 52,
            linetype=2,
            color = "#bdbdbd",
            linewidth=1) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
   # geom_vline(xintercept = 11, linetype="solid",
   #            color = "#bdbdbd", linewidth=1) +
   # geom_vline(xintercept = 9, linetype=2,
@@ -1674,20 +1676,12 @@ a1_m_scurve <- ggplot(error_scurve,
   scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(a[1]), y = expression(m)) +
   ggtitle("(b)") +
+  theme_minimal() +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 11),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12,
-            angle=90),
-        axis.ticks.x = element_line(linewidth = 0.5),
-        axis.ticks.y = element_line(linewidth = 0.5),
-        plot.title = element_text(size = 12),
-        legend.title = element_text(size = 12),
-        legend.text = element_text(size = 10),
-        legend.key.height = unit(1, 'cm'),
-        legend.key.width = unit(1, 'cm'),
-        legend.key.size = unit(1, 'cm'))
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
 
 # 
 # b1_m_scurve2 <- ggplot(error_scurve, 
@@ -1877,15 +1871,12 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
   xlab(expression(mean(n[h]))) +
   ylab("MSE") +
   ggtitle("(c)") +
+  theme_minimal() +
   theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12, 
-            angle=90),
-        plot.title = element_text(size = 12),
-        axis.ticks.x = element_line(linewidth = 0.5),
-        axis.ticks.y = element_line(linewidth = 0.5))
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
 
 # mse_scurve_lwd2 <- error_rm_scurve |>
 #   filter(b_non_empty >= 5) |>
@@ -2021,13 +2012,13 @@ distance_hist <- ggplot(
   ylab("standardized number of edges") +
   xlab(expression(d^{(2)})) +
   ggtitle("(d)") +
+  theme_minimal() +
   theme(aspect.ratio = 0.75,
-        axis.title.x = element_text(size = 12),
-        axis.title.y = element_text(size = 12, angle = 90),
-        axis.text.x = element_text(size = 12),
-        axis.text.y = element_text(size = 12),
-        axis.ticks.x = element_line(), 
-        plot.title = element_text(size = 12))
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
 
 distance_scurve_summary <- distance_scurve |>
   group_by(bin) |>
