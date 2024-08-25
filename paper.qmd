@@ -3332,11 +3332,11 @@ error_plot_pbmc <- ggplot(error_pbmc,
   geom_line(linewidth = 0.3) + 
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 24, 26)]) +
+  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
   ylab("log(MSE)") +
-  xlab(expression(a[1])) +
+  xlab(expression(paste("binwidth (", a[1], ")"))) +
   theme_minimal() +
   theme(panel.border = element_rect(fill = 'transparent'),
         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
@@ -3351,13 +3351,13 @@ error_plot_pbmc <- ggplot(error_pbmc,
 ```
 
 ```{r}
-#| fig-cap: "MSE from UMAP, tSNE, PHATE, PaCMAP, and TriMAP wwith diffferent (hyper-)parameter choices applied to PBMC3k dataset for different number of bin widths along the x-axis ($a_1$). Which is the most reasonable representation of the structures present in the PBMC3k data? The residual plot have a steep slope at the beginning, indicating that a smaller $a_1$ causes a smaller amount of error. Then, the slope gradually increases or level up, indicating that a higher number of $a_1$ generates a larger error. It was observed that for every $a_1$, the lowest error occurred with tSNE using the perplexity: $30$."
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in Figure 1) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the top plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, b, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts c and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
 #| out-height: 100%
 
-free(error_plot_pbmc) / wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
-           nldr5c, nldr6c, nldr7c, nldr8c, ncol = 4)
+free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+           nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
 ```
 
 As shown in @fig-tsne-suggest, there are three well-separated clusters, although the separation between the clusters are small. Additionally, non-linear structures can also be observed within the clusters (@fig-tsne-suggest). This demonstrates that tSNE accurately captures the data structure of the PBMC3k dataset, which UMAP did not achieve.
