@@ -15,7 +15,7 @@ pbmc_scaled_obj <- gen_scaled_data(
 umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 30
+num_bins_x_pbmc <- 26
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1)
@@ -80,12 +80,52 @@ df_b <- df_b[match(df_bin_centroids_pbmc$hexID, df_b$hb_id),] |>
 df_exe <- dplyr::bind_rows(df_b, df)
 
 ## Set the maximum difference as the criteria
-distance_df_small_edges <- distance_pbmc |>
+distance_df_small_edges_pbmc <- distance_pbmc |>
   dplyr::filter(distance < benchmark_pbmc)
 ## Since erase brushing is considerd.
 
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
-                         lineFrom = distance_df_small_edges$from,
-                         lineTo = distance_df_small_edges$to,
+                         lineFrom = distance_df_small_edges_pbmc$from,
+                         lineTo = distance_df_small_edges_pbmc$to,
                          group = df_exe$type, pointSize = append(rep(0, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+
+#### With scaled data
+
+# Apply the scaling
+scaled_pbmc_data <- scale_data_manual(training_data_pbmc |> select(-ID)) |>
+  as_tibble()
+
+df_b_pbmc <- df_bin_pbmc |>
+  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  select(-type)
+
+# Apply the scaling
+scaled_pbmc_data_model <- scale_data_manual(df_b_pbmc) |>
+  as_tibble()
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
+                       scaled_pbmc_data |> mutate(type = "data"))
+
+## Set the maximum difference as the criteria
+distance_df_small_edges_pbmc <- distance_pbmc |>
+  dplyr::filter(distance < benchmark_pbmc)
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = distance_df_small_edges_pbmc$from,
+            lineTo = distance_df_small_edges_pbmc$to,
+            group = df$type,
+            pointSize = append(rep(1.5, NROW(scaled_pbmc_data_model)), rep(1, NROW(scaled_pbmc_data))),
+            levelColors = c("#000000", "#33a02c"),
+            lineColors = rep("#33a02c", nrow(distance_df_small_edges_pbmc)))
+
+
+
