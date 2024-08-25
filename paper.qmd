@@ -3368,11 +3368,25 @@ benchmark_mnist <- find_lg_benchmark(
 
 sc_ltr_pos_mnist <- c(0.96, 0.96)
 
-trimesh_removed_mnist <- vis_rmlg_mesh(
-  distance_edges = distance_mnist, 
-  benchmark_value = benchmark_mnist, 
-  tr_coord_df = tr_from_to_df_mnist, 
-  distance_col = "distance") +
+tr_df <- distinct(tibble::tibble(
+  x = c(tr_from_to_df_mnist[["x_from"]], tr_from_to_df_mnist[["x_to"]]), 
+  y = c(tr_from_to_df_mnist[["y_from"]], tr_from_to_df_mnist[["y_to"]])))
+
+distance_df_small_edges_mnist <- distance_mnist |>
+  filter(distance < benchmark_mnist)
+
+tr_from_to_df_mnist <- inner_join(
+  tr_from_to_df_mnist, distance_df_small_edges_mnist, 
+  by = c("from", "to"))
+
+trimesh_removed_mnist <- ggplot() + 
+  geom_segment(data = tr_from_to_df_mnist, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
   geom_point(data = pacmap_minst_scaled,
              aes(
                x = PaCMAP1,
@@ -3381,6 +3395,20 @@ trimesh_removed_mnist <- vis_rmlg_mesh(
              alpha=0.5, 
              size = 0.1) +
   interior_annotation("a", sc_ltr_pos_mnist)
+
+# trimesh_removed_mnist <- vis_rmlg_mesh(
+#   distance_edges = distance_mnist, 
+#   benchmark_value = benchmark_mnist, 
+#   tr_coord_df = tr_from_to_df_mnist, 
+#   distance_col = "distance") +
+#   geom_point(data = pacmap_minst_scaled,
+#              aes(
+#                x = PaCMAP1,
+#                y = PaCMAP2
+#              ),
+#              alpha=0.5, 
+#              size = 0.1) +
+#   interior_annotation("a", sc_ltr_pos_mnist)
 
 ## Compute error
 error_df <- augment(
