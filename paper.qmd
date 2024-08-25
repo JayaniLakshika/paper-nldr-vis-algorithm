@@ -3445,19 +3445,20 @@ error_plot_mnist <- error_df |>
              color = type, 
              group = ID)) +
   geom_point(alpha=0.5, 
-             size = 0.1) +
-  interior_annotation("b", sc_ltr_pos_mnist)
+             size = 0.1) #+
+  #interior_annotation("b", sc_ltr_pos_mnist)
 ```
 
 <!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 ```{r}
 #| echo: false
-#| fig-cap: "(a) Model generated in $2\\text{-}D$, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows a non-linear continuous structure. Most low $p\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most high p-D model errors are concentrated along the upper edge."
+#| fig-cap: "$10\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows a non-linear continuous structure. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge."
 #| label: fig-model-mnist
 #| fig-pos: H
+#| out-height: 22%
 
-trimesh_removed_mnist + error_plot_mnist + 
-  plot_layout(guides='collect', ncol=2) &
+error_plot_mnist + 
+  plot_layout(guides='collect') &
   theme(legend.position='bottom')
 ```
 
