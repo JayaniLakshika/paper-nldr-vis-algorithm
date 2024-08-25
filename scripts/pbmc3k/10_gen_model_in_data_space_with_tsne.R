@@ -43,6 +43,7 @@ tr_from_to_df_pbmc <- gen_edges(
 # tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
 #   filter(row_number() != 360)
 
+
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_pbmc,
@@ -56,6 +57,11 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
+
+benchmark_pbmc <- 0.1
+
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  filter(!(row_number() %in% c(155)))
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_pbmc <- hex_binning(
@@ -154,6 +160,9 @@ df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
 ## Set the maximum difference as the criteria
 distance_df_small_edges_pbmc <- distance_pbmc |>
   dplyr::filter(distance < benchmark_pbmc)
+
+distance_df_small_edges_pbmc <- distance_df_small_edges_pbmc |>
+  filter(!(row_number() %in% c(155)))
 
 # Visualize with langevitour
 langevitour(df |> dplyr::select(-type),

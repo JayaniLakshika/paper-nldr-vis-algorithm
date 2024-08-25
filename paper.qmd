@@ -3339,7 +3339,7 @@ tsne_pbmc
 ```{r}
 #| label: num-bins-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 15
+num_bins_x_pbmc <- 13
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1) 
@@ -3365,7 +3365,7 @@ tr_from_to_df_pbmc <- gen_edges(
   tri_object = tr1_object_pbmc)
 
 # tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-#   filter(row_number() != 360)
+#   filter(!(row_number() %in% c(65, 112, 130)))
 
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(
@@ -3381,14 +3381,33 @@ benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
 
+benchmark_pbmc <- 0.1
+
 ## Remove an edge that exist as long edge in p-D
 # tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
 
-trimesh_removed_pbmc <- vis_rmlg_mesh(
-  distance_edges = distance_pbmc,
-  benchmark_value = benchmark_pbmc,
-  tr_coord_df = tr_from_to_df_pbmc,
-  distance_col = "distance") +
+tr_df <- distinct(tibble::tibble(
+  x = c(tr_from_to_df_pbmc[["x_from"]], tr_from_to_df_pbmc[["x_to"]]), 
+  y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
+
+distance_df_small_edges_pbmc <- distance_pbmc |>
+  filter(distance < benchmark_pbmc)
+
+tr_from_to_df_pbmc <- inner_join(
+  tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
+  by = c("from", "to"))
+
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  filter(!(row_number() %in% c(155)))
+
+trimesh_removed_pbmc <- ggplot() + 
+  geom_segment(data = tr_from_to_df_pbmc, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
   geom_point(
     data = tsne_pbmc_scaled,
     aes(
@@ -3397,9 +3416,26 @@ trimesh_removed_pbmc <- vis_rmlg_mesh(
     ),
     alpha = 0.2,
     color = "#000000"
-  ) 
-  #xlim(sc_xlims) + ylim(sc_ylims) +
-  #interior_annotation("a", sc_ltr_pos)
+  )  +
+  coord_fixed() +
+  interior_annotation("a")
+
+# trimesh_removed_pbmc <- vis_rmlg_mesh(
+#   distance_edges = distance_pbmc,
+#   benchmark_value = benchmark_pbmc,
+#   tr_coord_df = tr_from_to_df_pbmc,
+#   distance_col = "distance") +
+#   geom_point(
+#     data = tsne_pbmc_scaled,
+#     aes(
+#       x = tSNE1,
+#       y = tSNE2
+#     ),
+#     alpha = 0.2,
+#     color = "#000000"
+#   ) 
+#   #xlim(sc_xlims) + ylim(sc_ylims) +
+#   #interior_annotation("a", sc_ltr_pos)
 
 ## Compute error
 error_df <- augment(
@@ -3442,72 +3478,248 @@ error_plot_pbmc <- error_df |>
 ```
 
 ```{r}
-#| label: proj-tsne-pbmc
+#| label: pbmc-tsne-model-proj
 
-## Hexagonal binning to have regular hexagons
-hb_obj_pbmc <- hex_binning(
-  data = tsne_pbmc_scaled,
-  bin1 = num_bins_x_pbmc,
-  r2 = r2_pbmc,
-  q = 0.1)
+# Apply the scaling
+scaled_pbmc_data <- scale_data_manual(training_data_pbmc |> select(-ID)) |>
+  as_tibble()
 
-tsne_data_with_hb_id <- hb_obj_pbmc$data_hb_id
-
-df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
-                                tsne_data_with_hb_id)
-
-### Define type column
-df <- df_all_pbmc |>
-  dplyr::select(tidyselect::starts_with("PC")) |>
-  dplyr::mutate(type = "data") ## original dataset
-
-df_b <- df_bin_pbmc |>
+df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_pbmc$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id)
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  select(-type)
 
-df_exe <- dplyr::bind_rows(df_b, df)
+# Apply the scaling
+scaled_pbmc_data_model <- scale_data_manual(df_b_pbmc) |>
+  as_tibble()
 
-## Set the maximum difference as the criteria
-distance_df_small_edges <- distance_pbmc |>
-  dplyr::filter(distance < benchmark_pbmc)
-## Since erase brushing is considerd.
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
+                       scaled_pbmc_data |> mutate(type = "data"))
+
+## Removed long edge in high-d
+distance_df_small_edges_pbmc <- distance_df_small_edges_pbmc |>
+  filter(!(row_number() %in% c(155)))
 
 ## First projection
 projection <- cbind(
-  c(0.038104,-0.001148,0.003905,-0.003332,-0.011747,-0.002688,0.003468,-0.014321,-0.000320),
-  c(-0.000902,0.041414,0.005089,-0.000149,-0.000551,0.000239,-0.008013,-0.005799,-0.001411))
+    c(0.40456,-0.55243,-0.58434,0.05063,-0.20540,-0.10469,0.28850,0.12209,0.17017),
+    c(0.34225,0.53615,-0.05822,-0.01993,-0.55480,0.21337,0.34100,-0.07280,-0.33139))
 
-proj1_pbmc_tsne <- gen_proj_langevitour(
-  points_df = df_exe,
-  projection = projection,
-  edge_df = distance_df_small_edges |> select(-distance)
-) 
+projected <- as.matrix(scaled_pbmc_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_pbmc |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_pbmc_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+pbmc_proj_umap_model1 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("b")
 
 ## Second projection
 projection <- cbind(
-  c(0.013182,-0.022240,-0.001729,0.026946,-0.005289,0.001235,-0.007784,0.017500,-0.006949),
-  c(0.027138,0.011939,0.009374,-0.004582,-0.004771,-0.027107,-0.005287,-0.002325,-0.007951))
+    c(0.07154,-0.44483,-0.04593,0.63343,0.21449,-0.39592,-0.29762,0.01726,0.30845),
+    c(0.87788,-0.21837,0.11780,-0.17226,-0.17920,-0.00829,0.11424,0.28681,0.06091))
 
-proj2_pbmc_tsne <- gen_proj_langevitour(
-  points_df = df_exe,
-  projection = projection,
-  edge_df = distance_df_small_edges |> select(-distance)
-) 
+projected <- as.matrix(scaled_pbmc_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_pbmc |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_pbmc_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+pbmc_proj_umap_model2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("c")
 
 ## Third projection
 projection <- cbind(
-  c(-0.003540,0.025008,0.023261,-0.012782,-0.011617,-0.006796,0.009566,-0.015022,0.001164),
-  c(0.038201,-0.007751,0.005064,-0.014143,0.003255,-0.001091,0.001611,-0.003674,-0.008314))
+    c(0.13399,-0.00303,0.34841,-0.15626,-0.27432,0.48771,0.14252,0.39963,0.57983),
+    c(0.49615,0.73920,-0.15299,-0.07463,-0.07948,0.13320,-0.15484,0.20042,-0.28869))
 
-proj3_pbmc_tsne <- gen_proj_langevitour(
-  points_df = df_exe,
-  projection = projection,
-  edge_df = distance_df_small_edges |> select(-distance)
-) 
+projected <- as.matrix(scaled_pbmc_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_pbmc |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_pbmc_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+pbmc_proj_umap_model3 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("d")
 
 ```
 
@@ -3529,11 +3741,11 @@ proj3_pbmc_tsne <- gen_proj_langevitour(
 #| fig-cap: "Model in $2\\text{-}D$, on the tSNE layout, and three views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>)."
 #| label: fig-pbmc2-sc
 #| fig-pos: H
-#| out-height: 100%
-#| eval: true
+#| fig-width: 10
+#| fig-height: 10
 
-trimesh_removed_pbmc + proj1_pbmc_tsne + 
-  proj2_pbmc_tsne + proj3_pbmc_tsne +
+trimesh_removed_pbmc + pbmc_proj_umap_model1 + 
+  pbmc_proj_umap_model2 + pbmc_proj_umap_model3 +
   plot_layout(guides='collect', ncol=2) &
   theme(legend.position='none')
 ```
