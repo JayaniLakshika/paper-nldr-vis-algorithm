@@ -16,7 +16,7 @@ mnist_scaled_obj <- gen_scaled_data(
 pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_mnist <- 22
+num_bins_x_mnist <- 19
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1)
@@ -80,13 +80,50 @@ df_b <- df_b[match(df_bin_centroids_mnist$hexID, df_b$hb_id),] |>
 df_exe <- dplyr::bind_rows(df_b, df)
 
 ## Set the maximum difference as the criteria
-distance_df_small_edges <- distance_mnist |>
+distance_df_small_edges_mnist <- distance_mnist |>
   dplyr::filter(distance < benchmark_mnist)
 ## Since erase brushing is considerd.
 
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
-                         lineFrom = distance_df_small_edges$from,
-                         lineTo = distance_df_small_edges$to,
+                         lineFrom = distance_df_small_edges_mnist$from,
+                         lineTo = distance_df_small_edges_mnist$to,
                          group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
+
+#### With scaled data
+
+# Apply the scaling
+scaled_mnist_data <- scale_data_manual(training_data_mnist |> select(-ID)) |>
+  as_tibble()
+
+df_b_mnist <- df_bin_mnist |>
+  dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b_mnist <- df_b_mnist[match(df_bin_centroids_mnist$hexID, df_b_mnist$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  select(-type)
+
+# Apply the scaling
+scaled_mnist_data_model <- scale_data_manual(df_b_mnist) |>
+  as_tibble()
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
+                       scaled_mnist_data |> mutate(type = "data"))
+
+## Set the maximum difference as the criteria
+distance_df_small_edges_mnist <- distance_mnist |>
+  dplyr::filter(distance < benchmark_mnist)
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = distance_df_small_edges_mnist$from,
+            lineTo = distance_df_small_edges_mnist$to,
+            group = df$type,
+            pointSize = append(rep(1.5, NROW(scaled_mnist_data_model)), rep(1, NROW(scaled_mnist_data))),
+            levelColors = c("#000000", "#33a02c"),
+            lineColors = rep("#33a02c", nrow(distance_df_small_edges_mnist)))
+
 
