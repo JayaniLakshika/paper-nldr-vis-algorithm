@@ -49,6 +49,28 @@ df_2 <- df_2 |>
 
 write_rds(df_2, file = "data/five_gau_clusters/data_five_gau.rds")
 
+## With cluster labels
+
+df1 <- df1 |>
+  mutate(cluster = "cluster1")
+df2 <- df2 |>
+  mutate(cluster = "cluster2")
+df3 <- df3 |>
+  mutate(cluster = "cluster3")
+df4 <- df4 |>
+  mutate(cluster = "cluster4")
+df5 <- df5 |>
+  mutate(cluster = "cluster5")
+
+df_2n <- bind_rows(df1, df2, df3, df4, df5)
+df_2n <- df_2n |>
+  rename(x1 = x, x2 = y, x3 = z, x4 = w)
+
+df_2n <- df_2n |>
+  mutate(ID = row_number())
+
+write_rds(df_2n, file = "data/five_gau_clusters/data_five_gau_with_labels.rds")
+
 
 data_split_sp <- initial_split(df_2)
 training_data_5 <- training(data_split_sp) |>

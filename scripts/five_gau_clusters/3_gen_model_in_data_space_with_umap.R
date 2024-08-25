@@ -89,6 +89,11 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 
 #### With scaled data
 
+# data_gau_labels <- read_rds("data/five_gau_clusters/data_five_gau_with_labels.rds")
+#
+# training_data_gau_labels <- left_join(training_data_gau, data_gau_labels) |>
+#   pull(cluster)
+
 # Apply the scaling
 scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
   as_tibble()
