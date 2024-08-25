@@ -201,7 +201,7 @@ scale_data_manual <- function(data) {
 ```{r}
 #| label: gen-axes
 
-gen_axes <- function(data, proj_data, limits = 1) {
+gen_axes <- function(data, proj_data, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL) {
   
   rng <- range(proj_data)
   proj_data <- proj_data/max(abs(rng))
@@ -210,20 +210,31 @@ gen_axes <- function(data, proj_data, limits = 1) {
   obs_labels <- as.character(1:nrow(data))
   
   axis_scale <- limits/6
-  axis_pos <- -2/3 * limits
   
-  adj <- function(x) axis_pos + x * axis_scale
-  axes <- data.frame(x1 = adj(0), 
-                     y1 = adj(0), 
-                     x2 = adj(projection[, 1]), 
-                     y2 = adj(projection[, 2]))
+  if (is.null(axis_pos_x)) {
+    
+    axis_pos_x <- -2/3 * limits
+    
+  }
+  
+  if (is.null(axis_pos_y)) {
+    
+    axis_pos_y <- -2/3 * limits
+    
+  }
+  
+  adj <- function(x, axis_pos) axis_pos + x * axis_scale
+  axes <- data.frame(x1 = adj(0, axis_pos_x), 
+                     y1 = adj(0, axis_pos_y), 
+                     x2 = adj(projection[, 1], axis_pos_x), 
+                     y2 = adj(projection[, 2], axis_pos_y))
   
   axis_labels <- colnames(data)
   rownames(axes) <- axis_labels
   
   theta <- seq(0, 2 * pi, length = 50)
-  circle <- data.frame(c1 = adj(cos(theta)), 
-                       c2 = adj(sin(theta)))
+  circle <- data.frame(c1 = adj(cos(theta), axis_pos_x), 
+                       c2 = adj(sin(theta), axis_pos_y))
   
   return(list(axes = axes, circle = circle))
   
@@ -2175,8 +2186,7 @@ tr_from_to_df_gau1 <- gen_edges(
 #   filter(row_number() != 34)
 
 tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-  filter(row_number() != 115) |>
-  filter(row_number() != 139)
+  filter(row_number() != 149)
 
 ## Compute 2D distances
 distance_gau1 <- cal_2d_dist(
@@ -2191,6 +2201,8 @@ distance_gau1 <- cal_2d_dist(
 benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
+
+benchmark_gau1 <- 0.1
 
 trimesh_removed_gau1 <- vis_rmlg_mesh(
   distance_edges = distance_gau1,
@@ -2233,9 +2245,13 @@ scaled_gau_data_model <- scale_data_manual(df_b) |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
+distance_df_small_edges <- distance_df_small_edges |>
+  filter(row_number() != 108)
+
+## First projection
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+    c(0.46477,-0.02024,0.56378,0.39736),
+    c(0.15607,-0.54876,-0.44090,0.41505))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2267,12 +2283,14 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data, 
   proj_data = projected_df, 
-  limits = 1)
+  limits = 0.3,
+  axis_pos_x = -0.4,
+  axis_pos_y = -0.1)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-five_gau_proj_tsne_model <- projected_df |>
+five_gau_proj_tsne_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -2301,9 +2319,86 @@ five_gau_proj_tsne_model <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55)) +
+  xlim(c(-0.45, -0.2)) +
+  ylim(c(-0.15, 0.18)) +
   interior_annotation("a", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
+
+## Second projection
+projection <- cbind(
+    c(-0.71895,0.29250,-0.29905,-0.01656),
+    c(-0.16698,-0.62707,-0.23756,0.46328))
+
+projected <- as.matrix(scaled_gau_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_gau_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_gau_data, 
+  proj_data = projected_df, 
+  limits = 0.3,
+  axis_pos_x = 0.1,
+  axis_pos_y = -0.1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+five_gau_proj_tsne_model2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    alpha = 0.3) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(0.05, 0.25)) +
+  ylim(c(-0.15, 0.25)) +
+  interior_annotation("b", 
                       position = c(0.08, 0.9),
                       cex = 3)
 
@@ -2699,13 +2794,15 @@ df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
 scaled_gau_data_model <- scale_data_manual(df_b) |>
   as_tibble()
 
+
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
+## First projection
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+    c(0.21889,-0.25701,-0.19529,-0.73412),
+    c(-0.63168,0.27992,-0.42895,-0.17223))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2734,15 +2831,41 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data, 
-  proj_data = projected_df, 
-  limits = 1)
+# axes_obj <- gen_axes(
+#   data = scaled_gau_data, 
+#   proj_data = projected_df, 
+#   limits = 1)
+# 
+# axes <- axes_obj$axes
+# circle <- axes_obj$circle
 
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+limits <- 0.3
+projected_df_n <- projected_df |> select(-ID)
 
-five_gau_proj_pacmap_model <- projected_df |>
+rng <- range(projected_df_n)
+projected_df_n <- projected_df_n/max(abs(rng))
+colnames(projected_df_n) <- c("P1", "P2")
+projected_df_n <- data.frame(projected_df_n)
+obs_labels <- as.character(1:nrow(scaled_gau_data))
+
+axis_scale <- limits/6
+# axis_pos <- -2/3 * limits
+axis_pos <- 0
+
+adj <- function(x) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0), 
+                   y1 = adj(0), 
+                   x2 = adj(projection[, 1]), 
+                   y2 = adj(projection[, 2]))
+
+axis_labels <- colnames(scaled_gau_data)
+rownames(axes) <- axis_labels
+
+theta <- seq(0, 2 * pi, length = 50)
+circle <- data.frame(c1 = adj(cos(theta)), 
+                     c2 = adj(sin(theta)))
+
+five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -2756,6 +2879,7 @@ five_gau_proj_pacmap_model <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
+    size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -2771,20 +2895,117 @@ five_gau_proj_pacmap_model <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.18, 0.1)) +
-  ylim(c(-0.78, -0.55)) +
-  interior_annotation("c", 
+  xlim(c(-0.05, 0.35)) +
+  ylim(c(-0.05, 0.35)) +
+  interior_annotation("e", 
+                      position = c(0.08, 0.9),
+                      cex = 3)
+
+### Second projection
+projection <- cbind(
+    c(-0.60995,0.33361,0.32920,-0.31518),
+    c(0.19525,-0.30554,0.74417,0.07600))
+
+projected <- as.matrix(scaled_gau_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_gau_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+# axes_obj <- gen_axes(
+#   data = scaled_gau_data, 
+#   proj_data = projected_df, 
+#   limits = 1)
+# 
+# axes <- axes_obj$axes
+# circle <- axes_obj$circle
+
+limits <- 0.3
+projected_df_n <- projected_df |> select(-ID)
+
+rng <- range(projected_df_n)
+projected_df_n <- projected_df_n/max(abs(rng))
+colnames(projected_df_n) <- c("P1", "P2")
+projected_df_n <- data.frame(projected_df_n)
+obs_labels <- as.character(1:nrow(scaled_gau_data))
+
+axis_scale <- limits/6
+# axis_pos <- -2/3 * limits
+axis_pos_x <- -0.05
+axis_pos_y <- -0.4
+
+adj <- function(x, axis_pos) axis_pos + x * axis_scale
+axes <- data.frame(x1 = adj(0, axis_pos_x), 
+                   y1 = adj(0, axis_pos_y), 
+                   x2 = adj(projection[, 1], axis_pos_x), 
+                   y2 = adj(projection[, 2], axis_pos_y))
+
+axis_labels <- colnames(scaled_gau_data)
+rownames(axes) <- axis_labels
+
+theta <- seq(0, 2 * pi, length = 50)
+circle <- data.frame(c1 = adj(cos(theta), axis_pos_x), 
+                     c2 = adj(sin(theta), axis_pos_y))
+
+
+five_gau_proj_pacmap_model2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.8,
+    alpha = 0.3) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.1, 0.2)) +
+  ylim(c(-0.45, 0)) +
+  interior_annotation("f", 
                       position = c(0.08, 0.9),
                       cex = 3)
 
 
-# five_gau_proj_pacmap_model <- gen_proj_langevitour(
-#   points_df = df_exe,
-#   projection = projection,
-#   edge_df = distance_df_small_edges |> select(-distance)
-# ) +
-#   xlim(c(-0.18, 0.1)) +
-#   ylim(c(-0.78, -0.55))
 ```
 
 ```{r}
@@ -2794,9 +3015,9 @@ five_gau_proj_pacmap_model <- projected_df |>
 #| fig-pos: H
 #| fig-cap: "(a) tSNE, (b) UMAP, and (c) PaCMAP"
 
-five_gau_proj_tsne_model + five_gau_proj_tsne_model +
+five_gau_proj_tsne_model1 + five_gau_proj_tsne_model2 +
   five_gau_proj_umap_model1 + five_gau_proj_umap_model2 +
-  five_gau_proj_pacmap_model + five_gau_proj_pacmap_model +
+  five_gau_proj_pacmap_model1 + five_gau_proj_pacmap_model2 +
   plot_layout(guides = "collect", ncol = 2) &
   theme(legend.position='none')
 ```
