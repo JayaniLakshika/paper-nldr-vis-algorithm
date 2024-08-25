@@ -3464,24 +3464,275 @@ error_plot_mnist +
 
 According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (@fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data, because PaCMAP preserves the non-linear structure present in the \pD{} data. 
 
-<!--add langevitour screenshots and youtube animation link-->
 ```{r}
-trimesh_removed_mnist 
+#| label: mnist-model-proj
+
+# Apply the scaling
+scaled_mnist_data <- scale_data_manual(training_data_mnist |> select(-ID)) |>
+  as_tibble()
+
+df_b_mnist <- df_bin_mnist |>
+  dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b_mnist <- df_b_mnist[match(df_bin_centroids_mnist$hexID, df_b_mnist$hb_id),] |>
+  dplyr::select(-hb_id) |>
+  select(-type)
+
+# Apply the scaling
+scaled_mnist_data_model <- scale_data_manual(df_b_mnist) |>
+  as_tibble()
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
+                       scaled_mnist_data |> mutate(type = "data"))
+
+
+## First projection
+projection <- cbind(
+    c(0.71503,0.00502,-0.04370,-0.01811,-0.01103,0.09877,0.06199,0.05396,0.07771,-0.01713),
+    c(0.00587,0.71879,0.03485,0.08284,-0.07534,-0.05420,0.04315,-0.00547,-0.02995,0.01810))
+
+projected <- as.matrix(scaled_mnist_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_mnist |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_mnist_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+mnist_proj_pacmap_model1 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("b")
+
+## Second projection
+projection <- cbind(
+    c(0.13639,-0.18552,-0.38537,-0.03088,-0.04663,0.15013,-0.28351,-0.28865,-0.03379,-0.38009),
+    c(-0.46592,-0.40953,-0.02752,0.12815,0.08356,-0.12991,-0.28307,0.11145,0.08031,0.10800))
+
+projected <- as.matrix(scaled_mnist_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_mnist |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_mnist_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+mnist_proj_pacmap_model2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.1) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("c")
+
+## Third projection
+projection <- cbind(
+    c(0.47163,0.21622,0.04027,0.17328,0.03603,0.06488,-0.22226,-0.07186,0.39674,0.13485),
+    c(-0.41187,0.36322,0.11264,-0.14175,0.19810,0.07062,0.00680,0.08795,0.37068,-0.11280))
+
+projected <- as.matrix(scaled_mnist_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_mnist |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_mnist_data, 
+  proj_data = projected_df, 
+  limits = 1)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+mnist_proj_pacmap_model3 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  interior_annotation("d")
+
 ```
 
-::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"}
-![](figures/mnist/mnist_model_2d.png){#fig-mnist1-model}
+<!--add langevitour screenshots and youtube animation link-->
+```{r}
+#| label: fig-mnist-tri-proj
+#| fig-pos: H
+#| fig-height: 10
+#| fig-width: 10
+#| fig-cap: "Model in \\gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($(s_1, \ s_2) = (-0.100, \ -0.059)$, $b = 374 \  (22, \ 17)$, $m = 140$, benchmark value to remove large edges is $0.094$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>)."
 
-![](figures/mnist/sc_1.png){#fig-mnist1-sc1}
+trimesh_removed_mnist + mnist_proj_pacmap_model1 +
+  mnist_proj_pacmap_model2 + mnist_proj_pacmap_model3 +
+  plot_layout(ncol = 2)
+```
 
-![](figures/mnist/sc_2.png){#fig-mnist1-sc2}
+<!-- ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"} -->
+<!-- ![](figures/mnist/mnist_model_2d.png){#fig-mnist1-model} -->
 
-![](figures/mnist/sc_3.png){#fig-mnist1-sc3}
+<!-- ![](figures/mnist/sc_1.png){#fig-mnist1-sc1} -->
 
-Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data ($(s_1, \ s_2) = (-0.100, \ -0.059)$, $b = 374 \  (22, \ 17)$, $m = 140$, benchmark value to remove large edges is $0.094$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>).
+<!-- ![](figures/mnist/sc_2.png){#fig-mnist1-sc2} -->
+
+<!-- ![](figures/mnist/sc_3.png){#fig-mnist1-sc3} -->
+
+<!-- Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data ($(s_1, \ s_2) = (-0.100, \ -0.059)$, $b = 374 \  (22, \ 17)$, $m = 140$, benchmark value to remove large edges is $0.094$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>). -->
 
 
-:::
+<!-- ::: -->
 <!-- need to update the youtube recording-->
 
 There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (@fig-model-mnist b). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out). 
