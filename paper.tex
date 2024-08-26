@@ -952,6 +952,21 @@ structures can be seen. Some clusters have non-linear continuity
 patterns and high-density patches
 (Figure~\ref{fig-model-pbmc-author-proj}).
 
+In order to find a reasonable NLDR representation for the PBMC3k
+dataset, the MSE for different \(a_1\) using UMAP, tSNE, PHATE, PaCMAP,
+and TriMAP with different (hyper-)parameter settings
+(Figure~\ref{fig-pbmc-mse}) were calculated. tSNE with a perplexity
+value set to \(30\), the default parameter setting, is considered as a
+reasonable representation for the PBMC3k dataset. As shown in
+Figure~\ref{fig-NLDR-variety} (e), there are three well-separated
+clusters, although the separation between the clusters are small.
+Additionally, non-linear structures can also be observed within the
+clusters (Figure~\ref{fig-NLDR-variety} (e)). The visualization of the
+\emph{model-in-the-data-space} provides evidence for this
+(Figure~\ref{fig-pbmc2-sc}). Therefore, tSNE with perplexity \(30\)
+accurately captures the data structure of the PBMC3k dataset, which is
+better than UMAP.
+
 \begin{figure}[H]
 
 \centering{
@@ -975,15 +990,6 @@ video is available at \url{https://youtu.be/VqqWuE0Jj6A}.}
 
 \end{figure}%
 
-In order to find a reasonable NLDR representation for the PBMC3k
-dataset, the MSE for different \(b_1\) using UMAP with different
-(hyper-)parameter settings and tSNE with default (hyper-)parameter
-setting (Figure~\ref{fig-pbmc-mse}) were calculated. After analyzing the
-results, it was found that tSNE with default (hyper-)parameter setting
-(perplexity: \(30\)) achieved the lowest error. Therefore, tSNE with a
-perplexity value set to \(30\), the default parameter setting, is
-considered as a reasonable representation for the PBMC3k dataset.
-
 \begin{figure}[H]
 
 \centering{
@@ -1004,13 +1010,6 @@ is between layouts c and e, that have small separations between oddly
 shaped clusters. Layout e is the best choice.}
 
 \end{figure}%
-
-As shown in Figure~\ref{fig-NLDR-variety} (e), there are three
-well-separated clusters, although the separation between the clusters
-are small. Additionally, non-linear structures can also be observed
-within the clusters (Figure~\ref{fig-NLDR-variety} (e)). This
-demonstrates that tSNE accurately captures the data structure of the
-PBMC3k dataset, which UMAP did not achieve.
 
 \begin{figure}[H]
 
