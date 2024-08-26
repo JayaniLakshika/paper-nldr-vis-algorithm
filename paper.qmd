@@ -4131,9 +4131,11 @@ error_plot_mnist <- error_df |>
   #interior_annotation("b", sc_ltr_pos_mnist)
 ```
 
-<!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
-According to @fig-mnist-tri-proj (b), the non-linear structure observed in the \gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist-tri-proj (c)), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist-tri-proj (d), some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data. 
+PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). Furthermore, shows some quirks when visualizing the *model-in-the-data-space* (@fig-mnist-tri-proj).
 
+<!-- According to @fig-mnist-tri-proj (b), the non-linear structure observed in the \gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist-tri-proj (c)), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist-tri-proj (d), some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data.  -->
+
+<!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 ```{r}
 #| label: mnist-model-proj
 
@@ -4383,7 +4385,7 @@ mnist_proj_pacmap_model3 <- projected_df |>
 #| fig-pos: H
 #| fig-height: 10
 #| fig-width: 10
-#| fig-cap: "Model in \\gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($a_1 = 0.062$, $b = 285 \\  (19, \ 15)$, $m = 109$, and benchmark value to remove large edges is $0.108$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>)."
+#| fig-cap: "Model in \\gD{}, on the PaCMAP layout (a), and three views (b, c, d) of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($a_1 = 0.062$, $b = 285 \\  (19, \ 15)$, $m = 109$, and benchmark value to remove large edges is $0.108$). (b) The non-linear structure observed in the \\gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\\text{-}D$ data. (c) the model shows a twisted pattern within the non-linear structure in $10\\text{-}D$ space, which is an additional pattern not visible in the \\gD{} representation (@fig-pacmap-author). (d) some long edges exist in the $10\\text{-}D$ space that are not recognized as long edges in the \\gD{} representation. The full video is available at <https://youtu.be/zcg_GXBmqjA>."
 
 trimesh_removed_mnist + mnist_proj_pacmap_model1 +
   mnist_proj_pacmap_model2 + mnist_proj_pacmap_model3 +
