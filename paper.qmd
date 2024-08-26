@@ -2964,7 +2964,7 @@ five_gau_proj_tsne_model1 + five_gau_proj_tsne_model2 +
 - Illustrate how to use our method to get a better representation
 -->
 
-In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR is commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). @fig-umap-author is a reproduction of the published plot. It shows three well-separated clusters with big separations. 
+In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR methods are commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). @fig-umap-author is the reproduction of the published plot. It shows three well-separated clusters with big separations. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -2998,7 +2998,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 umap_pbmc 
 ```
 
-To determine whether the UMAP representation with the (hyper-)parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the $9\text{-}D$ data. The @fig-umap-author shows three well-separated clusters. However, as shown in @fig-pbmc1-sc, there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-umap-author) does not accurately represent the structure(s) present in PBMC3k dataset. But, when visualizing the model-in-th-data-space some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-pbmc1-sc).  
+To determine whether the UMAP representation with the specific (hyper-)parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the $9\text{-}D$ data. The @fig-umap-author shows three well-separated clusters. However, as shown in @fig-pbmc1-sc, there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-umap-author) does not accurately represent the structure(s) present in PBMC3k dataset. But, when visualizing the model-in-th-data-space some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-pbmc1-sc).  
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -4144,7 +4144,7 @@ error_plot_mnist <- error_df |>
   ) 
 ```
 
-PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). Furthermore, shows some quirks when visualizing the *model-in-the-data-space* (@fig-mnist-tri-proj).
+As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). It also shows some quirks like twisted patterns and long edges (@fig-mnist-tri-proj). Furthermore, the results help to identify anomalies (with large model errors) within and the outside the non-linear structure, displaying different patterns of the digit 1 (@fig-model-error-mnist). 
 
 <!-- According to @fig-mnist-tri-proj (b), the non-linear structure observed in the \gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist-tri-proj (c)), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist-tri-proj (d), some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data.  -->
 
@@ -4471,7 +4471,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 ```
 
 ```{r}
-#| label: fig-model-mnist
+#| label: fig-model-error-mnist
 #| fig-cap: "$10\\text{-}D$ model error in PaCMAP layout of MNIST digit 1 dataset in $2\\text{-}D$. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge (a). There are certain data points that exhibit large error rates due to their deviation from the usual $10\\text{-}D$ data structure, which makes them anomalies. These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1 (b). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (c). "
 #| fig-pos: H
 #| fig-width: 4

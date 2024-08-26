@@ -929,19 +929,20 @@ expression}\label{single-cell-gene-expression}
 
 In the field of single-cell studies, a common analytical task involves
 clustering to identify groups of cells with similar expression profiles.
-NLDR is commonly used to display clusters, and help to verify the
-results. For example, \citet{chen2023} illustrates the use of UMAP to
-identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k).
-\textbf{?@fig-umap-author} is a reproduction of the published plot. It
-shows three well-separated clusters with big separations.
+NLDR methods are commonly used to display clusters, and help to verify
+the results. For example, \citet{chen2023} illustrates the use of UMAP
+to identify clusters in Human Peripheral Blood Mononuclear Cells
+(PBMC3k). \textbf{?@fig-umap-author} is the reproduction of the
+published plot. It shows three well-separated clusters with big
+separations.
 
-To determine whether the UMAP representation with the (hyper-)parameter
-choice suggested by \citet{chen2023} preserves the original data
-structure, we visualize the model constructed with UMAP overlaid on the
-\(9\text{-}D\) data. The \textbf{?@fig-umap-author} shows three
-well-separated clusters. However, as shown in \textbf{?@fig-pbmc1-sc},
-there is no big separation between three clusters in \(9\text{-}D\).
-Therefore, the suggested UMAP representation
+To determine whether the UMAP representation with the specific
+(hyper-)parameter choice suggested by \citet{chen2023} preserves the
+original data structure, we visualize the model constructed with UMAP
+overlaid on the \(9\text{-}D\) data. The \textbf{?@fig-umap-author}
+shows three well-separated clusters. However, as shown in
+\textbf{?@fig-pbmc1-sc}, there is no big separation between three
+clusters in \(9\text{-}D\). Therefore, the suggested UMAP representation
 (\textbf{?@fig-umap-author}) does not accurately represent the
 structure(s) present in PBMC3k dataset. But, when visualizing the
 model-in-th-data-space some unobserved structures can be seen. Some
@@ -1057,11 +1058,14 @@ right.}
 
 \end{figure}%
 
-PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data,
-as it preserves the non-linear structure present in the \(10\text{-}D\)
-data (Figure~\ref{fig-mnist-tri-proj}). Furthermore, shows some quirks
-when visualizing the \emph{model-in-the-data-space}
-(Figure~\ref{fig-mnist-tri-proj}).
+As a result of visualizing the \emph{model-in-the-data-space}, PaCMAP
+provides a reasonable \gD{} representation of MNIST digit 1 data, as it
+preserves the non-linear structure present in the \(10\text{-}D\) data
+(Figure~\ref{fig-mnist-tri-proj}). It also shows some quirks like
+twisted patterns and long edges (Figure~\ref{fig-mnist-tri-proj}).
+Furthermore, the results help to identify anomalies (with large model
+errors) within and the outside the non-linear structure, displaying
+different patterns of the digit 1 (Figure~\ref{fig-model-error-mnist}).
 
 \begin{figure}[H]
 
@@ -1093,12 +1097,12 @@ representation. The full video is available at
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.8\textheight]{paper_files/figure-pdf/fig-model-mnist-1.pdf}
+\includegraphics[width=1\textwidth,height=0.8\textheight]{paper_files/figure-pdf/fig-model-error-mnist-1.pdf}
 
 }
 
-\caption{\label{fig-model-mnist}\(10\text{-}D\) model error in PaCMAP
-layout of MNIST digit 1 dataset in \(2\text{-}D\). Most low
+\caption{\label{fig-model-error-mnist}\(10\text{-}D\) model error in
+PaCMAP layout of MNIST digit 1 dataset in \(2\text{-}D\). Most low
 \(10\text{-}D\) model errors are distributed along the lower edge of the
 \(2\text{-}D\) structure, while most large \(10\text{-}D\) model errors
 are concentrated along the upper edge (a). There are certain data points
