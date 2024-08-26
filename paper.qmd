@@ -2129,7 +2129,16 @@ It’s important to access the \gD{} layout and the generated model overlaid on 
 
 <!-- XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY INTERESTING EXAMPLE WHEN THE FILLED OUT VS FLAT SHAPES ARE DISCUSSED. -->
 
-In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation.
+In this section, we will assess how t-SNE, UMAP, and PaCMAP algorithms preserve the clustering structure. We will use a simulated dataset consisting of five spherical Gaussian clusters where each cluster occupies a different corner of the $4\text{-}D$ space, with each cluster containing an equal number of points ($1000$) and the same within-cluster variation. The data simulated from $\Sigma = \begin{pmatrix}
+0.0025 & 0 & 0 & 0 \\
+0 & 0.0025 & 0 & 0 \\
+0 & 0 & 0.0025 & 0 \\
+0 & 0 & 0 & 0.0025 \\
+\end{pmatrix}$.
+
+
+
+<!-- In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation. -->
 
 XXX Add tSNE, UMAP, and PaCMAP NLDR layouts and describe what is happening
 XXX Discuss the models of one specific cluster (filled out, pancakes): tSNE, UMAP, PaCMAP are useful to capture global structures, but this is an evidence where PaCMAP fail to capture the local structure with default hyper-parameter settings than tSNE and UMAP
