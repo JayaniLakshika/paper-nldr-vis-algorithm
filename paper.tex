@@ -1031,7 +1031,7 @@ digit 1, which exhibits a non-linear structure in \gD{}
 (Figure~\ref{fig-pacmap-author}). There are \(7877\) images of the digit
 1 in the dataset. Additionally, PCA was applied as a preprocessing step
 and the first \(10\) principal components were selected. The objective
-was to assess whether PaCMAP effectively preserves the non-linear
+is to assess whether PaCMAP effectively preserves the non-linear
 structure in \gD{}.
 
 \begin{figure}[H]
@@ -1048,11 +1048,44 @@ settings, beyond the defaults, are \(10\) nearest neighbors, ratio of
 the number of mid-near pairs to the number of neighbors equal to
 \(0.5\), and the ratio of the number of further pairs to the number of
 neighbors is \(2\). We use our \emph{model-in-the-data-space} to assess
-whether this is an accurate representation of structure present in
-\(10\text{-}D\), or if it is misleading. The angle of the digit 1 images
-varies along this structure. Images at the top-left of the
-\(2\text{-}D\) layout show the digit 1 angled more to the left, while
-those at the bottom-right show the digit 1 angled more to the right.}
+whether this is an accurate representation of non-linear structure
+present in \(10\text{-}D\), or if it is misleading. The angle of the
+digit 1 images varies along this structure. Images at the top-left of
+the \(2\text{-}D\) layout show the digit 1 angled more to the left,
+while those at the bottom-right show the digit 1 angled more to the
+right.}
+
+\end{figure}%
+
+According to Figure~\ref{fig-mnist-tri-proj} (b), the non-linear
+structure observed in the \gD{} layout of PaCMAP
+(Figure~\ref{fig-pacmap-author}) is also visible when visualizing the
+model overlaid on the data space. This indicates that PaCMAP accurately
+captures the non-linear structure of the \(10\text{-}D\) data.
+Additionally, the model shows a twisted pattern within the non-linear
+structure in \(10\text{-}D\) space (Figure~\ref{fig-mnist-tri-proj}
+(c)), which is an additional pattern not visible in the \gD{}
+representation (Figure~\ref{fig-pacmap-author}). Furthermore, as shown
+in Figure~\ref{fig-mnist-tri-proj} (d), some long edges exist in the
+\(10\text{-}D\) space that are not recognized as long edges in the \gD{}
+representation. However, PaCMAP provides a reasonable \gD{}
+representation of MNIST digit 1 data, as it preserves the non-linear
+structure present in the \(10\text{-}D\) data.
+
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
+
+}
+
+\caption{\label{fig-mnist-tri-proj}Model in \gD{}, on the PaCMAP layout,
+and three views of the fit in projections from \(10\text{-}D\), for the
+digit 1 of MNIST data (\(a_1 = 0.062\), \(b = 285 \  (19,  15)\),
+\(m = 109\), and benchmark value to remove large edges is \(0.108\)).
+(The \textbf{langevitour} software is used to view the data with a tour,
+and the full video is available at \url{https://youtu.be/zcg_GXBmqjA}).}
 
 \end{figure}%
 
@@ -1072,42 +1105,9 @@ the lower edge of the \(2\text{-}D\) structure, while most large
 
 \end{figure}%
 
-According to \textbf{?@fig-mnist1-sc1}, the non-linear continuous
-structure observed in the \gD{} representation of PaCMAP
-(Figure~\ref{fig-pacmap-author}) is also visible when visualizing the
-model overlaid on the data space. This indicates that PaCMAP accurately
-captures the structure of the \(10\text{-}D\) data. Additionally, the
-model shows a twisted pattern within the non-linear structure in
-\(10\text{-}D\) space (\textbf{?@fig-mnist1-sc2}), which is an
-additional pattern not visible in the \gD{} representation
-(Figure~\ref{fig-pacmap-author}). Furthermore, as shown in
-\textbf{?@fig-mnist1-sc3}, some long edges exist in the \(10\text{-}D\)
-space that are not recognized as long edges in the \gD{} representation.
-However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1
-data, because PaCMAP preserves the non-linear structure present in the
-\(10\text{-}D\) data.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
-
-}
-
-\caption{\label{fig-mnist-tri-proj}Model in \gD{}, on the PaCMAP layout,
-and three views of the fit in projections from \(10\text{-}D\), for the
-digit 1 of MNIST data (\((s_1,  s_2) = (-0.100,  -0.059)\),
-\(b = 374   (22,  17)\), \(m = 140\), benchmark value to remove large
-edges is \(0.094\)). (The \textbf{langevitour} software is used to view
-the data with a tour, and the full video is available at
-\url{https://youtu.be/zcg_GXBmqjA}).}
-
-\end{figure}%
-
 There are certain data points that exhibit high error rates due to their
 deviation from the usual \(10\text{-}D\) data structure, which makes
-them anomalies (Figure~\ref{fig-model-mnist} b). These anomalies can be
+them anomalies (Figure~\ref{fig-model-mnist}). These anomalies can be
 classified into two types: those that are anomalies within the
 non-linear structure and those that lie outside of it. The images
 associated with high model error points within the non-linear structure
