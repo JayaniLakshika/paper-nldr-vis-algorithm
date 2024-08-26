@@ -3949,7 +3949,7 @@ trimesh_removed_pbmc + pbmc_proj_umap_model1 +
 - Demonstrate that it is, except for the anomalies 
 -->
 
-The MNIST dataset consists of $70000$ grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, we selected the handwritten digit 1 which has a non-linear structure in \gD{}. There are $7877$ images. Also, applied PCA as a preprocessing step and selected first $10$ principal components. The objective is to evaluate whether PaCMAP preserves the non-linear structure in \gD{}. 
+The MNIST dataset consists of $70000$ grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective was to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}. 
 
 <!-- PaCMAP preserves non-linear structure in $784\text{-}D$. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure. -->
 
@@ -3997,7 +3997,7 @@ pacmap_plot_mnist <- pacmap_plot_mnist +
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are $10$ nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to $0.5$, and the ratio of the number of further pairs to the number of neighbors is $2$. We use our *model-in-the-data-space* to assess whether this is an accurate representation of structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right."
+#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are $10$ nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to $0.5$, and the ratio of the number of further pairs to the number of neighbors is $2$. We use our *model-in-the-data-space* to assess whether this is an accurate representation of structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 images varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while those at the bottom-right show the digit 1 angled more to the right."
 #| label: fig-pacmap-author
 #| fig-pos: H
 #| out-height: 22%
