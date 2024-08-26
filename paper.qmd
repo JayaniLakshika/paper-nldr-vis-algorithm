@@ -2304,6 +2304,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
+    size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -2381,6 +2382,7 @@ five_gau_proj_tsne_model2 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
+    size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -2551,7 +2553,8 @@ five_gau_proj_umap_model1 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
-    alpha = 0.2) +
+    size = 0.5,
+    alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
     data=axes, 
@@ -2628,6 +2631,7 @@ five_gau_proj_umap_model2 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
+    size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -2779,39 +2783,15 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-# axes_obj <- gen_axes(
-#   data = scaled_gau_data, 
-#   proj_data = projected_df, 
-#   limits = 1)
-# 
-# axes <- axes_obj$axes
-# circle <- axes_obj$circle
+axes_obj <- gen_axes(
+  data = scaled_gau_data,
+  proj_data = projected_df,
+  limits = 0.3,
+  axis_pos_x = 0.1,
+  axis_pos_y = 0.05)
 
-limits <- 0.3
-projected_df_n <- projected_df |> select(-ID)
-
-rng <- range(projected_df_n)
-projected_df_n <- projected_df_n/max(abs(rng))
-colnames(projected_df_n) <- c("P1", "P2")
-projected_df_n <- data.frame(projected_df_n)
-obs_labels <- as.character(1:nrow(scaled_gau_data))
-
-axis_scale <- limits/6
-# axis_pos <- -2/3 * limits
-axis_pos <- 0
-
-adj <- function(x) axis_pos + x * axis_scale
-axes <- data.frame(x1 = adj(0), 
-                   y1 = adj(0), 
-                   x2 = adj(projection[, 1]), 
-                   y2 = adj(projection[, 2]))
-
-axis_labels <- colnames(scaled_gau_data)
-rownames(axes) <- axis_labels
-
-theta <- seq(0, 2 * pi, length = 50)
-circle <- data.frame(c1 = adj(cos(theta)), 
-                     c2 = adj(sin(theta)))
+axes <- axes_obj$axes
+circle <- axes_obj$circle
 
 five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
@@ -2843,8 +2823,8 @@ five_gau_proj_pacmap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.05, 0.35)) +
-  ylim(c(-0.05, 0.35)) +
+  xlim(c(0.05, 0.35)) +
+  ylim(c(0, 0.35)) +
   interior_annotation("e", 
                       position = c(0.08, 0.9),
                       cex = 3)
@@ -2881,41 +2861,15 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-# axes_obj <- gen_axes(
-#   data = scaled_gau_data, 
-#   proj_data = projected_df, 
-#   limits = 1)
-# 
-# axes <- axes_obj$axes
-# circle <- axes_obj$circle
+axes_obj <- gen_axes(
+  data = scaled_gau_data,
+  proj_data = projected_df,
+  limits = 0.3,
+  axis_pos_x = -0.05,
+  axis_pos_y = -0.4)
 
-limits <- 0.3
-projected_df_n <- projected_df |> select(-ID)
-
-rng <- range(projected_df_n)
-projected_df_n <- projected_df_n/max(abs(rng))
-colnames(projected_df_n) <- c("P1", "P2")
-projected_df_n <- data.frame(projected_df_n)
-obs_labels <- as.character(1:nrow(scaled_gau_data))
-
-axis_scale <- limits/6
-# axis_pos <- -2/3 * limits
-axis_pos_x <- -0.05
-axis_pos_y <- -0.4
-
-adj <- function(x, axis_pos) axis_pos + x * axis_scale
-axes <- data.frame(x1 = adj(0, axis_pos_x), 
-                   y1 = adj(0, axis_pos_y), 
-                   x2 = adj(projection[, 1], axis_pos_x), 
-                   y2 = adj(projection[, 2], axis_pos_y))
-
-axis_labels <- colnames(scaled_gau_data)
-rownames(axes) <- axis_labels
-
-theta <- seq(0, 2 * pi, length = 50)
-circle <- data.frame(c1 = adj(cos(theta), axis_pos_x), 
-                     c2 = adj(sin(theta), axis_pos_y))
-
+axes <- axes_obj$axes
+circle <- axes_obj$circle
 
 five_gau_proj_pacmap_model2 <- projected_df |>
   ggplot(
