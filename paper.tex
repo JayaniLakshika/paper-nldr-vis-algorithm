@@ -908,15 +908,39 @@ within-cluster variation. The data simulated from
 0 & 0 & 0 & 0.0025 \\
 \end{pmatrix}\).
 
-XXX Add tSNE, UMAP, and PaCMAP NLDR layouts and describe what is
-happening XXX Discuss the models of one specific cluster (filled out,
-pancakes): tSNE, UMAP, PaCMAP are useful to capture global structures,
-but this is an evidence where PaCMAP fail to capture the local structure
-with default hyper-parameter settings than tSNE and UMAP XXX Why?
-hyper-parameter choice specially number of neighbors, data
-characteristics (intrinsic dimensionality), imbalance between global and
-local structures, optimization and initialization issues XXX Add this is
-with specific hyper-parameter choices
+In the t-SNE 2D layout, the distances between clusters appear smaller,
+leading to more tightly packed clusters, which is typical of t-SNE's
+focus on preserving local structures. This often results in less
+emphasis on the global distances between clusters. On the other hand,
+UMAP tends to maintain larger separations between clusters, better
+reflecting the global structure and preserving the relative distances
+between clusters more effectively. PaCMAP, meanwhile, balances these
+aspects by maintaining the distance between clusters and positioning
+them correctly, effectively capturing both global and local structures.
+
+The t-SNE, UMAP, and PaCMAP layouts each reveal different aspects of the
+clustering structure within the dataset. When examining a specific
+cluster, which appears more like a filled-out pancake in higher
+dimensions, we observe that t-SNE, UMAP, and PaCMAP all effectively
+capture global structures. However, there is evidence suggesting that
+PaCMAP, with its default hyper-parameter settings, struggles to preserve
+the local structure as effectively as t-SNE and UMAP.
+
+The differences in performance can be attributed to several factors. One
+key element is the choice of hyper-parameters, particularly the number
+of neighbors considered during the dimensionality reduction process.
+This parameter significantly impacts how well local structures are
+maintained. Additionally, the intrinsic dimensionality of the data, the
+balance between global and local structures, and issues related to
+optimization and initialization all contribute to the observed outcomes.
+
+It's important to note that these observations are made with specific
+hyper-parameter settings. Adjusting these parameters could lead to
+different results, potentially improving PaCMAP's ability to capture
+local structures or altering how t-SNE and UMAP handle global and local
+structures. Thus, while PaCMAP generally balances global and local
+preservation, careful tuning of its parameters is crucial for achieving
+the best results in any given dataset.
 
 \begin{figure}[H]
 
