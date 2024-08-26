@@ -4132,17 +4132,16 @@ error_plot_mnist <- error_df |>
     type = "qual",
     palette = 2
   ) + 
-    # Optional: Set a minimal theme
-    theme(
-        legend.position = "bottom",
-        legend.text = element_text(size = 10),          # Increase legend text size
-        legend.key.size = unit(1, "lines")              # Increase size of legend keys
-    ) +
-    guides(
-        color = guide_legend(
-            override.aes = list(size = 2.5, alpha = 1)      # Increase point size and opacity in legend
-        )
-    )
+  theme(
+      legend.position = "bottom",
+      legend.text = element_text(size = 10),          # Increase legend text size
+      legend.key.size = unit(1, "lines")              # Increase size of legend keys
+  ) +
+  guides(
+      color = guide_legend(
+          override.aes = list(size = 2.5, alpha = 1)      # Increase point size and opacity in legend
+      )
+  )
 ```
 
 PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). Furthermore, shows some quirks when visualizing the *model-in-the-data-space* (@fig-mnist-tri-proj).
@@ -4423,15 +4422,14 @@ trimesh_removed_mnist + mnist_proj_pacmap_model1 +
 
 ```{r}
 #| echo: false
-#| fig-cap: "$10\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows a non-linear continuous structure. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge."
+#| fig-cap: "$10\\text{-}D$ model error in PaCMAP layout of MNIST digit 1 dataset in $2\\text{-}D$. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge (a). There are certain data points that exhibit high error rates due to their deviation from the usual $10\\text{-}D$ data structure, which makes them anomalies. These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1 (b). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (c). "
 #| label: fig-model-mnist
 #| fig-pos: H
-#| out-height: 22%
 
 error_plot_mnist 
 ```
 
-There are certain data points that exhibit high error rates due to their deviation from the usual $10\text{-}D$ data structure, which makes them anomalies (@fig-model-mnist). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out). 
+<!-- There are certain data points that exhibit high error rates due to their deviation from the usual $10\text{-}D$ data structure, which makes them anomalies (@fig-model-mnist). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out).  -->
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
