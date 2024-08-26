@@ -3949,7 +3949,9 @@ trimesh_removed_pbmc + pbmc_proj_umap_model1 +
 - Demonstrate that it is, except for the anomalies 
 -->
 
-The MNIST dataset consists of grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to demonstrate how PaCMAP preserves non-linear structure in \pD{}. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure.
+The MNIST dataset consists of $70000$ grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, we selected the handwritten digit 1 which has a non-linear structure in \gD{}. There are $7877$ images. Also, applied PCA as a preprocessing step and selected first $10$ principal components. The objective is to evaluate whether PaCMAP preserves the non-linear structure in \gD{}. 
+
+<!-- PaCMAP preserves non-linear structure in $784\text{-}D$. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure. -->
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3995,7 +3997,7 @@ pacmap_plot_mnist <- pacmap_plot_mnist +
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are 10 nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to 0.5, and the ratio of the number of further pairs to the number of neighbors is 2. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right."
+#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are $10$ nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to $0.5$, and the ratio of the number of further pairs to the number of neighbors is $2$. We use our *model-in-the-data-space* to assess whether this is an accurate representation of structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while images at the bottom-right show the digit 1 angled more to the right."
 #| label: fig-pacmap-author
 #| fig-pos: H
 #| out-height: 22%
@@ -4142,7 +4144,7 @@ error_plot_mnist +
   theme(legend.position='bottom')
 ```
 
-According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the \pD{} data. Additionally, the model shows a twisted pattern within the non-linear structure in \pD{} space (@fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the \pD{} space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data, because PaCMAP preserves the non-linear structure present in the \pD{} data. 
+According to @fig-mnist1-sc1, the non-linear continuous structure observed in the \gD{} representation of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist1-sc2), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist1-sc3, some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP is a reasonable \gD{} representation of MNIST digit 1 data, because PaCMAP preserves the non-linear structure present in the $10\text{-}D$ data. 
 
 ```{r}
 #| label: mnist-model-proj
@@ -4415,7 +4417,7 @@ trimesh_removed_mnist + mnist_proj_pacmap_model1 +
 <!-- ::: -->
 <!-- need to update the youtube recording-->
 
-There are certain data points that exhibit high error rates due to their deviation from the usual \pD{} data structure, which makes them anomalies (@fig-model-mnist b). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out). 
+There are certain data points that exhibit high error rates due to their deviation from the usual $10\text{-}D$ data structure, which makes them anomalies (@fig-model-mnist b). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out). 
 
 <!--images that occur large error-->
 <!-- within the nonlinear structure-->
