@@ -2964,7 +2964,7 @@ five_gau_proj_tsne_model1 + five_gau_proj_tsne_model2 +
 - Illustrate how to use our method to get a better representation
 -->
 
-In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR methods are commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). @fig-NLDR-variety (a) is the reproduction of the published plot. It shows three well-separated clusters with big separations. 
+In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR methods are commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). There are $2622$ single cells. First 9 principal components are used to generate the UMAP. @fig-NLDR-variety (a) is the reproduction of the published plot. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -2998,7 +2998,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 umap_pbmc 
 ```
 
-To determine whether the UMAP representation with the specific (hyper-)parameter choice suggested by @chen2023 preserves the original data structure, we visualize the model constructed with UMAP overlaid on the $9\text{-}D$ data. The @fig-umap-author shows three well-separated clusters. However, as shown in @fig-pbmc1-sc, there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-umap-author) does not accurately represent the structure(s) present in PBMC3k dataset. But, when visualizing the model-in-th-data-space some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-pbmc1-sc).  
+To determine whether the UMAP representation with the specific (hyper-)parameter choice suggested by @chen2023 preserves the data structure present in $9\text{-}D$ (@fig-model-pbmc-author-proj (b)), we visualize the model constructed with UMAP overlaid on the $9\text{-}D$ data. The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj, there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset in $9\text{-}D$. But, when visualizing the *model-in-th-data-space* some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-model-pbmc-author-proj).  
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -3389,7 +3389,7 @@ pbmc_proj_tsne_model3 <- projected_df |>
 #| fig-pos: H
 #| fig-height: 10
 #| fig-width: 10
-#| fig-cap: "Model in \\gD{}, on the UMAP layout, and three views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$) (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>)."
+#| fig-cap: "Model in \\gD{}, on the UMAP layout, and three views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$) The full video is available at <https://youtu.be/VqqWuE0Jj6A>."
 
 trimesh_removed_pbmc + pbmc_proj_tsne_model1 +
   pbmc_proj_tsne_model2 + pbmc_proj_tsne_model3 +

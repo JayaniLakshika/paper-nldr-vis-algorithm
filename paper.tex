@@ -932,22 +932,24 @@ clustering to identify groups of cells with similar expression profiles.
 NLDR methods are commonly used to display clusters, and help to verify
 the results. For example, \citet{chen2023} illustrates the use of UMAP
 to identify clusters in Human Peripheral Blood Mononuclear Cells
-(PBMC3k). Figure~\ref{fig-NLDR-variety} (a) is the reproduction of the
-published plot. It shows three well-separated clusters with big
-separations.
+(PBMC3k). There are \(2622\) single cells. First 9 principal components
+are used to generate the UMAP. Figure~\ref{fig-NLDR-variety} (a) is the
+reproduction of the published plot.
 
 To determine whether the UMAP representation with the specific
 (hyper-)parameter choice suggested by \citet{chen2023} preserves the
-original data structure, we visualize the model constructed with UMAP
-overlaid on the \(9\text{-}D\) data. The \textbf{?@fig-umap-author}
-shows three well-separated clusters. However, as shown in
-\textbf{?@fig-pbmc1-sc}, there is no big separation between three
-clusters in \(9\text{-}D\). Therefore, the suggested UMAP representation
-(\textbf{?@fig-umap-author}) does not accurately represent the
-structure(s) present in PBMC3k dataset. But, when visualizing the
-model-in-th-data-space some unobserved structures can be seen. Some
-clusters have non-linear continuity patterns and high-density patches
-(\textbf{?@fig-pbmc1-sc}).
+data structure present in \(9\text{-}D\)
+(Figure~\ref{fig-model-pbmc-author-proj} (b)), we visualize the model
+constructed with UMAP overlaid on the \(9\text{-}D\) data. The
+Figure~\ref{fig-NLDR-variety} (a) shows three well-separated clusters
+with big separations. However, as shown in
+Figure~\ref{fig-model-pbmc-author-proj}, there is no big separation
+between three clusters in \(9\text{-}D\). Therefore, the suggested UMAP
+representation (Figure~\ref{fig-NLDR-variety} (a)) does not accurately
+represent the structure of PBMC3k dataset in \(9\text{-}D\). But, when
+visualizing the \emph{model-in-th-data-space} some unobserved structures
+can be seen. Some clusters have non-linear continuity patterns and
+high-density patches (Figure~\ref{fig-model-pbmc-author-proj}).
 
 \begin{figure}[H]
 
@@ -959,11 +961,9 @@ clusters have non-linear continuity patterns and high-density patches
 
 \caption{\label{fig-model-pbmc-author-proj}Model in \gD{}, on the UMAP
 layout, and three views of the fit in projections from \(9\text{-}D\),
-for the PBMC3k data (\((s_1,  s_2) = (-0.050,  -0.041)\),
-\(b = 870   (30,  29)\), \(m = 135\), benchmark value to remove large
-edges is \(0.099\)) (The \textbf{langevitour} software is used to view
-the data with a tour, and the full video is available at
-\url{https://youtu.be/VqqWuE0Jj6A}).}
+for the PBMC3k data (\(b = 870   (30,  29)\), \(m = 135\), benchmark
+value to remove large edges is \(0.099\)) The full video is available at
+\url{https://youtu.be/VqqWuE0Jj6A}.}
 
 \end{figure}%
 
