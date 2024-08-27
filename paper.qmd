@@ -3287,6 +3287,8 @@ pbmc_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("b")
 
 ## Second projection
@@ -3359,6 +3361,8 @@ pbmc_proj_tsne_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("c")
 
 ## Third projection
@@ -3431,6 +3435,8 @@ pbmc_proj_tsne_model3 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("d")
 
 ```
@@ -3442,7 +3448,7 @@ pbmc_proj_tsne_model3 <- projected_df |>
 #| fig-width: 10
 #| fig-cap: "Model in \\gD{}, on the UMAP layout (a), and three views of the fit in projections from $9\\text{-}D$ (b, c, d), for the PBMC3k data ($a_1 = 0.046$, $b = 676 \\  (26, \ 26)$, $m = 92$, benchmark value to remove large edges is $0.08$). The three well-separated clusters observed in the \\gD{} layout of UMAP (@fig-NLDR-variety (a)) is also visible when visualizing the model overlaid on the data space. But the separation between the clusters are small in $9\\text{-}D$. The model shows non-linear clusters and densed points within clusters in $9\\text{-}D$ space, which are some additional patterns not visible in the \\gD{} representation (@fig-NLDR-variety (a)). The full video is available at <https://youtu.be/VqqWuE0Jj6A>."
 
-trimesh_removed_pbmc + pbmc_proj_tsne_model1 +
+free(trimesh_removed_pbmc) + pbmc_proj_tsne_model1 +
   pbmc_proj_tsne_model2 + pbmc_proj_tsne_model3 +
   plot_layout(ncol = 2)
 ```
