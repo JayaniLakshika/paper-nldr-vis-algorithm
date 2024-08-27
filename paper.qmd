@@ -3806,6 +3806,8 @@ pbmc_proj_umap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("b")
 
 ## Second projection
@@ -3878,6 +3880,8 @@ pbmc_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("c")
 
 ## Third projection
@@ -3950,6 +3954,8 @@ pbmc_proj_umap_model3 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("d")
 
 ```
@@ -3975,7 +3981,7 @@ pbmc_proj_umap_model3 <- projected_df |>
 #| fig-width: 10
 #| fig-height: 10
 
-trimesh_removed_pbmc + pbmc_proj_umap_model1 + 
+free(trimesh_removed_pbmc) + pbmc_proj_umap_model1 + 
   pbmc_proj_umap_model2 + pbmc_proj_umap_model3 +
   plot_layout(guides='collect', ncol=2) &
   theme(legend.position='none')
@@ -4296,6 +4302,8 @@ mnist_proj_pacmap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("b")
 
 ## Second projection
@@ -4368,6 +4376,8 @@ mnist_proj_pacmap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("c")
 
 ## Third projection
@@ -4440,6 +4450,8 @@ mnist_proj_pacmap_model3 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
   interior_annotation("d")
 
 ```
@@ -4452,7 +4464,7 @@ mnist_proj_pacmap_model3 <- projected_df |>
 #| fig-width: 10
 #| fig-cap: "Model in \\gD{}, on the PaCMAP layout (a), and three views (b, c, d) of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($a_1 = 0.062$, $b = 285 \\  (19, \ 15)$, $m = 109$, and benchmark value to remove large edges is $0.108$). (b) The non-linear structure observed in the \\gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\\text{-}D$ data. (c) the model shows a twisted pattern within the non-linear structure in $10\\text{-}D$ space, which is an additional pattern not visible in the \\gD{} representation (@fig-pacmap-author). (d) some long edges exist in the $10\\text{-}D$ space that are not recognized as long edges in the \\gD{} representation. The full video is available at <https://youtu.be/zcg_GXBmqjA>."
 
-trimesh_removed_mnist + mnist_proj_pacmap_model1 +
+free(trimesh_removed_mnist) + mnist_proj_pacmap_model1 +
   mnist_proj_pacmap_model2 + mnist_proj_pacmap_model3 +
   plot_layout(ncol = 2)
 ```
