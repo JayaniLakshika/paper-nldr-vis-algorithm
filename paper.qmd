@@ -1847,7 +1847,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     newdata = NULL,
     type_NLDR = "UMAP",
     col_start = "x") |>
-    mutate(benchmark_rm_lwd = benchmark_rm_lwd,
+    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
            bin1 = effective_bin1_scurve,
            bin2 = effective_bin2_scurve,
            b = bin1 * bin2,
@@ -1866,7 +1866,7 @@ error_rm_scurve <- error_rm_scurve |>
   filter(b_non_empty >= 5)
 
 mse_scurve_lwd <- ggplot(error_rm_scurve, 
-                     aes(x = mean_counts, 
+                     aes(x = benchmark_rm_lwd, 
                          y = MSE)) + 
   geom_point(
     size = 1
@@ -1878,8 +1878,8 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
   #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
   # scale_x_continuous("standardized bin count", 
   #        transform = "reverse") + 
-  scale_x_continuous(breaks = unique(error_rm_scurve$mean_counts)) +
-  xlab(expression(mean(n[h]))) +
+  scale_x_continuous(breaks = unique(error_rm_scurve$benchmark_rm_lwd)) +
+  xlab("threshold to remove low-density hexagons") +
   ylab("MSE") +
   ggtitle("(c)") +
   theme_minimal() +
