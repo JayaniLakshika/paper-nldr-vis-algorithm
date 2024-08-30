@@ -2288,9 +2288,12 @@ distance_df_small_edges <- distance_df_small_edges |>
   filter(row_number() != 108)
 
 ## First projection
+# projection <- cbind(
+#     c(0.46477,-0.02024,0.56378,0.39736),
+#     c(0.15607,-0.54876,-0.44090,0.41505))
 projection <- cbind(
-    c(0.46477,-0.02024,0.56378,0.39736),
-    c(0.15607,-0.54876,-0.44090,0.41505))
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2320,11 +2323,11 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  data = scaled_gau_data, 
-  proj_data = projected_df, 
-  limits = 0.3,
-  axis_pos_x = -0.4,
-  axis_pos_y = -0.1)
+  data = scaled_gau_data,
+  proj_data = projected_df,
+  limits = 0.2,
+  axis_pos_x = -0.12,
+  axis_pos_y = -0.12)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2359,8 +2362,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.45, -0.2)) +
-  ylim(c(-0.15, 0.18)) +
+  xlim(c(-0.41, -0.15)) +
+  ylim(c(0.18, 0.52)) +
   interior_annotation("a1", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -2401,11 +2404,11 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  data = scaled_gau_data, 
-  proj_data = projected_df, 
+  data = scaled_gau_data,
+  proj_data = projected_df,
   limits = 0.3,
-  axis_pos_x = 0.1,
-  axis_pos_y = -0.1)
+  axis_pos_x = -0.7,
+  axis_pos_y = -0.7)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2425,7 +2428,7 @@ five_gau_proj_tsne_model2 <- projected_df |>
     color = "#33a02c") +
   geom_point(
     size = 0.5,
-    alpha = 0.3) +
+    alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
     data=axes, 
@@ -2440,8 +2443,8 @@ five_gau_proj_tsne_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0.05, 0.25)) +
-  ylim(c(-0.15, 0.25)) +
+  xlim(c(-0.75, -0.35)) +
+  ylim(c(-0.75, -0.4)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -2549,9 +2552,12 @@ scaled_gau_data_model <- scaled_gau |>
   select(-type)
 
 ## First projection
+# projection <- cbind(
+#   c(0.02743,0.21427,0.62893,-0.49816),
+#   c(-0.70709,0.42156,-0.02593,0.10965))
 projection <- cbind(
-  c(0.02743,0.21427,0.62893,-0.49816),
-  c(-0.70709,0.42156,-0.02593,0.10965))
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2583,9 +2589,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
-  limits = 0.3,
-  axis_pos_x = -0.2,
-  axis_pos_y = -0.85)
+  limits = 0.2,
+  axis_pos_x = 0.45,
+  axis_pos_y = -0.28)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2620,8 +2626,8 @@ five_gau_proj_umap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.25, 0.1)) +
-  ylim(c(-0.9, -0.55)) +
+  xlim(c(-0.41, -0.15)) +
+  ylim(c(0.18, 0.52)) +
   interior_annotation("b1", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -2662,8 +2668,8 @@ axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
   limits = 0.3,
-  axis_pos_x = 0.08,
-  axis_pos_y = -0.08)
+  axis_pos_x = -0.7,
+  axis_pos_y = -0.7)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2683,7 +2689,7 @@ five_gau_proj_umap_model2 <- projected_df |>
     color = "#33a02c") +
   geom_point(
     size = 0.5,
-    alpha = 0.3) +
+    alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
     data=axes, 
@@ -2698,8 +2704,8 @@ five_gau_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0, 0.4)) +
-  ylim(c(-0.15, 0.3)) +
+  xlim(c(-0.75, -0.35)) +
+  ylim(c(-0.75, -0.4)) +
   interior_annotation("b2", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -2816,8 +2822,8 @@ distance_df_small_edges <- distance_gau1 |>
 
 ## First projection
 projection <- cbind(
-    c(0.21889,-0.25701,-0.19529,-0.73412),
-    c(-0.63168,0.27992,-0.42895,-0.17223))
+  c(-0.00215,-0.68905,-0.04778,-0.54223),
+  c(0.42558,-0.23854,-0.63659,0.35753))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2849,9 +2855,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
-  limits = 0.3,
-  axis_pos_x = 0.1,
-  axis_pos_y = 0.05)
+  limits = 0.2,
+  axis_pos_x = -0.37,
+  axis_pos_y = 0.22)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2886,8 +2892,8 @@ five_gau_proj_pacmap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0.05, 0.35)) +
-  ylim(c(0, 0.35)) +
+  xlim(c(-0.41, -0.15)) +
+  ylim(c(0.18, 0.52)) +
   interior_annotation("c1", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -2952,7 +2958,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
     color = "#33a02c") +
   geom_point(
     size = 0.8,
-    alpha = 0.3) +
+    alpha = 0.15) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
     data=axes, 
@@ -2978,7 +2984,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-five-gau-nldr-layouts
-#| fig-height: 5
+#| fig-height: 10
 #| fig-width: 15
 #| fig-pos: H
 #| fig-cap: "(a) tSNE, (b) UMAP, and (c) PaCMAP"

@@ -4,7 +4,8 @@ library(dplyr)
 library(readr)
 library(langevitour)
 
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+#training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
 pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 gau1_scaled_obj <- gen_scaled_data(
@@ -98,8 +99,8 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 #### With scaled data
 
 # Apply the scaling
-scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
-  as_tibble()
+# scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
+#   as_tibble()
 
 df_b <- df_bin_gau1 |>
   dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
@@ -111,8 +112,22 @@ df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
   select(-type)
 
 # Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
+data_gau <- training_data_gau |>
+  select(-ID) |>
+  mutate(type = "data")
+
+df_model_data <- bind_rows(data_gau, df_b)
+scaled_gau <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
+
+scaled_gau_data <- scaled_gau |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_gau_data_model <- scaled_gau |>
+  filter(type == "model") |>
+  select(-type)
+
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_gau_data_model |> mutate(type = "model"),
