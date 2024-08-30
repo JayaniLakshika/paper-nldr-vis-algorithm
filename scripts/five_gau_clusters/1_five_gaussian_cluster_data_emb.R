@@ -77,7 +77,7 @@ write_rds(df_2n, file = "data/five_gau_clusters/data_five_gau_with_labels.rds")
 # write_rds(test_data_5, file = "data/five_gau_clusters/data_five_gau_test.rds")
 
 ### tSNE
-tSNE_data_gau <- Fit_tSNE(df_2 |> dplyr::select(-ID), opt_perplexity = 30, with_seed = 20240110)
+tSNE_data_gau <- Fit_tSNE(df_2 |> dplyr::select(-ID), opt_perplexity = calculate_effective_perplexity(df_2), with_seed = 20240110)
 
 tSNE_data_gau <- tSNE_data_gau |>
   select(-ID) |>
@@ -85,8 +85,8 @@ tSNE_data_gau <- tSNE_data_gau |>
 
 plot_tSNE_2D(tSNE_data_gau)
 
-#write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_", calculate_effective_perplexity(df_2),".rds"))
-write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_30.rds"))
+write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_", calculate_effective_perplexity(df_2),".rds"))
+#write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_30.rds"))
 
 
 ### UMAP
