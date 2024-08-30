@@ -172,9 +172,9 @@ center_data <- function(data) {
 }
 
 # Function to scale data manually
-scale_data_manual <- function(data) {
+scale_data_manual <- function(data, type_col) {
   # Step 1: Center the data (mean 0)
-  data_centered <- center_data(data)
+  data_centered <- center_data(data |> select(-all_of(type_col)))
   
   # Step 2: Calculate the standard deviation of each dimension
   sds <- apply(data_centered, 2, sd)
@@ -193,6 +193,10 @@ scale_data_manual <- function(data) {
   for (i in seq_along(scaling_factors)) {
     data_scaled[, i] <- data_scaled[, i] * scaling_factors[i]
   }
+  
+  # Combine the scaled data with the 'type' column and return as a tibble
+  data_scaled <- as_tibble(data_scaled) %>% 
+    mutate(!!type_col := data[[type_col]])
   
   return(data_scaled)
 }
@@ -604,21 +608,26 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 true_model_df <- read_rds("data/s_curve/scurve_true_model.rds")
 wireframe_true_model <- read_rds("data/s_curve/scurve_true_model_wireframe.rds")
 
-# Apply the scaling function to the s_curve_noise data
-scaled_s_curve_noise <- scale_data_manual(
-  training_data_scurve |> select(-ID)) |>
+data_scurve <- training_data_scurve |> 
+  select(-ID) |> 
+  mutate(type = "data")
+
+model_scurve <- true_model_df |> 
+    select(-ID) |> 
+  mutate(type = "model")
+
+# Apply the scaling
+df_model_data_scurve <- bind_rows(data_scurve, model_scurve)
+scaled_scurve <- scale_data_manual(df_model_data_scurve, "type") |>
   as_tibble()
 
-# Scaling the true model and add the mean of scaled noise dimensions
-scaled_s_curve_true <- scale_data_manual(
-  true_model_df |> 
-    select(-ID) |>
-    select(x1:x3)) |>
-  as_tibble() |>
-  mutate(x4 = mean(scaled_s_curve_noise$x4),
-         x5 = mean(scaled_s_curve_noise$x5),
-         x6 = mean(scaled_s_curve_noise$x6),
-         x7 = mean(scaled_s_curve_noise$x7))
+scaled_s_curve_noise <- scaled_scurve |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_s_curve_true <- scaled_scurve |>
+  filter(type == "model") |>
+  select(-type)
 
 projection <- cbind(
     c(0.45181,0.04747,0.02613,0.25735,0.20622,0.08755,-0.11488),
@@ -2161,9 +2170,13 @@ It's important to note that these observations are made with specific hyper-para
 ```{r}
 #| label: five-gau-proj-tsne-model
 
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
-tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
+data_gau <- training_data_gau |> 
+  select(-ID) |>
+  mutate(type = "data")
+
+tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
 gau1_scaled_obj <- gen_scaled_data(
   data = tsne_data_gau)
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
@@ -2172,10 +2185,6 @@ tsne_gau <- tsne_gau_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2)) +
   geom_point(alpha=0.3, color = "#000000")
-
-# Apply the scaling
-scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
-  as_tibble()
 
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 13
@@ -2256,12 +2265,20 @@ df_b <- df_bin_gau1 |>
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
+  dplyr::select(-hb_id) 
 
 # Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
+df_model_data <- bind_rows(data_gau, df_b)
+scaled_gau <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
+
+scaled_gau_data <- scaled_gau |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_gau_data_model <- scaled_gau |>
+  filter(type == "model") |>
+  select(-type)
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
@@ -2349,9 +2366,12 @@ five_gau_proj_tsne_model1 <- projected_df |>
                       cex = 2)
 
 ## Second projection
+# projection <- cbind(
+#     c(-0.71895,0.29250,-0.29905,-0.01656),
+#     c(-0.16698,-0.62707,-0.23756,0.46328))
 projection <- cbind(
-    c(-0.71895,0.29250,-0.29905,-0.01656),
-    c(-0.16698,-0.62707,-0.23756,0.46328))
+  c(0.36030,0.00630,0.66545,-0.34307),
+  c(-0.01861,0.14409,-0.36798,-0.73066))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2509,20 +2529,24 @@ df_b <- df_bin_gau1 |>
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id)|>
-  select(-type)
-
-# Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
-  as_tibble()
+  dplyr::select(-hb_id)
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
 # Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
+df_model_data <- bind_rows(data_gau, df_b)
+scaled_gau <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
+
+scaled_gau_data <- scaled_gau |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_gau_data_model <- scaled_gau |>
+  filter(type == "model") |>
+  select(-type)
 
 ## First projection
 projection <- cbind(
@@ -2771,13 +2795,20 @@ df_b <- df_bin_gau1 |>
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id)|>
-  select(-type)
+  dplyr::select(-hb_id)
 
 # Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
+df_model_data <- bind_rows(data_gau, df_b)
+scaled_gau <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
 
+scaled_gau_data <- scaled_gau |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_gau_data_model <- scaled_gau |>
+  filter(type == "model") |>
+  select(-type)
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
@@ -2862,9 +2893,12 @@ five_gau_proj_pacmap_model1 <- projected_df |>
                       cex = 2)
 
 ### Second projection
+# projection <- cbind(
+#     c(-0.60995,0.33361,0.32920,-0.31518),
+#     c(0.19525,-0.30554,0.74417,0.07600))
 projection <- cbind(
-    c(-0.60995,0.33361,0.32920,-0.31518),
-    c(0.19525,-0.30554,0.74417,0.07600))
+  c(0.36030,0.00630,0.66545,-0.34307),
+  c(-0.01861,0.14409,-0.36798,-0.73066))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -2897,8 +2931,8 @@ axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
   limits = 0.3,
-  axis_pos_x = -0.05,
-  axis_pos_y = -0.4)
+  axis_pos_x = -0.7,
+  axis_pos_y = -0.7)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2933,8 +2967,8 @@ five_gau_proj_pacmap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.2)) +
-  ylim(c(-0.45, 0)) +
+  xlim(c(-0.75, -0.35)) +
+  ylim(c(-0.75, -0.4))+
   interior_annotation("c2", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -3196,9 +3230,9 @@ trimesh_removed_pbmc + error_plot_pbmc +
 ```{r}
 #| label: pbmc-umap-model-proj
 
-# Apply the scaling
-scaled_pbmc_data <- scale_data_manual(training_data_pbmc |> select(-ID)) |>
-  as_tibble()
+data_pbmc <- training_data_pbmc |> 
+  select(-ID) |>
+  mutate(type = "data")
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
@@ -3206,12 +3240,20 @@ df_b_pbmc <- df_bin_pbmc |>
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
+  dplyr::select(-hb_id) 
 
 # Apply the scaling
-scaled_pbmc_data_model <- scale_data_manual(df_b_pbmc) |>
+df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
+scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
   as_tibble()
+
+scaled_pbmc_data <- scaled_pbmc |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_pbmc_data_model <- scaled_pbmc |>
+  filter(type == "model") |>
+  select(-type)
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
@@ -3719,22 +3761,26 @@ error_plot_pbmc <- error_df |>
 ```{r}
 #| label: pbmc-tsne-model-proj
 
-# Apply the scaling
-scaled_pbmc_data <- scale_data_manual(training_data_pbmc |> select(-ID)) |>
-  as_tibble()
-
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
+  dplyr::select(-hb_id) 
 
 # Apply the scaling
-scaled_pbmc_data_model <- scale_data_manual(df_b_pbmc) |>
+df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
+scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
   as_tibble()
+
+scaled_pbmc_data <- scaled_pbmc |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_pbmc_data_model <- scaled_pbmc |>
+  filter(type == "model") |>
+  select(-type)
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
@@ -4035,6 +4081,10 @@ training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
+data_mnist <- training_data_mnist |>
+  select(-ID) |>
+  mutate(type = "data")
+
 pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds") |> 
   select(PaCMAP1, PaCMAP2, ID)
 mnist_scaled_obj <- gen_scaled_data(
@@ -4225,23 +4275,26 @@ As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reas
 <!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 ```{r}
 #| label: mnist-model-proj
-
-# Apply the scaling
-scaled_mnist_data <- scale_data_manual(training_data_mnist |> select(-ID)) |>
-  as_tibble()
-
 df_b_mnist <- df_bin_mnist |>
   dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b_mnist <- df_b_mnist[match(df_bin_centroids_mnist$hexID, df_b_mnist$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
+  dplyr::select(-hb_id) 
 
 # Apply the scaling
-scaled_mnist_data_model <- scale_data_manual(df_b_mnist) |>
+df_model_data_mnist <- bind_rows(data_mnist, df_b_mnist)
+scaled_mnist <- scale_data_manual(df_model_data_mnist, "type") |>
   as_tibble()
+
+scaled_mnist_data <- scaled_mnist |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_mnist_data_model <- scaled_mnist |>
+  filter(type == "model") |>
+  select(-type)
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
