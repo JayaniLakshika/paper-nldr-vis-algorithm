@@ -32,7 +32,8 @@ df2 <- tibble::tibble(x=rnorm(cluster_size, mean = 1, sd = 0.05), y=rnorm(cluste
 
 df3 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05), y=rnorm(cluster_size, mean = 1, sd = 0.05), z=rnorm(cluster_size, mean = 0, sd = 0.05), w=rnorm(cluster_size, mean = 0, sd = 0.05))
 
-df4 <- tibble::tibble(x=rnorm(100, mean = 0, sd = 0.7), y=rnorm(100, mean = 0, sd = 0.7), z=rnorm(100, mean = 0, sd = 0.7), w=rnorm(100, mean = 0, sd = 0.7))
+#df4 <- tibble::tibble(x=rnorm(50, mean = 1, sd = 1), y=rnorm(50, mean = 1, sd = 1), z=rnorm(50, mean = 1, sd = 1), w=rnorm(50, mean = 0, sd = 1))
+df4 <- tibble::tibble(x=runif(100, min = -3, max = 3), y=runif(100, min = -3, max = 3), z=runif(100, min = -3, max = 3), w=runif(100, min = -3, max = 3))
 
 df_2 <- bind_rows(df1, df2, df3, df4)
 df_2 <- df_2 |>

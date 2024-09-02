@@ -8,7 +8,7 @@ set.seed(20240110)
 
 training_data_gau <- read_rds("data/three_gau_clusters_with_bkg_noise/data_three_gau_clusters_with_bkg_noise.rds")
 
-tsne_data_gau <- read_rds("data/three_gau_clusters_with_bkg_noise/tsne_data_three_gau_clusters_with_bkg_noise_55.rds")
+tsne_data_gau <- read_rds("data/three_gau_clusters_with_bkg_noise/tsne_data_three_gau_clusters_with_bkg_noise_56.rds")
 gau1_scaled_obj <- gen_scaled_data(
   data = tsne_data_gau)
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
@@ -25,7 +25,7 @@ gau1_model <- fit_highd_model(
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "x",
   q = 0.1
 )

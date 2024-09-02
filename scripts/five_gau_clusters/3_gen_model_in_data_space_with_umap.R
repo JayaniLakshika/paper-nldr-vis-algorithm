@@ -50,6 +50,15 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
+tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
+  filter(row_number() != 147)
+
+trimesh_removed_gau1 <- vis_rmlg_mesh(
+  distance_edges = distance_gau1,
+  benchmark_value = benchmark_gau1,
+  tr_coord_df = tr_from_to_df_gau1,
+  distance_col = "distance")
+
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
   data = umap_gau_scaled,
@@ -121,6 +130,9 @@ df <- dplyr::bind_rows(scaled_gau_data_model |> mutate(type = "model"),
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
+
+distance_df_small_edges <- distance_df_small_edges |>
+  filter(row_number() != 147)
 
 # Visualize with langevitour
 langevitour(df |> dplyr::select(-type),
