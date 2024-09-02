@@ -2326,8 +2326,8 @@ axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
   limits = 0.2,
-  axis_pos_x = -0.37,
-  axis_pos_y = 0.22)
+  axis_pos_x = 0.15,
+  axis_pos_y = -0.85)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2362,8 +2362,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.41, -0.15)) +
-  ylim(c(0.18, 0.52)) +
+  xlim(c(0.1, 0.38)) +
+  ylim(c(-0.9, -0.5)) +
   interior_annotation("a1", 
                       position = c(0.08, 0.9),
                       cex = 2)
