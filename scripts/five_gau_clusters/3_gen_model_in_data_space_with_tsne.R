@@ -6,9 +6,9 @@ library(langevitour)
 
 set.seed(20240110)
 
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
-tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
+tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
 gau1_scaled_obj <- gen_scaled_data(
   data = tsne_data_gau)
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
@@ -63,8 +63,8 @@ benchmark_gau1 <- find_lg_benchmark(
 
 benchmark_gau1 <- 0.1
 
-tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-  filter(row_number() != 149)
+# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
+#   filter(row_number() != 149)
 
 trimesh_removed_gau1 <- vis_rmlg_mesh(
   distance_edges = distance_gau1,
@@ -125,9 +125,22 @@ gen_proj_langevitour(
 
 #### With scaled data
 
+data_gau <- training_data_gau |>
+  select(-ID) |>
+  mutate(type = "data")
+
 # Apply the scaling
-scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
+df_model_data <- bind_rows(data_gau, df_b)
+scaled_gau <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
+
+scaled_gau_data <- scaled_gau |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_gau_data_model <- scaled_gau |>
+  filter(type == "model") |>
+  select(-type)
 
 df_b <- df_bin_gau1 |>
   dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
@@ -138,10 +151,6 @@ df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
   dplyr::select(-hb_id) |>
   select(-type)
 
-# Apply the scaling
-scaled_gau_data_model <- scale_data_manual(df_b) |>
-  as_tibble()
-
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_gau_data_model |> mutate(type = "model"),
                        scaled_gau_data |> mutate(type = "data"))
@@ -150,8 +159,8 @@ df <- dplyr::bind_rows(scaled_gau_data_model |> mutate(type = "model"),
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
-distance_df_small_edges <- distance_df_small_edges |>
-  filter(row_number() != 108)
+# distance_df_small_edges <- distance_df_small_edges |>
+#   filter(row_number() != 108)
 
 # Visualize with langevitour
 langevitour(df |> dplyr::select(-type),

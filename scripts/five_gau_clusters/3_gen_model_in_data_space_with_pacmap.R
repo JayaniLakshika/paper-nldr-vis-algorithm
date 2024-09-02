@@ -99,19 +99,6 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 #### With scaled data
 
 # Apply the scaling
-# scaled_gau_data <- scale_data_manual(training_data_gau |> select(-ID)) |>
-#   as_tibble()
-
-df_b <- df_bin_gau1 |>
-  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
-
-# Apply the scaling
 data_gau <- training_data_gau |>
   select(-ID) |>
   mutate(type = "data")
@@ -126,6 +113,15 @@ scaled_gau_data <- scaled_gau |>
 
 scaled_gau_data_model <- scaled_gau |>
   filter(type == "model") |>
+  select(-type)
+
+df_b <- df_bin_gau1 |>
+  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id) |>
   select(-type)
 
 
