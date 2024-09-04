@@ -3181,7 +3181,7 @@ trimesh_removed_pbmc <- ggplot() +
     color = "#000000"
   )  +
   coord_fixed() +
-  interior_annotation("a")
+  interior_annotation("a1")
 
 # ## Compute error
 # error_df <- augment(
@@ -3219,19 +3219,6 @@ trimesh_removed_pbmc <- ggplot() +
 #              size = 0.1) +
 #   interior_annotation("b", sc_ltr_pos)
 
-```
-
-<!--bin1 = 30, bin2 = 29, b = 870, non_empty = 135-->
-```{r}
-#| echo: false
-#| fig-cap: "(a) Model generated in $2\\text{-}D$ with UMAP, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters."
-#| label: fig-model-pbmc-author
-#| fig-pos: H
-#| eval: false
-
-trimesh_removed_pbmc + error_plot_pbmc + 
-  plot_layout(guides='collect', ncol=2) &
-  theme(legend.position='bottom')
 ```
 
 ```{r}
@@ -3308,537 +3295,6 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-pbmc_proj_tsne_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#33a02c") +
-  geom_point(
-    size = 0.5,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
-  interior_annotation("b")
-
-## Second projection
-projection <- cbind(
-    c(0.78689,-0.14774,0.36527,0.09617,0.12097,-0.00033,0.36973,-0.20959,-0.08438),
-    c(0.18390,-0.43121,-0.30398,0.05861,0.55282,-0.14058,-0.27048,0.44386,-0.27372))
-
-projected <- as.matrix(scaled_pbmc_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_pbmc |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df,  
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-pbmc_proj_tsne_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#33a02c") +
-  geom_point(
-    size = 0.5,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
-  interior_annotation("c")
-
-## Third projection
-projection <- cbind(
-    c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
-    c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
-
-projected <- as.matrix(scaled_pbmc_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_pbmc |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df,  
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-pbmc_proj_tsne_model3 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#33a02c") +
-  geom_point(
-    size = 0.5,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
-  interior_annotation("d")
-
-```
-
-```{r}
-#| label: fig-model-pbmc-author-proj
-#| fig-pos: H
-#| fig-height: 10
-#| fig-width: 10
-#| fig-cap: "Model in \\gD{}, on the UMAP layout (a), and three views of the fit in projections from $9\\text{-}D$ (b, c, d), for the PBMC3k data ($a_1 = 0.046$, $b = 676 \\  (26, \ 26)$, $m = 92$, benchmark value to remove large edges is $0.08$). The three well-separated clusters observed in the \\gD{} layout of UMAP (@fig-NLDR-variety (a)) is also visible when visualizing the model overlaid on the data space. But the separation between the clusters are small in $9\\text{-}D$. The model shows non-linear clusters and densed points within clusters in $9\\text{-}D$ space, which are some additional patterns not visible in the \\gD{} representation (@fig-NLDR-variety (a)). The full video is available at <https://youtu.be/VqqWuE0Jj6A>."
-
-free(trimesh_removed_pbmc) + pbmc_proj_tsne_model1 +
-  pbmc_proj_tsne_model2 + pbmc_proj_tsne_model3 +
-  plot_layout(ncol = 2)
-```
-
-<!-- ::: {#fig-pbmc1-sc layout-ncol="4" fig-pos="H"} -->
-<!-- ![](figures/pbmc3k/umap_trimesh_plot.png) -->
-
-<!-- ![](figures/pbmc3k/sc_1.png) -->
-
-<!-- ![](figures/pbmc3k/sc_2.png) -->
-
-<!-- ![](figures/pbmc3k/sc_3.png) -->
-
-<!-- Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$) (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>). -->
-<!-- ::: -->
-<!--compute absolute error for different parameter choices-->
-
-```{r}
-#| label: combine-data-pbmc
-
-error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
-error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
-error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
-error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
-error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
-error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
-error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
-error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds")
-
-error_pbmc <- bind_rows(error_pbmc_umap, 
-                        error_pbmc_umap2,
-                        error_pbmc_umap3,
-                        error_pbmc_tsne,
-                        error_pbmc_tsne2,
-                        error_pbmc_phate,
-                        error_pbmc_trimap,
-                        error_pbmc_pacmap)
-
-error_pbmc <- error_pbmc |>
-  mutate(a1 = round(a1, 2)) |>
-  filter(bin1 >= 5) |>
-  group_by(method, a1) |>
-  filter(MSE == min(MSE)) |>
-  ungroup()
-```
-
-```{r}
-#| label: tsne-pbmc
-# read the png file from device 
-
-#pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
-
-error_plot_pbmc <- ggplot(error_pbmc, 
-                          aes(x = a1, 
-                              y = MSE, 
-                              colour = method)) + 
-  geom_point(size = 0.8) +
-  geom_line(linewidth = 0.3) + 
-  # geom_vline(xintercept = 15, linetype="solid", 
-  #            color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
-                              '#984ea3','#999999','#a65628','#f781bf')) +
-  scale_y_log10() +
-  ylab("log(MSE)") +
-  xlab(expression(paste("binwidth (", a[1], ")"))) +
-  theme_minimal() +
-  theme(panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line(),
-        legend.position = "none",
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7)) 
-
-```
-
-```{r}
-#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in Figure 1) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, b, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts c and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
-#| label: fig-pbmc-mse
-#| fig-pos: H
-#| out-height: 100%
-
-free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
-           nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
-```
-
-<!--best choice-->
-
-```{r}
-#| label: tsne-pbmc-read
-tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
-pbmc_scaled_obj <- gen_scaled_data(
-  data = tsne_pbmc)
-tsne_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
-
-# tsne_pbmc <- tsne_pbmc_scaled |>
-#   ggplot(aes(x = tSNE1,
-#              y = tSNE2)) +
-#   geom_point(alpha=0.3, color = "#000000")
-```
-
-<!--tSNE with perplexity:30-->
-```{r}
-#| echo: false
-#| fig-cap: "The $2\\text{-}D$ layout from tSNE applied for the PBMC3k dataset. The default (hyper-)parameter setting is a perplexity $30$. We use our model-in-the-data-space to assess whether this is an accurate representation of structure present in the high-dimensional data, or if it is misleading."
-#| label: fig-tsne-suggest
-#| fig-pos: H
-#| out-width: 40%
-#| eval: false
-
-tsne_pbmc 
-```
-
-<!-- We then fit the model for tSNE, and visualize the resultant model in the $9\text{-}D$ data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data. -->
-
-<!--Fit the best model and compute error-->
-```{r}
-#| label: num-bins-pbmc
-## Compute hexbin parameters
-num_bins_x_pbmc <- 13
-lim1 <- pbmc_scaled_obj$lim1
-lim2 <- pbmc_scaled_obj$lim2
-r2_pbmc <- diff(lim2)/diff(lim1) 
-
-pbmc_model <- fit_highd_model(
-  training_data = training_data_pbmc,
-  emb_df = tsne_pbmc_scaled,
-  bin1 = num_bins_x_pbmc,
-  r2 = r2_pbmc,
-  q = 0.1,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "PC"
-)
-
-df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
-df_bin_pbmc <- pbmc_model$df_bin
-
-## Triangulate bin centroids
-tr1_object_pbmc <- tri_bin_centroids(
-  df_bin_centroids_pbmc, x = "c_x", y = "c_y")
-tr_from_to_df_pbmc <- gen_edges(
-  tri_object = tr1_object_pbmc)
-
-# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-#   filter(!(row_number() %in% c(65, 112, 130)))
-
-## Compute 2D distances
-distance_pbmc <- cal_2d_dist(
-  tr_coord_df = tr_from_to_df_pbmc,
-  start_x = "x_from",
-  start_y = "y_from",
-  end_x = "x_to",
-  end_y = "y_to",
-  select_vars = c("from", "to", "distance"))
-
-## To find the benchmark value
-benchmark_pbmc <- find_lg_benchmark(
-  distance_edges = distance_pbmc,
-  distance_col = "distance")
-
-benchmark_pbmc <- 0.1
-
-## Remove an edge that exist as long edge in p-D
-# tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
-
-tr_df <- distinct(tibble::tibble(
-  x = c(tr_from_to_df_pbmc[["x_from"]], tr_from_to_df_pbmc[["x_to"]]), 
-  y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
-
-distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc)
-
-tr_from_to_df_pbmc <- inner_join(
-  tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
-  by = c("from", "to"))
-
-tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-  filter(!(row_number() %in% c(155)))
-
-trimesh_removed_pbmc <- ggplot() + 
-  geom_segment(data = tr_from_to_df_pbmc, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#33a02c") +
-  geom_point(
-    data = tsne_pbmc_scaled,
-    aes(
-      x = tSNE1,
-      y = tSNE2
-    ),
-    alpha = 0.2,
-    color = "#000000"
-  )  +
-  coord_fixed() +
-  interior_annotation("a")
-
-# trimesh_removed_pbmc <- vis_rmlg_mesh(
-#   distance_edges = distance_pbmc,
-#   benchmark_value = benchmark_pbmc,
-#   tr_coord_df = tr_from_to_df_pbmc,
-#   distance_col = "distance") +
-#   geom_point(
-#     data = tsne_pbmc_scaled,
-#     aes(
-#       x = tSNE1,
-#       y = tSNE2
-#     ),
-#     alpha = 0.2,
-#     color = "#000000"
-#   ) 
-#   #xlim(sc_xlims) + ylim(sc_ylims) +
-#   #interior_annotation("a", sc_ltr_pos)
-
-## Compute error
-error_df <- augment(
-  df_bin_centroids = df_bin_centroids_pbmc,
-  df_bin = df_bin_pbmc,
-  training_data = training_data_pbmc,
-  newdata = NULL,
-  type_NLDR = "tSNE",
-  col_start = "PC")
-
-## Categorize error
-
-error_df <- error_df |>
-  mutate(type = case_when(
-    row_wise_abs_error <= 5 ~ "error 0-5",
-    row_wise_abs_error <= 10 ~ "error 5-10",
-    row_wise_abs_error <= 15 ~ "error 10-15",
-    row_wise_abs_error <= 20 ~ "error 15-20",
-    row_wise_abs_error <= 25 ~ "error 20-25",
-    .default = "error greter than 25"
-  )) |>
-  mutate(type = factor(type, levels = c(
-    "error 0-5", "error 5-10", "error 10-15", "error 15-20", "error 20-25", 
-    "error greter than 25")))
-
-## To join embedding
-error_df <- error_df |>
-  bind_cols(tsne_pbmc_scaled |>
-              select(-ID))
-
-error_plot_pbmc <- error_df |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             color = type,
-             group = ID)) +
-  geom_point(alpha=0.5,
-             size = 0.1) +
-  interior_annotation("b", sc_ltr_pos)
-
-```
-
-```{r}
-#| label: pbmc-tsne-model-proj
-
-df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) 
-
-# Apply the scaling
-df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
-scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
-  as_tibble()
-
-scaled_pbmc_data <- scaled_pbmc |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_pbmc_data_model <- scaled_pbmc |>
-  filter(type == "model") |>
-  select(-type)
-
-# Combine with the true model for visualization
-df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
-                       scaled_pbmc_data |> mutate(type = "data"))
-
-## Removed long edge in high-d
-distance_df_small_edges_pbmc <- distance_df_small_edges_pbmc |>
-  filter(!(row_number() %in% c(155)))
-
-## First projection
-projection <- cbind(
-    c(0.40456,-0.55243,-0.58434,0.05063,-0.20540,-0.10469,0.28850,0.12209,0.17017),
-    c(0.34225,0.53615,-0.05822,-0.01993,-0.55480,0.21337,0.34100,-0.07280,-0.33139))
-
-projected <- as.matrix(scaled_pbmc_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_pbmc |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df,  
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
 pbmc_proj_umap_model1 <- projected_df |>
   ggplot(
     aes(
@@ -3871,12 +3327,12 @@ pbmc_proj_umap_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("b")
+  interior_annotation("a2")
 
 ## Second projection
 projection <- cbind(
-    c(0.07154,-0.44483,-0.04593,0.63343,0.21449,-0.39592,-0.29762,0.01726,0.30845),
-    c(0.87788,-0.21837,0.11780,-0.17226,-0.17920,-0.00829,0.11424,0.28681,0.06091))
+    c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
+    c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection
 
@@ -3947,12 +3403,291 @@ pbmc_proj_umap_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c")
+  interior_annotation("a3")
 
-## Third projection
+```
+
+<!-- ::: {#fig-pbmc1-sc layout-ncol="4" fig-pos="H"} -->
+<!-- ![](figures/pbmc3k/umap_trimesh_plot.png) -->
+
+<!-- ![](figures/pbmc3k/sc_1.png) -->
+
+<!-- ![](figures/pbmc3k/sc_2.png) -->
+
+<!-- ![](figures/pbmc3k/sc_3.png) -->
+
+<!-- Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$) (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>). -->
+<!-- ::: -->
+<!--compute absolute error for different parameter choices-->
+
+```{r}
+#| label: combine-data-pbmc
+
+error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
+error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
+error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
+error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
+error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
+error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
+error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
+error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds")
+
+error_pbmc <- bind_rows(error_pbmc_umap, 
+                        error_pbmc_umap2,
+                        error_pbmc_umap3,
+                        error_pbmc_tsne,
+                        error_pbmc_tsne2,
+                        error_pbmc_phate,
+                        error_pbmc_trimap,
+                        error_pbmc_pacmap)
+
+error_pbmc <- error_pbmc |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(bin1 >= 5) |>
+  group_by(method, a1) |>
+  filter(MSE == min(MSE)) |>
+  ungroup()
+```
+
+```{r}
+#| label: error-comp-pbmc
+# read the png file from device 
+
+#pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
+
+error_plot_pbmc <- ggplot(error_pbmc, 
+                          aes(x = a1, 
+                              y = MSE, 
+                              colour = method)) + 
+  geom_point(size = 0.8) +
+  geom_line(linewidth = 0.3) + 
+  # geom_vline(xintercept = 15, linetype="solid", 
+  #            color = "black", linewidth=0.8, alpha = 0.5) +
+  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
+                              '#984ea3','#999999','#a65628','#f781bf')) +
+  scale_y_log10() +
+  ylab("log(MSE)") +
+  xlab(expression(paste("binwidth (", a[1], ")"))) +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7)) 
+
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in Figure 1) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, b, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts c and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
+#| label: fig-pbmc-mse
+#| fig-pos: H
+#| out-height: 100%
+
+free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+           nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
+```
+
+<!--best choice-->
+
+```{r}
+#| label: umap-pbmc-read-best
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+pbmc_scaled_obj <- gen_scaled_data(
+  data = umap_pbmc2)
+umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
+
+# tsne_pbmc <- tsne_pbmc_scaled |>
+#   ggplot(aes(x = tSNE1,
+#              y = tSNE2)) +
+#   geom_point(alpha=0.3, color = "#000000")
+```
+
+<!-- We then fit the model for tSNE, and visualize the resultant model in the $9\text{-}D$ data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data. -->
+
+<!--Fit the best model and compute error-->
+```{r}
+#| label: num-bins-pbmc
+## Compute hexbin parameters
+num_bins_x_pbmc <- 13
+lim1 <- pbmc_scaled_obj$lim1
+lim2 <- pbmc_scaled_obj$lim2
+r2_pbmc <- diff(lim2)/diff(lim1) 
+
+pbmc_model <- fit_highd_model(
+  training_data = training_data_pbmc,
+  emb_df = umap_pbmc_scaled_best,
+  bin1 = num_bins_x_pbmc,
+  r2 = r2_pbmc,
+  q = 0.1,
+  is_bin_centroid = TRUE,
+  is_rm_lwd_hex = FALSE,
+  col_start_highd = "PC"
+)
+
+df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
+df_bin_pbmc <- pbmc_model$df_bin
+
+## Triangulate bin centroids
+tr1_object_pbmc <- tri_bin_centroids(
+  df_bin_centroids_pbmc, x = "c_x", y = "c_y")
+tr_from_to_df_pbmc <- gen_edges(
+  tri_object = tr1_object_pbmc)
+
+# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+#   filter(!(row_number() %in% c(65, 112, 130)))
+
+## Compute 2D distances
+distance_pbmc <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_pbmc,
+  start_x = "x_from",
+  start_y = "y_from",
+  end_x = "x_to",
+  end_y = "y_to",
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_pbmc <- find_lg_benchmark(
+  distance_edges = distance_pbmc,
+  distance_col = "distance")
+
+#benchmark_pbmc <- 0.1
+
+## Remove an edge that exist as long edge in p-D
+# tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
+
+tr_df <- distinct(tibble::tibble(
+  x = c(tr_from_to_df_pbmc[["x_from"]], tr_from_to_df_pbmc[["x_to"]]), 
+  y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
+
+distance_df_small_edges_pbmc <- distance_pbmc |>
+  filter(distance < benchmark_pbmc)
+
+tr_from_to_df_pbmc <- inner_join(
+  tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
+  by = c("from", "to"))
+
+# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+#   filter(!(row_number() %in% c(155)))
+
+trimesh_removed_pbmc_best <- ggplot() + 
+  geom_segment(data = tr_from_to_df_pbmc, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
+  geom_point(
+    data = umap_pbmc_scaled_best,
+    aes(
+      x = UMAP1,
+      y = UMAP2
+    ),
+    alpha = 0.2,
+    color = "#000000"
+  )  +
+  coord_fixed() +
+  interior_annotation("b1")
+
+# trimesh_removed_pbmc <- vis_rmlg_mesh(
+#   distance_edges = distance_pbmc,
+#   benchmark_value = benchmark_pbmc,
+#   tr_coord_df = tr_from_to_df_pbmc,
+#   distance_col = "distance") +
+#   geom_point(
+#     data = tsne_pbmc_scaled,
+#     aes(
+#       x = tSNE1,
+#       y = tSNE2
+#     ),
+#     alpha = 0.2,
+#     color = "#000000"
+#   ) 
+#   #xlim(sc_xlims) + ylim(sc_ylims) +
+#   #interior_annotation("a", sc_ltr_pos)
+
+## Compute error
+error_df <- augment(
+  df_bin_centroids = df_bin_centroids_pbmc,
+  df_bin = df_bin_pbmc,
+  training_data = training_data_pbmc,
+  newdata = NULL,
+  type_NLDR = "UMAP",
+  col_start = "PC")
+
+## Categorize error
+
+error_df <- error_df |>
+  mutate(type = case_when(
+    row_wise_abs_error <= 5 ~ "error 0-5",
+    row_wise_abs_error <= 10 ~ "error 5-10",
+    row_wise_abs_error <= 15 ~ "error 10-15",
+    row_wise_abs_error <= 20 ~ "error 15-20",
+    row_wise_abs_error <= 25 ~ "error 20-25",
+    .default = "error greter than 25"
+  )) |>
+  mutate(type = factor(type, levels = c(
+    "error 0-5", "error 5-10", "error 10-15", "error 15-20", "error 20-25", 
+    "error greter than 25")))
+
+## To join embedding
+error_df <- error_df |>
+  bind_cols(umap_pbmc_scaled_best |>
+              select(-ID))
+
+error_plot_pbmc_best <- error_df |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2,
+             color = type,
+             group = ID)) +
+  geom_point(alpha=0.5,
+             size = 0.1) +
+  interior_annotation("b", sc_ltr_pos)
+
+```
+
+```{r}
+#| label: pbmc-umap-model-proj-best
+
+df_b_pbmc <- df_bin_pbmc |>
+  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
+  dplyr::select(-hb_id) 
+
+# Apply the scaling
+df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
+scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
+  as_tibble()
+
+scaled_pbmc_data <- scaled_pbmc |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_pbmc_data_model <- scaled_pbmc |>
+  filter(type == "model") |>
+  select(-type)
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
+                       scaled_pbmc_data |> mutate(type = "data"))
+
+## Removed long edge in high-d
+# distance_df_small_edges_pbmc <- distance_df_small_edges_pbmc |>
+#   filter(!(row_number() %in% c(155)))
+
+## First projection
 projection <- cbind(
-    c(0.13399,-0.00303,0.34841,-0.15626,-0.27432,0.48771,0.14252,0.39963,0.57983),
-    c(0.49615,0.73920,-0.15299,-0.07463,-0.07948,0.13320,-0.15484,0.20042,-0.28869))
+    c(0.24156,0.85058,0.11564,-0.03255,-0.28106,0.27463,-0.10539,0.08429,0.13107),
+    c(-0.67212,0.02745,-0.26718,-0.33126,-0.34919,0.20839,-0.14498,-0.37708,0.15455))
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection
 
@@ -3991,7 +3726,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-pbmc_proj_umap_model3 <- projected_df |>
+pbmc_proj_umap_model1_best <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -4023,7 +3758,83 @@ pbmc_proj_umap_model3 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("d")
+  interior_annotation("b2")
+
+## Second projection
+projection <- cbind(
+    c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
+    c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
+
+projected <- as.matrix(scaled_pbmc_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_pbmc |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  data = scaled_pbmc_data, 
+  proj_data = projected_df,  
+  limits = 1.5,
+  axis_pos_x = -0.75,
+  axis_pos_y = -0.75)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+pbmc_proj_umap_model2_best <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  scale_color_manual(values = c("#000000", "#33a02c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes, 
+    aes(x=x2, y=y2, label=rownames(axes)), 
+    colour="grey50",
+    size = 3) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
+  interior_annotation("b3")
 
 ```
 
@@ -4043,14 +3854,15 @@ pbmc_proj_umap_model3 <- projected_df |>
 ```{r}
 #| echo: false
 #| fig-cap: "Model in \\gD{}, on the tSNE layout (a), and three views of the fit in projections from $9\\text{-}D$ (b, c, d), for the PBMC3k data ($a_1 = 0.099$, $b = 221 \\  (13, \ 17)$, $m = 92$, benchmark value to remove large edges is $0.1$). The three well-separated clusters with small separations observed in the \\gD{} layout of tSNE (@fig-NLDR-variety (e)) is also visible when visualizing the model overlaid on the data space in $9\\text{-}D$. Furthermore, there are some non-linear clusters. The model shows densed points within clusters in $9\\text{-}D$ space, which is an additional patterns not visible in the \\gD{} representation (@fig-NLDR-variety (e)). The full video is available at <https://youtu.be/5Y1hE4i7N2k>."
-#| label: fig-pbmc2-sc
+#| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
 
-free(trimesh_removed_pbmc) + pbmc_proj_umap_model1 + 
-  pbmc_proj_umap_model2 + pbmc_proj_umap_model3 +
-  plot_layout(guides='collect', ncol=2) &
+free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
+  pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
+  pbmc_proj_umap_model2 + pbmc_proj_umap_model2_best +
+  plot_layout(nrow=3) &
   theme(legend.position='none')
 ```
 
