@@ -3879,6 +3879,60 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 The MNIST dataset consists of $70000$ grayscale images of handwritten digits [@lecun2010]. @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective is to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}. 
 
+```{r}
+#| label: read-mnist-nldr
+# Read a variety of different NLDR representations of mnist
+# and plot them on same aspect ratio
+tsne_mnist <- read_rds("data/mnist/mnist_tsne89.rds")
+
+nldr_mnist1 <- tsne_mnist |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("a")
+
+umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
+
+nldr_mnist2 <- umap_mnist |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("b")
+
+phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
+
+nldr_mnist3 <- phate_mnist |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("c")
+
+trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
+
+nldr_mnist4 <- trimap_mnist |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("d")
+
+pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
+
+nldr_mnist5 <- pacmap_mnist |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e")
+```
+
+```{r}
+#| fig-width: 25
+#| fig-height: 5
+
+nldr_mnist1 + nldr_mnist2 + 
+  nldr_mnist3 + nldr_mnist4 + nldr_mnist5 +
+  plot_layout(ncol = 5)
+```
+
 <!-- PaCMAP preserves non-linear structure in $784\text{-}D$. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure. -->
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
