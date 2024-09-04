@@ -51,15 +51,18 @@ mnist_10_pcs_of_digit_1 <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 
 ##############
 ### tSNE
-tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = calculate_effective_perplexity(mnist_10_pcs_of_digit_1), with_seed = 20240110)
+#tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = calculate_effective_perplexity(mnist_10_pcs_of_digit_1), with_seed = 20240110)
+tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = 30, with_seed = 20240110)
+
 
 tSNE_data_gau <- tSNE_data_gau |>
   mutate(ID = 1:NROW(tSNE_data_gau))
 
 plot_tSNE_2D(tSNE_data_gau)
 
-write_rds(tSNE_data_gau, file = paste0("data/mnist/mnist_tsne", calculate_effective_perplexity(mnist_10_pcs_of_digit_1),".rds"))
+#write_rds(tSNE_data_gau, file = paste0("data/mnist/mnist_tsne", calculate_effective_perplexity(mnist_10_pcs_of_digit_1),".rds"))
 #write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_30.rds"))
+write_rds(tSNE_data_gau, file = paste0("data/mnist/mnist_tsne30.rds"))
 
 
 ### UMAP
@@ -131,6 +134,7 @@ data_matrix <- matrix(data_vector, ncol = NCOL(mnist_10_pcs_of_digit_1))
 
 # Initialize PaCMAP instance
 reducer <- pacmap$PaCMAP(n_components = as.integer(2), n_neighbors = as.integer(10), MN_ratio = 0.5, FP_ratio = as.integer(2))
+
 
 # Perform dimensionality Reduction
 PacMAP_data <- reducer$fit_transform(data_matrix, init = "random") |>

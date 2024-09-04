@@ -69,7 +69,8 @@ write_rds(error_mnist_umap, "data/mnist/error_mnist_umap.rds")
 bin1_vec_mnist <- 5:63 #sqrt(NROW(training_data_mnist)/2)
 
 ## For tsne
-tsne_mnist <- read_rds("data/mnist/mnist_tsne89.rds")
+#tsne_mnist <- read_rds("data/mnist/mnist_tsne89.rds")
+tsne_mnist <- read_rds("data/mnist/mnist_tsne30.rds")
 mnist_scaled_obj_tsne <- gen_scaled_data(
   data = tsne_mnist)
 tsne_mnist_scaled <- mnist_scaled_obj_tsne$scaled_nldr
