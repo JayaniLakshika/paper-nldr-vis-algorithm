@@ -4010,27 +4010,27 @@ tsne_plot_mnist <- tsne_minst_scaled |>
              y = tSNE2)) + 
   geom_point(alpha=0.1, color = "#000000") 
 
-# # read the png file from device 
-# left_top_img <- readPNG("figures/mnist/mnist_digit1_img_lt.png", native = TRUE)
-# center_img <- readPNG("figures/mnist/mnist_digit1_img_c.png", native = TRUE)
-# right_bottom_img <- readPNG("figures/mnist/mnist_digit1_img_rb.png", native = TRUE)
-# 
-# tsne_plot_mnist <- tsne_plot_mnist +
-#     inset_element(p = left_top_img, 
-#                   left = 0.8, 
-#                   bottom = 0.85, 
-#                   right = 0, 
-#                   top = 0.95) +
-#     inset_element(p = center_img, 
-#                   left = 1.2, 
-#                   bottom = 0.6, 
-#                   right = 0, 
-#                   top = 0.7) +
-#     inset_element(p = right_bottom_img, 
-#                   left = 1.7, 
-#                   bottom = 0.48, 
-#                   right = 0, 
-#                   top = 0.58)
+# read the png file from device
+left_top_img <- readPNG("figures/mnist/mnist_right_top_img.png", native = TRUE)
+center_img <- readPNG("figures/mnist/mnist_middle_img.png", native = TRUE)
+right_bottom_img <- readPNG("figures/mnist/mnist_right_bottom_img.png", native = TRUE)
+
+tsne_plot_mnist <- tsne_plot_mnist +
+    inset_element(p = left_top_img,
+                  left = 1,
+                  bottom = 0.85,
+                  right = 0,
+                  top = 0.95) +
+    inset_element(p = center_img,
+                  left = 0.8,
+                  bottom = 0.5,
+                  right = 0,
+                  top = 0.6) +
+    inset_element(p = right_bottom_img,
+                  left = 1,
+                  bottom = 0.2,
+                  right = 0,
+                  top = 0.3)
 ```
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
