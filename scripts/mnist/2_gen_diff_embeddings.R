@@ -29,7 +29,7 @@ reticulate::source_python(here::here("scripts/function_scripts/Fit_TriMAP_code.p
 
 source(here::here("scripts/nldr_code.R"))
 
-mnist_10_pcs_of_digit_1 <- readRDS("data/mnist/mnist_10_pcs_of_digit_1.rds")
+mnist_10_pcs_of_digit_1 <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 
 # ## PaCMAP
 #
