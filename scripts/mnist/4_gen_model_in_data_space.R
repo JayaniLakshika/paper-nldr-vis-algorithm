@@ -1,7 +1,7 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
 
 ## Import data
@@ -9,11 +9,11 @@ training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
-pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds") |>
-  select(PaCMAP1, PaCMAP2, ID)
+tsne_minst <- read_rds("data/mnist/mnist_tsne30.rds")
+
 mnist_scaled_obj <- gen_scaled_data(
-  data = pacmap_minst)
-pacmap_minst_scaled <- mnist_scaled_obj$scaled_nldr
+  data = tsne_minst)
+tsne_minst_scaled <- mnist_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
 num_bins_x_mnist <- 19
@@ -23,7 +23,7 @@ r2_mnist <- diff(lim2)/diff(lim1)
 
 mnist_model <- fit_highd_model(
   training_data = training_data_mnist,
-  emb_df = pacmap_minst_scaled,
+  emb_df = tsne_minst_scaled,
   bin1 = num_bins_x_mnist,
   r2 = r2_mnist,
   is_bin_centroid = TRUE,
@@ -56,13 +56,13 @@ benchmark_mnist <- find_lg_benchmark(
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_mnist <- hex_binning(
-  data = pacmap_minst_scaled,
+  data = tsne_minst_scaled,
   bin1 = num_bins_x_mnist,
   r2 = r2_mnist)
 
-pacmap_data_with_hb_id <- hb_obj_mnist$data_hb_id
+tsne_data_with_hb_id <- hb_obj_mnist$data_hb_id
 df_all_mnist <- dplyr::bind_cols(training_data_mnist |> dplyr::select(-ID),
-                           pacmap_data_with_hb_id)
+                           tsne_data_with_hb_id)
 
 ### Define type column
 df <- df_all_mnist |>
@@ -92,9 +92,23 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 
 #### With scaled data
 
+data_mnist <- training_data_mnist |>
+  select(-ID) |>
+  mutate(type = "data")
+
 # Apply the scaling
-scaled_mnist_data <- scale_data_manual(training_data_mnist |> select(-ID)) |>
+df_model_data <- bind_rows(data_mnist, df_b)
+scaled_mnist <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
+
+scaled_mnist_data <- scaled_mnist |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_mnist_data_model <- scaled_mnist |>
+  filter(type == "model") |>
+  select(-type)
+
 
 df_b_mnist <- df_bin_mnist |>
   dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
@@ -104,10 +118,6 @@ df_b_mnist <- df_bin_mnist |>
 df_b_mnist <- df_b_mnist[match(df_bin_centroids_mnist$hexID, df_b_mnist$hb_id),] |>
   dplyr::select(-hb_id) |>
   select(-type)
-
-# Apply the scaling
-scaled_mnist_data_model <- scale_data_manual(df_b_mnist) |>
-  as_tibble()
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),

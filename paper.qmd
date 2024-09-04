@@ -4271,7 +4271,7 @@ mnist_proj_tsne_model1 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
-    size = 0.5,
+    size = 0.2,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -4293,8 +4293,8 @@ mnist_proj_tsne_model1 <- projected_df |>
 
 ## Second projection
 projection <- cbind(
-    c(0.13639,-0.18552,-0.38537,-0.03088,-0.04663,0.15013,-0.28351,-0.28865,-0.03379,-0.38009),
-    c(-0.46592,-0.40953,-0.02752,0.12815,0.08356,-0.12991,-0.28307,0.11145,0.08031,0.10800))
+    c(-0.33305,0.20223,0.06303,0.11124,0.13299,-0.30093,0.34082,0.15581,-0.08864,0.33573),
+    c(0.53615,0.14969,-0.09393,-0.20053,0.07992,-0.34791,0.13057,-0.06814,-0.16737,0.03716))
 
 projected <- as.matrix(scaled_mnist_data) %*% projection
 
@@ -4347,7 +4347,7 @@ mnist_proj_tsne_model2 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
-    size = 0.5,
+    size = 0.2,
     alpha = 0.1) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -4369,8 +4369,8 @@ mnist_proj_tsne_model2 <- projected_df |>
 
 ## Third projection
 projection <- cbind(
-    c(0.47163,0.21622,0.04027,0.17328,0.03603,0.06488,-0.22226,-0.07186,0.39674,0.13485),
-    c(-0.41187,0.36322,0.11264,-0.14175,0.19810,0.07062,0.00680,0.08795,0.37068,-0.11280))
+    c(-0.12783,-0.50063,-0.02631,-0.00484,0.17733,0.37157,0.11310,0.09424,0.19844,0.19792),
+    c(-0.42542,0.29570,0.31106,-0.30307,0.00614,0.16714,0.21779,-0.00025,0.07020,-0.00689))
 
 projected <- as.matrix(scaled_mnist_data) %*% projection
 
@@ -4423,7 +4423,7 @@ mnist_proj_tsne_model3 <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
-    size = 0.5,
+    size = 0.2,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
