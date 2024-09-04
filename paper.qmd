@@ -4257,7 +4257,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-mnist_proj_pacmap_model1 <- projected_df |>
+mnist_proj_tsne_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -4333,7 +4333,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-mnist_proj_pacmap_model2 <- projected_df |>
+mnist_proj_tsne_model2 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -4409,7 +4409,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-mnist_proj_pacmap_model3 <- projected_df |>
+mnist_proj_tsne_model3 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -4451,10 +4451,10 @@ mnist_proj_pacmap_model3 <- projected_df |>
 #| fig-pos: H
 #| fig-height: 10
 #| fig-width: 10
-#| fig-cap: "Model in \\gD{}, on the PaCMAP layout (a), and three views (b, c, d) of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($a_1 = 0.062$, $b = 285 \\  (19, \ 15)$, $m = 109$, and benchmark value to remove large edges is $0.108$). (b) The non-linear structure observed in the \\gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\\text{-}D$ data. (c) the model shows a twisted pattern within the non-linear structure in $10\\text{-}D$ space, which is an additional pattern not visible in the \\gD{} representation (@fig-pacmap-author). (d) some long edges exist in the $10\\text{-}D$ space that are not recognized as long edges in the \\gD{} representation. The full video is available at <https://youtu.be/zcg_GXBmqjA>."
+#| fig-cap: "Model in \\gD{}, on the tSNE layout (a), and three views (b, c, d) of the fit in projections from $10\\text{-}D$, for the digit 1 of MNIST data ($a_1 = 0.062$, $b = 285 \\  (19, \ 15)$, $m = 109$, and benchmark value to remove large edges is $0.108$). (b) The non-linear structure observed in the \\gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\\text{-}D$ data. (c) the model shows a twisted pattern within the non-linear structure in $10\\text{-}D$ space, which is an additional pattern not visible in the \\gD{} representation (@fig-pacmap-author). (d) some long edges exist in the $10\\text{-}D$ space that are not recognized as long edges in the \\gD{} representation. The full video is available at <https://youtu.be/zcg_GXBmqjA>."
 
-free(trimesh_removed_mnist) + mnist_proj_pacmap_model1 +
-  mnist_proj_pacmap_model2 + mnist_proj_pacmap_model3 +
+free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
+  mnist_proj_tsne_model2 + mnist_proj_tsne_model3 +
   plot_layout(ncol = 2)
 ```
 
@@ -4483,7 +4483,7 @@ free(trimesh_removed_mnist) + mnist_proj_pacmap_model1 +
 ## Data with pixel values
 mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 
-img_error_within <- c(6169, 5987, 773, 6671, 4785, 4699, 5173, 5475) 
+img_error_within <- c(5173, 6671, 2964, 2464, 6319, 7388, 4303, 7650) 
 
 pixels_gathered_within <-  mnist_data |>
   mutate(instance = row_number()) |>
@@ -4502,7 +4502,7 @@ imge_error_sample_within <- pixels_gathered_within |>
         strip.text.x = element_blank(),
         legend.position = "none") 
 
-img_error_outside <- c(1489, 5095, 855, 3143, 453, 3619, 1015, 409) #, 5101
+img_error_outside <- c(3554, 501, 4422, 6860, 3869, 1529, 4916, 6144)
 
 pixels_gathered_outside <-  mnist_data |>
   mutate(instance = row_number()) |>
@@ -4525,7 +4525,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "$10\\text{-}D$ model error in PaCMAP layout of MNIST digit 1 dataset in $2\\text{-}D$. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge (a). There are certain data points that exhibit large error rates due to their deviation from the usual $10\\text{-}D$ data structure, which makes them anomalies. These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1 (b). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (c). "
+#| fig-cap: "$10\\text{-}D$ model error in tSNE layout of MNIST digit 1 dataset in $2\\text{-}D$. Most low $10\\text{-}D$ model errors are distributed along the lower edge of the $2\\text{-}D$ structure, while most large $10\\text{-}D$ model errors are concentrated along the upper edge (a). There are certain data points that exhibit large error rates due to their deviation from the usual $10\\text{-}D$ data structure, which makes them anomalies. These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1 (b). However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (c). "
 #| fig-pos: H
 #| fig-width: 4
 #| fig-height: 8
