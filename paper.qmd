@@ -108,12 +108,12 @@ library(quollr)
 library(tibble)
 library(dplyr)
 # remotes::install_github("jlmelville/snedata")
-library(snedata)
-library(ggflowchart)
-library(purrr) ## map function
-library(gridExtra) ## for grid.arrange
-library(rsample)
-library(DT)
+# library(snedata)
+# library(ggflowchart)
+#library(purrr) ## map function
+#library(gridExtra) ## for grid.arrange
+# library(rsample)
+# library(DT)
 library(ggbeeswarm)
 library(ggplot2)
 library(readr)
@@ -309,7 +309,8 @@ nldr2c <- umap_pbmc |>
   interior_annotation("b")
 
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
+#umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
 nldr3 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+

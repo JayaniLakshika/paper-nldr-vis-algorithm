@@ -5,8 +5,8 @@ library(ggplot2)
 library(quollr)
 set.seed(20240110)
 
-n_neighbors <- 9
-min_dist <- 0.5
+n_neighbors <- 10
+min_dist <- 0.99
 
 ## Select PCs
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")

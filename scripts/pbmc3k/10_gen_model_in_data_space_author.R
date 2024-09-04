@@ -1,7 +1,7 @@
 ## Import necessary libraries
 library(quollr)
 library(dplyr)
-library(reader)
+library(readr)
 library(langevitour)
 
 ## Import data
