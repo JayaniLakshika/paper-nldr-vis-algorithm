@@ -1062,15 +1062,23 @@ The digit 1 of the MNIST dataset consists of \(7877\) grayscale images
 of handwritten digits \citep{lecun2010}. Before further analysis, PCA
 was used to preprocess the data, where the first \(10\) principal
 components, explaining 83\% of the total variation, were selected. The
-objective is to select a reasonable NLDR layout, representing the
-non-linear sub-clustering structure of the digit 1 dataset in
-\(10\text{-}D\).
+objective is to select a reasonable \gD{} layout, representing the
+non-linear structure of the digit 1 dataset in \(10\text{-}D\).
 
-The MSE for different \(a_1\) using tSNE, UMAP, PHATE, PaCMAP, and
-TriMAP with default (hyper-)parameter setting
+The MSE for different bin widths (\(a_1\)) using tSNE, UMAP, PHATE,
+PaCMAP, and TriMAP with default (hyper-)parameter setting
 (Figure~\ref{fig-mnist-mse}) were calculated. It is found that tSNE
-provide the most reasonable representation for the digit 1 dataset,
-showing universally best (Figure~\ref{fig-mnist-mse}).
+(Figure~\ref{fig-mnist-mse} (a)) provide the most reasonable
+representation for the digit 1 dataset, showing universally best.
+However, \gD{} representation shows a big non-linear cluster and a small
+cluster with a small gap.
+
+In the case of digit 1 data, there should not be any clusters unless
+anomalies exist, indicating different digit 1 patterns. The angle of the
+digit 1 images varies along this non-linear clustering structure
+(Figure~\ref{fig-tsne-best}), while the small cluster contains the digit
+1 images with different patterns of the digit 1, unlike the usual
+(Figure~\ref{fig-model-error-mnist} (c)).
 
 \begin{figure}[H]
 
@@ -1089,22 +1097,18 @@ hyper-parameter settings}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.22\textheight]{paper_files/figure-pdf/fig-pacmap-author-1.pdf}
+\includegraphics[width=1\textwidth,height=0.22\textheight]{paper_files/figure-pdf/fig-tsne-best-1.pdf}
 
 }
 
-\caption{\label{fig-pacmap-author}\(2\text{-}D\) layout from PaCMAP
-applied for the digit 1 of the MNIST dataset. The (hyper-)parameter
-settings, beyond the defaults, are \(10\) nearest neighbors, ratio of
-the number of mid-near pairs to the number of neighbors equal to
-\(0.5\), and the ratio of the number of further pairs to the number of
-neighbors is \(2\). We use our \emph{model-in-the-data-space} to assess
-whether this is an accurate representation of non-linear structure
-present in \(10\text{-}D\), or if it is misleading. The angle of the
-digit 1 images varies along this structure. Images at the top-left of
-the \(2\text{-}D\) layout show the digit 1 angled more to the left,
-while those at the bottom-right show the digit 1 angled more to the
-right.}
+\caption{\label{fig-tsne-best}The \(2\text{-}D\) layout from tSNE
+applied for the MNIST digit 1 dataset with defualt (hyper-)parameters.
+We use our \emph{model-in-the-data-space} to assess whether this is an
+accurate representation of non-linear structure present in
+\(10\text{-}D\), or if it is misleading. The angle of the digit 1 images
+varies along this structure. Images at the top-right of the \(\gD{}\)
+layout show the digit 1 angled more to the right, while those at the
+bottom-right show the digit 1 angled more to the left.}
 
 \end{figure}%
 
@@ -1121,13 +1125,13 @@ right.}
 \(10\text{-}D\), for the digit 1 of MNIST data (\(a_1 = 0.062\),
 \(b = 285 \  (19,  15)\), \(m = 109\), and benchmark value to remove
 large edges is \(0.108\)). (b) The non-linear structure observed in the
-\gD{} layout of PaCMAP (Figure~\ref{fig-pacmap-author}) is also visible
+\gD{} layout of PaCMAP (\textbf{?@fig-pacmap-author}) is also visible
 when visualizing the model overlaid on the data space. This indicates
 that PaCMAP accurately captures the non-linear structure of the
 \(10\text{-}D\) data. (c) the model shows a twisted pattern within the
 non-linear structure in \(10\text{-}D\) space, which is an additional
 pattern not visible in the \gD{} representation
-(Figure~\ref{fig-pacmap-author}). (d) some long edges exist in the
+(\textbf{?@fig-pacmap-author}). (d) some long edges exist in the
 \(10\text{-}D\) space that are not recognized as long edges in the \gD{}
 representation. The full video is available at
 \url{https://youtu.be/zcg_GXBmqjA}.}

@@ -3877,9 +3877,11 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 <!--add different NLDR layouts-->
 
-The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable NLDR layout, representing the non-linear sub-clustering structure of the digit 1 dataset in $10\text{-}D$. 
+The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$. 
 
-The MSE for different $a_1$ using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE provide the most reasonable representation for the digit 1 dataset, showing universally best (@fig-mnist-mse). 
+The MSE for different bin widths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE (@fig-mnist-mse (a)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap. 
+
+In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-tsne-best), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). 
 
 <!-- @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective is to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}.  -->
 
@@ -4039,8 +4041,8 @@ tsne_plot_mnist <- tsne_plot_mnist +
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 ```{r}
-#| fig-cap: "$2\\text{-}D$ layout from PaCMAP applied for the digit 1 of the MNIST dataset. The (hyper-)parameter settings, beyond the defaults, are $10$ nearest neighbors, ratio of the number of mid-near pairs to the number of neighbors equal to $0.5$, and the ratio of the number of further pairs to the number of neighbors is $2$. We use our *model-in-the-data-space* to assess whether this is an accurate representation of non-linear structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 images varies along this structure. Images at the top-left of the $2\\text{-}D$ layout show the digit 1 angled more to the left, while those at the bottom-right show the digit 1 angled more to the right."
-#| label: fig-pacmap-author
+#| fig-cap: "The $2\\text{-}D$ layout from tSNE applied for the MNIST digit 1 dataset with defualt (hyper-)parameters. We use our *model-in-the-data-space* to assess whether this is an accurate representation of non-linear structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 images varies along this structure. Images at the top-right of the $\\gD{}$ layout show the digit 1 angled more to the right, while those at the bottom-right show the digit 1 angled more to the left."
+#| label: fig-tsne-best
 #| fig-pos: H
 #| out-height: 22%
 
