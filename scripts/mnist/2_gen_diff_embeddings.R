@@ -54,6 +54,8 @@ mnist_10_pcs_of_digit_1 <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 #tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = calculate_effective_perplexity(mnist_10_pcs_of_digit_1), with_seed = 20240110)
 tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = 30, with_seed = 20240110)
 
+tSNE_fit <- mnist_10_pcs_of_digit_1 |>
+  Rtsne::Rtsne(perplexity = 30)
 
 tSNE_data_gau <- tSNE_data_gau |>
   mutate(ID = 1:NROW(tSNE_data_gau))
@@ -99,7 +101,10 @@ data_vector <- unlist(mnist_10_pcs_of_digit_1)
 data_matrix <- matrix(data_vector, ncol = NCOL(mnist_10_pcs_of_digit_1))
 
 # Initialize PaCMAP instance
-reducer <- trimap$TRIMAP(n_dims = as.integer(2), n_inliers = as.integer(12), n_outliers = as.integer(4), n_random = as.integer(3))
+reducer <- trimap$TRIMAP(n_dims = as.integer(2),
+                         n_inliers = as.integer(12),
+                         n_outliers = as.integer(4),
+                         n_random = as.integer(3))
 
 # Perform dimensionality Reduction
 TriMAP_data <- reducer$fit_transform(data_matrix) |>
