@@ -997,6 +997,27 @@ between three clusters in \(9\text{-}D\). Therefore, the suggested UMAP
 representation (Figure~\ref{fig-NLDR-variety} (a)) does not accurately
 represent the structure of PBMC3k dataset in \(9\text{-}D\).
 
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
+
+}
+
+\caption{\label{fig-pbmc-mse}Assessing which of the 8 NLDR layouts on
+the PBMC3k data (shown in Figure~\ref{fig-NLDR-variety}) is the better
+representation using MSE for varying binwidth (\(a_1\)). Colour used for
+the lines and points in the left plot and in the scatterplots represents
+NLDR layout (a-h). Layout f is universally poor. Layouts a, b, g, h that
+show large separations between clusters are universally suboptimal.
+Layout d with little separation performs well at tiny binwidth (where
+most points are in their own bin) and poorly as binwidth increases. The
+choice of best is between layouts c and e, that have small separations
+between oddly shaped clusters. Layout e is the best choice.}
+
+\end{figure}%
+
 In order to find a reasonable NLDR representation for the PBMC3k
 dataset, the MSE for different \(a_1\) using UMAP, tSNE, PHATE, PaCMAP,
 and TriMAP with different (hyper-)parameter settings
@@ -1011,27 +1032,6 @@ clusters (Figure~\ref{fig-NLDR-variety} (e)). The visualization of the
 (\textbf{?@fig-pbmc2-sc}). Therefore, tSNE with perplexity \(30\)
 accurately captures the data structure of the PBMC3k dataset, which is
 better than UMAP.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
-
-}
-
-\caption{\label{fig-pbmc-mse}Assessing which of the 8 NLDR layouts on
-the PBMC3k data (shown in Figure 1) is the better representation using
-MSE for varying binwidth (\(a_1\)). Colour used for the lines and points
-in the left plot and in the scatterplots represents NLDR layout (a-h).
-Layout f is universally poor. Layouts a, b, g, h that show large
-separations between clusters are universally suboptimal. Layout d with
-little separation performs well at tiny binwidth (where most points are
-in their own bin) and poorly as binwidth increases. The choice of best
-is between layouts c and e, that have small separations between oddly
-shaped clusters. Layout e is the best choice.}
-
-\end{figure}%
 
 \begin{figure}[H]
 
