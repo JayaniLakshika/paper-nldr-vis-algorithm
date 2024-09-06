@@ -979,10 +979,11 @@ the results. For example, \citet{chen2023} illustrates the use of UMAP
 to identify clusters in Human Peripheral Blood Mononuclear Cells
 (PBMC3k). There are \(2622\) single cells. First 9 principal components
 are used to generate the UMAP. Figure~\ref{fig-NLDR-variety} (a) is the
-reproduction of the published plot. The objective is to select a
-reasonable \gD{} layout, representing the three close clusters of the
-PBMC3k dataset in \(9\text{-}D\)
-(Figure~\ref{fig-model-pbmc-author-proj} (a2)).
+reproduction of the published plot. The objective is to assess the
+published layout, and if it does not accurately represent the three
+clusters with small separations of the PBMC3k dataset
+(Figure~\ref{fig-model-pbmc-author-proj} (a2)), then select a reasonable
+\gD{} layout.
 
 To determine whether the UMAP representation with the specific
 (hyper-)parameter choice suggested by \citet{chen2023} preserves the
@@ -994,11 +995,7 @@ with big separations. However, as shown in
 Figure~\ref{fig-model-pbmc-author-proj}, there is no big separation
 between three clusters in \(9\text{-}D\). Therefore, the suggested UMAP
 representation (Figure~\ref{fig-NLDR-variety} (a)) does not accurately
-represent the structure of PBMC3k dataset in \(9\text{-}D\). But, when
-visualizing the \emph{model-in-the-data-space} some unobserved
-structures can be seen. Some clusters have non-linear continuity
-patterns and high-density patches
-(Figure~\ref{fig-model-pbmc-author-proj}).
+represent the structure of PBMC3k dataset in \(9\text{-}D\).
 
 In order to find a reasonable NLDR representation for the PBMC3k
 dataset, the MSE for different \(a_1\) using UMAP, tSNE, PHATE, PaCMAP,
