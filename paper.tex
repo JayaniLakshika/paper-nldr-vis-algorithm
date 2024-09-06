@@ -1071,14 +1071,25 @@ PaCMAP, and TriMAP with default (hyper-)parameter setting
 (Figure~\ref{fig-mnist-mse} (a)) provide the most reasonable
 representation for the digit 1 dataset, showing universally best.
 However, \gD{} representation shows a big non-linear cluster and a small
-cluster with a small gap.
+cluster with a small gap (Figure~\ref{fig-tsne-best}).
 
 In the case of digit 1 data, there should not be any clusters unless
 anomalies exist, indicating different digit 1 patterns. The angle of the
 digit 1 images varies along this non-linear clustering structure
 (Figure~\ref{fig-tsne-best}), while the small cluster contains the digit
 1 images with different patterns of the digit 1, unlike the usual
-(Figure~\ref{fig-model-error-mnist} (c)).
+(Figure~\ref{fig-model-error-mnist} (c)). This provides the evidence for
+two close clusters.
+
+The \emph{model-in-the-data-space} helps to assess the \gD{} layout. As
+shown in \citet{mnist-model-proj} (a), the model provides the evidence
+for the non-linear structure in \(10\text{-}D\). Also, by visualizing
+the model in \(10\text{-}D\) shows some quirks. The model has a twisted
+pattern which actually provide evidence for the \(10\text{-}D\)
+structure which couldn't be observed by \gD{} layout
+(@\citet{mnist-model-proj} (b)). Furthermore, there are some long edges
+which indicates the existence of the small cluster and it's so close
+(@\citet{mnist-model-proj} (c)).
 
 \begin{figure}[H]
 
@@ -1146,20 +1157,19 @@ representation. The full video is available at
 
 }
 
-\caption{\label{fig-model-error-mnist}\(10\text{-}D\) model error in
-tSNE layout of MNIST digit 1 dataset in \(2\text{-}D\). Most low
-\(10\text{-}D\) model errors are distributed along the lower edge of the
-\(2\text{-}D\) structure, while most large \(10\text{-}D\) model errors
-are concentrated along the upper edge (a). There are certain data points
-that exhibit large error rates due to their deviation from the usual
-\(10\text{-}D\) data structure, which makes them anomalies. These
-anomalies can be classified into two types: those that are anomalies
-within the non-linear structure and those that lie outside of it. The
-images associated with high model error points within the non-linear
-structure display different patterns of the digit 1 (b). However, when
-comparing these images to the ones found outside of the non-linear
-structure, it becomes evident that the latter display different patterns
-of the digit 1 (c).}
+\caption{\label{fig-model-error-mnist}(a) The \(10\text{-}D\) model
+error for tSNE layout in \(\gD{}\) of MNIST digit 1 dataset. Most low
+\(10\text{-}D\) model errors are distributed along the big non-linear
+clutser, while most large \(10\text{-}D\) model errors are concentrated
+along the small cluster. (b) There are certain data points that exhibit
+large error rates due to their deviation from the usual \(10\text{-}D\)
+data structure, which makes them anomalies. These anomalies can be
+classified into two types: those that are anomalies within the
+non-linear structure and those that lie outside of it. The images
+associated with high model error points within the non-linear structure
+display different patterns of the digit 1. However, when comparing these
+images to the ones found outside of the non-linear structure, it becomes
+evident that the latter display different patterns of the digit 1 (c).}
 
 \end{figure}%
 
