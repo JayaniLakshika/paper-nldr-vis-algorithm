@@ -3879,7 +3879,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$. 
 
-The MSE for different bin widths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE (@fig-mnist-mse (a)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap (@fig-tsne-best). 
+The MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE (@fig-mnist-mse (a)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap (@fig-tsne-best). 
 
 In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-tsne-best), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters. 
 
@@ -3986,7 +3986,7 @@ error_plot_mnist <- ggplot(error_mnist,
 
 
 ```{r}
-#| fig-cap: "Different methods with default hyper-parameter settings"
+#| fig-cap: "Assessing which of the 5 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
 #| out-height: 100%
