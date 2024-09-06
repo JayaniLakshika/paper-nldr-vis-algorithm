@@ -3877,7 +3877,9 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 <!--add different NLDR layouts-->
 
-The digit 1 of MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select the best NLDR layout, representing the structure of the digit 1 data in $10\text{-}D$ with default (hyper-)parameters. 
+The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable NLDR layout, representing the non-linear sub-clustering structure of the digit 1 dataset in $10\text{-}D$. 
+
+The MSE for different $a_1$ using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE provide the most reasonable representation for the digit 1 dataset, showing universally best (@fig-mnist-mse). 
 
 <!-- @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective is to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}.  -->
 
