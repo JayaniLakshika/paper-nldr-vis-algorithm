@@ -985,17 +985,27 @@ clusters with small separations of the PBMC3k dataset
 (Figure~\ref{fig-model-pbmc-author-proj} (a2)), then select a reasonable
 \gD{} layout.
 
-To determine whether the UMAP representation with the specific
-(hyper-)parameter choice suggested by \citet{chen2023} preserves the
-data structure present in \(9\text{-}D\)
-(Figure~\ref{fig-model-pbmc-author-proj} (b)), we visualize the model
-constructed with UMAP overlaid on the \(9\text{-}D\) data. The
-Figure~\ref{fig-NLDR-variety} (a) shows three well-separated clusters
-with big separations. However, as shown in
+The Figure~\ref{fig-NLDR-variety} (a) shows three well-separated
+clusters with big separations. However, as shown in
 Figure~\ref{fig-model-pbmc-author-proj} (a2), there is no big separation
 between three clusters in \(9\text{-}D\). Therefore, the suggested UMAP
 representation (Figure~\ref{fig-NLDR-variety} (a)) does not accurately
 represent the structure of PBMC3k dataset.
+
+As shown in Figure~\ref{fig-NLDR-variety}, layout c, d, and e that show
+small separations between clusters are universally optimal. But layout d
+with little separations perform well at tiny binwidth and poorly as
+binwidth increases. Also, layout e performs well at large binwidths. The
+layout c is chosen as the best, since it used the UMAP with a different
+(hyper-) parameter settings.
+
+The visualization of the model generated for the selected layout in
+\(9\text{-}D\) shows edges between the clusters
+(Figure~\ref{fig-mnist-tri-proj} (b2)). This provides evidence for the
+small separations between clusters. Furthermore, the data does not
+uniformally distributed along the clusters and therefore shows densed
+points (Figure~\ref{fig-mnist-tri-proj} (b2). Also, the clusters are
+non-linear shaped (Figure~\ref{fig-mnist-tri-proj} (b3).
 
 \begin{figure}[H]
 
@@ -1017,29 +1027,6 @@ choice of best is between layouts c and e, that have small separations
 between oddly shaped clusters. Layout e is the best choice.}
 
 \end{figure}%
-
-The MSE for different binwidths (\(a_1\)) using tSNE, UMAP, PHATE,
-PaCMAP, and TriMAP with different (hyper-)parameter settings
-(Figure~\ref{fig-pbmc-mse}) were calculated. It is found that tSNE
-(Figure~\ref{fig-mnist-mse} (a)) provide the most reasonable
-representation for the digit 1 dataset, showing universally best.
-However, \gD{} representation shows a big non-linear cluster and a small
-cluster with a small gap (Figure~\ref{fig-tsne-best}).
-
-In order to find a reasonable NLDR representation for the PBMC3k
-dataset, the MSE for different \(a_1\) using UMAP, tSNE, PHATE, PaCMAP,
-and TriMAP with different (hyper-)parameter settings
-(Figure~\ref{fig-pbmc-mse}) were calculated. tSNE with a perplexity
-value set to \(30\), the default parameter setting, is considered as a
-reasonable representation for the PBMC3k dataset. As shown in
-Figure~\ref{fig-NLDR-variety} (e), there are three well-separated
-clusters, although the separation between the clusters are small.
-Additionally, non-linear structures can also be observed within the
-clusters (Figure~\ref{fig-NLDR-variety} (e)). The visualization of the
-\emph{model-in-the-data-space} provides evidence for this
-(\textbf{?@fig-pbmc2-sc}). Therefore, tSNE with perplexity \(30\)
-accurately captures the data structure of the PBMC3k dataset, which is
-better than UMAP.
 
 \begin{figure}[H]
 
