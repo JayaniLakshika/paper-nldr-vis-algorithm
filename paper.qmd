@@ -3857,11 +3857,12 @@ pbmc_proj_umap_model2_best <- projected_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in \\gD{}, on the tSNE layout (a), and three views of the fit in projections from $9\\text{-}D$ (b, c, d), for the PBMC3k data ($a_1 = 0.099$, $b = 221 \\  (13, \ 17)$, $m = 92$, benchmark value to remove large edges is $0.1$). The three well-separated clusters with small separations observed in the \\gD{} layout of tSNE (@fig-NLDR-variety (e)) is also visible when visualizing the model overlaid on the data space in $9\\text{-}D$. Furthermore, there are some non-linear clusters. The model shows densed points within clusters in $9\\text{-}D$ space, which is an additional patterns not visible in the \\gD{} representation (@fig-NLDR-variety (e)). The full video is available at <https://youtu.be/5Y1hE4i7N2k>."
+#| fig-cap: "Model in \\gD{}, on the layouts, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data. The \\gD{} model shows three well-separated clusters with large gaps in a1 ($a_1 = 0.05$, $b = 676 \\  (26, \ 26)$, $m = 92$, benchmark value to remove large edges is $0.08$), while a2 ($a_1 = 0.10$, $b = 195 \\  (13, \ 15)$, $m = 90$, benchmark value to remove large edges is $0.166$) shows small separation between the clusters. Because of the small separation, the three clusters are connected in \\gD{} and appear as long edges in $9\\text{-}D$. The full video for the model for layout a is available at <https://youtu.be/5Y1hE4i7N2k>. The full video for the model for layout c is available at <https://youtu.be/5Y1hE4i7N2k>."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
-#| fig-height: 10
+#| fig-height: 15
+#| out-height: 80%
 
 free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
