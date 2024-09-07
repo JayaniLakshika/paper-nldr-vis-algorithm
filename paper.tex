@@ -916,29 +916,30 @@ these aspects by maintaining the distance between clusters and
 accurately positioning them, effectively capturing both global and local
 structures.
 
-The t-SNE, UMAP, and PaCMAP layouts each reveal different aspects of the
-clustering structure within the dataset. When examining a specific
-cluster, which appears more like a filled-out pancake in higher
-dimensions, we observe that t-SNE, UMAP, and PaCMAP all effectively
-capture global structures. However, there is evidence suggesting that
-PaCMAP, with its default hyper-parameter settings, struggles to preserve
-the local structure as effectively as t-SNE and UMAP.
+By visualizing the model of different layouts in \(4\text{-}D\) reveal
+different characteristics of each NLDR method. When examining the model
+of a specific cluster, which appears more like a filled-out shape in
+tSNE, and UMAP, while the model has a pancake shape in PaCMAP. The
+reason to have filled-out shaped clusters in tSNE and UMAP is that the
+ability of capture the local structure. On the other hand, the reason
+for the pancake shape in PaCMAP is the fail to capture the local
+structure.
 
 The differences in performance can be attributed to several factors. One
 key element is the choice of hyper-parameters, particularly the number
 of neighbors considered during the dimensionality reduction process.
 This parameter significantly impacts how well local structures are
-maintained. Additionally, the intrinsic dimensionality of the data, the
-balance between global and local structures, and issues related to
-optimization and initialization all contribute to the observed outcomes.
+maintained. Additionally, the balance between global and local
+structures, and issues related to optimization and initialization all
+contribute to the observed outcomes.
 
-It's important to note that these observations are made with specific
+It's important to note that these layouts are made with default
 hyper-parameter settings. Adjusting these parameters could lead to
 different results, potentially improving PaCMAP's ability to capture
-local structures or altering how t-SNE and UMAP handle global and local
+local structures or altering how tSNE and UMAP handle global and local
 structures. Thus, while PaCMAP generally balances global and local
-preservation, careful tuning of its parameters is crucial for achieving
-the best results in any given dataset.
+preservation, careful tuning of its parameters is important for
+achieving the best results in any given dataset.
 
 \begin{figure}[H]
 
