@@ -899,19 +899,22 @@ In this section, the evaluation focuses on how effectively the tSNE,
 UMAP, and PaCMAP algorithms preserve the clustering structure. The data
 consists of five \(4\text{-}D\) clusters, each with \(1000\) points
 generated from a multivariate normal distribution with a small variance
-of 0.0025. The first cluster is centered at \((0, 0, 0, 0)\), the second
-at \((1, 0, 0, 0)\), the third at \((0, 1, 0, 0)\), the fourth at
+of \(0.0025\). The first cluster is centered at \((0, 0, 0, 0)\), the
+second at \((1, 0, 0, 0)\), the third at \((0, 1, 0, 0)\), the fourth at
 \((0, 0, 1, 0)\), and the fifth at \((0, 0, 0, 1)\).
 
-In the t-SNE 2D layout, the distances between clusters appear smaller,
-leading to more tightly packed clusters, which is typical of t-SNE's
-focus on preserving local structures. This often results in less
-emphasis on the global distances between clusters. On the other hand,
-UMAP tends to maintain larger separations between clusters, better
-reflecting the global structure and preserving the relative distances
-between clusters more effectively. PaCMAP, meanwhile, balances these
-aspects by maintaining the distance between clusters and positioning
-them correctly, effectively capturing both global and local structures.
+In the tSNE layout (Figure~\ref{fig-five-gau-projs} (a1)), the distances
+between clusters appear smaller, leading to more tightly packed
+clusters, which is typical of tSNE's focus on preserving local
+structures. This often results in less emphasis on the global distances
+between clusters. On the other hand, UMAP
+(Figure~\ref{fig-five-gau-projs} (b1)) tends to maintain larger
+separations between clusters, better reflecting the global structure and
+preserving the relative distances between clusters more effectively. In
+contrast, PaCMAP (Figure~\ref{fig-five-gau-projs} (c1)) aim to balance
+these aspects by maintaining the distance between clusters and
+accurately positioning them, effectively capturing both global and local
+structures.
 
 The t-SNE, UMAP, and PaCMAP layouts each reveal different aspects of the
 clustering structure within the dataset. When examining a specific
@@ -936,19 +939,6 @@ local structures or altering how t-SNE and UMAP handle global and local
 structures. Thus, while PaCMAP generally balances global and local
 preservation, careful tuning of its parameters is crucial for achieving
 the best results in any given dataset.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-five-gau-nldr-layouts-1.pdf}
-
-}
-
-\caption{\label{fig-five-gau-nldr-layouts}(a) tSNE, (b) UMAP, and (c)
-PaCMAP}
-
-\end{figure}%
 
 \begin{figure}[H]
 
