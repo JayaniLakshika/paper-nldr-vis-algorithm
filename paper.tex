@@ -895,18 +895,13 @@ S-curve).
 \section{A curious difference between tSNE, UMAP and PaCMAP
 revealer}\label{a-curious-difference-between-tsne-umap-and-pacmap-revealer}
 
-In this section, we will assess how t-SNE, UMAP, and PaCMAP algorithms
-preserve the clustering structure. We will use a simulated dataset
-consisting of five spherical Gaussian clusters where each cluster
-occupies a different corner of the \(4\text{-}D\) space, with each
-cluster containing an equal number of points (\(1000\)) and the same
-within-cluster variation. The data simulated from
-\(\Sigma = \begin{pmatrix}
-0.0025 & 0 & 0 & 0 \\
-0 & 0.0025 & 0 & 0 \\
-0 & 0 & 0.0025 & 0 \\
-0 & 0 & 0 & 0.0025 \\
-\end{pmatrix}\).
+In this section, the evaluation focuses on how effectively the tSNE,
+UMAP, and PaCMAP algorithms preserve the clustering structure. The data
+consists of five \(4\text{-}D\) clusters, each with \(1000\) points
+generated from a multivariate normal distribution with a small variance
+of 0.0025. The first cluster is centered at \((0, 0, 0, 0)\), the second
+at \((1, 0, 0, 0)\), the third at \((0, 1, 0, 0)\), the fourth at
+\((0, 0, 1, 0)\), and the fifth at \((0, 0, 0, 1)\).
 
 In the t-SNE 2D layout, the distances between clusters appear smaller,
 leading to more tightly packed clusters, which is typical of t-SNE's
