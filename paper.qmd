@@ -2245,11 +2245,45 @@ benchmark_gau1 <- find_lg_benchmark(
 
 benchmark_gau1 <- 0.1
 
-trimesh_removed_gau1 <- vis_rmlg_mesh(
-  distance_edges = distance_gau1,
-  benchmark_value = benchmark_gau1,
-  tr_coord_df = tr_from_to_df_gau1,
-  distance_col = "distance")
+# trimesh_removed_gau1 <- vis_rmlg_mesh(
+#   distance_edges = distance_gau1,
+#   benchmark_value = benchmark_gau1,
+#   tr_coord_df = tr_from_to_df_gau1,
+#   distance_col = "distance")
+
+tr_df <- distinct(tibble(
+  x = c(tr_from_to_df_gau1[["x_from"]], tr_from_to_df_gau1[["x_to"]]), 
+  y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
+
+distance_df_small_edges_gau1 <- distance_gau1 |>
+  filter(distance < benchmark_gau1)
+
+tr_from_to_df_gau1 <- inner_join(
+  tr_from_to_df_gau1, distance_df_small_edges_gau1, 
+  by = c("from", "to"))
+
+trimesh_removed_gau_tsne <- ggplot() + 
+  geom_segment(data = tr_from_to_df_gau1, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
+  geom_point(
+    data = tsne_gau_scaled,
+    aes(
+      x = tSNE1,
+      y = tSNE2
+    ),
+    alpha = 0.3,
+    size = 0.1,
+    color = "#000000"
+  )  +
+  coord_fixed() +
+  interior_annotation("a1", 
+                      position = c(0.08, 0.95),
+                      cex = 2)
 
 
 ## Hexagonal binning to have regular hexagons
@@ -2520,6 +2554,40 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
+tr_df <- distinct(tibble(
+  x = c(tr_from_to_df_gau1[["x_from"]], tr_from_to_df_gau1[["x_to"]]), 
+  y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
+
+distance_df_small_edges_gau1 <- distance_gau1 |>
+  filter(distance < benchmark_gau1)
+
+tr_from_to_df_gau1 <- inner_join(
+  tr_from_to_df_gau1, distance_df_small_edges_gau1, 
+  by = c("from", "to"))
+
+trimesh_removed_gau_umap <- ggplot() + 
+  geom_segment(data = tr_from_to_df_gau1, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
+  geom_point(
+    data = umap_gau_scaled,
+    aes(
+      x = UMAP1,
+      y = UMAP2
+    ),
+    alpha = 0.3,
+    size = 0.1,
+    color = "#000000"
+  )  +
+  coord_fixed() +
+  interior_annotation("b1", 
+                      position = c(0.06, 0.95),
+                      cex = 2)
+
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
   data = umap_gau_scaled,
@@ -2782,11 +2850,45 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-trimesh_removed_gau1 <- vis_rmlg_mesh(
-  distance_edges = distance_gau1,
-  benchmark_value = benchmark_gau1,
-  tr_coord_df = tr_from_to_df_gau1,
-  distance_col = "distance")
+# trimesh_removed_gau1 <- vis_rmlg_mesh(
+#   distance_edges = distance_gau1,
+#   benchmark_value = benchmark_gau1,
+#   tr_coord_df = tr_from_to_df_gau1,
+#   distance_col = "distance")
+
+tr_df <- distinct(tibble(
+  x = c(tr_from_to_df_gau1[["x_from"]], tr_from_to_df_gau1[["x_to"]]), 
+  y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
+
+distance_df_small_edges_gau1 <- distance_gau1 |>
+  filter(distance < benchmark_gau1)
+
+tr_from_to_df_gau1 <- inner_join(
+  tr_from_to_df_gau1, distance_df_small_edges_gau1, 
+  by = c("from", "to"))
+
+trimesh_removed_gau_pacmap <- ggplot() + 
+  geom_segment(data = tr_from_to_df_gau1, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#33a02c") +
+  geom_point(
+    data = pacmap_gau_scaled,
+    aes(
+      x = PaCMAP1,
+      y = PaCMAP2
+    ),
+    alpha = 0.3,
+    size = 0.1,
+    color = "#000000"
+  )  +
+  coord_fixed() +
+  interior_annotation("c1", 
+                      position = c(0.08, 0.95),
+                      cex = 2)
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
@@ -2999,7 +3101,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 #| fig-pos: H
 #| fig-cap: "Model in \\gD{}, on the layouts from tSNE, UMAP, and PaCMAP (a1, b1, c1). Two views of the fit in projections of each layout from $4\\text{-}D$, for the Gaussian cluster data. All \\gD{} models show five well-separated clusters with different gaps. Layout a1 shows small separations, while layout b2 shows large gaps. On the other hand, layout b3 shows average gaps with exact positions as in $4\\text{-}D$. Assessing the different models fit for different layouts for a specific cluster shows filled-out shape in a1, a2, and b1, b2. On the other hand, c1 and c2 shows pancake shape.  The full video for the model for layout a, b, and c are available at <https://youtu.be/5Y1hE4i7N2k>, <https://youtu.be/5Y1hE4i7N2k>, and <https://youtu.be/5Y1hE4i7N2k> respectively."
 
-tsne_gau + umap_gau + pacmap_gau +
+trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
 five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + five_gau_proj_tsne_model2 + five_gau_proj_umap_model2 + five_gau_proj_pacmap_model2 +
   plot_layout(guides = "collect", nrow = 3) &
   theme(legend.position='none')
