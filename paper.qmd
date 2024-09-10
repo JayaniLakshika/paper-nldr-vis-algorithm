@@ -2192,7 +2192,9 @@ tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
 tsne_gau <- tsne_gau_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2)) +
-  geom_point(alpha=0.3, color = "#000000")
+  geom_point(alpha=0.3, color = "#000000") +
+  geom_rect(aes(xmin = -0.05, xmax = 0.35, ymin = 0.28, ymax = 0.6),
+               fill = "transparent", color = "red", linewidth = 0.8)
 
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 13
