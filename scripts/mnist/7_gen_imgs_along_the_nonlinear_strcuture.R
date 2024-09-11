@@ -4,7 +4,8 @@ library(tidyr)
 
 mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 
-img_right_top <- c(6561, 454, 6397)
+#img_right_top <- c(6561, 454, 6397)
+img_right_top <- c(6048, 6650, 5119)
 
 pixels_gathered_within <-  mnist_data |>
   mutate(instance = row_number()) |>

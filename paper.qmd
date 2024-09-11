@@ -4297,7 +4297,15 @@ highd_error_2d_mnist <- error_df |>
              y = tSNE2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.2) +
-  scale_colour_continuous_sequential(palette = "Light Grays")
+  scale_colour_continuous_sequential(palette = "Light Grays") +
+  geom_rect(aes(xmin = 0.8, xmax = 0.9, ymin = 0.45, ymax = 0.6),
+               fill = "transparent", color = "#e41a1c", linewidth = 0.7) +
+  geom_rect(aes(xmin = 0.4, xmax = 0.5, ymin = 0.75, ymax = 0.9),
+               fill = "transparent", color = "#377eb8", linewidth = 0.7)  +
+  geom_rect(aes(xmin = 0.45, xmax = 0.55, ymin = 0.75, ymax = 0.9),
+               fill = "transparent", color = "#4daf4a", linewidth = 0.7)  +
+  geom_rect(aes(xmin = 0.55, xmax = 0.65, ymin = 0.75, ymax = 0.9),
+               fill = "transparent", color = "#a65628", linewidth = 0.7) 
   # scale_colour_brewer(
   #   type = "seq",
   #   palette = 1
@@ -4615,7 +4623,7 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
 ## Data with pixel values
 mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 
-img_right_top <- c(6561, 454, 6397)
+img_right_top <- c(6048, 6650, 5119)
 
 pixels_gathered_within <-  mnist_data |>
   mutate(instance = row_number()) |>
