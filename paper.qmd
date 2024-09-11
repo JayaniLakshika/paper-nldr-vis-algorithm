@@ -4238,16 +4238,16 @@ trimesh_removed_mnist <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c") +
+               colour = "#33a02c",
+               linewidth = 1) +
   geom_point(data = tsne_minst_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
              ),
-             alpha=0.5, 
-             size = 0.1) +
-  coord_fixed() +
-  interior_annotation("a", sc_ltr_pos_mnist)
+             alpha=0.1) +
+  interior_annotation("a", sc_ltr_pos_mnist) +
+  theme(aspect.ratio = 1)
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
 #   distance_edges = distance_mnist, 
