@@ -4268,45 +4268,50 @@ error_df <- augment(
 
 ## Categorize error
 
-error_df <- error_df |>
-  mutate(type = case_when(
-    row_wise_abs_error <= 2 ~ "error 0-2",
-    row_wise_abs_error <= 4 ~ "error 2-4",
-    row_wise_abs_error <= 6 ~ "error 4-6",
-    row_wise_abs_error <= 8 ~ "error 6-8",
-    row_wise_abs_error <= 10 ~ "error 8-10",
-    .default = "error greter than 10"
-  )) |>
-  mutate(type = factor(type, levels = c(
-    "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", 
-    "error greter than 10")))
+# error_df <- error_df |>
+#   mutate(type = case_when(
+#     row_wise_abs_error <= 2 ~ "error 0-2",
+#     row_wise_abs_error <= 4 ~ "error 2-4",
+#     row_wise_abs_error <= 6 ~ "error 4-6",
+#     row_wise_abs_error <= 8 ~ "error 6-8",
+#     row_wise_abs_error <= 10 ~ "error 8-10",
+#     .default = "error greter than 10"
+#   )) |>
+#   mutate(type = factor(type, levels = c(
+#     "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", 
+#     "error greter than 10")))
 
 ## To join embedding
 error_df <- error_df |>
   bind_cols(tsne_minst_scaled |> 
               select(-ID))
+
+## To transform the data
+## ggplot(data = error_df, aes(x=row_wise_abs_error)) + geom_density() ## right skewed
+
+error_df <- error_df |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
   
 highd_error_2d_mnist <- error_df |>
   ggplot(aes(x = tSNE1,
-             y = tSNE2, 
-             color = type, 
-             group = ID)) +
-  geom_point(alpha=0.5, 
-             size = 0.1) +
-  scale_colour_brewer(
-    type = "qual",
-    palette = 2
-  ) + 
-  theme(
-      legend.position = "bottom",
-      legend.text = element_text(size = 10),          # Increase legend text size
-      legend.key.size = unit(1, "lines")              # Increase size of legend keys
-  ) +
-  guides(
-      color = guide_legend(
-          override.aes = list(size = 2.5, alpha = 1)      # Increase point size and opacity in legend
-      )
-  ) 
+             y = tSNE2,
+             colour = sqrt_row_wise_abs_error)) +
+  geom_point(alpha=0.2) +
+  scale_colour_continuous_sequential(palette = "Light Grays")
+  # scale_colour_brewer(
+  #   type = "seq",
+  #   palette = 1
+  # ) #+ 
+  # theme(
+  #     legend.position = "bottom",
+  #     legend.text = element_text(size = 10),          # Increase legend text size
+  #     legend.key.size = unit(1, "lines")              # Increase size of legend keys
+  # ) +
+  # guides(
+  #     color = guide_legend(
+  #         override.aes = list(size = 2.5, alpha = 1)      # Increase point size and opacity in legend
+  #     )
+  # ) 
 ```
 
 <!-- As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). It also shows some quirks like twisted patterns and long edges (@fig-mnist-tri-proj). Furthermore, the results help to identify anomalies (with large model errors) within and the outside the non-linear structure, displaying different patterns of the digit 1 (@fig-model-error-mnist).  -->
@@ -4693,6 +4698,8 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 #| label: fig-model-error-mnist
 #| fig-cap: "(a) The $10\\text{-}D$ model error for tSNE layout in $\\gD{}$ of the MNIST digit 1 dataset. Most low model errors are distributed along the big non-linear clutser, while most large model errors are concentrated along the small cluster. (b) There are certain images that exhibit large errors due to their deviation from the non-linear cluster, which makes them anomalies. The images associated with large model errors shows different patterns of digit 1."
 #| fig-pos: H
+#| fig-width: 10
+#| fig-height: 5
 #| out-height: 80%
 
 highd_error_2d_mnist + (imge_error_sample_outside / right_top_img / middle_img / right_bottom_img)
