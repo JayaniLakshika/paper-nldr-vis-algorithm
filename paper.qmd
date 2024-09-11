@@ -3566,7 +3566,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
   scale_y_log10() +
-  ylab("log(MSE)") +
+  ylab("MSE") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
   theme_minimal() +
   theme(panel.border = element_rect(fill = 'transparent'),
@@ -4009,7 +4009,8 @@ nldr_mnist1 <- tsne_mnist |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#ff7f00') +
-  interior_annotation("a", c(0.08, 0.93))
+  interior_annotation("a", c(0.08, 0.93)) +
+  theme(aspect.ratio = 1)
 
 umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
 
@@ -4017,7 +4018,8 @@ nldr_mnist2 <- umap_mnist |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour='#a65628') +
-  interior_annotation("b")
+  interior_annotation("b") +
+  theme(aspect.ratio = 1)
 
 phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
 
@@ -4025,7 +4027,8 @@ nldr_mnist3 <- phate_mnist |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
   geom_point(alpha=0.1, size=1, colour='#377eb8') +
-  interior_annotation("c")
+  interior_annotation("c") +
+  theme(aspect.ratio = 1)
 
 trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
 
@@ -4033,7 +4036,8 @@ nldr_mnist4 <- trimap_mnist |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
   geom_point(alpha=0.1, size=1, colour='#4daf4a') +
-  interior_annotation("d")
+  interior_annotation("d") +
+  theme(aspect.ratio = 1)
 
 pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
 
@@ -4041,7 +4045,8 @@ nldr_mnist5 <- pacmap_mnist |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
-  interior_annotation("e")
+  interior_annotation("e") +
+  theme(aspect.ratio = 1)
 ```
 
 ```{r}
@@ -4081,7 +4086,7 @@ error_plot_mnist <- ggplot(error_mnist,
   scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a', "#ff7f00",'#a65628')) +
   scale_y_log10() +
-  ylab("log(MSE)") +
+  ylab("MSE") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
   theme_minimal() +
   theme(panel.border = element_rect(fill = 'transparent'),
