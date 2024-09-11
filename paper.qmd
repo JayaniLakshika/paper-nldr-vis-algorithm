@@ -157,10 +157,10 @@ theme_set(theme_linedraw() +
      legend.key.width = unit(0.25, 'cm')
    )
 )
-interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1) {
+interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="grey70") {
   annotation_custom(grid::textGrob(label = label,
       x = unit(position[1], "npc"), y = unit(position[2], "npc"),
-      gp = grid::gpar(cex = cex, col="grey70")))
+      gp = grid::gpar(cex = cex, col=col)))
 }
 ```
 
@@ -4305,7 +4305,7 @@ highd_error_2d_mnist <- error_df |>
   geom_rect(aes(xmin = 0.45, xmax = 0.55, ymin = 0.75, ymax = 0.9),
                fill = "transparent", color = "#4daf4a", linewidth = 0.7)  +
   geom_rect(aes(xmin = 0.55, xmax = 0.65, ymin = 0.75, ymax = 0.9),
-               fill = "transparent", color = "#a65628", linewidth = 0.7) 
+               fill = "transparent", color = "#984ea3", linewidth = 0.7) 
   # scale_colour_brewer(
   #   type = "seq",
   #   palette = 1
@@ -4637,7 +4637,7 @@ right_top_img <- pixels_gathered_within |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
+  scale_fill_continuous_sequential(palette = "Blues 3") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none")
@@ -4656,7 +4656,7 @@ middle_img <- pixels_gathered_within |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
+  scale_fill_continuous_sequential(palette = "Greens 3") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none")
@@ -4675,7 +4675,7 @@ right_bottom_img <- pixels_gathered_within |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
+  scale_fill_continuous_sequential(palette = "Purples 2") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none")
@@ -4695,7 +4695,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
+  scale_fill_continuous_sequential(palette = "Reds 2") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none") 
