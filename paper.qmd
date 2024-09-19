@@ -3391,7 +3391,10 @@ trimesh_removed_pbmc <- ggplot() +
     color = "#000000"
   )  +
   coord_fixed() +
-  interior_annotation("a1")
+  interior_annotation("a1") +
+  theme(
+    aspect.ratio = 1
+  )
 
 # ## Compute error
 # error_df <- augment(
@@ -3810,7 +3813,10 @@ trimesh_removed_pbmc_best <- ggplot() +
     color = "#000000"
   )  +
   coord_fixed() +
-  interior_annotation("b1")
+  interior_annotation("b1") +
+  theme(
+    aspect.ratio = 1
+  )
 
 # trimesh_removed_pbmc <- vis_rmlg_mesh(
 #   distance_edges = distance_pbmc,
