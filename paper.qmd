@@ -4139,7 +4139,7 @@ nldr_mnist3 <- phate_mnist |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
   geom_point(alpha=0.1, size=1, colour='#377eb8') +
-  interior_annotation("c") +
+  interior_annotation("c", position = c(0.94, 0.92)) +
   theme(aspect.ratio = 1)
 
 trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
@@ -4148,7 +4148,7 @@ nldr_mnist4 <- trimap_mnist |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
   geom_point(alpha=0.1, size=1, colour='#4daf4a') +
-  interior_annotation("d") +
+  interior_annotation("d", position = c(0.86, 0.92)) +
   theme(aspect.ratio = 1)
 
 pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
