@@ -50,7 +50,8 @@ UMAP_data <- umap(data,
                   n_neighbors = n_neighbors,
                   min_dist = min_dist,
                   n_components =  2,
-                  nn_method = "fnn") |>
+                  nn_method = "fnn",
+                  init ="spca") |>
   as_tibble()
 
 # UMAP_data <- UMAP_fit$layout |>
