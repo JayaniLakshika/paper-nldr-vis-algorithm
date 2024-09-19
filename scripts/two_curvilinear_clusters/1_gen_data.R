@@ -1,4 +1,6 @@
 library(dplyr)
+library(langevitour)
+library(readr)
 
 set.seed(20240110)
 
@@ -9,7 +11,7 @@ generate_curvilinear_2d_with_noise <- function(n) {
 
   # Add small noise to other dimensions
   x3 <- sin(x1 * pi) + runif(n, -0.5, 0.5)
-  x4 <- rnorm(n, mean = 0, sd = 0.01)
+  x4 <- cos(x1 * pi) + runif(n, -0.5, 0.5)
 
   data <- tibble::tibble(x1 = x1,
                          x2 = x2,
