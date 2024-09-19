@@ -2,6 +2,8 @@ library(ggplot2)
 library(dplyr)
 library(readr)
 
+conflicted::conflicts_prefer(dplyr::filter)
+
 error_mnist_umap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_tsne.rds")
 error_mnist_tsne <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_umap.rds")
 error_mnist_phate <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_phate.rds")
@@ -39,7 +41,7 @@ error_plot_mnist <- ggplot(error_mnist,
         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        legend.position = "none",
+        legend.position = "bottom",
         axis.text.x = element_text(size = 7),
         axis.text.y = element_text(size = 7),
         axis.title.x = element_text(size = 7),
