@@ -2071,6 +2071,118 @@ Deciding on the best fit relies on several elements:
 
 Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
 
+```{r}
+#| label: read-two-curvilinear-clust-nldr
+# Read a variety of different NLDR representations of two_curvilinear_clust
+# and plot them on same aspect ratio
+tsne_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_tsne_perplexity_30.rds")
+
+nldr_two_curvilinear_clust1 <- tsne_two_curvilinear_clust |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("a", c(0.08, 0.93)) +
+  theme(aspect.ratio = 1)
+
+umap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+
+nldr_two_curvilinear_clust2 <- umap_two_curvilinear_clust |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1)
+
+phate_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_phate_knn_5.rds")
+
+nldr_two_curvilinear_clust3 <- phate_two_curvilinear_clust |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("c") +
+  theme(aspect.ratio = 1)
+
+trimap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+
+nldr_two_curvilinear_clust4 <- trimap_two_curvilinear_clust |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("d") +
+  theme(aspect.ratio = 1)
+
+pacmap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+
+nldr_two_curvilinear_clust5 <- pacmap_two_curvilinear_clust |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e") +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| label: combine-data-two_curvilinear_clust
+
+error_two_curvilinear_clust_umap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_umap.rds")
+error_two_curvilinear_clust_tsne <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_tsne.rds")
+error_two_curvilinear_clust_phate <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_phate.rds")
+error_two_curvilinear_clust_trimap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_trimap.rds")
+error_two_curvilinear_clust_pacmap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_pacmap.rds")
+
+error_two_curvilinear_clust <- bind_rows(error_two_curvilinear_clust_umap, 
+                         error_two_curvilinear_clust_tsne,
+                         error_two_curvilinear_clust_phate,
+                         error_two_curvilinear_clust_trimap,
+                         error_two_curvilinear_clust_pacmap)
+
+error_two_curvilinear_clust <- error_two_curvilinear_clust |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(bin1 >= 5) |>
+  group_by(method, a1) |>
+  filter(MSE == min(MSE)) |>
+  ungroup()
+```
+
+```{r}
+#| label: error-comp-two_curvilinear_clust
+
+error_plot_two_curvilinear_clust <- ggplot(error_two_curvilinear_clust, 
+                           aes(x = a1, 
+                               y = MSE, 
+                               colour = method)) + 
+  geom_point(size = 0.8) +
+  geom_line(linewidth = 0.3) + 
+  # geom_vline(xintercept = 15, linetype="solid", 
+  #            color = "black", linewidth=0.8, alpha = 0.5) +
+  scale_x_continuous(breaks = sort(unique(error_two_curvilinear_clust$a1))[append(seq(1, length(unique(error_two_curvilinear_clust$a1)), by = 5), 24)]) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a', "#ff7f00",'#a65628')) +
+  scale_y_log10() +
+  ylab("MSE") +
+  xlab(expression(paste("binwidth (", a[1], ")"))) +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7)) 
+
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 5 NLDR layouts on the two_curvilinear_clust digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
+#| label: fig-two_curvilinear_clust-mse
+#| fig-pos: H
+#| out-height: 100%
+
+free(error_plot_two_curvilinear_clust) + wrap_plots(nldr_two_curvilinear_clust1, nldr_two_curvilinear_clust2, nldr_two_curvilinear_clust3, 
+                                    nldr_two_curvilinear_clust4, nldr_two_curvilinear_clust5, ncol = 2)
+```
+
 <!-- @fig-scurve-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed.  -->
 
 <!-- langevitour with pD model for S-curve -->
