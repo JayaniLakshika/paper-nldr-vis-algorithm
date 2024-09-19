@@ -4,13 +4,13 @@ library(readr)
 library(conflicted)
 
 library(Rtsne)
-library(uwot)
+library(umap) #predit for uwot not working
 library(phateR)
 library(reticulate)
 
 set.seed(20240110)
 
-conflicts_prefer(uwot::umap)
+conflicts_prefer(umap::umap)
 
 use_python("~/miniforge3/envs/pcamp_env/bin/python")
 use_condaenv("pcamp_env")
@@ -46,21 +46,37 @@ write_rds(tSNE_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_cl
 n_neighbors <- 15
 min_dist <- 0.1
 
-UMAP_data <- umap(data,
-                  n_neighbors = n_neighbors,
-                  min_dist = min_dist,
-                  n_components =  2,
-                  nn_method = "fnn",
-                  init ="spca") |>
-  as_tibble()
+# UMAP_model <- umap(data,
+#                   n_neighbors = n_neighbors,
+#                   min_dist = min_dist,
+#                   n_components =  2,
+#                   init ="spca")
+#
+# UMAP_data <- UMAP_model |>
+#   as_tibble()
 
 # UMAP_data <- UMAP_fit$layout |>
 #   tibble::as_tibble(.name_repair = "unique")
+
+UMAP_fit <- umap(data,
+                 n_neighbors = n_neighbors,
+                 n_components =  min_dist)
+
+UMAP_data <- UMAP_fit$layout |>
+  as_tibble()
 
 names(UMAP_data) <- c("UMAP1", "UMAP2")
 
 ## Run only once
 write_rds(UMAP_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
+
+# predict_UMAP_df <- predict(UMAP_fit, data) |>
+#   as_tibble()
+#
+# names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+#
+# ## Run only once
+# write_rds(predict_UMAP_df, file = "data/two_nonlinear_clusters/two_nonlinear_clusters_umap_predict.rds")
 
 ## PHATE
 knn <- 5

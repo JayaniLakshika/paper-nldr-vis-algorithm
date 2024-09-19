@@ -22,7 +22,7 @@ generate_curvilinear_2d_with_noise <- function(n) {
 }
 
 # Number of points for each cluster
-n_points <- 500
+n_points <- 750
 
 # Generate the first curvilinear cluster in dimensions 1 and 2 with small noise in dimensions 3 and 4
 curv_1_2 <- generate_curvilinear_2d_with_noise(n_points)
