@@ -3564,7 +3564,7 @@ projection <- cbind(
     c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
     c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
 
-projection_scaled <- projection * 1.23
+projection_scaled <- projection * 1.25
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
@@ -3595,11 +3595,11 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.7,
   axis_labels = names(scaled_pbmc_data),
-  threshold = 0.084)
+  threshold = 0.086)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3616,9 +3616,10 @@ pbmc_proj_umap_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -3635,8 +3636,8 @@ pbmc_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
+  xlim(c(-0.9, 0.5)) +
+  ylim(c(-0.9, 0.5)) +
   interior_annotation("a3")
 
 ```
@@ -4014,7 +4015,7 @@ projection <- cbind(
     c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
     c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
 
-projection_scaled <- projection * 1.23
+projection_scaled <- projection * 1.25
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
@@ -4045,11 +4046,11 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.7,
   axis_labels = names(scaled_pbmc_data),
-  threshold = 0.084)
+  threshold = 0.086)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -4068,7 +4069,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
       yend = proj2_to), 
     color = "#33a02c") +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -4085,8 +4086,8 @@ pbmc_proj_umap_model2_best <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
+  xlim(c(-0.9, 0.5)) +
+  ylim(c(-0.9, 0.5)) +
   interior_annotation("b3")
 
 ```
