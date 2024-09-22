@@ -3544,10 +3544,11 @@ pbmc_proj_umap_model1 <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
-    size = 2) +
+    size = 3) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -3623,10 +3624,11 @@ pbmc_proj_umap_model2 <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
-    size = 2) +
+    size = 3) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -3991,10 +3993,11 @@ pbmc_proj_umap_model1_best <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
-    size = 2) +
+    size = 3) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -4070,10 +4073,11 @@ pbmc_proj_umap_model2_best <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
-    size = 2) +
+    size = 3) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -4566,12 +4570,13 @@ mnist_proj_tsne_model1 <- projected_df |>
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
     size = 3) +
   geom_path(
@@ -4649,8 +4654,9 @@ mnist_proj_tsne_model2 <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
     size = 3) +
   geom_path(
@@ -4728,8 +4734,9 @@ mnist_proj_tsne_model3 <- projected_df |>
     aes(x=x1, y=y1, xend=x2, yend=y2), 
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
     colour="grey50",
     size = 3) +
   geom_path(
