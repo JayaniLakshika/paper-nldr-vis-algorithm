@@ -3514,11 +3514,11 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75,
+  limits = 1,
+  axis_pos_x = -0.4,
+  axis_pos_y = -0.4,
   axis_labels = names(scaled_pbmc_data),
-  threshold = 0.084)
+  threshold = 0.057)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3535,9 +3535,10 @@ pbmc_proj_umap_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -3554,8 +3555,8 @@ pbmc_proj_umap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
+  xlim(c(-0.6, 1)) +
+  ylim(c(-0.6, 1)) +
   interior_annotation("a2")
 
 ## Second projection
@@ -3963,11 +3964,11 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 1.5,
-  axis_pos_x = -0.75,
-  axis_pos_y = -0.75,
+  limits = 1,
+  axis_pos_x = -0.4,
+  axis_pos_y = -0.4,
   axis_labels = names(scaled_pbmc_data),
-  threshold = 0.084)
+  threshold = 0.057)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3984,9 +3985,10 @@ pbmc_proj_umap_model1_best <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -4003,8 +4005,8 @@ pbmc_proj_umap_model1_best <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
+  xlim(c(-0.6, 1)) +
+  ylim(c(-0.6, 1)) +
   interior_annotation("b2")
 
 ## Second projection
