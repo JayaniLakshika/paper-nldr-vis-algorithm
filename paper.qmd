@@ -3385,18 +3385,17 @@ trimesh_removed_pbmc <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c") +
+               colour = "#33a02c",
+               linewidth = 1) +
   geom_point(
     data = umap_pbmc_scaled,
     aes(
       x = UMAP1,
       y = UMAP2
     ),
-    alpha = 0.3,
-    size = 0.1,
+    alpha = 0.1,
     color = "#000000"
   )  +
-  coord_fixed() +
   interior_annotation("a1") +
   theme(
     aspect.ratio = 1
@@ -3823,7 +3822,8 @@ trimesh_removed_pbmc_best <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c") +
+               colour = "#33a02c",
+               linewidth = 1) +
   geom_point(
     data = umap_pbmc_scaled_best,
     aes(
@@ -3833,7 +3833,6 @@ trimesh_removed_pbmc_best <- ggplot() +
     alpha = 0.2,
     color = "#000000"
   )  +
-  coord_fixed() +
   interior_annotation("b1") +
   theme(
     aspect.ratio = 1
