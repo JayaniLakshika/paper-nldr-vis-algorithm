@@ -205,7 +205,7 @@ scale_data_manual <- function(data, type_col) {
 ```{r}
 #| label: gen-axes
 
-gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axis_labels) {
+gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axis_labels, threshold) {
   
   axis_scale <- limits/6
   
@@ -228,6 +228,11 @@ gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axi
                      y2 = adj(proj[, 2], axis_pos_y))
   
   rownames(axes) <- axis_labels
+  
+  ## To remove axes
+  axes <- axes |>
+    mutate(distance = sqrt((x2 - x1)^2 + (y2 - y1)^2)) |>
+    filter(distance >= threshold)
   
   theta <- seq(0, 2 * pi, length = 50)
   circle <- data.frame(c1 = adj(cos(theta), axis_pos_x), 
@@ -3475,9 +3480,9 @@ projection_scaled <- projection * 1.23
 # projection_filtered <- projection
 # projection_filtered[apply(projection_filtered, 1, function(row) all(row < 0)), ] <- 0.75
 
-rows_to_keep <- c(1, 2, 4, 5, 6)
+#rows_to_keep <- c(1, 2, 4, 5, 6)
 
-projection_filtered <- projection[rows_to_keep, ]
+#projection_filtered <- projection[rows_to_keep, ]
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
@@ -3507,11 +3512,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  proj = projection_filtered,
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75,
-  axis_labels = paste0("p", rows_to_keep))
+  axis_labels = names(scaled_pbmc_data),
+  threshold = 0.07)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
