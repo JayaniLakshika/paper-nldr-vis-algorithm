@@ -205,7 +205,7 @@ scale_data_manual <- function(data, type_col) {
 ```{r}
 #| label: gen-axes
 
-gen_axes <- function(data, proj_data, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL) {
+gen_axes <- function(data, proj_data, proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL) {
   
   rng <- range(proj_data)
   proj_data <- proj_data/max(abs(rng))
@@ -230,8 +230,8 @@ gen_axes <- function(data, proj_data, limits = 1, axis_pos_x = NULL, axis_pos_y 
   adj <- function(x, axis_pos) axis_pos + x * axis_scale
   axes <- data.frame(x1 = adj(0, axis_pos_x), 
                      y1 = adj(0, axis_pos_y), 
-                     x2 = adj(projection[, 1], axis_pos_x), 
-                     y2 = adj(projection[, 2], axis_pos_y))
+                     x2 = adj(proj[, 1], axis_pos_x), 
+                     y2 = adj(proj[, 2], axis_pos_y))
   
   axis_labels <- colnames(data)
   rownames(axes) <- axis_labels
@@ -2481,6 +2481,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.2,
   axis_pos_x = 0.15,
   axis_pos_y = -0.85)
@@ -2562,6 +2563,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
   axis_pos_y = -0.7)
@@ -2779,6 +2781,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.2,
   axis_pos_x = -0.55,
   axis_pos_y = -0.05)
@@ -2857,6 +2860,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
   axis_pos_y = -0.7)
@@ -3079,6 +3083,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.2,
   axis_pos_x = -0.37,
   axis_pos_y = 0.22)
@@ -3160,6 +3165,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_gau_data,
   proj_data = projected_df,
+  proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
   axis_pos_y = -0.7)
@@ -3469,7 +3475,7 @@ df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
 ## First projection
 projection <- cbind(
     c(0.24156,0.85058,0.11564,-0.03255,-0.28106,0.27463,-0.10539,0.08429,0.13107),
-    c(-0.67212,0.02745,-0.26718,-0.33126,-0.34919,0.20839,-0.14498,-0.37708,0.15455))
+    c(-0.67212,0.02745,-0.26718,-0.33126,-0.34919,0.20839,-0.14498,-0.37708,0.15455)) 
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection
 
@@ -3500,7 +3506,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   data = scaled_pbmc_data, 
-  proj_data = projected_df,  
+  proj_data = projected_df, 
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -3576,7 +3583,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   data = scaled_pbmc_data, 
-  proj_data = projected_df,  
+  proj_data = projected_df, 
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -3942,6 +3950,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_pbmc_data, 
   proj_data = projected_df,  
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -4017,7 +4026,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   data = scaled_pbmc_data, 
-  proj_data = projected_df,  
+  proj_data = projected_df,
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -4514,6 +4524,7 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   data = scaled_mnist_data, 
   proj_data = projected_df, 
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -4589,7 +4600,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   data = scaled_mnist_data, 
-  proj_data = projected_df, 
+  proj_data = projected_df,
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
@@ -4665,7 +4677,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   data = scaled_mnist_data, 
-  proj_data = projected_df, 
+  proj_data = projected_df,
+  proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
   axis_pos_y = -0.75)
