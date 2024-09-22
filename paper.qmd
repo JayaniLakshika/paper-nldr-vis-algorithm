@@ -2482,7 +2482,7 @@ axes_obj <- gen_axes(
   axis_pos_x = 0.15,
   axis_pos_y = -0.85,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2510,7 +2510,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
     colour="grey70") +
   geom_text(
     data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    aes(x=x2, y=y2),
+    label=rownames(axes), 
     colour="grey50",
     size = 3) +
   geom_path(
@@ -2564,7 +2565,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.7,
   axis_pos_y = -0.7,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2592,7 +2593,8 @@ five_gau_proj_tsne_model2 <- projected_df |>
     colour="grey70") +
   geom_text(
     data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    aes(x=x2, y=y2), 
+    label=rownames(axes), 
     colour="grey50",
     size = 3) +
   geom_path(
@@ -2782,7 +2784,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.55,
   axis_pos_y = -0.05,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
   
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2861,7 +2863,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.7,
   axis_pos_y = -0.7,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3084,7 +3086,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.37,
   axis_pos_y = 0.22,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3166,7 +3168,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.7,
   axis_pos_y = -0.7,
   axis_labels = names(scaled_gau_data),
-  threshold = 0.084)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
