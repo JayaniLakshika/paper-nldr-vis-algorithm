@@ -93,9 +93,9 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 
 #### With scaled data
 
-# Apply the scaling
-scaled_pbmc_data <- scale_data_manual(training_data_pbmc |> select(-ID)) |>
-  as_tibble()
+data_pbmc <- training_data_pbmc |>
+  select(-ID) |>
+  mutate(type = "data")
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
@@ -103,20 +103,26 @@ df_b_pbmc <- df_bin_pbmc |>
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
 df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) |>
-  select(-type)
+  dplyr::select(-hb_id)
+
 
 # Apply the scaling
-scaled_pbmc_data_model <- scale_data_manual(df_b_pbmc) |>
+df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
+scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
   as_tibble()
+
+scaled_pbmc_data <- scaled_pbmc |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_pbmc_data_model <- scaled_pbmc |>
+  filter(type == "model") |>
+  select(-type)
 
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
                        scaled_pbmc_data |> mutate(type = "data"))
 
-## Set the maximum difference as the criteria
-distance_df_small_edges_pbmc <- distance_pbmc |>
-  dplyr::filter(distance < benchmark_pbmc)
 
 # Visualize with langevitour
 langevitour(df |> dplyr::select(-type),
