@@ -2476,13 +2476,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.2,
   axis_pos_x = 0.15,
-  axis_pos_y = -0.85)
+  axis_pos_y = -0.85,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2558,13 +2558,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
-  axis_pos_y = -0.7)
+  axis_pos_y = -0.7,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -2776,14 +2776,14 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.2,
   axis_pos_x = -0.55,
-  axis_pos_y = -0.05)
-
+  axis_pos_y = -0.05,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
+  
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
@@ -2855,13 +2855,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
-  axis_pos_y = -0.7)
+  axis_pos_y = -0.7,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3078,13 +3078,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.2,
   axis_pos_x = -0.37,
-  axis_pos_y = 0.22)
+  axis_pos_y = 0.22,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3160,13 +3160,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_gau_data,
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 0.3,
   axis_pos_x = -0.7,
-  axis_pos_y = -0.7)
+  axis_pos_y = -0.7,
+  axis_labels = names(scaled_gau_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3270,7 +3270,7 @@ In the field of single-cell studies, a common analytical task involves clusterin
 #| label: published-pbmc
 ## Import data
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
-names(training_data_pbmc) <- paste0("p", 1:50)
+names(training_data_pbmc) <- paste0("pc", 1:50)
 
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
@@ -3323,7 +3323,7 @@ pbmc_model <- fit_highd_model(
   q = 0.1,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "p"
+  col_start_highd = "pc"
 )
 
 df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -3561,7 +3561,9 @@ projection <- cbind(
     c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
     c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
 
-projected <- as.matrix(scaled_pbmc_data) %*% projection
+projection_scaled <- projection * 1.23
+
+projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -3570,7 +3572,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -3589,12 +3591,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df, 
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_pbmc_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -3762,7 +3764,7 @@ pbmc_model <- fit_highd_model(
   q = 0.1,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "p"
+  col_start_highd = "pc"
 )
 
 df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -3857,7 +3859,7 @@ error_df <- augment(
   training_data = training_data_pbmc,
   newdata = NULL,
   type_NLDR = "UMAP",
-  col_start = "p")
+  col_start = "pc")
 
 ## Categorize error
 
@@ -3927,7 +3929,9 @@ projection <- cbind(
     c(0.24156,0.85058,0.11564,-0.03255,-0.28106,0.27463,-0.10539,0.08429,0.13107),
     c(-0.67212,0.02745,-0.26718,-0.33126,-0.34919,0.20839,-0.14498,-0.37708,0.15455))
 
-projected <- as.matrix(scaled_pbmc_data) %*% projection
+projection_scaled <- projection * 1.23
+
+projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -3936,7 +3940,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -3955,12 +3959,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df,  
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_pbmc_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -4004,7 +4008,9 @@ projection <- cbind(
     c(0.00067,0.53963,-0.16241,-0.09777,0.32766,0.44543,-0.51359,-0.29884,0.00951),
     c(0.62399,0.26016,0.06441,-0.34686,-0.40466,0.24643,0.23537,0.07972,0.34402))
 
-projected <- as.matrix(scaled_pbmc_data) %*% projection
+projection_scaled <- projection * 1.23
+
+projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4013,7 +4019,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection
+projected_model <- as.matrix(scaled_pbmc_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4032,12 +4038,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  data = scaled_pbmc_data, 
-  proj_data = projected_df,
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_pbmc_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -4470,6 +4476,7 @@ highd_error_2d_mnist <- error_df |>
 <!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 ```{r}
 #| label: mnist-model-proj
+
 df_b_mnist <- df_bin_mnist |>
   dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -4499,9 +4506,11 @@ df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
 ## First projection
 projection <- cbind(
     c(0.71503,0.00502,-0.04370,-0.01811,-0.01103,0.09877,0.06199,0.05396,0.07771,-0.01713),
-    c(0.00587,0.71879,0.03485,0.08284,-0.07534,-0.05420,0.04315,-0.00547,-0.02995,0.01810)) * 1.3
+    c(0.00587,0.71879,0.03485,0.08284,-0.07534,-0.05420,0.04315,-0.00547,-0.02995,0.01810)) 
 
-projected <- as.matrix(scaled_mnist_data) %*% projection
+projection_scaled <- projection * 1.3
+
+projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4510,7 +4519,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4528,13 +4537,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_mnist_data, 
-  proj_data = projected_df, 
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_mnist_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -4576,9 +4585,11 @@ mnist_proj_tsne_model1 <- projected_df |>
 ## Second projection
 projection <- cbind(
     c(-0.33305,0.20223,0.06303,0.11124,0.13299,-0.30093,0.34082,0.15581,-0.08864,0.33573),
-    c(0.53615,0.14969,-0.09393,-0.20053,0.07992,-0.34791,0.13057,-0.06814,-0.16737,0.03716)) * 2
+    c(0.53615,0.14969,-0.09393,-0.20053,0.07992,-0.34791,0.13057,-0.06814,-0.16737,0.03716)) 
 
-projected <- as.matrix(scaled_mnist_data) %*% projection
+projection_scaled <- projection * 2
+
+projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4587,7 +4598,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4605,13 +4616,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_mnist_data, 
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_mnist_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -4653,9 +4664,11 @@ mnist_proj_tsne_model2 <- projected_df |>
 ## Third projection
 projection <- cbind(
     c(-0.12783,-0.50063,-0.02631,-0.00484,0.17733,0.37157,0.11310,0.09424,0.19844,0.19792),
-    c(-0.42542,0.29570,0.31106,-0.30307,0.00614,0.16714,0.21779,-0.00025,0.07020,-0.00689)) * 1.5
+    c(-0.42542,0.29570,0.31106,-0.30307,0.00614,0.16714,0.21779,-0.00025,0.07020,-0.00689))
 
-projected <- as.matrix(scaled_mnist_data) %*% projection
+projection_scaled <- projection * 1.5
+
+projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4664,7 +4677,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_mnist_data_model) %*% projection
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -4682,13 +4695,13 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
-axes_obj <- gen_axes(
-  data = scaled_mnist_data, 
-  proj_data = projected_df,
+axes_obj <- gen_axes(  
   proj = projection,
   limits = 1.5,
   axis_pos_x = -0.75,
-  axis_pos_y = -0.75)
+  axis_pos_y = -0.75,
+  axis_labels = names(scaled_mnist_data),
+  threshold = 0.084)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
