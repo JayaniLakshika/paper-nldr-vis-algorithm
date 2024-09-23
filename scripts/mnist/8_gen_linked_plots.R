@@ -178,8 +178,8 @@ nldr_scurve <- shared_df_mnist |>
 nldr_scurve_plt <- ggplotly(nldr_scurve, width = as.character(round(600/r2_mnist, 0)),
                             height = "600", tooltip = "none") |>
   style(unselected=list(marker=list(opacity=1))) |>
-  highlight(on="plotly_selected", off="plotly_deselect") |>
-  config(displayModeBar = FALSE)
+  highlight(on="plotly_selected", off="plotly_deselect") #|>
+  #config(displayModeBar = FALSE)
 
 
 # langevitour_output <- langevitour::langevitour(df_exe[1:7],

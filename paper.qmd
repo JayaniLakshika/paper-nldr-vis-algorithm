@@ -4410,6 +4410,9 @@ tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
   by = c("from", "to"))
 
+tsne_minst_scaled_temp <- tsne_minst_scaled |>
+  mutate(cluster = if_else((tSNE1 <= 0.92) & (tSNE1 >= 0.75) & (tSNE2 <= 0.62) & (tSNE2 >= 0.44), "small_clust", "big_clust"))
+
 trimesh_removed_mnist <- ggplot() + 
   geom_segment(data = tr_from_to_df_mnist, 
                aes(
@@ -4419,14 +4422,17 @@ trimesh_removed_mnist <- ggplot() +
                  yend = y_to),
                colour = "#33a02c",
                linewidth = 1) +
-  geom_point(data = tsne_minst_scaled,
+  geom_point(data = tsne_minst_scaled_temp,
              aes(
                x = tSNE1,
-               y = tSNE2
+               y = tSNE2,
+               colour = cluster
              ),
-             alpha=0.1) +
+             alpha=0.1)+
+  scale_color_manual(values=c('#000000', '#e41a1c')) +
   interior_annotation("a", sc_ltr_pos_mnist) +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        legend.position = "none")
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
 #   distance_edges = distance_mnist, 
