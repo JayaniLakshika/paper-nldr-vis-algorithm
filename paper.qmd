@@ -1985,33 +1985,34 @@ benchmark_scurve <- find_lg_benchmark(
   distance_edges = distance_scurve, 
   distance_col = "distance")
 
-benchmark_label_df <- tibble(y = benchmark_scurve - 0.03,
-                             x = 1.3,
-                             label = paste0("benchmark is ", benchmark_scurve))
+benchmark_label_df <- tibble(
+  y = benchmark_scurve - 0.03, 
+  x = 1.3, 
+  label = paste0("benchmark is ", benchmark_scurve))
 
 ## To draw the distance distribution
-distance_scurve$group <- "1"
-distance_scurve_plot <- ggplot(distance_scurve, 
-                        aes(x = group, 
-                            y = distance)) + 
-  geom_quasirandom(
-    size = 2, 
-    alpha = 0.3
-  ) + 
-  ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
-  coord_flip() + 
-  geom_hline(yintercept = benchmark_scurve,
-     linetype="solid", 
-     color = "black", linewidth=0.5, alpha = 0.5) +
-  ylab(expression(d^{(2)})) +
-  ggtitle("(d)") +
-  theme(aspect.ratio = 0.75,
-        axis.text.x = element_text(size = 12),
-        axis.title.x = element_text(size = 12),
-        plot.title = element_text(size = 12))
+# distance_scurve$group <- "1"
+# distance_scurve_plot <- ggplot(distance_scurve, 
+#                         aes(x = group, 
+#                             y = distance)) + 
+#   geom_quasirandom(
+#     size = 2, 
+#     alpha = 0.3
+#   ) + 
+#   ylim(0, max(unlist(distance_scurve$distance))+ 0.5) + 
+#   coord_flip() + 
+#   geom_hline(yintercept = benchmark_scurve,
+#      linetype="solid", 
+#      color = "black", linewidth=0.5, alpha = 0.5) +
+#   ylab(expression(d^{(2)})) +
+#   ggtitle("(d)") +
+#   theme(aspect.ratio = 0.75,
+#         axis.text.x = element_text(size = 12),
+#         axis.title.x = element_text(size = 12),
+#         plot.title = element_text(size = 12))
 
 # Define bin width and starting point
-bin_width <- hb_obj_scurve2$centroids$c_x[2]-hb_obj_scurve2$centroids$c_x[1]
+bin_width <- hb_obj_scurve2$a1
 start_point <- bin_width/2
 
 # Create bins and calculate the mean value for each bin range
@@ -2027,8 +2028,37 @@ distance_hist <- ggplot(
     geom_histogram(
       aes(y = after_stat(count) / sum(after_stat(count))), 
       binwidth = bin_width) +
-  scale_x_continuous(breaks = bin_labels, labels = round(bin_labels, 2)) +
-  ylab("standardized number of edges") +
+  scale_x_continuous(breaks = bin_labels, 
+                     labels = c(
+                       expression(a[1]),
+                       expression(2*a[1]),
+                       expression(3*a[1]),
+                       expression(4*a[1]),
+                       expression(5*a[1]),
+                       expression(6*a[1]),
+                       expression(7*a[1]),
+                       expression(8*a[1]),
+                       expression(9*a[1]),
+                       expression(10*a[1]),
+                       expression(11*a[1]),
+                       expression(12*a[1]),
+                       expression(13*a[1])
+                     )) +
+  # geom_text(
+  #   data = tibble(x = 12*bin_width, y = 0.7,
+  #                 text = expression(a[1])),
+  #   aes(
+  #     x=x,
+  #     y=y,
+  #     label = text
+  #   )
+  # 
+  # ) +
+  geom_vline(xintercept = start_point + 2*bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  ylab("Proportion of the number of edges") +
   xlab(expression(d^{(2)})) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -2039,10 +2069,10 @@ distance_hist <- ggplot(
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
-distance_scurve_summary <- distance_scurve |>
-  group_by(bin) |>
-  summarise(count = n()) |>
-  mutate(std_counts = count/sum(count))
+# distance_scurve_summary <- distance_scurve |>
+#   group_by(bin) |>
+#   summarise(count = n()) |>
+#   mutate(std_counts = count/sum(count))
 
 ```
 
