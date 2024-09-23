@@ -4536,16 +4536,32 @@ scaled_mnist <- scale_data_manual(df_model_data_mnist, "type") |>
 
 scaled_mnist_data <- scaled_mnist |>
   filter(type == "data") |>
+  # bind_cols(tsne_minst_scaled_temp) |>
+  # select(-type, -tSNE1, -tSNE2, -ID) |>
   select(-type)
+
+# scaled_mnist_data <- bind_cols(scaled_mnist_data,
+#                                tsne_minst_scaled |> select(-ID))
 
 scaled_mnist_data_model <- scaled_mnist |>
   filter(type == "model") |>
   select(-type)
 
-# Combine with the true model for visualization
-df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
-                       scaled_mnist_data |> mutate(type = "data"))
+# model_2d <- df_bin_centroids_mnist |>
+#   select(c_x, c_y) |>
+#   rename(c("tSNE1" = "c_x",
+#            "tSNE2" = "c_y"))
+# 
+# scaled_mnist_data_model <- bind_cols(scaled_mnist_data_model, model_2d)
 
+
+# Combine with the true model for visualization
+# df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
+#                        scaled_mnist_data)
+
+
+# scaled_mnist_data <- scaled_mnist_data |>
+#   select(-type)
 
 ## First projection
 projection <- cbind(
@@ -4561,7 +4577,8 @@ projected_df <- projected |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
   #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
+  dplyr::mutate(ID = dplyr::row_number()) |>
+  mutate(cluster = tsne_minst_scaled_temp$cluster)
 
 projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
@@ -4596,7 +4613,8 @@ mnist_proj_tsne_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
-      y = proj2)) +
+      y = proj2,
+      colour = cluster)) +
   geom_segment(
     data = model_df, 
     aes(
@@ -4608,7 +4626,7 @@ mnist_proj_tsne_model1 <- projected_df |>
   geom_point(
     size = 0.2,
     alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
+  scale_color_manual(values = c("#000000","#e41a1c")) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -4625,7 +4643,11 @@ mnist_proj_tsne_model1 <- projected_df |>
   #coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("b")
+  interior_annotation("b") +
+  theme(
+    legend.position = "none"
+  )
+
 
 ## Second projection
 projection <- cbind(
@@ -4641,7 +4663,9 @@ projected_df <- projected |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
   #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
+  dplyr::mutate(ID = dplyr::row_number()) |>
+  mutate(cluster = tsne_minst_scaled_temp$cluster)
+
 
 projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
@@ -4676,7 +4700,8 @@ mnist_proj_tsne_model2 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
-      y = proj2)) +
+      y = proj2,
+      colour = cluster)) +
   geom_segment(
     data = model_df, 
     aes(
@@ -4688,7 +4713,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   geom_point(
     size = 0.2,
     alpha = 0.1) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
+  scale_color_manual(values = c("#000000", "#e41a1c")) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -4705,7 +4730,11 @@ mnist_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c")
+  interior_annotation("c") +
+  theme(
+    legend.position = "none"
+  )
+
 
 ## Third projection
 projection <- cbind(
@@ -4721,7 +4750,9 @@ projected_df <- projected |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
   #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
+  dplyr::mutate(ID = dplyr::row_number()) |>
+  mutate(cluster = tsne_minst_scaled_temp$cluster)
+
 
 projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
 
@@ -4756,7 +4787,8 @@ mnist_proj_tsne_model3 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
-      y = proj2)) +
+      y = proj2,
+      colour = cluster)) +
   geom_segment(
     data = model_df, 
     aes(
@@ -4768,7 +4800,7 @@ mnist_proj_tsne_model3 <- projected_df |>
   geom_point(
     size = 0.2,
     alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#33a02c")) +
+  scale_color_manual(values = c("#000000", "#e41a1c")) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -4785,7 +4817,10 @@ mnist_proj_tsne_model3 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("d")
+  interior_annotation("d") +
+  theme(
+    legend.position = "none"
+  )
 
 ```
 
