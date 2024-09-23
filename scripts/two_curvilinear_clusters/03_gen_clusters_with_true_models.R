@@ -8,7 +8,7 @@ generate_curvilinear_2d_with_noise <- function(n) {
 
   # Add small noise to other dimensions
   x3 <- sin(x1 * pi) + runif(n, -0.5, 0.5)
-  x4 <- rnorm(n, mean = 0, sd = 0.01)
+  x4 <- cos(x1 * pi) + runif(n, -0.5, 0.5)
 
   data <- tibble::tibble(x1 = x1,
                          x2 = x2,
@@ -51,7 +51,7 @@ curv_3_4 <- sweep(curv_3_4, 2, offset, "+")
 # Combine the clusters to create the final dataset
 curvilinear_4d <- bind_rows(curv_1_2, curv_3_4)
 
-curvilinear_data <- curvilinear_data |>
+curvilinear_data <- curvilinear_4d |>
   mutate(type = "data")
 
 # Generate the grid data
