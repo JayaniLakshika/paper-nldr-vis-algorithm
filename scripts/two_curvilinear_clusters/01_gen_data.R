@@ -6,17 +6,17 @@ set.seed(20240110)
 
 # Function to generate a 2D curvilinear cluster with noise in the other dimensions
 generate_curvilinear_2d_with_noise <- function(n) {
-  x1 <- runif(n, 0, 2)
-  x2 <- -(x1^3 + runif(n, 0, 3)) + runif(n, 0, 0.5)
+  x1 <- runif(n, -1, 2)
+  x2 <- runif(n, -0.5, 3)
+  x3 <- -(x1^3 + runif(n, 0, 3)) + runif(n, 0, 0.5)
 
   # Add small noise to other dimensions
-  x3 <- sin(x1 * pi) + runif(n, -0.5, 0.5)
-  x4 <- cos(x1 * pi) + runif(n, -0.5, 0.5)
+  #x3 <- sin(x1 * pi) + runif(n, -0.5, 0.5)
+  #x4 <- cos(x1 * pi) + runif(n, -0.5, 0.5)
 
   data <- tibble::tibble(x1 = x1,
                          x2 = x2,
-                         x3 = x3,
-                         x4 = x4)
+                         x3 = x3) #,x4 = x4
 
   data
 }
@@ -29,12 +29,12 @@ curv_1_2 <- generate_curvilinear_2d_with_noise(n_points)
 
 # Generate the second curvilinear cluster in dimensions 3 and 4 with small noise in dimensions 1 and 2
 curv_3_4 <- generate_curvilinear_2d_with_noise(n_points) |>
-  select(x3, x4, x1, x2)
+  select(x3, x1, x2)
 
-names(curv_3_4) <- c("x1", "x2", "x3", "x4")
+names(curv_3_4) <- c("x1", "x2", "x3")
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(2, 2, 2, 2)  # Adjust these values to set the desired distance
+offset <- c(4, 4, 4)  # Adjust these values to set the desired distance
 curv_3_4 <- sweep(curv_3_4, 2, offset, "+")
 
 # Combine the clusters to create the final dataset
