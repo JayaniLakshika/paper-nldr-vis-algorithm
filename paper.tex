@@ -783,6 +783,26 @@ Evaluating this rate of increase is important. If the increment is not
 considerable, the decision might lean towards retaining low-density
 hexagons.
 
+\begin{figure}[H]
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-scurve-1.pdf}
+
+}
+
+\caption{\label{fig-param-scurve}Various plots to help assess best
+hexagon bin parameters, thresholds to remove low density bins and large
+edges. Both (b) and (c) show MSE, against number of bins along the
+x-axis and standardised count. A good benchmark value for these
+parameters is when the MSE drops and then flattens out. Plot (a) shows
+the distribution of stadardised counts of hexagons. Plot (d) shows the
+distribution of \(2\text{-}D\) Euclidean distances between bin
+centroids, with a good benchmark value for removing large edges would
+being the distance that shows the first large decrease.}
+
+\end{figure}%
+
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
 Edges define the neighbourhood structure, in order to provide a smooth
@@ -819,21 +839,11 @@ initial bin position or removing low density bins.
 
 \begin{figure}[H]
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-scurve-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-40-1.pdf}
 
 }
 
-\caption{\label{fig-param-scurve}Various plots to help assess best
-hexagon bin parameters, thresholds to remove low density bins and large
-edges. Both (b) and (c) show MSE, against number of bins along the
-x-axis and standardised count. A good benchmark value for these
-parameters is when the MSE drops and then flattens out. Plot (a) shows
-the distribution of stadardised counts of hexagons. Plot (d) shows the
-distribution of \(2\text{-}D\) Euclidean distances between bin
-centroids, with a good benchmark value for removing large edges would
-being the distance that shows the first large decrease.}
+\caption{long edge removal}
 
 \end{figure}%
 
