@@ -4,6 +4,7 @@ library(crosstalk)
 library(quollr)
 library(plotly)
 library(readr)
+library(DT)
 
 ## Import data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
@@ -200,11 +201,19 @@ langevitour_output <- langevitour(df |> dplyr::select(starts_with("PC")),
                                   link=shared_df_mnist,
                                   link_filter=FALSE)
 
+# Create a table widget
+datatableWidget <- datatable(
+  shared_df_mnist,
+  rownames=FALSE, width="100%",
+  class='compact cell-border hover', extensions='Buttons',
+  options=list(dom='Bfrtip',buttons=c('copy','csv','excel')))
+
 
 linked_plt <- bscols(
   nldr_scurve_plt,
   langevitour_output,
-  widths = c(6, 6),
+  datatableWidget,
+  widths = c(4, 4, 4),
   device = "sm"
 )
 
