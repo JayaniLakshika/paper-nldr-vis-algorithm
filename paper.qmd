@@ -1126,17 +1126,20 @@ error_df_scurve <- augment(
   type_NLDR = "UMAP",
   col_start = "x")
 
-error_df_scurve <- error_df_scurve |>
-  mutate(type = case_when(
-    row_wise_abs_error == 0 ~ "no error",
-    row_wise_abs_error <= 0.2 ~ "error 0-0.2",
-    row_wise_abs_error <= 0.4 ~ "error 0.2-0.4",
-    row_wise_abs_error <= 0.6 ~ "error 0.4-0.6",
-    .default = "error greter than 0.6"
-  )) |>
-  mutate(type = factor(type, levels = c(
-    "no error", "error 0-0.2", "error 0.2-0.4", "error 0.4-0.6", "error greter than 0.6")))
+# error_df_scurve <- error_df_scurve |>
+#   mutate(type = case_when(
+#     row_wise_abs_error == 0 ~ "no error",
+#     row_wise_abs_error <= 0.2 ~ "error 0-0.2",
+#     row_wise_abs_error <= 0.4 ~ "error 0.2-0.4",
+#     row_wise_abs_error <= 0.6 ~ "error 0.4-0.6",
+#     .default = "error greter than 0.6"
+#   )) |>
+#   mutate(type = factor(type, levels = c(
+#     "no error", "error 0-0.2", "error 0.2-0.4", "error 0.4-0.6", "error greter than 0.6")))
 
+
+error_df_scurve <- error_df_scurve |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
 
 error_df_scurve <- error_df_scurve |>
   bind_cols(umap_scurve_scaled |>
@@ -1145,16 +1148,9 @@ error_df_scurve <- error_df_scurve |>
 error_plot_scurve <- error_df_scurve |>
   ggplot(aes(x = UMAP1,
              y = UMAP2,
-             color = type)) +
+             colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
-  scale_colour_brewer(
-    type = "qual",
-    palette = 2
-  ) +
-  theme(
-    legend.position = "right",
-    legend.text = element_text(size = 10)
-  ) +
+  scale_colour_continuous_sequential(palette = "Light Grays") +
   coord_equal()
 ```
 
