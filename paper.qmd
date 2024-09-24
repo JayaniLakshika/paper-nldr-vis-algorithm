@@ -1386,7 +1386,7 @@ hex_grid_coloured_scurve1 <- ggplot() +
              alpha = 0.3,
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
-    na.value = "#ffffff", option = "C") +
+    na.value = "#ffffff", option = "E") +
   interior_annotation("a", position = c(0.92, 0.93)) +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
 
@@ -1510,7 +1510,7 @@ hex_grid_coloured_scurve3 <-  ggplot() +
            aes(x = UMAP1, y = UMAP2),
            alpha = 0.3,
            size = 0.5) +
-  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "C") +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("c")
  
@@ -1645,13 +1645,13 @@ mse_scurve_b <- ggplot(error_scurve,
                      aes(x = a1, 
                          y = MSE)) +
   geom_vline(xintercept = 0.10, linetype=2,
-           color = "#bdbdbd", linewidth=1) +
+           color = "#54278f", linewidth=1) +
   geom_vline(xintercept = 0.12,
              linetype="solid",
-             color = "#bdbdbd",
+             color = "#006d2c",
              linewidth=1) +
   geom_vline(xintercept = 0.18, linetype=2,
-             color = "#bdbdbd", linewidth=1) +
+             color = "#08519c", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
@@ -1671,11 +1671,11 @@ a1_m_scurve <- ggplot(error_scurve,
                      aes(x = a1,
                          y = prop_bins)) +
   geom_vline(xintercept = 0.12, linetype="solid",
-             color = "#bdbdbd", linewidth=1) +
+             color = "#006d2c", linewidth=1) +
   geom_vline(xintercept = 0.10, linetype=2,
-             color = "#bdbdbd", linewidth=1) +
+             color = "#54278f", linewidth=1) +
   geom_vline(xintercept = 0.18, linetype=2,
-             color = "#bdbdbd", linewidth=1) +
+             color = "#08519c", linewidth=1) +
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) +
   # scale_y_continuous(breaks = sort(unique(error_scurve$b_non_empty))[-3]) +
