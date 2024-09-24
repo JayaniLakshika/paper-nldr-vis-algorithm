@@ -4844,6 +4844,188 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
   plot_layout(ncol = 2)
 ```
 
+<!--proj for twisted pattern-->
+```{r}
+#| label: mnist-model-proj-twisted
+## fourth projection
+projection <- cbind(
+  c(-0.03265,-0.43663,0.02143,0.07384,0.26237,0.20909,0.32398,-0.34487,0.03723,-0.04418),
+  c(0.52862,-0.14177,0.20045,-0.37753,-0.09552,0.08851,0.07168,0.09255,-0.15653,-0.00030))
+
+projection_scaled <- projection * 2
+
+projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number()) |>
+  mutate(cluster = tsne_minst_scaled_temp$cluster)
+
+
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_mnist |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(  
+  proj = projection,
+  limits = 1,
+  axis_pos_x = -0.83,
+  axis_pos_y = -0.83,
+  axis_labels = names(scaled_mnist_data),
+  threshold = 0.06)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+mnist_proj_tsne_model4 <- ggplot() +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c",
+    linewidth = 0.5) +
+  # geom_point(
+  #   #size = 0.2,
+  #   alpha = 0.2) +
+  # scale_color_manual(values = c("#000000", "#e41a1c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
+  interior_annotation("d") +
+  theme(
+    legend.position = "none"
+  )
+
+
+## fifth projection
+projection <- cbind(
+  c(-0.36688,-0.10781,-0.15474,-0.23005,-0.20194,-0.10841,-0.32443,0.04531,-0.36514,-0.14546),
+  c(0.34256,-0.16215,-0.18747,-0.08515,-0.28689,-0.32807,0.28372,0.20894,-0.16990,0.09181))
+
+projection_scaled <- projection * 2.3
+
+projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number()) |>
+  mutate(cluster = tsne_minst_scaled_temp$cluster)
+
+
+projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_mnist |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(  
+  proj = projection,
+  limits = 1,
+  axis_pos_x = -0.83,
+  axis_pos_y = -0.83,
+  axis_labels = names(scaled_mnist_data),
+  threshold = 0.06)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+mnist_proj_tsne_model5 <- ggplot() +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#33a02c",
+    linewidth = 0.5) +
+  # geom_point(
+  #   #size = 0.2,
+  #   alpha = 0.2) +
+  # scale_color_manual(values = c("#000000", "#e41a1c")) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
+  interior_annotation("d") +
+  theme(
+    legend.position = "none"
+  )
+
+```
+
+```{r}
+#| label: fig-mnist-tri-proj-twisted
+#| fig-pos: H
+#| fig-height: 10
+#| fig-width: 10
+#| fig-cap: "twisted pattern"
+
+free(trimesh_removed_mnist) + free(trimesh_removed_mnist) + mnist_proj_tsne_model4 + mnist_proj_tsne_model5 +
+  plot_layout(ncol = 2)
+```
+
+
 <!-- ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"} -->
 <!-- ![](figures/mnist/mnist_model_2d.png){#fig-mnist1-model} -->
 
