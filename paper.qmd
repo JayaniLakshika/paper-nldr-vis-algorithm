@@ -244,6 +244,21 @@ gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axi
 ```
 
 ```{r}
+#| label: solve-quad-fun
+
+quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
+{
+  a <- as.complex(a)
+  answer <- c((-b + sqrt(b^2 - 4 * a * c)) / (2 * a),
+              (-b - sqrt(b^2 - 4 * a * c)) / (2 * a))
+  if(all(Im(answer) == 0)) answer <- Re(answer)
+  if(answer[1] == answer[2]) return(answer[1])
+  answer[answer>0] ## only positive 
+}
+
+```
+
+```{r}
 #| label: code-setup
 set.seed(20240110)
 #source("nldr_code.R", local = TRUE)
@@ -1562,10 +1577,14 @@ error_scurve <- data.frame(matrix(nrow = 0, ncol = 0))
 for (xbins in bin1_vec_scurve) {
   #for (buff in buffer_vec) {
   
-  bin_obj <- calc_bins_y(bin1 = xbins, r2 = r2, q = 0.1)
+  bin_obj <- calc_bins_y(
+    bin1 = xbins, 
+    r2 = r2, 
+    q = 0.1)
     
   bin2 <- bin_obj$bin2
   a1 <- bin_obj$a1
+  a2 <- bin_obj$a2
 
   scurve_model <- fit_highd_model(
     training_data = training_data_scurve,
@@ -1593,7 +1612,9 @@ for (xbins in bin1_vec_scurve) {
            bin2 = bin2,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_scurve),
-           a1 = round(a1, 2))
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_scurve <- bind_rows(error_scurve, error_df)
     
@@ -1635,11 +1656,20 @@ for (xbins in bin1_vec_scurve) {
 #     r2 = r2,
 #     q = 0.1)$a1
 
+
 ## Find the minimum MSE when have duplicate a1
 error_scurve <- error_scurve |>
   group_by(a1) |>
   filter(MSE == min(MSE)) |>
-  ungroup()
+  ungroup() |>
+  mutate(prop_dens = b_non_empty/side_length) 
+
+base_line_prop_dens <- error_scurve |>
+  filter(a1 == min(a1)) |>
+  pull(prop_dens)
+
+error_scurve <- error_scurve |>
+  mutate(prop_comp = prop_dens/base_line_prop_dens)
 
 mse_scurve_b <- ggplot(error_scurve, 
                      aes(x = a1, 
@@ -1663,6 +1693,29 @@ mse_scurve_b <- ggplot(error_scurve,
         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
+
+prop_dens_a1 <- ggplot(error_scurve,
+                     aes(x = a1,
+                         y = prop_comp)) +
+  geom_vline(xintercept = 0.12, linetype="solid",
+             color = "#006d2c", linewidth=1) +
+  geom_vline(xintercept = 0.10, linetype=2,
+             color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.18, linetype=2,
+             color = "#08519c", linewidth=1) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
+  # scale_y_continuous(breaks = sort(unique(error_scurve$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = sort(unique(round(error_scurve$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("proportion of densities")) +
+  ggtitle("(d)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
 
 error_scurve <- error_scurve |>
   mutate(prop_bins = b_non_empty/b)
@@ -1985,6 +2038,8 @@ mse_scurve_lwd <- ggplot(error_rm_scurve,
         legend.position = "none")
 ```
 
+<!--base line -->
+
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-scurve (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
 
 
@@ -2019,7 +2074,7 @@ df_bin_centroids_scurve_keep  <- df_bin_centroids_scurve |>
 #| fig-pos: H
 
 mse_scurve_b + a1_m_scurve +
-  mse_scurve_lwd + 
+  mse_scurve_lwd + prop_dens_a1 +
   plot_layout(ncol=2)
 ```
 
