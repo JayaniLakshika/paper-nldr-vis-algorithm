@@ -2598,10 +2598,12 @@ trimesh_removed_gau_tsne <- ggplot() +
     size = 0.1,
     color = "#000000"
   )  +
-  coord_fixed() +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
-                      cex = 2)
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
 
 
 ## Hexagonal binning to have regular hexagons
@@ -2905,10 +2907,12 @@ trimesh_removed_gau_umap <- ggplot() +
     size = 0.1,
     color = "#000000"
   )  +
-  coord_fixed() +
   interior_annotation("b1", 
                       position = c(0.06, 0.95),
-                      cex = 2)
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
@@ -3209,10 +3213,12 @@ trimesh_removed_gau_pacmap <- ggplot() +
     size = 0.1,
     color = "#000000"
   )  +
-  coord_fixed() +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
-                      cex = 2)
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
