@@ -54,6 +54,8 @@ benchmark_mnist <- find_lg_benchmark(
   distance_edges = distance_mnist,
   distance_col = "distance")
 
+benchmark_mnist <- 0.1
+
 ## Hexagonal binning to have regular hexagons
 hb_obj_mnist <- hex_binning(
   data = tsne_minst_scaled,
