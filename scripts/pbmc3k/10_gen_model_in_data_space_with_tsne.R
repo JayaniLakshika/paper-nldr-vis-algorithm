@@ -60,7 +60,7 @@ benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
 
-#benchmark_pbmc <- 0.1
+benchmark_pbmc <- 0.1
 
 # tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
 #   filter(!(row_number() %in% c(155)))

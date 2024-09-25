@@ -4031,7 +4031,7 @@ benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
 
-#benchmark_pbmc <- 0.1
+benchmark_pbmc <- 0.1
 
 ## Remove an edge that exist as long edge in p-D
 # tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
@@ -4340,7 +4340,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows close clusters. This is why b1, b2, and b3 shows connected edges between the clusters, as proven by @fig-pbmc-mse as a best layout. Additionally, in the fitted model for layout b, the two big clusters are not connected, but two are connected with the small cluster. Viewing the fitted model in $9\\text{-}D$, helps to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations for the models are available at <https://youtu.be/swkOKdjnjq0> and <link2> respectively."
+#| fig-cap: "Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows three clusters with two of them close and one is separated from others. This is why b1, b2, and b3 shows a connected edge between the close clusters, as proven by @fig-pbmc-mse as a best layout. Viewing the fitted model in $9\\text{-}D$, helps to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations for the models are available at <https://youtu.be/0cKX_HG_n0k> and <link2> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
