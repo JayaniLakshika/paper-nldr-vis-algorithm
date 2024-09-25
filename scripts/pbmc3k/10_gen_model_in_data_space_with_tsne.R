@@ -3,6 +3,7 @@ library(quollr)
 library(dplyr)
 library(reader)
 library(langevitour)
+set.seed(20240110)
 
 ## Import data
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
