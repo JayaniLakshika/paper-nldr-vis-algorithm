@@ -4417,7 +4417,7 @@ trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
 nldr_mnist4 <- trimap_mnist |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("d", position = c(0.86, 0.92)) +
   theme(aspect.ratio = 1)
 
@@ -4466,7 +4466,7 @@ error_plot_mnist <- ggplot(error_mnist,
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a', "#ff7f00",'#a65628')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8','#999999', "#ff7f00",'#a65628')) +
   scale_y_log10() +
   ylab("MSE") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
@@ -4623,16 +4623,15 @@ trimesh_removed_mnist <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c",
-               linewidth = 1) +
+               colour = "#000000") +
   geom_point(data = tsne_minst_scaled_temp,
              aes(
                x = tSNE1,
                y = tSNE2,
                colour = cluster
              ),
-             alpha=0.1)+
-  scale_color_manual(values=c('#000000', '#e41a1c')) +
+             alpha=0.2)+
+  scale_color_manual(values=c('#ff7f00', '#4daf4a')) +
   interior_annotation("a", sc_ltr_pos_mnist) +
   theme(aspect.ratio = 1,
         legend.position = "none")
@@ -4829,12 +4828,11 @@ mnist_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c",
-    linewidth = 1) +
+    color = "#000000") +
   geom_point(
     #size = 0.2,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000","#e41a1c")) +
+    alpha = 0.3) +
+  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -4917,12 +4915,11 @@ mnist_proj_tsne_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c",
-    linewidth = 1) +
+    color = "#000000") +
   geom_point(
     #size = 0.2,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#e41a1c")) +
+    alpha = 0.3) +
+  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -5005,12 +5002,11 @@ mnist_proj_tsne_model3 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c",
-    linewidth = 1) +
+    color = "#000000") +
   geom_point(
     #size = 0.2,
-    alpha = 0.2) +
-  scale_color_manual(values = c("#000000", "#e41a1c")) +
+    alpha = 0.3) +
+  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
