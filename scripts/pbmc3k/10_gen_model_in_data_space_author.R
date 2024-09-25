@@ -6,6 +6,8 @@ library(langevitour)
 
 ## Import data
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
+names(training_data_pbmc) <- paste0("pc", 1:50)
+
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
 
@@ -27,7 +29,7 @@ pbmc_model <- fit_highd_model(
   r2 = r2_pbmc,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "PC"
+  col_start_highd = "pc"
 )
 
 df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -66,7 +68,7 @@ df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
 
 ### Define type column
 df <- df_all_pbmc |>
-  dplyr::select(tidyselect::starts_with("PC")) |>
+  dplyr::select(tidyselect::starts_with("pc")) |>
   dplyr::mutate(type = "data") ## original dataset
 
 df_b <- df_bin_pbmc |>
