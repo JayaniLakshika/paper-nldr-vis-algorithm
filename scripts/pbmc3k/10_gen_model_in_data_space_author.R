@@ -132,8 +132,8 @@ langevitour(df |> dplyr::select(-type),
             lineTo = distance_df_small_edges_pbmc$to,
             group = df$type,
             pointSize = append(rep(1.5, NROW(scaled_pbmc_data_model)), rep(1, NROW(scaled_pbmc_data))),
-            levelColors = c("#000000", "#33a02c"),
-            lineColors = rep("#33a02c", nrow(distance_df_small_edges_pbmc)))
+            levelColors = c('#a65628', "#000000"),
+            lineColors = rep("#000000", nrow(distance_df_small_edges_pbmc)))
 
 
 
