@@ -2587,15 +2587,16 @@ trimesh_removed_gau_tsne <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c") +
+               colour = "#33a02c",
+               linewidth = 1) +
   geom_point(
     data = tsne_gau_scaled,
     aes(
       x = tSNE1,
       y = tSNE2
     ),
-    alpha = 0.3,
-    size = 0.1,
+    alpha = 0.2,
+    #size = 0.1,
     color = "#000000"
   )  +
   interior_annotation("a1", 
@@ -2659,7 +2660,9 @@ projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
 
-projected <- as.matrix(scaled_gau_data) %*% projection
+projection_scaled <- projection * 1
+
+projected <- as.matrix(scaled_gau_data) %*% projection_scaled
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -2668,7 +2671,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
+projected_model <- as.matrix(scaled_gau_data_model) %*% projection_scaled
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -2688,8 +2691,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.2,
-  axis_pos_x = 0.15,
+  limits = 0.3,
+  axis_pos_x = 0.05,
   axis_pos_y = -0.85,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
@@ -2709,10 +2712,11 @@ five_gau_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
-    alpha = 0.3) +
+    #size = 0.5,
+    alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
     data=axes, 
@@ -2723,12 +2727,12 @@ five_gau_proj_tsne_model1 <- projected_df |>
     aes(x=x2, y=y2),
     label=rownames(axes), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0.1, 0.38)) +
+  xlim(c(0, 0.4)) +
   ylim(c(-0.9, -0.5)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
@@ -2792,9 +2796,10 @@ five_gau_proj_tsne_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.2) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -2806,13 +2811,13 @@ five_gau_proj_tsne_model2 <- projected_df |>
     aes(x=x2, y=y2), 
     label=rownames(axes), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.35)) +
-  ylim(c(-0.75, -0.4)) +
+  xlim(c(-0.75, -0.36)) +
+  ylim(c(-0.75, -0.36)) +
   interior_annotation("a3", 
                       position = c(0.08, 0.9),
                       cex = 2)
