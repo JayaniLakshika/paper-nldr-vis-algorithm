@@ -3602,7 +3602,7 @@ trimesh_removed_pbmc <- ggplot() +
     alpha = 0.2,
     color = "#000000"
   )  +
-  interior_annotation("a1") +
+  interior_annotation("a1", cex = 2) +
   theme(
     aspect.ratio = 1
   )
@@ -3763,7 +3763,7 @@ pbmc_proj_umap_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 1)) +
   ylim(c(-0.6, 1)) +
-  interior_annotation("a2")
+  interior_annotation("a2", cex = 2)
 
 ## Second projection
 projection <- cbind(
@@ -3844,7 +3844,7 @@ pbmc_proj_umap_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.9, 0.5)) +
   ylim(c(-0.9, 0.5)) +
-  interior_annotation("a3")
+  interior_annotation("a3", cex = 2)
 
 ```
 
@@ -4041,7 +4041,7 @@ trimesh_removed_pbmc_best <- ggplot() +
     alpha = 0.2,
     color = "#000000"
   )  +
-  interior_annotation("b1") +
+  interior_annotation("b1", cex = 2) +
   theme(
     aspect.ratio = 1
   )
@@ -4214,7 +4214,7 @@ pbmc_proj_umap_model1_best <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 1)) +
   ylim(c(-0.6, 1)) +
-  interior_annotation("b2")
+  interior_annotation("b2", cex = 2)
 
 ## Second projection
 projection <- cbind(
@@ -4294,7 +4294,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
   coord_fixed() +
   xlim(c(-0.9, 0.5)) +
   ylim(c(-0.9, 0.5)) +
-  interior_annotation("b3")
+  interior_annotation("b3", cex = 2)
 
 ```
 
@@ -4313,7 +4313,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in \\gD{}, on the layouts, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data. The \\gD{} model shows three well-separated clusters with large gaps in a1 ($a_1 = 0.05$, $b = 676 \\  (26, \ 26)$, $m = 92$, benchmark value to remove large edges is $0.08$), while a2 ($a_1 = 0.10$, $b = 195 \\  (13, \ 15)$, $m = 90$, benchmark value to remove large edges is $0.166$) shows small separation between the clusters. Because of the small separation, the three clusters are connected in \\gD{} and appear as long edges in $9\\text{-}D$. The full video for the model for layout a is available at <https://youtu.be/5Y1hE4i7N2k>. The full video for the model for layout c is available at <https://youtu.be/5Y1hE4i7N2k>."
+#| fig-cap: ""
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
