@@ -307,8 +307,7 @@ nldr1c <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a")
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
-
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
 nldr2 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
@@ -318,12 +317,12 @@ nldr2 <- umap_pbmc |>
 nldr2c <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("b")
 
 
-#umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
+
 nldr3 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
@@ -333,8 +332,11 @@ nldr3 <- umap_pbmc |>
 nldr3c <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#999999') +
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
   interior_annotation("c")
+
+
+#umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
 
@@ -3951,7 +3953,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, b, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts c and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
 #| out-height: 100%
@@ -4365,7 +4367,7 @@ pbmc_proj_umap_model2_best <- ggplot() +
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in \\gD{}, on the layout a and c, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout c shows close clusters. In $9\\text{-}D$, the data shows close clusters. This is the reason where b1, b2, and b3 shows connected edges between the clusters, and also proved by @fig-pbmc-mse as the best layout, which used the same NLDR method. By viewing the fitted model in $9\\text{-}D$, help to see some unobserved pattern of the data (i) densed points, and (ii) non-linear clusters."
+#| fig-cap: "Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows close clusters. This is the reason where b1, b2, and b3 shows connected edges between the clusters, and also proved by @fig-pbmc-mse as the best layout, which used the same NLDR method. By viewing the fitted model in $9\\text{-}D$, help to see some unobserved pattern of the data (i) densed points, and (ii) non-linear clusters."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
