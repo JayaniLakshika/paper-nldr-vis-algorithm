@@ -3198,7 +3198,9 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1)
+  filter(distance < benchmark_gau1) |>
+  mutate(ID = row_number()) |>
+  filter(!(ID %in% c(97)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
