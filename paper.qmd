@@ -694,7 +694,7 @@ axes_obj <- gen_axes(
   proj = projection * 5,
   limits = 0.15,
   axis_pos_x = -0.1,
-  axis_pos_y = -0.075,
+  axis_pos_y = -0.1,
   axis_labels = names(scaled_two_curvy_data),
   threshold = 0.01)
 
@@ -727,11 +727,13 @@ two_curvy_proj_tsne_model1 <- projected_df |>
     aes(x=x2, y=y2), 
     label=rownames(axes),
     colour="grey50",
-    size = 3) +
+    size = 4) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-0.126, 0.125)) + 
+  ylim(c(-0.126, 0.125)) +
   interior_annotation("a", cex = 2) +
   theme(
     legend.position = "none"
@@ -773,9 +775,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection * 5,
-  limits = 0.15,
+  limits = 0.12,
   axis_pos_x = -0.1,
-  axis_pos_y = -0.075,
+  axis_pos_y = -0.1,
   axis_labels = names(scaled_two_curvy_data),
   threshold = 0.01)
 
@@ -808,11 +810,13 @@ two_curvy_proj_tsne_model2 <- projected_df |>
     aes(x=x2, y=y2), 
     label=rownames(axes),
     colour="grey50",
-    size = 3) +
+    size = 4) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
+  xlim(c(-0.125, 0.075)) + 
+  ylim(c(-0.125, 0.075)) +
   interior_annotation("b", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
@@ -821,7 +825,7 @@ two_curvy_proj_tsne_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the S-curve data (black points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>)." 
+#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the two-curvy data (black points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>)." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
