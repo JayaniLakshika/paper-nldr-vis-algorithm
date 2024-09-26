@@ -3210,7 +3210,8 @@ trimesh_removed_gau_pacmap <- ggplot() +
                  y = y_from, 
                  xend = x_to, 
                  yend = y_to),
-               colour = "#33a02c") +
+               colour = "#33a02c",
+               linewidth = 1) +
   geom_point(
     data = pacmap_gau_scaled,
     aes(
@@ -3218,7 +3219,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
       y = PaCMAP2
     ),
     alpha = 0.3,
-    size = 0.1,
+    #size = 0.1,
     color = "#000000"
   )  +
   interior_annotation("c1", 
@@ -3325,9 +3326,10 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.5,
+    #size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -3338,12 +3340,12 @@ five_gau_proj_pacmap_model1 <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.41, -0.15)) +
+  xlim(c(-0.46, -0.12)) +
   ylim(c(0.18, 0.52)) +
   interior_annotation("c2", 
                       position = c(0.08, 0.9),
@@ -3407,9 +3409,10 @@ five_gau_proj_pacmap_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#33a02c") +
+    color = "#33a02c",
+    linewidth = 1) +
   geom_point(
-    size = 0.8,
+    #size = 0.8,
     alpha = 0.15) +
   scale_color_manual(values = c("#000000", "#33a02c")) +
   geom_segment(
@@ -3420,13 +3423,13 @@ five_gau_proj_pacmap_model2 <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
   xlim(c(-0.75, -0.35)) +
-  ylim(c(-0.75, -0.4))+
+  ylim(c(-0.75, -0.35))+
   interior_annotation("c3", 
                       position = c(0.08, 0.9),
                       cex = 2)
