@@ -4657,11 +4657,12 @@ tr_df <- distinct(tibble::tibble(
   y = c(tr_from_to_df_mnist[["y_from"]], tr_from_to_df_mnist[["y_to"]])))
 
 distance_df_small_edges_mnist <- distance_mnist |>
-  filter(distance < benchmark_mnist)
+  filter(distance < benchmark_mnist) |>
+  filter(!(row_number() %in% c(143, 144, 162)))
 
 tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
-  by = c("from", "to"))
+  by = c("from", "to")) 
 
 tsne_minst_scaled_temp <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 0.92) & (tSNE1 >= 0.75) & (tSNE2 <= 0.62) & (tSNE2 >= 0.44), "small_clust", "big_clust"))
@@ -4681,7 +4682,7 @@ trimesh_removed_mnist <- ggplot() +
                colour = cluster
              ),
              alpha=0.2)+
-  scale_color_manual(values=c('#ff7f00', '#4daf4a')) +
+  scale_color_manual(values=c("#999999",'#ff7f00')) +
   interior_annotation("a", sc_ltr_pos_mnist) +
   theme(aspect.ratio = 1,
         legend.position = "none")
@@ -4882,7 +4883,7 @@ mnist_proj_tsne_model1 <- projected_df |>
   geom_point(
     #size = 0.2,
     alpha = 0.3) +
-  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
+  scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -4969,7 +4970,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   geom_point(
     #size = 0.2,
     alpha = 0.3) +
-  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
+  scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -5056,7 +5057,7 @@ mnist_proj_tsne_model3 <- projected_df |>
   geom_point(
     #size = 0.2,
     alpha = 0.3) +
-  scale_color_manual(values = c('#ff7f00', '#4daf4a')) +
+  scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
