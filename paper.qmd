@@ -4438,7 +4438,7 @@ tsne_mnist <- read_rds("data/mnist/mnist_tsne30.rds")
 nldr_mnist1 <- tsne_mnist |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -4465,7 +4465,7 @@ trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
 nldr_mnist4 <- trimap_mnist |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#999999') +
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("d", position = c(0.86, 0.92)) +
   theme(aspect.ratio = 1)
 
@@ -4514,7 +4514,7 @@ error_plot_mnist <- ggplot(error_mnist,
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#999999', "#ff7f00",'#a65628')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#999999','#a65628')) +
   scale_y_log10() +
   ylab("MSE") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
