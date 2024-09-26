@@ -1,49 +1,49 @@
+library(tibble)
 library(dplyr)
 library(langevitour)
 library(readr)
 
 set.seed(20240110)
 
-# Function to generate a 2D curvilinear cluster with noise in the other dimensions
-generate_curvilinear_2d_with_noise <- function(n) {
-  x1 <- runif(n, -1, 2)
-  x2 <- runif(n, -0.5, 3)
-  x3 <- -(x1^3 + runif(n, 0, 3)) + runif(n, 0, 0.5)
+curve_3d <- function(n_samples = 100) {
+  a <- 3 * pi * stats::runif(n = n_samples, min = -0.5, max = 0)
+  x1 <- sin(a)
+  x2 <- 2.0 * stats::runif(n = n_samples)
+  x3 <- sign(a) * (cos(a) - 1)
 
-  # Add small noise to other dimensions
-  #x3 <- sin(x1 * pi) + runif(n, -0.5, 0.5)
-  #x4 <- cos(x1 * pi) + runif(n, -0.5, 0.5)
-
-  data <- tibble::tibble(x1 = x1,
-                         x2 = x2,
-                         x3 = x3) #,x4 = x4
-
-  data
+  df <- tibble(
+    x1 = x1,
+    x2 = x2,
+    x3 = x3
+  )
 }
 
-# Number of points for each cluster
-n_points <- 750
+# Simulate some s_curve_noise
 
-# Generate the first curvilinear cluster in dimensions 1 and 2 with small noise in dimensions 3 and 4
-curv_1_2 <- generate_curvilinear_2d_with_noise(n_points)
+sample_size <- 1000
+curve1 <- curve_3d(n_samples = sample_size)
+langevitour(curve1)
 
-# Generate the second curvilinear cluster in dimensions 3 and 4 with small noise in dimensions 1 and 2
-curv_3_4 <- generate_curvilinear_2d_with_noise(n_points) |>
-  select(x3, x1, x2)
+curve2 <- curve1 |>
+  select(x2, x3, x1)
 
-names(curv_3_4) <- c("x1", "x2", "x3")
+names(curve2) <- paste0("x", 1:3)
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(4, 4, 4)  # Adjust these values to set the desired distance
-curv_3_4 <- sweep(curv_3_4, 2, offset, "+")
+offset <- c(2.5, 2.5, 2.5)  # Adjust these values to set the desired distance
+curve2 <- sweep(curve2, 2, offset, "+")
 
-# Combine the clusters to create the final dataset
-curvilinear_4d <- bind_rows(curv_1_2, curv_3_4)
+df <- bind_rows(
+  curve1,
+  curve2
+)
 
-# View the first few rows
-head(curvilinear_4d)
+df$x4 <- runif(NROW(df), -0.05, 0.05)
+df$x5 <- runif(NROW(df), -0.02, 0.02)
+df$x6 <- runif(NROW(df), -0.1, 0.1)
+df$x7 <- runif(NROW(df), -0.01, 0.01)
 
-# Visualize using langevitour
-langevitour(curvilinear_4d)
+langevitour(df)
 
-write_rds(curvilinear_4d, here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_data.rds"))
+write_rds(df, here::here("data/two_curvy_clust/two_curvy_clust_data.rds"))
+

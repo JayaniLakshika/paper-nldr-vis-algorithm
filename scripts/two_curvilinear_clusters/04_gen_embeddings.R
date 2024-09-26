@@ -20,12 +20,12 @@ use_condaenv("pcamp_env")
 
 #source(here::here("R/nldr_code.R"), local = TRUE)
 
-data <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_data.rds"))
+data <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_data.rds"))
 
 ## Scale the data
 
-# data <- data |>
-#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+data <- data |>
+  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
 ## tSNE
 perplexity <- 30
@@ -39,7 +39,7 @@ tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
 names(tSNE_data) <- c("tSNE1", "tSNE2")
 
-write_rds(tSNE_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_tsne_perplexity_", perplexity, ".rds"))
+write_rds(tSNE_data, file = paste0("data/two_curvy_clust/two_curvy_clust_tsne_perplexity_", perplexity, ".rds"))
 
 ## UMAP
 
@@ -58,9 +58,13 @@ min_dist <- 0.1
 # UMAP_data <- UMAP_fit$layout |>
 #   tibble::as_tibble(.name_repair = "unique")
 
-UMAP_fit <- umap(data,
-                 n_neighbors = n_neighbors,
-                 n_components =  min_dist)
+# Create a config list with the desired parameters
+umap_config <- umap.defaults
+umap_config$n_neighbors <- n_neighbors      # Set the number of neighbors
+umap_config$n_components <- 2    # Set the number of output dimensions (typically 2 or 3)
+umap_config$min_dist <- min_dist
+
+UMAP_fit <- umap(data, config = umap_config)
 
 UMAP_data <- UMAP_fit$layout |>
   as_tibble()
@@ -68,15 +72,15 @@ UMAP_data <- UMAP_fit$layout |>
 names(UMAP_data) <- c("UMAP1", "UMAP2")
 
 ## Run only once
-write_rds(UMAP_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
+write_rds(UMAP_data, file = paste0("data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
 
-# predict_UMAP_df <- predict(UMAP_fit, data) |>
-#   as_tibble()
-#
-# names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
-#
-# ## Run only once
-# write_rds(predict_UMAP_df, file = "data/two_nonlinear_clusters/two_nonlinear_clusters_umap_predict.rds")
+predict_UMAP_df <- predict(UMAP_fit, data) |>
+  as_tibble()
+
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+
+## Run only once
+write_rds(predict_UMAP_df, file = "data/two_curvy_clust/two_curvy_clust_umap_predict.rds")
 
 ## PHATE
 knn <- 5
@@ -86,7 +90,7 @@ PHATE_data <- as_tibble(PHATE_data$embedding)
 
 names(PHATE_data) <- c("PHATE1", "PHATE2")
 
-write_rds(PHATE_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_phate_knn_", knn, ".rds"))
+write_rds(PHATE_data, file = paste0("data/two_curvy_clust/two_curvy_clust_phate_knn_", knn, ".rds"))
 
 
 ## TriMAP
@@ -113,7 +117,7 @@ TriMAP_data <- reducer$fit_transform(data_matrix) |>
 
 names(TriMAP_data) <- c("TriMAP1", "TriMAP2")
 
-write_rds(TriMAP_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_trimap_n-inliers_", n_inliers, "_n-outliers_", n_outliers, "_n-random_", n_random, ".rds"))
+write_rds(TriMAP_data, file = paste0("data/two_curvy_clust/two_curvy_clust_trimap_n-inliers_", n_inliers, "_n-outliers_", n_outliers, "_n-random_", n_random, ".rds"))
 
 ## PaCMAP
 
@@ -141,5 +145,5 @@ PacMAP_data <- reducer$fit_transform(data_matrix, init = init) |>
 
 names(PacMAP_data) <- c("PaCMAP1", "PaCMAP2")
 
-write_rds(PacMAP_data, file = paste0("data/two_nonlinear_clusters/two_nonlinear_clusters_pacmap_n-neighbors_", n_neighbors,"_init_", init, "_MN-ratio_", MN_ratio, "_FP-ratio_", FP_ratio, ".rds"))
+write_rds(PacMAP_data, file = paste0("data/two_curvy_clust/two_curvy_clust_pacmap_n-neighbors_", n_neighbors,"_init_", init, "_MN-ratio_", MN_ratio, "_FP-ratio_", FP_ratio, ".rds"))
 

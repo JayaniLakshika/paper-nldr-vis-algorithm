@@ -2,11 +2,11 @@ library(dplyr)
 library(readr)
 library(ggplot2)
 
-tsne_df <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_tsne_perplexity_30.rds"))
-umap_df <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_umap_n-neigbors_15_min-dist_0.1.rds"))
-phate_df <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_phate_knn_5.rds"))
-trimap_df <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds"))
-pacmap_df <- read_rds(here::here("data/two_nonlinear_clusters/two_nonlinear_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds"))
+tsne_df <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_tsne_perplexity_30.rds"))
+umap_df <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds"))
+phate_df <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_phate_knn_5.rds"))
+trimap_df <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_trimap_n-inliers_12_n-outliers_4_n-random_3.rds"))
+pacmap_df <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds"))
 
 
 tsne_df <- tsne_df |>

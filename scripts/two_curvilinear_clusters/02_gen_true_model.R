@@ -1,82 +1,96 @@
+library(langevitour)
+library(rsample)
+library(scales)
 library(dplyr)
-library(tidyr)
+library(readr)
 
-# Function to generate a curvilinear grid pattern in 2D
-generate_curvilinear_grid_2d <- function(n_grid_x, n_grid_y) {
-  x <- seq(0, 2, length.out = n_grid_x)
-  y <- seq(-3, 0.5, length.out = n_grid_y)
+set.seed(20240110)
 
-  # Use expand.grid to create a grid of (x, y) pairs
-  curvilinear_grid <- expand.grid(x = x, y = y)
+# Number of points along the S-curve
+n_samples <- 50
 
-  # Adjust y values according to a curvilinear pattern based on x
-  curvilinear_grid$y <- -(curvilinear_grid$x^3 + curvilinear_grid$y)
+# Generate uniform parameter t
+a <- runif(n = n_samples, min = -0.5, max = 0)
 
-  return(curvilinear_grid)
+# Parametric equations for the S-curve in 3D
+x1 <- sin(3 * pi * a)
+x3 <- sign(a) * (cos(3 * pi * a) - 1)
+
+# Set band thickness for the S-curve in the third dimension (y)
+band_thickness <- 2.0
+num_y_points <- 5  # Number of points along the y direction for each (x, z) pair
+
+# Create a data frame for storing points
+true_model <- data.frame()
+
+# Loop through each point on the S-curve and generate thickness without jitter
+for (i in 1:n_samples) {
+  # Current (x, z) values
+  current_x <- x1[i]
+  current_z <- x3[i]
+
+  # Generate y values with a thickness band
+  y_values <- seq(0, band_thickness, length.out = num_y_points)
+
+  # Create points for the current (x, z) with different y values
+  new_points <- data.frame(x1 = rep(current_x, num_y_points),
+                           x2 = y_values,
+                           x3 = rep(current_z, num_y_points),
+                           ID = seq((i-1)*num_y_points + 1, i*num_y_points))
+
+  # Combine with existing points
+  true_model <- rbind(true_model, new_points)
 }
 
-# Number of grid points in each dimension
-n_grid_x <- 10  # Adjust this number for a finer or coarser grid along x
-n_grid_y <- 10  # Adjust this number for a finer or coarser grid along y
-
-# Generate the curvilinear grid of points in 2D
-curvilinear_grid_2d <- generate_curvilinear_grid_2d(n_grid_x, n_grid_y)
-
-# Add an ID column to uniquely identify each point
-curvilinear_grid_2d <- curvilinear_grid_2d %>%
-  arrange(x, y) %>%
-  mutate(ID = row_number()) %>%
-  mutate(
-    z_noise = rnorm(n_grid_x * n_grid_y, mean = 0, sd = 0.01),
-    w_noise = rnorm(n_grid_x * n_grid_y, mean = 0, sd = 0.02)
-  )
-
-# Create a dataframe for "from" and "to" connections within rows and columns
-connections <- curvilinear_grid_2d %>%
-  mutate(Next_ID_x = lead(ID, n = 1),
-         Next_ID_y = lead(ID, n = n_grid_x)) %>%
-  filter(!is.na(Next_ID_x) | !is.na(Next_ID_y)) %>%
-
-  # Remove connections that wrap around to the next row or column
-  mutate(Last_In_Row = (ID %% n_grid_x == 0),
-         Last_In_Column = (ID > (n_grid_x * (n_grid_y - 1)))) %>%
-  filter(!(Last_In_Row & !is.na(Next_ID_x)) &
-           !(Last_In_Column & !is.na(Next_ID_y))) %>%
-
-  select(From = ID, To_x = Next_ID_x, To_y = Next_ID_y) %>%
-  pivot_longer(cols = c(To_x, To_y), names_to = "Direction", values_to = "To") %>%
-  filter(!is.na(To)) %>%
-  select(From, To)
-
-# Identify the last grid points in each row and connect them sequentially
-last_points <- curvilinear_grid_2d %>%
-  filter(ID %% n_grid_x == 0) %>%
-  arrange(ID)
-
-# Create sequential connections between the last points in each row
-last_point_connections <- tibble(
-  From = last_points$ID[-nrow(last_points)],
-  To = last_points$ID[-1]
+# Create the connections (from-to pairs)
+connections <- data.frame(
+  from = integer(0),
+  to = integer(0)
 )
 
-# Combine all connections
-all_connections <- bind_rows(connections, last_point_connections)
+# Connect points along the length of the S-curve
+for (i in 1:(n_samples - 1)) {
+  for (j in 1:num_y_points) {
+    from_id <- (i - 1) * num_y_points + j
+    to_id <- i * num_y_points + j
+    connections <- rbind(connections, data.frame(from = from_id, to = to_id))
+  }
+}
 
-# View the combined connections dataframe
-print(all_connections)
+# Connect points along the width (y-direction)
+for (i in 1:n_samples) {
+  for (j in 1:(num_y_points - 1)) {
+    from_id <- (i - 1) * num_y_points + j
+    to_id <- from_id + 1
+    connections <- rbind(connections, data.frame(from = from_id, to = to_id))
+  }
+}
 
-# Visualize the curvilinear grid and connections using langevitour
-langevitour(
-  curvilinear_grid_2d %>% select(-ID),
-  lineFrom = all_connections$From,
-  lineTo = all_connections$To
-)
+# Visualize with langevitour
+langevitour(true_model |> select(-ID))
 
-data <- bind_rows(curvilinear_grid_2d %>% select(-ID) |> mutate(type = "model"),
-                  curv_1_2 |> mutate(type = "data"))
-langevitour(
-  data |> select(-type),
-  group = data$type,
-  lineFrom = all_connections$From,
-  lineTo = all_connections$To
-)
+# Rename columns and add noise to other dimensions
+names(true_model) <- c("x1", "x2", "x3", "ID")
+
+true_model <- true_model |>
+  dplyr::mutate(x4 = mean(runif(NROW(true_model), -0.05, 0.05)),
+                x5 = mean(runif(NROW(true_model), -0.02, 0.02)),
+                x6 = mean(runif(NROW(true_model), -0.1, 0.1)),
+                x7 = mean(runif(NROW(true_model), -0.01, 0.01)))
+
+write_rds(true_model, "data/two_curvy_clust/two_curvy_clust_true_model.rds")
+
+training_data <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds") |>
+  dplyr::mutate(type = "data")
+
+# Combine with the true model for visualization
+df <- dplyr::bind_rows(true_model |> select(-ID) |> mutate(type = "true model"), training_data)
+
+# Visualize with langevitour
+langevitour(df |> dplyr::select(-type),
+            lineFrom = connections$from,
+            lineTo = connections$to,
+            group = df$type,
+            pointSize = append(rep(1.5, NROW(true_model)), rep(1, NROW(training_data))),
+            levelColors = c("#6a3d9a", "#969696"),
+            lineColors = rep("#969696", nrow(connections)))

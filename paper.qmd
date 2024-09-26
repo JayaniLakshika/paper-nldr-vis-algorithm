@@ -2281,7 +2281,7 @@ Comparing the MSE to obtain the best fit is suitable if one starts from the same
 #| label: read-two-curvilinear-clust-nldr
 # Read a variety of different NLDR representations of two_curvilinear_clust
 # and plot them on same aspect ratio
-tsne_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_tsne_perplexity_30.rds")
+tsne_two_curvilinear_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_tsne_perplexity_30.rds")
 
 nldr_two_curvilinear_clust1 <- tsne_two_curvilinear_clust |>
   ggplot(aes(x = tSNE1,
@@ -2290,7 +2290,7 @@ nldr_two_curvilinear_clust1 <- tsne_two_curvilinear_clust |>
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
-umap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+umap_two_curvilinear_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds")
 
 nldr_two_curvilinear_clust2 <- umap_two_curvilinear_clust |>
   ggplot(aes(x = UMAP1,
@@ -2299,7 +2299,7 @@ nldr_two_curvilinear_clust2 <- umap_two_curvilinear_clust |>
   interior_annotation("b", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
-phate_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_phate_knn_5.rds")
+phate_two_curvilinear_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_phate_knn_5.rds")
 
 nldr_two_curvilinear_clust3 <- phate_two_curvilinear_clust |>
   ggplot(aes(x = PHATE1,
@@ -2308,7 +2308,7 @@ nldr_two_curvilinear_clust3 <- phate_two_curvilinear_clust |>
   interior_annotation("c") +
   theme(aspect.ratio = 1)
 
-trimap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+trimap_two_curvilinear_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
 
 nldr_two_curvilinear_clust4 <- trimap_two_curvilinear_clust |>
   ggplot(aes(x = TriMAP1,
@@ -2317,7 +2317,7 @@ nldr_two_curvilinear_clust4 <- trimap_two_curvilinear_clust |>
   interior_annotation("d") +
   theme(aspect.ratio = 1)
 
-pacmap_two_curvilinear_clust <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+pacmap_two_curvilinear_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
 
 nldr_two_curvilinear_clust5 <- pacmap_two_curvilinear_clust |>
   ggplot(aes(x = PaCMAP1,
@@ -2330,11 +2330,11 @@ nldr_two_curvilinear_clust5 <- pacmap_two_curvilinear_clust |>
 ```{r}
 #| label: combine-data-two_curvilinear_clust
 
-error_two_curvilinear_clust_umap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_umap.rds")
-error_two_curvilinear_clust_tsne <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_tsne.rds")
-error_two_curvilinear_clust_phate <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_phate.rds")
-error_two_curvilinear_clust_trimap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_trimap.rds")
-error_two_curvilinear_clust_pacmap <- read_rds("data/two_nonlinear_clusters/error_two_nonlinear_clusters_pacmap.rds")
+error_two_curvilinear_clust_umap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_umap.rds")
+error_two_curvilinear_clust_tsne <- read_rds("data/two_curvy_clust/error_two_curvy_clust_tsne.rds")
+error_two_curvilinear_clust_phate <- read_rds("data/two_curvy_clust/error_two_curvy_clust_phate.rds")
+error_two_curvilinear_clust_trimap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_trimap.rds")
+error_two_curvilinear_clust_pacmap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_pacmap.rds")
 
 error_two_curvilinear_clust <- bind_rows(error_two_curvilinear_clust_umap, 
                          error_two_curvilinear_clust_tsne,
