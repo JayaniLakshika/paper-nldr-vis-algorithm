@@ -2544,8 +2544,8 @@ tr_from_to_df_gau1 <- gen_edges(
 #   filter(row_number() != 76) |>
 #   filter(row_number() != 34)
 
-tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-  filter(row_number() != 149)
+# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
+#   filter(row_number() != 149)
 
 ## Compute 2D distances
 distance_gau1 <- cal_2d_dist(
@@ -2574,7 +2574,8 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1)
+  filter(distance < benchmark_gau1) |>
+  filter(!(row_number() %in% c(33, 40, 48, 138, 143)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
@@ -2649,8 +2650,8 @@ scaled_gau_data_model <- scaled_gau |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
-distance_df_small_edges <- distance_df_small_edges |>
-  filter(row_number() != 108)
+# distance_df_small_edges <- distance_df_small_edges |>
+#   filter(row_number() != 108)
 
 ## First projection
 # projection <- cbind(
