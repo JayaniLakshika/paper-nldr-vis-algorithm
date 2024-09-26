@@ -442,7 +442,7 @@ and connect the bin centroids. We recommend using a hexagon grid because
 it better reflects the data distribution and has less artifacts than a
 rectangular grid. This process serves to reduce some noisiness in the
 resulting surface shown in \pD{}. The steps in this process are shown in
-Figure~\ref{fig-NLDR-scurve}, and documented below.
+Figure~\ref{fig-NLDR-two-curvy}, and documented below.
 
 To illustrate the method, we use \(7\text{-}D\) simulated data, which we
 call the ``S-curve''. It is constructed by simulating \(n=750\)
@@ -453,33 +453,16 @@ remaining variables \(X_4, X_5, X_6, X_7\) are all uniform error, with
 small variance. We would consider \(T=(X_1, X_2, X_3)\) to be the
 geometric structure (true model) that we hope to capture.
 
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-scurve-true-sc-1.pdf}
-
-}
-
-\caption{\label{fig-scurve-true-sc}Two views of the true model (blue
-lines) in \(2\text{-}D\) projections from \(7\text{-}D\), for the
-S-curve data (black points). The data is spread along the S shape, and
-does not vary much from this curve. (The \textbf{langevitour} software
-is used to view the data with a tour, and the full video is available at
-\url{https://youtu.be/I5GL23vLiw0}).}
-
-\end{figure}%
-
 \begin{figure}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-scurve-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-two-curvy-1.pdf}
 
 }
 
-\caption{\label{fig-NLDR-scurve}Key steps for constructing the model on
-the UMAP layout (\(k=2\)): (a) data, (b) hexagon bins, (c) bin
+\caption{\label{fig-NLDR-two-curvy}Key steps for constructing the model
+on the UMAP layout (\(k=2\)): (a) data, (b) hexagon bins, (c) bin
 centroids, and (d) triangulated centroids. The S-curve data is shown.}
 
 \end{figure}%
@@ -495,8 +478,8 @@ should take the aspect ratio produced by the NLDR
 \((r_1, r_2, ..., r_k)\) into account. When \(k=2\), as in hexagon
 binning, the default range is \([0, y_{i,\text{max}}], i=1,2\), where
 \(y_{1,\text{max}}=1\) and \(y_{2,\text{max}} = \frac{r_2}{r_1}\)
-(Figure~\ref{fig-NLDR-scurve}). If the NLDR aspect ratio is ignored then
-set \(y_ {2,\text{max}} = 1\).
+(Figure~\ref{fig-NLDR-two-curvy}). If the NLDR aspect ratio is ignored
+then set \(y_ {2,\text{max}} = 1\).
 
 \subsubsection{Computing hexagon grid
 configuration}\label{computing-hexagon-grid-configuration}
@@ -558,8 +541,8 @@ function
 mapping observation \(i\) into \(H_h = \{i| u(i) = h\}\).
 
 By default, the bin centroid is used for describing a hexagon (as done
-in Figure~\ref{fig-NLDR-scurve} (c)), but any measure of center, such as
-a mean or weighted mean of the points within each hexagon, could be
+in Figure~\ref{fig-NLDR-two-curvy} (c)), but any measure of center, such
+as a mean or weighted mean of the points within each hexagon, could be
 used. The bin centers, and the binned data, are the two important
 components needed to render the model representation in high dimensions.
 
@@ -567,7 +550,7 @@ components needed to render the model representation in high dimensions.
 
 Delaunay triangulation \citep{lee1980, alb2024} is used to connect
 points so that edges indicate neighbouring observations, in both the
-NLDR layout (Figure~\ref{fig-NLDR-scurve} (d)) and the \pD{} model
+NLDR layout (Figure~\ref{fig-NLDR-two-curvy} (d)) and the \pD{} model
 representation. When the data has been binned the triangulation connectd
 centroids. The edges preserve the neighborhood information when the
 model is lifted into \pD{}.
@@ -594,33 +577,6 @@ compute the edges in \pD{} and pruned any detected long edges to improve
 the accuracy. Once pruned, re-plot the \gD{} view to ensure it
 accurately captures the data.
 
-\begin{figure}[H]
-
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/umap_trimesh_layout.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_umap_best_1.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_umap_best_2.png}\end{minipage}%
-%
-\begin{minipage}{0.25\linewidth}
-\includegraphics{figures/scurve/sc_umap_best_3.png}\end{minipage}%
-
-\caption{\label{fig-scurve-sc}Model in \gD{}, on the UMAP layout, and
-three views of the fit in projections from \(7\text{-}D\), for the
-S-curve data (\((s_1, \ s_2) = (-0.160, \ -0.263)\),
-\(b = 405 \  (15, \ 27)\), \(m = 70\), benchmark value to remove low
-density hexagons is \(0.250\), and benchmark value to remove large edges
-is \(0.159\)). MSE is \(0.0462\). The model closely fits the shape, but
-it doesn't fully fill out the width of the S, which means that it does
-not adequately capture the surface (The \textbf{langevitour} software is
-used to view the data with a tour, and the full video is available at
-\url{https://youtu.be/i7F7xpN1Hz8}).}
-
-\end{figure}%
-
 \subsection{Measuring the fit}\label{sec-summary}
 
 The model here is similar to a confirmatory factor analysis model
@@ -642,18 +598,6 @@ where \(n\) is the number of observations, \(b\) is the number of bins,
 number of variables, \(\mathbfit{x}_{hij}\) is the \(j^{th}\)
 dimensional data of \(i^{th}\) observation in \(h^{th}\) hexagon.
 
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-p-d-error-in-2d-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-p-d-error-in-2d-scurve}error}
-
-\end{figure}%
-
 \subsection{\texorpdfstring{Prediction into
 \gD{}}{Prediction into }}\label{prediction-into}
 
@@ -666,25 +610,6 @@ written as, let
 then the new observation \(i\) falls in the hexagon,
 \(H_h = \{i| z(i) = h\}\) and the corresponding \kD{} bin centroids,
 \(C_{h}^{(2)} = (c_{h1}, c_{h2})\).
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-predict-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-predict-scurve}Comparison of prediction generated
-using the exiting \texttt{umap} prediction method and our method: (a) A
-view of the true model in projections from \(7\text{-}D\), (b) predicted
-data from the \texttt{umap} prediction method, (c) predicted data from
-our method, and (d) comparison of predictions from both methods. In plot
-(d), points representing the same data but predicted by different
-methods are connected by lines. Need to add concluded sentence after
-changing the data.}
-
-\end{figure}%
 
 \subsection{Tuning}\label{tuning}
 
@@ -722,39 +647,19 @@ The values \((s_1, \ s_2)\) define the position of the centroid of the
 bottom left hexagon. By default, this is at \(s_1 = -q, s_2 = -qr_2\),
 where \(q\) is the buffer sound the data. The choice of these values can
 have some effect on the distribution of bin counts.
-Figure~\ref{fig-param-scurve} (a) illustrates this. The distribution of
-bin counts for \(s_1\) varying between \(-0.1-0.0\) is shown. Generally,
-a more uniform distribution among these possibilities would indicate
-that the bins are reliably capturing the underlying distribution of
-observations.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-bins-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-bins-scurve}Hexbin density plots of UMAP layout of
-the S-curve data, using three different bin inputs: (a)
-\(b = 91 \text{ } (7, \text{ }13)\), (b)
-\(b = 220 \text{ } (11, \text{ }20)\), and (c)
-\(b = 312 \text{ } (13, \text{ }24)\). Color indicates standardized
-counts, dark indicating high count and light indicates low count. At the
-smallest bin size the data segregates into two separate groups,
-suggesting this is too many bins. Using the MSE of the model fit in
-\(p\text{-}D\) helps decide on a useful choice of number of bins.}
-
-\end{figure}%
+\textbf{?@fig-param-two\_curvy} (a) illustrates this. The distribution
+of bin counts for \(s_1\) varying between \(-0.1-0.0\) is shown.
+Generally, a more uniform distribution among these possibilities would
+indicate that the bins are reliably capturing the underlying
+distribution of observations.
 
 The default number of bins \(b=b_1\times b_2\) is computed based on the
 sample size, by setting \(b_1=n^{1/3}\), consistent with the
 Diaconis-Freedman rule \citep{freedman1981}. The value of \(b_2\) is
 determined analytically by \(b_1, q, r_2\). Values of \(b_1\) between
 \(2\) and \(b_1 = \sqrt{\frac{n}{r_2}}\) are allowed.
-Figure~\ref{fig-param-scurve} (b) shows the effect of different choices
-of \(b_1\) on the MSE of the fitted model.
+\textbf{?@fig-param-two\_curvy} (b) shows the effect of different
+choices of \(b_1\) on the MSE of the fitted model.
 
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
@@ -770,44 +675,24 @@ density which puts the counts on a standard scale. If there is something
 of a gap at low values, this would suggest a potential value to use as a
 cutoff. Alternatively, one could choose to remove based on a percentile,
 the bins with density in the lowest 5\% of all bins, for example.
-Figure~\ref{fig-param-scurve} (c) illustrates the effect on the model
+\textbf{?@fig-param-two\_curvy} (c) illustrates the effect on the model
 representation of removing bins below different percentages. Generally,
 we would urge caution in removing low count bins.
 
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
 model performance, it's essential to observe the change in MSE as the
-benchmark value increases (Figure~\ref{fig-param-scurve}). The MSE shows
-a gradual decrease as the benchmark value goes from \(1\) to \(0\).
-Evaluating this rate of increase is important. If the increment is not
-considerable, the decision might lean towards retaining low-density
-hexagons.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-scurve-1.pdf}
-
-}
-
-\caption{\label{fig-param-scurve}Various plots to help assess best
-hexagon bin parameters, thresholds to remove low density bins and large
-edges. Both (b) and (c) show MSE, against number of bins along the
-x-axis and standardised count. A good benchmark value for these
-parameters is when the MSE drops and then flattens out. Plot (a) shows
-the distribution of stadardised counts of hexagons. Plot (d) shows the
-distribution of \(2\text{-}D\) Euclidean distances between bin
-centroids, with a good benchmark value for removing large edges would
-being the distance that shows the first large decrease.}
-
-\end{figure}%
+benchmark value increases (\textbf{?@fig-param-two\_curvy}). The MSE
+shows a gradual decrease as the benchmark value goes from \(1\) to
+\(0\). Evaluating this rate of increase is important. If the increment
+is not considerable, the decision might lean towards retaining
+low-density hexagons.
 
 \subsubsection{Removing long edges}\label{removing-long-edges}
 
 Edges define the neighbourhood structure, in order to provide a smooth
 \gD{} representation of the fitted model.
-Figure~\ref{fig-scurve-true-sc} shows a wire frame of the true model
+\textbf{?@fig-two\_curvy-true-sc} shows a wire frame of the true model
 that was used to generate the S-curve example data. The ideal is that
 the representation of the fitted model, at least for this example where
 we know the true model, should look similar to this.
@@ -826,7 +711,7 @@ edge lengths. In particular, a gap between values, where there a
 concentration of small values and then a few larger values, likely
 suggests a cutoff for edge removal. Because the triangulation is
 typically done on the hexagon centroids, there are particular discrete
-edge lengths, based on bin widths. Figure~\ref{fig-NLDR-scurve} (d)
+edge lengths, based on bin widths. Figure~\ref{fig-NLDR-two-curvy} (d)
 illustrates edge length distributions.
 
 There is an additional step that is needed. When the model is lifted
@@ -836,16 +721,6 @@ possible actions: (1) re-do the NLDR to get a more representative
 layout; (2) identify the edge and remove it from the model, in \gD{} and
 \pD{}; (3) consider different values for the model fit, number of bins,
 initial bin position or removing low density bins.
-
-\begin{figure}[H]
-
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-41-1.pdf}
-
-}
-
-\caption{long edge removal}
-
-\end{figure}%
 
 \section{Best fit}\label{best-fit}
 
@@ -898,9 +773,9 @@ close clusters are universally suboptimal. Layout a is the best choice.}
 \begin{minipage}{0.25\linewidth}
 \includegraphics{figures/scurve/sc_tsne_best_3.png}\end{minipage}%
 
-\caption{\label{fig-scurve-sc-best}Model in \gD{}, on the tSNE layout,
-and three views of the fit in projections from \(7\text{-}D\), for the
-S-curve data (\((s_1, \ s_2) = (-0.170, \ -0.137)\),
+\caption{\label{fig-two_curvy-sc-best}Model in \gD{}, on the tSNE
+layout, and three views of the fit in projections from \(7\text{-}D\),
+for the S-curve data (\((s_1, \ s_2) = (-0.170, \ -0.137)\),
 \(b = 256 \  (16, \ 16)\), \(m = 70\), benchmark value to remove low
 density hexagons is \(0.250\), and benchmark value to remove large edges
 is \(0.180\)). MSE is \(0.0432\). The model closely fits the shape, but
