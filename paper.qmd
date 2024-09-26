@@ -3139,7 +3139,8 @@ five_gau_proj_umap_model2 <- projected_df |>
 pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 gau1_scaled_obj <- gen_scaled_data(
   data = pacmap_data_gau)
-pacmap_gau_scaled <- gau1_scaled_obj$scaled_nldr
+pacmap_gau_scaled <- gau1_scaled_obj$scaled_nldr |>
+  select(PaCMAP1, PaCMAP2, ID)
 
 pacmap_gau <- pacmap_gau_scaled |>
   ggplot(aes(x = PaCMAP1,
