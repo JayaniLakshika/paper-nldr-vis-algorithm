@@ -4741,11 +4741,11 @@ highd_error_2d_mnist <- error_df |>
              y = tSNE2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.2) +
-  scale_colour_continuous_sequential(palette = "Light Grays") +
+  scale_colour_continuous_sequential(palette = "Blues") +
   geom_rect(aes(xmin = 0.8, xmax = 0.9, ymin = 0.45, ymax = 0.6),
-               fill = "transparent", color = "#e41a1c", linewidth = 0.7) +
+               fill = "transparent", color = "#000000", linewidth = 0.7) +
   geom_rect(aes(xmin = 0.75, xmax = 0.85, ymin = 0.8, ymax = 0.95),
-               fill = "transparent", color = "#377eb8", linewidth = 0.7)  +
+               fill = "transparent", color = "#e41a1c", linewidth = 0.7)  +
   geom_rect(aes(xmin = 0.45, xmax = 0.55, ymin = 0.45, ymax = 0.6),
                fill = "transparent", color = "#4daf4a", linewidth = 0.7)  +
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
@@ -5133,7 +5133,7 @@ right_top_img <- pixels_gathered_within |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Blues 3") +
+  scale_fill_continuous_sequential(palette = "Reds 2") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none")
@@ -5192,7 +5192,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
   coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Reds 2") +
+  scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
         legend.position = "none") 
