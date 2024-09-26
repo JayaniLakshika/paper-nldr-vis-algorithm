@@ -4658,11 +4658,12 @@ tr_df <- distinct(tibble::tibble(
 
 distance_df_small_edges_mnist <- distance_mnist |>
   filter(distance < benchmark_mnist) |>
-  filter(!(row_number() %in% c(143, 144, 162)))
+  filter(!(row_number() %in% c(155, 554, 140)))
 
 tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
-  by = c("from", "to")) 
+  by = c("from", "to")) |>
+  mutate(ID = row_number())
 
 tsne_minst_scaled_temp <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 0.92) & (tSNE1 >= 0.76) & (tSNE2 <= 0.62) & (tSNE2 >= 0.44), "small_clust", "big_clust"))
@@ -4685,7 +4686,7 @@ trimesh_removed_mnist <- ggplot() +
   scale_color_manual(values=c("#999999",'#ff7f00')) +
   interior_annotation("a", sc_ltr_pos_mnist) +
   theme(aspect.ratio = 1,
-        legend.position = "none")
+        legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
 #   distance_edges = distance_mnist, 
@@ -5092,6 +5093,7 @@ mnist_proj_tsne_model3 <- projected_df |>
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
   mnist_proj_tsne_model2 + mnist_proj_tsne_model3 +
   plot_layout(ncol = 2)
+
 ```
 
 <!-- ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"} -->
