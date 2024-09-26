@@ -91,6 +91,13 @@ connections_curvy2$to <- connections$to + 500
 
 
 model_data <- bind_rows(true_model, curvy2)
+
+model_data <- model_data |>
+  dplyr::mutate(x4 = mean(runif(NROW(model_data), -0.05, 0.05)),
+                x5 = mean(runif(NROW(model_data), -0.02, 0.02)),
+                x6 = mean(runif(NROW(model_data), -0.1, 0.1)),
+                x7 = mean(runif(NROW(model_data), -0.01, 0.01)))
+
 connections_all <- bind_rows(connections, connections_curvy2)
 
 # Visualize with langevitour
