@@ -2923,7 +2923,15 @@ trimesh_removed_gau_umap <- ggplot() +
     alpha = 0.05,
     #size = 0.1,
     color = "#999999"
-  )  +
+  ) + 
+  geom_rect(
+    aes(xmin = 0.45, 
+        xmax = 0.57, 
+        ymin = 0, 
+        ymax = 0.1),
+    fill = "transparent", 
+    color = "red", 
+    linewidth = 0.5)  +
   interior_annotation("b1", 
                       position = c(0.06, 0.95),
                       cex = 2) +
@@ -3235,7 +3243,15 @@ trimesh_removed_gau_pacmap <- ggplot() +
     alpha = 0.3,
     #size = 0.1,
     color = "#999999"
-  )  +
+  ) +
+  geom_rect(
+    aes(xmin = -0.04, 
+        xmax = 0.22, 
+        ymin = 0.08, 
+        ymax = 0.34),
+    fill = "transparent", 
+    color = "red", 
+    linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
