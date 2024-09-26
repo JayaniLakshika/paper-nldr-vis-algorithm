@@ -4088,7 +4088,8 @@ tr_df <- distinct(tibble::tibble(
   y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc)
+  filter(distance < benchmark_pbmc) |>
+  filter(!(row_number() %in% c(6, 12, 14, 16, 17, 19, 23, 29, 30, 143, 144, 146, 147, 157)))
 
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
