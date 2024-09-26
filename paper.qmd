@@ -487,21 +487,21 @@ We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbour information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-scurve, and documented below.
 
 ```{r}
-#| label: scurve-training
-training_data_scurve <- read_rds("data/s_curve/s_curve_training.rds")
+#| label: two-curvy-training
+training_data_two_curvy <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds")
 ```
 
-<!--UMAP applied for Scurve data-->
+<!--UMAP applied for Two curvy data-->
 ```{r}
-#| label: umap-scurve
-umap_scurve <- read_rds(file = "data/s_curve/s_curve_umap.rds") 
+#| label: umap-two-curvy
+umap_two_curvy <- read_rds(file = "data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds") 
 
-scurve_scaled_obj <- gen_scaled_data(
-  data = umap_scurve)
+two_curvy_scaled_obj <- gen_scaled_data(
+  data = umap_two_curvy)
 
-umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
-lim1 <- scurve_scaled_obj$lim1
-lim2 <- scurve_scaled_obj$lim2
+umap_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr
+lim1 <- two_curvy_scaled_obj$lim1
+lim2 <- two_curvy_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.93)
