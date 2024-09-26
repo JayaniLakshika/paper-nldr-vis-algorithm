@@ -732,23 +732,23 @@ hex_param_vis <- ggplot() +
             hjust=-0.1, vjust=1.2) + 
     geom_segment(data=d_rect, aes(
       x = x1min  - rect_adj$x1, # 0 - 0.03, 
-      y = -0.35, 
+      y = -0.2, 
       xend = x1max - rect_adj$x1, #1 - 0.03, 
-      yend = -0.35), #-0.35),
+      yend = -0.2), #-0.35),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
                  color = "black")+
-    annotate("text", x=0.5, y=-0.45, 
+    annotate("text", x=0.5, y=-0.25, 
              label = expression(r[1]), color = "black") +
     geom_segment(data=d_rect, aes(
-      x = -0.25, 
+      x = -0.2, 
       y = x2min - rect_adj$x2, #0 - 0.05, 
-      xend = -0.25, 
+      xend = -0.2, 
       yend = x2max - rect_adj$x2), #r2 - 0.05),
       arrow = arrow(length = unit(0.03, "npc"),
                        ends = "both"), 
                  color = "black")+ 
-    annotate("text", x=-0.35, y=1, 
+    annotate("text", x=-0.25, y=0.25, 
              label = expression(r[2]), color = "black") +
     geom_segment(data = a1, aes(
       x = x, #-0.1 + 0.2087578, 
@@ -775,7 +775,7 @@ hex_param_vis <- ggplot() +
     annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
              label = expression(a[2]), 
              color = "black", hjust=-0.2) +
-    annotate("text", x=-0.18, y=-0.25, 
+    annotate("text", x=-0.18, y=-0.2, 
       label = expression(group("(", list(s[1], s[2]), ")")),
       color = "black") +
   coord_equal()
