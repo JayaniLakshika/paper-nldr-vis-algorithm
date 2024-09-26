@@ -4665,7 +4665,7 @@ tr_from_to_df_mnist <- inner_join(
   by = c("from", "to")) 
 
 tsne_minst_scaled_temp <- tsne_minst_scaled |>
-  mutate(cluster = if_else((tSNE1 <= 0.92) & (tSNE1 >= 0.75) & (tSNE2 <= 0.62) & (tSNE2 >= 0.44), "small_clust", "big_clust"))
+  mutate(cluster = if_else((tSNE1 <= 0.92) & (tSNE1 >= 0.76) & (tSNE2 <= 0.62) & (tSNE2 >= 0.44), "small_clust", "big_clust"))
 
 trimesh_removed_mnist <- ggplot() + 
   geom_segment(data = tr_from_to_df_mnist, 
