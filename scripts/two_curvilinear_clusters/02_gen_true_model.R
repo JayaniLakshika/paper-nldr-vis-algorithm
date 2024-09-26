@@ -66,7 +66,35 @@ for (i in 1:n_samples) {
   }
 }
 
+names(true_model) <- c("x1", "x2", "x3", "ID")
+
 # Visualize with langevitour
 langevitour(true_model |> select(-ID),
             lineFrom = connections$from,
             lineTo = connections$to)
+
+
+curvy2 <- true_model |>
+  select(-ID) |>
+  select(x2, x3, x1)
+
+names(curvy2) <- paste0("x", 1:3)
+# Apply an offset to one of the clusters to create a distance between them
+offset <- c(2.5, 2.5, 2.5)  # Adjust these values to set the desired distance
+curvy2 <- sweep(curvy2, 2, offset, "+") |>
+  mutate(ID = NROW(true_model) + row_number())
+
+
+connections_curvy2 <- connections
+connections_curvy2$from <- connections$from + 500
+connections_curvy2$to <- connections$to + 500
+
+
+model_data <- bind_rows(true_model, curvy2)
+connections_all <- bind_rows(connections, connections_curvy2)
+
+# Visualize with langevitour
+langevitour(model_data |> select(-ID),
+            lineFrom = connections_all$from,
+            lineTo = connections_all$to)
+
