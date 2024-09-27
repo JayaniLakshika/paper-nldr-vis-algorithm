@@ -523,7 +523,7 @@ nldr_two_curvy <- umap_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 6
+num_bins_x_two_curvy <- 7
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -565,6 +565,22 @@ hex_grid_two_curvy <- ggplot(
              alpha = 0.5, size = 0.5, color = "#000000") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos)
+
+hex_grid_coloured_two_curvy1 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts, 
+    aes(x = x, y = y,
+      group = hex_poly_id, 
+      fill = std_counts), color = "grey70", linewidth=0.2) +
+  geom_point(data = umap_two_curvy_scaled,
+             aes(x = UMAP1, y = UMAP2),
+             alpha = 0.3,
+             size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "E") +
+  interior_annotation("a", position = c(0.92, 0.93)) +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
+
 ```
 
 <!--Non-empty bins with bin centroids-->
@@ -1091,6 +1107,104 @@ $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$
 Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
 
 ```{r}
+#| label: hexbin-regular-two-curvy2
+## hexagon binning to have regular hexagons
+hb_obj_two_curvy2 <- hex_binning(
+  data = umap_two_curvy_scaled, 
+  bin1 = 10, 
+  r2 = r2)
+
+a1_2 <- calc_bins_y(
+  bin1 = 10, 
+  r2 = r2
+  )$a1
+
+## Data set with all centroids
+all_centroids_df2 <- hb_obj_two_curvy2$centroids
+
+## Generate all coordinates of hexagons
+hex_grid2 <- hb_obj_two_curvy2$hex_poly
+
+## To obtain the standardise counts within hexbins
+counts_df2 <- hb_obj_two_curvy2$std_cts
+df_bin_centroids2 <- extract_hexbin_centroids(
+  centroids_df = all_centroids_df2, 
+  counts_df = counts_df2) |>
+  filter(drop_empty == FALSE) |>
+  mutate(b1 = "b1 = 11")
+
+hex_grid_with_counts_s_curve2 <- full_join(
+  hex_grid2, 
+  df_bin_centroids2 |> select(hexID, std_counts), 
+  by = c("hex_poly_id" = "hexID")) 
+
+hex_grid_coloured_two_curvy2 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_s_curve2, 
+    aes(x = x, y = y, 
+        group = hex_poly_id, 
+        fill = std_counts), 
+        color = "grey70", 
+        linewidth=0.2) +
+  geom_point(data = umap_two_curvy_scaled,
+           aes(x = UMAP1, y = UMAP2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "C") +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  interior_annotation("b")
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy3
+## hexagon binning to have regular hexagons
+hb_obj_two_curvy3 <- hex_binning(
+  data = umap_two_curvy_scaled, 
+  bin1 = 13, 
+  r2 = r2)
+
+a1_3 <- calc_bins_y(
+  bin1 = 13, 
+  r2 = r2
+)$a1
+
+## Data set with all centroids
+all_centroids_df3 <- hb_obj_two_curvy3$centroids
+
+## Generate all coordinates of hexagons
+hex_grid3 <- hb_obj_two_curvy3$hex_poly
+
+## To obtain the standardise counts within hexbins
+counts_df3 <- hb_obj_two_curvy3$std_cts
+df_bin_centroids3 <- extract_hexbin_centroids(
+  centroids_df = all_centroids_df3, 
+  counts_df = counts_df3) |>
+  filter(drop_empty == FALSE) |>
+  mutate(b1 = "b1 = 14")
+
+hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
+                                          df_bin_centroids3 |> select(hexID, std_counts), 
+                                          by = c("hex_poly_id" = "hexID")) 
+
+hex_grid_coloured_two_curvy3 <-  ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_s_curve3, 
+    aes(x = x, y = y, 
+        group = hex_poly_id, 
+        fill = std_counts), 
+        color = "grey70", linewidth=0.2) +
+  geom_point(data = umap_two_curvy_scaled,
+           aes(x = UMAP1, y = UMAP2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
+  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  interior_annotation("c")
+```
+
+
+```{r}
 #| label: model-prediction-umap-quollr
 
 true_pred_df <- predict_emb(
@@ -1175,6 +1289,98 @@ $$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{h
 
 where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon.
 
+```{r}
+#| label: error-two-curvy
+
+error_two_curvy_clust_umap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_umap.rds")
+
+## Find the minimum MSE when have duplicate a1
+error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+  group_by(a1) |>
+  filter(MSE == min(MSE)) |>
+  ungroup() |>
+  mutate(prop_dens = b_non_empty/side_length) 
+
+base_line_prop_dens <- error_two_curvy_clust_umap |>
+  filter(a1 == min(a1)) |>
+  pull(prop_dens)
+
+error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+  mutate(prop_comp = prop_dens/base_line_prop_dens)
+
+
+mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap, 
+                     aes(x = a1, 
+                         y = MSE)) +
+  geom_vline(xintercept = 0.10, linetype=2,
+           color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.12,
+             linetype="solid",
+             color = "#006d2c",
+             linewidth=1) +
+  geom_vline(xintercept = 0.18, linetype=2,
+             color = "#08519c", linewidth=1) +
+  geom_line(linewidth = 0.5) + 
+  geom_point(size = 1) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
+  ggtitle("(a)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
+
+prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
+                     aes(x = a1,
+                         y = prop_comp)) +
+  geom_vline(xintercept = 0.12, linetype="solid",
+             color = "#006d2c", linewidth=1) +
+  geom_vline(xintercept = 0.10, linetype=2,
+             color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.18, linetype=2,
+             color = "#08519c", linewidth=1) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
+  # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("proportion of densities")) +
+  ggtitle("(d)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
+error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+  mutate(prop_bins = b_non_empty/b)
+
+a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
+                     aes(x = a1,
+                         y = prop_bins)) +
+  geom_vline(xintercept = 0.12, linetype="solid",
+             color = "#006d2c", linewidth=1) +
+  geom_vline(xintercept = 0.10, linetype=2,
+             color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.18, linetype=2,
+             color = "#08519c", linewidth=1) +
+  geom_point(size = 1) +
+  geom_line(linewidth = 0.05) +
+  # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
+  ggtitle("(b)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
+```
 
 ### Prediction into \gD{}
 
@@ -1274,6 +1480,27 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 
 <!--The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model.--> 
 
+```{r}
+#| echo: false
+#| label: fig-bins-two-curvy
+#| fig-pos: H
+#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)$, (b) $b = 220 \\text{ } (11, \\text{ }20)$, and (c) $b = 312 \\text{ } (13, \\text{ }24)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-width: 6
+#| fig-height: 4
+
+# hex_grid_coloured_two_curvy1 + 
+#   hex_grid_coloured_two_curvy2 + 
+#   hex_grid_coloured_two_curvy3 +
+#   plot_layout(guides='collect', ncol = 3,
+#               heights = c(2,1)) &
+#   theme(legend.position='none', plot.tag = element_text(size = 8))
+
+hex_grid_coloured_two_curvy1 +
+  hex_grid_coloured_two_curvy2 +
+  hex_grid_coloured_two_curvy3 +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='none', plot.tag = element_text(size = 8))
+``` 
 
 
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{\frac{n}{r_2}}$ are allowed. @fig-param-two_curvy (b) shows the effect of different choices of $b_1$ on the MSE of the fitted model. 
@@ -1309,8 +1536,54 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 
 <!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-two_curvy (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
 
+```{r}
+#| label: rm-lwd-bin-error
+
+error_rm_two_curvy <- read_rds("data/two_curvy_clust/error_rm_lwd_diff_bin.rds") |>
+  mutate(bin1  = as.factor(bin1))
+
+mse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
+                     aes(x = benchmark_rm_lwd, 
+                         y = MSE,
+                         color = bin1)) + 
+  geom_point(
+    size = 1
+    ) +
+  geom_line(
+    linewidth = 0.3
+    ) + 
+  # geom_vline(xintercept = benchmark1, linetype="solid", 
+  #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
+  # scale_x_continuous("standardized bin count", 
+  #        transform = "reverse") + 
+  scale_x_continuous(breaks = unique(error_rm_two_curvy$benchmark_rm_lwd)) +
+  scale_color_manual(values=c("#08519c", "#006d2c", "#54278f")) +
+  xlab("threshold to remove low-density hexagons") +
+  ylab("MSE") +
+  ggtitle("(c)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none")
+```
 
 
+```{r}
+#| echo: false
+#| fig-cap: "Various plots to help assess best hexagon bin parameters, thresholds to remove low density bins and large edges. Both (b) and (c) show MSE, against number of bins along the x-axis and standardised count. A good benchmark value for these parameters is when the MSE drops and then flattens out. Plot (a) shows the distribution of stadardised counts of hexagons. Plot (d) shows the distribution of $2\\text{-}D$ Euclidean distances between bin centroids, with a good benchmark value for removing large edges would being the distance that shows the first large decrease."
+#| label: fig-param-two-curvy
+#| out-width: 100%
+#| fig-width: 12
+#| fig-height: 10
+#| fig-pos: H
+
+mse_two_curvy_b + a1_m_two_curvy +
+  mse_two_curvy_lwd + prop_dens_a1 +
+  plot_layout(ncol=2)
+```
 
 #### Removing long edges
 

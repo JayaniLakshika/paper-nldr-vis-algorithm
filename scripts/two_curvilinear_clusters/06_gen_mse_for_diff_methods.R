@@ -28,6 +28,7 @@ for (xbins in bin1_vec_two_curvy_clust) {
 
   bin2 <- hb_obj$bin2
   a1 <- hb_obj$a1
+  a2 <- hb_obj$a2
 
   two_curvy_clust_model <- fit_highd_model(
     training_data = training_data_two_curvy_clust,
@@ -56,7 +57,9 @@ for (xbins in bin1_vec_two_curvy_clust) {
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_clust),
            method = "UMAP",
-           a1 = a1)
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_two_curvy_clust_umap <- bind_rows(error_two_curvy_clust_umap, error_df)
 
@@ -89,6 +92,7 @@ for (xbins in bin1_vec_two_curvy_clust) {
 
   bin2 <- hb_obj$bin2
   a1 <- hb_obj$a1
+  a2 <- hb_obj$a2
 
   two_curvy_clust_model <- fit_highd_model(
     training_data = training_data_two_curvy_clust,
@@ -117,7 +121,9 @@ for (xbins in bin1_vec_two_curvy_clust) {
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_clust),
            method = "tSNE",
-           a1 = a1)
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_two_curvy_clust_tsne <- bind_rows(error_two_curvy_clust_tsne, error_df)
 
@@ -149,6 +155,7 @@ for (xbins in bin1_vec_two_curvy_clust) {
 
   bin2 <- hb_obj$bin2
   a1 <- hb_obj$a1
+  a2 <- hb_obj$a2
 
   two_curvy_clust_model <- fit_highd_model(
     training_data = training_data_two_curvy_clust,
@@ -177,7 +184,9 @@ for (xbins in bin1_vec_two_curvy_clust) {
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_clust),
            method = "PHATE",
-           a1 = a1)
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_two_curvy_clust_phate <- bind_rows(error_two_curvy_clust_phate, error_df)
 
@@ -209,7 +218,7 @@ for (xbins in bin1_vec_two_curvy_clust) {
 
   bin2 <- hb_obj$bin2
   a1 <- hb_obj$a1
-
+  a2 <- hb_obj$a2
 
   two_curvy_clust_model <- fit_highd_model(
     training_data = training_data_two_curvy_clust,
@@ -238,7 +247,9 @@ for (xbins in bin1_vec_two_curvy_clust) {
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_clust),
            method = "TriMAP",
-           a1 = a1)
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_two_curvy_clust_trimap <- bind_rows(error_two_curvy_clust_trimap, error_df)
 
@@ -270,6 +281,7 @@ for (xbins in bin1_vec_two_curvy_clust) {
 
   bin2 <- hb_obj$bin2
   a1 <- hb_obj$a1
+  a2 <- hb_obj$a2
 
   two_curvy_clust_model <- fit_highd_model(
     training_data = training_data_two_curvy_clust,
@@ -298,7 +310,9 @@ for (xbins in bin1_vec_two_curvy_clust) {
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_clust),
            method = "PaCMAP",
-           a1 = a1)
+           a1 = round(a1, 2),
+           a2 = round(a2, 2),
+           side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)))
 
   error_two_curvy_clust_pacmap <- bind_rows(error_two_curvy_clust_pacmap, error_df)
 
