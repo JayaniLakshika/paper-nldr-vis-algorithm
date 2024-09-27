@@ -1138,6 +1138,10 @@ hex_grid_with_counts_s_curve2 <- full_join(
   df_bin_centroids2 |> select(hexID, std_counts), 
   by = c("hex_poly_id" = "hexID")) 
 
+umap_data_two_curvy2_with_hb_id <- hb_obj_two_curvy2$data_hb_id
+df_all_two_curvy2 <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy2_with_hb_id)
+df_bin_two_curvy2 <- avg_highd_data(data = df_all_two_curvy2, col_start = "x")
+
 hex_grid_coloured_two_curvy2 <- ggplot() + 
   geom_polygon(
     data = hex_grid_with_counts_s_curve2, 
@@ -1308,7 +1312,6 @@ base_line_prop_dens <- error_two_curvy_clust_umap |>
 error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
   mutate(prop_comp = prop_dens/base_line_prop_dens)
 
-
 mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap, 
                      aes(x = a1, 
                          y = MSE)) +
@@ -1380,6 +1383,42 @@ a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
+training_data_two_curvy <- training_data_two_curvy |>
+  mutate(ID = row_number())
+
+## Compute error
+error_df_two_curvy_abs <- augment(
+  df_bin_centroids = df_bin_centroids2,
+  df_bin = df_bin_two_curvy2,
+  training_data = training_data_two_curvy,
+  newdata = NULL,
+  type_NLDR = "UMAP",
+  col_start = "x")
+
+error_df_two_curvy_abs <- error_df_two_curvy_abs |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+
+error_df_two_curvy_abs <- error_df_two_curvy_abs |>
+  bind_cols(umap_two_curvy_scaled |>
+              select(-ID))
+
+error_plot_two_curvy <- error_df_two_curvy_abs |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2,
+             colour = sqrt_row_wise_abs_error)) +
+  geom_point(alpha=0.5) +
+  scale_colour_continuous_sequential(palette = "Light Grays") +
+  coord_equal()
+
+```
+
+```{r}
+#| label: fig-p-d-error-in-2d-two-curvy
+#| fig-cap: "error"
+#| out-height: 30%
+#| fig-pos: H
+
+error_plot_two_curvy
 ```
 
 ### Prediction into \gD{}
