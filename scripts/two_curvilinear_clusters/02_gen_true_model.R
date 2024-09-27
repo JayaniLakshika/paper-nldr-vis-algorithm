@@ -105,6 +105,9 @@ langevitour(model_data |> select(-ID),
             lineFrom = connections_all$from,
             lineTo = connections_all$to)
 
+model_data <- model_data |>
+  select(x1, x2, x3, x4, x5, x6, x7, ID)
+
 write_rds(model_data, "data/two_curvy_clust/two_curvy_clust_true_model.rds")
 write_rds(connections_all, "data/two_curvy_clust/two_curvy_clust_true_model_connections.rds")
 

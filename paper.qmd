@@ -540,14 +540,14 @@ hex_grid <- hb_obj_two_curvy$hex_poly
 
 ## To obtain the standardise counts within hexbins
 counts_df <- hb_obj_two_curvy$std_cts
-df_bin_centroids <- extract_hexbin_centroids(
+df_bin_centroids_two_curvy <- extract_hexbin_centroids(
   centroids_df = all_centroids_df, 
   counts_df = counts_df) |>
   filter(drop_empty == FALSE)
 
 umap_data_two_curvy_with_hb_id <- hb_obj_two_curvy$data_hb_id
 df_all_two_curvy <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy_with_hb_id)
-df_b_two_curvy <- avg_highd_data(data = df_all_two_curvy, col_start = "x")
+df_bin_two_curvy <- avg_highd_data(data = df_all_two_curvy, col_start = "x")
 
 hex_grid_with_counts <- 
   left_join(hex_grid,
@@ -572,7 +572,7 @@ hex_grid_two_curvy <- ggplot(
 ```{r}
 #| label: empty-bin-two-curvy
 hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids$hexID)
+  filter(hex_poly_id %in% df_bin_centroids_two_curvy$hexID)
 
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
@@ -580,7 +580,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
   geom_polygon(color = "black", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
-  geom_point(data = df_bin_centroids, 
+  geom_point(data = df_bin_centroids_two_curvy, 
              aes(x = c_x, y = c_y), 
              color = "#33a02c",
              size = 1) +
@@ -593,7 +593,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
 #| label: triangulate-two-curvy
 ## Triangulate bin centroids
 tr1_object_two_curvy <- tri_bin_centroids(
-  df_bin_centroids, x = "c_x", y = "c_y")
+  df_bin_centroids_two_curvy, x = "c_x", y = "c_y")
 tr_from_to_df_two_curvy <- gen_edges(
   tri_object = tr1_object_two_curvy)
 
@@ -1090,8 +1090,69 @@ The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors t
 $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
 Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
 
+```{r}
+#| label: model-prediction-umap-quollr
+
+true_pred_df <- predict_emb(
+  test_data = true_model_df,
+  df_bin_centroids = df_bin_centroids_two_curvy,
+  df_bin = df_bin_two_curvy,
+  type_NLDR = "UMAP"
+)
 
 
+# Compute radius r
+a1 <- calc_bins_y(
+  bin1 = 15, 
+  r2 = r2, 
+  q = 0.1)$a1
+
+r <- a1/2 
+
+# Function to jitter points within a circumcircle of a hexagon
+jitter_within_circumcircle <- function(center_x, center_y, radius, num_points) {
+  theta <- runif(num_points, 0, 2 * pi)
+  r <- radius * sqrt(runif(num_points))
+  x <- center_x + r * cos(theta)
+  y <- center_y + r * sin(theta)
+  jittered_points <- data.frame(UMAP1 = x, UMAP2 = y, ID = points_in_hex$ID)
+  return(jittered_points)
+}
+
+# Jittered points data frame
+jittered_points_df <- data.frame()
+
+# Iterate through each hexagon and jitter points within the circumcircle
+for (hex_id in unique(true_pred_df$pred_hb_id)) {
+  # hex_points <- hex_grid_nonempty %>% filter(hex_poly_id == hex_id)
+  # center_x <- mean(hex_points$x)
+  # center_y <- mean(hex_points$y)
+  # points_in_hex <- true_pred_df %>% filter(pred_UMAP_1 >= min(hex_points$x) & pred_UMAP_1 <= max(hex_points$x) & pred_UMAP_2 >= min(hex_points$y) & pred_UMAP_2 <= max(hex_points$y))
+  
+  points_in_hex <- true_pred_df |>
+    filter(pred_hb_id == hex_id)
+  
+  center_x <- points_in_hex |> 
+    pull(pred_UMAP_1) |> 
+    unique()
+  
+  center_y <- points_in_hex |> 
+    pull(pred_UMAP_2) |> 
+    unique()
+
+  if (nrow(points_in_hex) > 0) {
+    jittered_points <- jitter_within_circumcircle(center_x, center_y, r, nrow(points_in_hex))
+    jittered_points_df <- rbind(jittered_points_df, jittered_points)
+  }
+}
+
+plot_predict_umap_two_curvy <- ggplot(
+  data = jittered_points_df, 
+  aes(x = UMAP1,
+      y = UMAP2)) +
+  geom_point(alpha = 0.5) +
+  interior_annotation("c", c(0.92, 0.96), cex = 2)
+```
 
 <!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
 
@@ -1119,18 +1180,63 @@ where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the
 
 A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
 
+<!--prediction for true-model of two-curvy clust-->
+```{r}
+#| label: model-prediction-umap-original
+
+predict_umap_two_curvy <- read_rds(file = "data/two_curvy_clust/two_curvy_clust_umap_predict_true.rds")
+
+predict_two_curvy_obj <- gen_scaled_data(
+    data = predict_umap_two_curvy)
+
+predict_umap_two_curvy_scaled <- predict_two_curvy_obj$scaled_nldr
+
+plot_predict_umap_fun_two_curvy <- ggplot(
+  data = predict_umap_two_curvy_scaled, 
+  aes(x = UMAP1, 
+      y = UMAP2)) +
+  geom_point(alpha = 0.5) +
+  interior_annotation("b", c(0.92, 0.96), cex = 2)
+```
+
+```{r}
+#| label: model-prediction-points-line
+
+predict_umap_two_curvy_scaled <- predict_umap_two_curvy_scaled |>
+  mutate(ID = row_number()) |>
+  mutate(type = "predict_from_umap") 
+
+jittered_points_df <- jittered_points_df |>
+  mutate(type = "predict_from_model") 
+
+predict_point_df <- bind_rows(
+  predict_umap_two_curvy_scaled,
+  jittered_points_df
+)
+
+plot_predict_umap_connect_two_curvy <- ggplot(
+  data = predict_point_df, 
+  aes(x = UMAP1, 
+      y = UMAP2, 
+      group = ID)) +
+  geom_point(alpha = 0.5) +
+  geom_line(alpha = 0.3) +
+  interior_annotation("d", c(0.92, 0.96), cex = 2)
+```
+
+
+
 ```{r}
 #| echo: false
 #| label: fig-predict-two-curvy
 #| fig-pos: H
-#| fig-width: 9
-#| fig-height: 5
+#| fig-width: 10
+#| fig-height: 10
 #| fig-cap: "Comparison of prediction generated using the exiting `umap` prediction method and our method: (a) A view of the true model in projections from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Need to add concluded sentence after changing the data."
 
-# proj_plot_two_curvy_true + plot_predict_umap_two_curvy + 
-#   plot_predict_umap_two_curvy + plot_predict_umap_connect_two_curvy +
-#   plot_layout(ncol = 4)
-proj_plot_two_curvy_true
+proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_two_curvy +
+  plot_predict_umap_connect_two_curvy +
+  plot_layout(ncol = 2)
 ```
 
 
