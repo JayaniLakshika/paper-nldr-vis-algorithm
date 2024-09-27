@@ -1158,6 +1158,78 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
     na.value = "#ffffff", option = "C") +
   xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
   interior_annotation("b")
+
+## Triangulate bin centroids
+tr1_object_two_curvy2 <- tri_bin_centroids(
+  df_bin_centroids2, x = "c_x", y = "c_y")
+tr_from_to_df_two_curvy2 <- gen_edges(
+  tri_object = tr1_object_two_curvy2)
+
+trimesh_two_curvy2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy2,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#33a02c") +
+  interior_annotation("a", position = c(0.92, 0.95))
+
+## Compute 2D distances
+distance_two_curvy <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_two_curvy2, 
+  start_x = "x_from", 
+  start_y = "y_from", 
+  end_x = "x_to", 
+  end_y = "y_to", 
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_two_curvy <- find_lg_benchmark(
+  distance_edges = distance_two_curvy, 
+  distance_col = "distance")
+
+## Benchmark 1
+
+distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy) ## 0.231
+
+tr_from_to_df_two_curvy3 <- inner_join(
+  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy2,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed1 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#33a02c") +
+  interior_annotation("c", position = c(0.92, 0.95))
+
+
+## Benchmark 2
+
+benchmark_two_curvy <- 1.3
+
+distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy)
+
+tr_from_to_df_two_curvy4 <- inner_join(
+  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy2,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy4,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#33a02c") +
+  interior_annotation("b", position = c(0.92, 0.95))
+
 ```
 
 ```{r}
@@ -1213,15 +1285,15 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 true_pred_df <- predict_emb(
   test_data = true_model_df,
-  df_bin_centroids = df_bin_centroids_two_curvy,
-  df_bin = df_bin_two_curvy,
+  df_bin_centroids = df_bin_centroids2,
+  df_bin = df_bin_two_curvy2,
   type_NLDR = "UMAP"
 )
 
 
 # Compute radius r
 a1 <- calc_bins_y(
-  bin1 = 15, 
+  bin1 = 13, 
   r2 = r2, 
   q = 0.1)$a1
 
@@ -1633,6 +1705,15 @@ The Delaunay triangulation will ensure that all centroids are connected into a t
 The decision on edge length removal is made based on the distribution of edge lengths. In particular, a gap between values, where there a concentration of small values and then a few larger values, likely suggests a cutoff for edge removal. Because the triangulation is typically done on the hexagon centroids, there are particular discrete edge lengths, based on bin widths. @fig-NLDR-two-curvy (d) illustrates edge length distributions. 
 
 There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
+
+```{r}
+#| fig-width: 6
+#| fig-height: 4
+#| fig-cap: "long edge removal"
+
+trimesh_two_curvy2 + trimesh_two_curvy_removed2 + trimesh_two_curvy_removed1 +
+  plot_layout(ncol = 3)
+```
 
 
 <!-- (@fig-NLDR-two-curvy (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
