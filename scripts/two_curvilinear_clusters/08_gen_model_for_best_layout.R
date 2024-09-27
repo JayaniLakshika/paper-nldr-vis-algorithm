@@ -6,6 +6,10 @@ library(langevitour)
 
 ## Import data
 training_data_two_nonlinear_clusters <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds")
+
+# training_data_two_nonlinear_clusters <- training_data_two_nonlinear_clusters |>
+#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+
 training_data_two_nonlinear_clusters <- training_data_two_nonlinear_clusters |>
   mutate(ID = 1:NROW(training_data_two_nonlinear_clusters))
 
@@ -17,7 +21,7 @@ UMAP_two_nonlinear_clusters_scaled <- two_nonlinear_clusters_scaled_obj$scaled_n
   mutate(ID = 1:NROW(UMAP_two_nonlinear_clusters))
 
 ## Compute hexbin parameters
-num_bins_x_two_nonlinear_clusters <- 10
+num_bins_x_two_nonlinear_clusters <- 15
 lim1 <- two_nonlinear_clusters_scaled_obj$lim1
 lim2 <- two_nonlinear_clusters_scaled_obj$lim2
 r2_two_nonlinear_clusters <- diff(lim2)/diff(lim1)
@@ -112,8 +116,8 @@ df_b <- df_b[match(df_bin_centroids_two_nonlinear_clusters$hexID, df_b$hb_id),] 
 df_exe <- dplyr::bind_rows(df_b, df)
 
 ## Set the maximum difference as the criteria
-distance_df_small_edges_two_nonlinear_clusters <- distance_two_nonlinear_clusters |>
-  dplyr::filter(distance < benchmark_two_nonlinear_clusters)
+# distance_df_small_edges_two_nonlinear_clusters <- distance_two_nonlinear_clusters |>
+#   dplyr::filter(distance < benchmark_two_nonlinear_clusters)
 ## Since erase brushing is considerd.
 
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
