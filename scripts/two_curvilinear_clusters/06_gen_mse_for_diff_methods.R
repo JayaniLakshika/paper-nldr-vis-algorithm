@@ -2,6 +2,17 @@ library(readr)
 library(quollr)
 library(dplyr)
 
+quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
+{
+  a <- as.complex(a)
+  answer <- c((-b + sqrt(b^2 - 4 * a * c)) / (2 * a),
+              (-b - sqrt(b^2 - 4 * a * c)) / (2 * a))
+  if(all(Im(answer) == 0)) answer <- Re(answer)
+  if(answer[1] == answer[2]) return(answer[1])
+  answer[answer>0] ## only positive
+}
+
+
 training_data_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds")
 training_data_two_curvy_clust <- training_data_two_curvy_clust |>
   mutate(ID = 1:NROW(training_data_two_curvy_clust))
