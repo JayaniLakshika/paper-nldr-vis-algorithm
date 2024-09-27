@@ -519,7 +519,7 @@ nldr_two_curvy <- umap_two_curvy_scaled |>
 
 nldr_two_curvy_original <- umap_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
-  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
+  geom_point(alpha=0.5, colour="#000000", alpha = 0.5) +
   interior_annotation("a", sc_ltr_pos)
 ```
 
@@ -764,7 +764,8 @@ proj_plot_two_curvy_true <- model_df |>
       x = proj1_from, 
       y = proj2_from)) +
   geom_point(
-    color = "#000000") +
+    color = "#000000",
+    alpha = 0.5) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -1005,23 +1006,23 @@ hex_param_vis <- ggplot() +
             hjust=-0.1, vjust=1.2) + 
     geom_segment(data=d_rect, aes(
       x = x1min  - rect_adj$x1, # 0 - 0.03, 
-      y = -0.2, 
+      y = -0.31, 
       xend = x1max - rect_adj$x1, #1 - 0.03, 
-      yend = -0.2), #-0.35),
+      yend = -0.31), #-0.35),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
                  color = "black")+
-    annotate("text", x=0.5, y=-0.25, 
+    annotate("text", x=0.5, y=-0.36, 
              label = expression(r[1]), color = "black") +
     geom_segment(data=d_rect, aes(
-      x = -0.2, 
+      x = -0.25, 
       y = x2min - rect_adj$x2, #0 - 0.05, 
-      xend = -0.2, 
+      xend = -0.25, 
       yend = x2max - rect_adj$x2), #r2 - 0.05),
       arrow = arrow(length = unit(0.03, "npc"),
                        ends = "both"), 
                  color = "black")+ 
-    annotate("text", x=-0.25, y=0.25, 
+    annotate("text", x=-0.3, y=0.4, 
              label = expression(r[2]), color = "black") +
     geom_segment(data = a1, aes(
       x = x, #-0.1 + 0.2087578, 
@@ -1048,7 +1049,7 @@ hex_param_vis <- ggplot() +
     annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
              label = expression(a[2]), 
              color = "black", hjust=-0.2) +
-    annotate("text", x=-0.18, y=-0.2, 
+    annotate("text", x=-0.18, y=-0.22, 
       label = expression(group("(", list(s[1], s[2]), ")")),
       color = "black") +
   coord_equal()
