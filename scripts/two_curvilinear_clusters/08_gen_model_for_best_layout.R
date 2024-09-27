@@ -5,26 +5,26 @@ library(readr)
 library(langevitour)
 
 ## Import data
-training_data_two_nonlinear_clusters <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_data.rds")
+training_data_two_nonlinear_clusters <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds")
 training_data_two_nonlinear_clusters <- training_data_two_nonlinear_clusters |>
   mutate(ID = 1:NROW(training_data_two_nonlinear_clusters))
 
-tsne_two_nonlinear_clusters <- read_rds("data/two_nonlinear_clusters/two_nonlinear_clusters_tsne_perplexity_30.rds")
+UMAP_two_nonlinear_clusters <- read_rds("data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds")
 
 two_nonlinear_clusters_scaled_obj <- gen_scaled_data(
-  data = tsne_two_nonlinear_clusters)
-tsne_two_nonlinear_clusters_scaled <- two_nonlinear_clusters_scaled_obj$scaled_nldr |>
-  mutate(ID = 1:NROW(tsne_two_nonlinear_clusters_scaled))
+  data = UMAP_two_nonlinear_clusters)
+UMAP_two_nonlinear_clusters_scaled <- two_nonlinear_clusters_scaled_obj$scaled_nldr |>
+  mutate(ID = 1:NROW(UMAP_two_nonlinear_clusters))
 
 ## Compute hexbin parameters
-num_bins_x_two_nonlinear_clusters <- 9
+num_bins_x_two_nonlinear_clusters <- 10
 lim1 <- two_nonlinear_clusters_scaled_obj$lim1
 lim2 <- two_nonlinear_clusters_scaled_obj$lim2
 r2_two_nonlinear_clusters <- diff(lim2)/diff(lim1)
 
 two_nonlinear_clusters_model <- fit_highd_model(
   training_data = training_data_two_nonlinear_clusters,
-  emb_df = tsne_two_nonlinear_clusters_scaled,
+  emb_df = UMAP_two_nonlinear_clusters_scaled,
   bin1 = num_bins_x_two_nonlinear_clusters,
   r2 = r2_two_nonlinear_clusters,
   is_bin_centroid = TRUE,
@@ -75,10 +75,10 @@ trimesh_removed_two_nonlinear_clusters <- ggplot() +
                  yend = y_to),
                colour = "#33a02c",
                linewidth = 1) +
-  geom_point(data = tsne_two_nonlinear_clusters_scaled,
+  geom_point(data = UMAP_two_nonlinear_clusters_scaled,
              aes(
-               x = tSNE1,
-               y = tSNE2
+               x = UMAP1,
+               y = UMAP2
              ),
              alpha=0.1) +
   theme(aspect.ratio = 1)
@@ -88,13 +88,13 @@ trimesh_removed_two_nonlinear_clusters
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_two_nonlinear_clusters <- hex_binning(
-  data = tsne_two_nonlinear_clusters_scaled,
+  data = UMAP_two_nonlinear_clusters_scaled,
   bin1 = num_bins_x_two_nonlinear_clusters,
   r2 = r2_two_nonlinear_clusters)
 
-tsne_data_with_hb_id <- hb_obj_two_nonlinear_clusters$data_hb_id
+UMAP_data_with_hb_id <- hb_obj_two_nonlinear_clusters$data_hb_id
 df_all_two_nonlinear_clusters <- dplyr::bind_cols(training_data_two_nonlinear_clusters |> dplyr::select(-ID),
-                                 tsne_data_with_hb_id)
+                                 UMAP_data_with_hb_id)
 
 ### Define type column
 df <- df_all_two_nonlinear_clusters |>
