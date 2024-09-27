@@ -505,11 +505,11 @@ lim1 <- two_curvy_scaled_obj$lim1
 lim2 <- two_curvy_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-sc_ltr_pos <- c(0.08, 0.93)
+sc_ltr_pos <- c(0.08, 0.9)
 # sc_xlims <- c(-0.5, 1.47)
 # sc_ylims <- c(-0.32, 2.1)
-sc_xlims <- c(-0.2, 1.2)
-sc_ylims <- c(-0.2, 0.8)
+sc_xlims <- c(-0.3, 1.3)
+sc_ylims <- c(-0.3, 3.2)
 
 nldr_two_curvy <- umap_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
@@ -578,8 +578,9 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "E") +
-  interior_annotation("a", position = c(0.92, 0.93)) +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2))
+  interior_annotation("a", position = c(0.92, 0.93)) + 
+  xlim(sc_xlims) + ylim(sc_ylims) 
+
 
 ```
 
@@ -1161,7 +1162,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b")
 
 ## Triangulate bin centroids
@@ -1472,7 +1473,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
-  xlim(c(-0.25, 1.35)) + ylim(c(-0.35, 2)) +
+  xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c")
 ```
 
