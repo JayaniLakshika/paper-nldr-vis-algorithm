@@ -508,13 +508,18 @@ r2 <- diff(lim2)/diff(lim1)
 sc_ltr_pos <- c(0.08, 0.9)
 # sc_xlims <- c(-0.5, 1.47)
 # sc_ylims <- c(-0.32, 2.1)
-sc_xlims <- c(-0.3, 1.3)
-sc_ylims <- c(-0.3, 3.2)
+sc_xlims <- c(-0.27, 1.2)
+sc_ylims <- c(-0.2, 0.8)
 
 nldr_two_curvy <- umap_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, colour="#000000", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos)
+
+nldr_two_curvy_original <- umap_two_curvy_scaled |> 
+  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
   interior_annotation("a", sc_ltr_pos)
 ```
 
@@ -523,7 +528,7 @@ nldr_two_curvy <- umap_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 7
+num_bins_x_two_curvy <- 9
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -715,7 +720,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-two_curvy_proj_tsne_model1 <- projected_df |>
+two_curvy_proj_umap_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -727,11 +732,11 @@ two_curvy_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#253494") +
+    color = "#2b8cbe") +
   geom_point(
-    #size = 0.2,
-    alpha = 0.3,
-    color = "#969696") +
+    size = 0.5,
+    alpha = 0.5,
+    color = "#000000") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -748,7 +753,7 @@ two_curvy_proj_tsne_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("a", cex = 2) +
+  interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -776,7 +781,7 @@ proj_plot_two_curvy_true <- model_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("a", cex = 2) +
+  interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -826,7 +831,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-two_curvy_proj_tsne_model2 <- projected_df |>
+two_curvy_proj_umap_model2 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -838,11 +843,11 @@ two_curvy_proj_tsne_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#253494") +
+    color = "#2b8cbe") +
   geom_point(
-    #size = 0.2,
-    alpha = 0.3,
-    color = "#969696") +
+    size = 0.5,
+    alpha = 0.5,
+    color = "#000000") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -867,12 +872,12 @@ two_curvy_proj_tsne_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the two-curvy data (black points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>)." 
+#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the two-curvy data (black points). The data is spread along the non-linear shaped clusters, and does not vary much from the curves. The **langevitour** software is used to view the data with a tour, and the full video is available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
 
-two_curvy_proj_tsne_model1 + two_curvy_proj_tsne_model2 + 
+two_curvy_proj_umap_model1 + two_curvy_proj_umap_model2 + 
   plot_layout(ncol = 2)
 ```
 
@@ -880,7 +885,7 @@ two_curvy_proj_tsne_model1 + two_curvy_proj_tsne_model2 +
 #| label: fig-NLDR-two-curvy
 #| echo: false
 #| fig-cap: "Key steps for constructing the model on the UMAP layout ($k=2$): (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The S-curve data is shown."
-#| fig-width: 8
+#| fig-width: 12
 #| fig-height: 4
 #| out-width: 100%
  
@@ -1551,7 +1556,7 @@ plot_predict_umap_two_curvy <- ggplot(
   aes(x = UMAP1,
       y = UMAP2)) +
   geom_point(alpha = 0.5) +
-  interior_annotation("c", c(0.92, 0.96), cex = 2)
+  interior_annotation("c", c(0.08, 0.93), cex = 2)
 ```
 
 <!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
@@ -1565,7 +1570,7 @@ plot_predict_umap_two_curvy <- ggplot(
 #| fig-width: 10
 #| fig-height: 10
 
-nldr_two_curvy + 
+nldr_two_curvy_original + 
   trimesh_two_curvy_removed1_with_data +
   two_curvy_proj_umap_model +
   two_curvy_proj_umap_all_model +
@@ -1738,7 +1743,7 @@ plot_predict_umap_fun_two_curvy <- ggplot(
   aes(x = UMAP1, 
       y = UMAP2)) +
   geom_point(alpha = 0.5) +
-  interior_annotation("b", c(0.92, 0.96), cex = 2)
+  interior_annotation("b", c(0.08, 0.93), cex = 2)
 ```
 
 ```{r}
@@ -1763,7 +1768,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
       group = ID)) +
   geom_point(alpha = 0.5) +
   geom_line(alpha = 0.3) +
-  interior_annotation("d", c(0.92, 0.96), cex = 2)
+  interior_annotation("d", c(0.08, 0.93), cex = 2)
 ```
 
 
