@@ -24,8 +24,8 @@ data <- read_rds(here::here("data/two_curvy_clust/two_curvy_clust_data.rds"))
 
 ## Scale the data
 
-# data <- data |>
-#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+data <- data |>
+  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
 ## tSNE
 perplexity <- 30

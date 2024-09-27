@@ -7,7 +7,7 @@ library(readr)
 set.seed(20230531)
 
 # Number of points along the S-curve
-n_samples <- 50
+n_samples <- 25
 
 # Generate uniform parameter t
 t <- seq(-0.5, 0, length.out = n_samples)
@@ -86,8 +86,8 @@ curvy2 <- sweep(curvy2, 2, offset, "+") |>
 
 
 connections_curvy2 <- connections
-connections_curvy2$from <- connections$from + 500
-connections_curvy2$to <- connections$to + 500
+connections_curvy2$from <- connections$from + n_samples * num_y_points
+connections_curvy2$to <- connections$to + n_samples * num_y_points
 
 
 model_data <- bind_rows(true_model, curvy2)

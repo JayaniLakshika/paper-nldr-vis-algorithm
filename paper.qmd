@@ -523,7 +523,7 @@ nldr_two_curvy <- umap_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 10
+num_bins_x_two_curvy <- 6
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -713,10 +713,38 @@ two_curvy_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#3182bd") +
+    color = "#253494") +
   geom_point(
     #size = 0.2,
     alpha = 0.3,
+    color = "#969696") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.126, 0.125)) + 
+  ylim(c(-0.126, 0.125)) +
+  interior_annotation("a", cex = 2) +
+  theme(
+    legend.position = "none"
+  )
+
+proj_plot_two_curvy_true <- model_df |>
+  ggplot(
+    aes(
+      x = proj1_from, 
+      y = proj2_from)) +
+  geom_point(
     color = "#000000") +
   geom_segment(
     data=axes,
@@ -796,11 +824,11 @@ two_curvy_proj_tsne_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#3182bd") +
+    color = "#253494") +
   geom_point(
     #size = 0.2,
     alpha = 0.3,
-    color = "#000000") +
+    color = "#969696") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -1090,6 +1118,21 @@ where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the
 ### Prediction into \gD{}
 
 A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
+
+```{r}
+#| echo: false
+#| label: fig-predict-two-curvy
+#| fig-pos: H
+#| fig-width: 9
+#| fig-height: 5
+#| fig-cap: "Comparison of prediction generated using the exiting `umap` prediction method and our method: (a) A view of the true model in projections from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Need to add concluded sentence after changing the data."
+
+# proj_plot_two_curvy_true + plot_predict_umap_two_curvy + 
+#   plot_predict_umap_two_curvy + plot_predict_umap_connect_two_curvy +
+#   plot_layout(ncol = 4)
+proj_plot_two_curvy_true
+```
+
 
 <!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
 
