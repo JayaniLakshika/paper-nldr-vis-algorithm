@@ -925,34 +925,45 @@ The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of 
 ```{r}
 #| label: code-illustration
 # Code to draw illustration for notation
-start_pt <- all_centroids_df |> 
+## hexagon binning to have regular hexagons
+hb_obj_notation <- hex_binning(
+  data = umap_two_curvy_scaled, 
+  bin1 = 7, 
+  r2 = 1.6,
+  q = 0.1)
+
+## Data set with all centroids
+all_centroids_df_temp <- hb_obj_notation$centroids
+hex_grid_temp <- hb_obj_notation$hex_poly
+
+start_pt <- all_centroids_df_temp |> 
   filter(hexID == 1)
 d_rect <- tibble(x1min = 0, 
                  x1max = 1,
                  x2min = 0,
-                 x2max = r2)
+                 x2max = 1.6)
 
 # To move the rectangle to ignore the overlap with the centroids
 rect_adj <- tibble(x1 = 0.03, x2 = 0.03)
 
-a1 <- tibble(x = all_centroids_df$c_x[4],
-             xend = all_centroids_df$c_x[5],
-             y = all_centroids_df$c_y[21],
-             yend = all_centroids_df$c_y[21],
+a1 <- tibble(x = all_centroids_df_temp$c_x[4],
+             xend = all_centroids_df_temp$c_x[5],
+             y = all_centroids_df_temp$c_y[21],
+             yend = all_centroids_df_temp$c_y[21],
              label = expression(a[1]))
-a2 <- tibble(x = all_centroids_df$c_x[25],
-             xend = all_centroids_df$c_x[25],
-             y = all_centroids_df$c_y[25],
-             yend = all_centroids_df$c_y[33],
+a2 <- tibble(x = all_centroids_df_temp$c_x[25],
+             xend = all_centroids_df_temp$c_x[25],
+             y = all_centroids_df_temp$c_y[25],
+             yend = all_centroids_df_temp$c_y[33],
              label = expression(a[2]))
 hex_param_vis <- ggplot() + 
-    geom_polygon(data = hex_grid, 
+    geom_polygon(data = hex_grid_temp, 
                         aes(x = x, 
                             y = y, 
                             group = hex_poly_id),
                  fill = "white", 
                  color = "#bdbdbd") +
-    geom_point(data = all_centroids_df, aes(
+    geom_point(data = all_centroids_df_temp, aes(
       x = c_x, 
       y = c_y), 
       color = "#31a354", size = 0.9) +
@@ -1229,6 +1240,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
              ),
              color = "#000000",
             alpha = 0.5) +
+  #coord_equal() +
   interior_annotation("b")
 
 
