@@ -2093,6 +2093,13 @@ lim1 <- two_curvy_tsne_scaled_obj$lim1
 lim2 <- two_curvy_tsne_scaled_obj$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
 
+tsne_two_curvy_clust <- tsne_two_curvy_scaled |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("a", c(0.08, 0.93)) +
+  theme(aspect.ratio = 1)
+
 ## hexagon binning to have regular hexagons
 hb_obj_tsne_two_curvy2 <- hex_binning(
   data = tsne_two_curvy_scaled, 
@@ -2364,7 +2371,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| fig-width: 10
 #| fig-height: 20
 
-nldr_two_curvy_original + nldr_two_curvy_original +
+nldr_two_curvy_original + tsne_two_curvy_clust +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_umap_model +
   two_curvy_proj_tsne_model +
