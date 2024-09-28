@@ -598,8 +598,8 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "E") +
-  interior_annotation("a", position = c(0.92, 0.93)) + 
-  xlim(sc_xlims) + ylim(sc_ylims) 
+  interior_annotation("a", sc_ltr_pos) + 
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) 
 
 
 ```
@@ -686,6 +686,8 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
 
 ```{r}
 #| label: best-fit-two-curvy-proj-umap1
+
+df_bin_two_curvy_temp <- df_bin_two_curvy
 
 df_bin_two_curvy <- df_bin_two_curvy |>
   select(-hb_id) |>
@@ -1334,11 +1336,11 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy2 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 10, 
+  bin1 = 12, 
   r2 = r2)
 
 a1_2 <- calc_bins_y(
-  bin1 = 10, 
+  bin1 = 12, 
   r2 = r2
   )$a1
 
@@ -1387,8 +1389,8 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("b")
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) +
+  interior_annotation("b", sc_ltr_pos)
 
 ## Triangulate bin centroids
 tr1_object_two_curvy2 <- tri_bin_centroids(
@@ -1664,11 +1666,11 @@ two_curvy_proj_umap_all_model <- projected_df |>
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy3 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 13, 
+  bin1 = 14, 
   r2 = r2)
 
 a1_3 <- calc_bins_y(
-  bin1 = 13, 
+  bin1 = 14, 
   r2 = r2
 )$a1
 
@@ -1702,8 +1704,8 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c")
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) +
+  interior_annotation("c", sc_ltr_pos)
 ```
 
 
@@ -1712,15 +1714,15 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 true_pred_df <- predict_emb(
   test_data = true_model_df,
-  df_bin_centroids = df_bin_centroids2,
-  df_bin = df_bin_two_curvy2,
+  df_bin_centroids = df_bin_centroids_two_curvy,
+  df_bin = df_bin_two_curvy_temp,
   type_NLDR = "UMAP"
 )
 
 
 # Compute radius r
 a1 <- calc_bins_y(
-  bin1 = 13, 
+  bin1 = 9, 
   r2 = r2, 
   q = 0.1)$a1
 
@@ -2037,9 +2039,9 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the S-curve data, using three different bin inputs: (a) $b = 91 \\text{ } (7, \\text{ }13)$, (b) $b = 220 \\text{ } (11, \\text{ }20)$, and (c) $b = 312 \\text{ } (13, \\text{ }24)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size the data segregates into two separate groups, suggesting this is too many bins. Using the MSE of the model fit in $p\\text{-}D$ helps decide on a useful choice of number of bins."
-#| fig-width: 6
-#| fig-height: 4
+#| fig-cap: "Hexbin density plots of UMAP layout of the two-curvy clusters data, using three different bin inputs: (a) $b = 63 \\text{ } (9, \\text{ }7)$, (b) $b = 108 \\text{ } (12, \\text{ }9)$, and (c) $b = 312 \\text{ } (14, \\text{ }10)$. Color indicates standardized counts, dark indicating high count and light indicates low count. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-width: 9
+#| fig-height: 2
 
 # hex_grid_coloured_two_curvy1 + 
 #   hex_grid_coloured_two_curvy2 + 
