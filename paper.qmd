@@ -543,7 +543,7 @@ nldr_two_curvy_original <- umap_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 9
+num_bins_x_two_curvy <- 10
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -554,6 +554,8 @@ hb_obj_two_curvy <- hex_binning(
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_two_curvy$centroids
+
+a1_1 <- hb_obj_two_curvy$a1
 
 ## Generate all coordinates of hexagons
 hex_grid <- hb_obj_two_curvy$hex_poly
@@ -1336,11 +1338,11 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy2 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 12, 
+  bin1 = 14, 
   r2 = r2)
 
 a1_2 <- calc_bins_y(
-  bin1 = 12, 
+  bin1 = 14, 
   r2 = r2
   )$a1
 
@@ -1666,11 +1668,11 @@ two_curvy_proj_umap_all_model <- projected_df |>
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy3 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 14, 
+  bin1 = 17, 
   r2 = r2)
 
 a1_3 <- calc_bins_y(
-  bin1 = 14, 
+  bin1 = 17, 
   r2 = r2
 )$a1
 
@@ -1722,7 +1724,7 @@ true_pred_df <- predict_emb(
 
 # Compute radius r
 a1 <- calc_bins_y(
-  bin1 = 9, 
+  bin1 = 10, 
   r2 = r2, 
   q = 0.1)$a1
 
@@ -1831,17 +1833,17 @@ error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
 mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap, 
                      aes(x = a1, 
                          y = MSE)) +
-  geom_vline(xintercept = 0.10, linetype=2,
-           color = "#54278f", linewidth=1) +
-  geom_vline(xintercept = 0.12,
+  geom_vline(xintercept = 0.06,
              linetype="solid",
-             color = "#006d2c",
+           color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.04,
+             color = "#006d2c", linetype=2,
              linewidth=1) +
-  geom_vline(xintercept = 0.18, linetype=2,
+  geom_vline(xintercept = 0.12, linetype=2,
              color = "#08519c", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  # scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -1855,11 +1857,13 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
 prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
                      aes(x = a1,
                          y = prop_comp)) +
-  geom_vline(xintercept = 0.12, linetype="solid",
-             color = "#006d2c", linewidth=1) +
-  geom_vline(xintercept = 0.10, linetype=2,
-             color = "#54278f", linewidth=1) +
-  geom_vline(xintercept = 0.18, linetype=2,
+  geom_vline(xintercept = 0.06,
+             linetype="solid",
+           color = "#54278f", linewidth=1) +
+  geom_vline(xintercept = 0.04,
+             color = "#006d2c", linetype=2,
+             linewidth=1) +
+  geom_vline(xintercept = 0.12, linetype=2,
              color = "#08519c", linewidth=1) +
   geom_point(size = 1) +
   geom_line(linewidth = 0.05) +
