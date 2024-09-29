@@ -527,7 +527,7 @@ sc_ylims <- c(-0.2, 0.8)
 
 nldr_two_curvy <- umap_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
-  geom_point(alpha=0.5, colour="#000000", size = 0.5) +
+  geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 
@@ -579,12 +579,12 @@ hex_grid_with_counts <-
 hex_grid_two_curvy <- ggplot(
   data = hex_grid_with_counts, 
   aes(x = x, y = y)) +
-  geom_polygon(color = "black", 
+  geom_polygon(color = "grey70", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = umap_two_curvy_scaled, 
              aes(x = UMAP1, y = UMAP2), 
-             alpha = 0.5, size = 0.5, color = "#000000") +
+             alpha = 0.5, size = 0.5, color = "#636363") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos)
 
@@ -616,12 +616,12 @@ hex_grid_nonempty <- hex_grid |>
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
   aes(x = x, y = y)) +
-  geom_polygon(color = "black", 
+  geom_polygon(color = "grey70", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = df_bin_centroids_two_curvy, 
              aes(x = c_x, y = c_y), 
-             color = "#33a02c",
+             color = "#000000",
              size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c", sc_ltr_pos) 
@@ -653,17 +653,29 @@ benchmark_two_curvy <- find_lg_benchmark(
 distance_df_small_edges_two_curvy <- distance_two_curvy |>
     filter(distance < benchmark_two_curvy)
 
-trimesh_removed_two_curvy <- vis_rmlg_mesh(
-  distance_edges = distance_two_curvy, 
-  benchmark_value = benchmark_two_curvy, 
-  tr_coord_df = tr_from_to_df_two_curvy, 
-  distance_col = "distance") +
-  xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("d", sc_ltr_pos) 
+# trimesh_removed_two_curvy <- vis_rmlg_mesh(
+#   distance_edges = distance_two_curvy, 
+#   benchmark_value = benchmark_two_curvy, 
+#   tr_coord_df = tr_from_to_df_two_curvy, 
+#   distance_col = "distance") +
+#   xlim(sc_xlims) + ylim(sc_ylims) +
+#   interior_annotation("d", sc_ltr_pos) 
 
 tr_from_to_df_two_curvy <- inner_join(
   tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy,
   by = c("from", "to"))
+
+trimesh_removed_two_curvy <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  coord_equal() +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("d", sc_ltr_pos)
 
 trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy,
@@ -946,7 +958,7 @@ two_curvy_proj_umap_model1 <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#000000") +
+    color = "#636363") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -1058,7 +1070,7 @@ two_curvy_proj_umap_model2 <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#000000") +
+    color = "#636363") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -1083,7 +1095,7 @@ two_curvy_proj_umap_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the two-curvy clusters data (black points). The data is spread along the non-linear shaped clusters, and does not vary much from the curves. The **langevitour** software is used to view the data with a tour, and the full video is available at <>." 
+#| fig-cap: "Two views of the true model (blue lines) in $2\\text{-}D$ projections from $7\\text{-}D$, for the two-curvy clusters data (grey points). The data is spread along the non-linear shaped clusters, and does not vary much from the curves. The **langevitour** software is used to view the data with a tour, and the full video is available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
@@ -1836,14 +1848,14 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
   geom_vline(xintercept = 0.09,
              linetype="solid",
            color = "#d95f02", linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1b9e77", linetype=2,
              linewidth=1) +
   geom_vline(xintercept = 0.12, linetype=2,
              color = "#1f78b4", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -1860,7 +1872,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
   geom_vline(xintercept = 0.09,
              linetype="solid",
            color = "#d95f02", linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1b9e77", linetype=2,
              linewidth=1) +
   geom_vline(xintercept = 0.12, linetype=2,
@@ -1868,7 +1880,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("proportion of densities")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -1887,7 +1899,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
   geom_vline(xintercept = 0.09,
              linetype="solid",
            color = "#d95f02", linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1b9e77", linetype=2,
              linewidth=1) +
   geom_vline(xintercept = 0.12, linetype=2,
@@ -1895,7 +1907,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
@@ -1936,7 +1948,7 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
+#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
 #| out-height: 30%
 #| fig-pos: H
 
@@ -2045,7 +2057,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the two-curvy clusters data, using three different bin inputs: (a) $b = 63 \\text{ } (9, \\text{ }7)$, (b) $b = 108 \\text{ } (12, \\text{ }9)$, and (c) $b = 312 \\text{ } (14, \\text{ }10)$. Color indicates standardized counts, dark indicating high count and light indicates low count. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of UMAP layout of the two-curvy clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 2
 
