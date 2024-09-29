@@ -62,10 +62,10 @@ author:
     url: https://thiyanga.netlify.app/
 tbl-cap-location: bottom
 abstract: |
-  Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional ($p\text{-}D$) data using non-linear transformation. The methods and parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of $p\text{-}D$ distributions. To help evaluate the NLDR we have developed an algorithm to show the $2\text{-}D$ NLDR model in the $p\text{-}D$ space, viewed with a tour. One can see if the model fits everywhere or better in some subspaces, or completely mismatches the data. It is used to evaluate which $2\text{-}D$ layout is the best representation of the $p\text{-}D$ distribution and see how different methods may have similar summaries or quirks.
+  Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional data ($p\text{-}D$) by applying a non-linear transformation. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of $p\text{-}D$ distributions. The NLDR methods and (hyper)parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. To help assess the NLDR and decide on which, if any, is the most reasonable representation of the structure(s) present in the $p\text{-}D$ data, we have developed an algorithm to show the \gD{} NLDR model in the $p\text{-}D$ space, viewed with a tour, a movie of linear projections. From this, one can see if the model fits everywhere, or better in some subspaces, or completely mismatches the data. Also, we can see how different methods may have similar summaries or quirks. 
   
-keywords: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data-space]
-keywords-formatted: [high-dimensional data, dimension reduction, hexagon binning, low-dimensional representation, tour, data vizualization, model-in-the-data-space]
+keywords: [high-dimensional data vizualization, non-linear dimension reduction, tour]
+keywords-formatted: [high-dimensional data vizualization, non-linear dimension reduction, tour]
 
 bibliography: bibliography.bib  
 header-includes: | 
@@ -1420,7 +1420,7 @@ trimesh_two_curvy2 <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000") +
-  interior_annotation("a", position = c(0.92, 0.95))
+  interior_annotation("a")
 
 ## Compute 2D distances
 distance_two_curvy <- cal_2d_dist(
@@ -1473,8 +1473,8 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("b")
+  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  interior_annotation("a2")
 
 
 
@@ -1794,7 +1794,7 @@ plot_predict_umap_two_curvy <- ggplot(
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-umap1
-#| fig-cap: "Best fit"
+#| fig-cap: "Model in \\gD{}, on the layout and two views of the fit in projections from $7\\text{-}D$, for the two-curvy clusters data ($n =  2000$ and $p = 7$). The fitted model"
 #| fig-width: 10
 #| fig-height: 10
 
@@ -2320,7 +2320,7 @@ lim1 <- two_curvy_tsne_scaled_obj$lim1
 lim2 <- two_curvy_tsne_scaled_obj$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
 
-tsne_two_curvy_clust <- tsne_two_curvy_scaled |>
+tsne_two_curvy_clust_plt <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#ff7f00') +
@@ -2330,11 +2330,11 @@ tsne_two_curvy_clust <- tsne_two_curvy_scaled |>
 ## hexagon binning to have regular hexagons
 hb_obj_tsne_two_curvy2 <- hex_binning(
   data = tsne_two_curvy_scaled, 
-  bin1 = 10, 
+  bin1 = 8, 
   r2 = r2_tsne)
 
 a1_2_tsne <- calc_bins_y(
-  bin1 = 10, 
+  bin1 = 8, 
   r2 = r2_tsne
 )$a1
 
@@ -2388,6 +2388,8 @@ distance_two_curvy4 <- cal_2d_dist(
 benchmark_two_curvy4 <- find_lg_benchmark(
   distance_edges = distance_two_curvy4, 
   distance_col = "distance")
+
+benchmark_two_curvy4 <- 0.2
 
 ## Benchmark 1
 
@@ -2598,7 +2600,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| fig-width: 10
 #| fig-height: 20
 
-nldr_two_curvy_original + tsne_two_curvy_clust +
+nldr_two_curvy_original + tsne_two_curvy_clust_plt +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_umap_model +
   two_curvy_proj_tsne_model +
