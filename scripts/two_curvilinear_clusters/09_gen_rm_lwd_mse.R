@@ -24,7 +24,7 @@ r2 <- diff(lim2)/diff(lim1)
 two_curvy_model1 <- fit_highd_model(
   training_data = training_data_two_curvy,
   emb_df = umap_two_curvy_scaled,
-  bin1 = 7,
+  bin1 = 10,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -37,7 +37,7 @@ df_bin_two_curvy1 <- two_curvy_model1$df_bin
 error_rm_two_curvy1 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.6, by=0.15)
+benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
@@ -56,8 +56,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     type_NLDR = "UMAP",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
-           bin1 = 7,
-           bin2 = 13,
+           bin1 = 10,
+           bin2 = 8,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
@@ -71,7 +71,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model2 <- fit_highd_model(
   training_data = training_data_two_curvy,
   emb_df = umap_two_curvy_scaled,
-  bin1 = 10,
+  bin1 = 13,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -84,7 +84,7 @@ df_bin_two_curvy2 <- two_curvy_model2$df_bin
 error_rm_two_curvy2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.6, by=0.15)
+benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
@@ -103,8 +103,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     type_NLDR = "UMAP",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
-           bin1 = 10,
-           bin2 = 13,
+           bin1 = 13,
+           bin2 = 10,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
@@ -118,7 +118,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model3 <- fit_highd_model(
   training_data = training_data_two_curvy,
   emb_df = umap_two_curvy_scaled,
-  bin1 = 12,
+  bin1 = 23,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -131,7 +131,7 @@ df_bin_two_curvy3 <- two_curvy_model3$df_bin
 error_rm_two_curvy3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.6, by=0.15)
+benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
@@ -150,8 +150,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     type_NLDR = "UMAP",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
-           bin1 = 12,
-           bin2 = 13,
+           bin1 = 23,
+           bin2 = 17,
            b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))

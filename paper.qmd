@@ -1338,11 +1338,11 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy2 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 14, 
+  bin1 = 13, 
   r2 = r2)
 
 a1_2 <- calc_bins_y(
-  bin1 = 14, 
+  bin1 = 13, 
   r2 = r2
   )$a1
 
@@ -1668,11 +1668,11 @@ two_curvy_proj_umap_all_model <- projected_df |>
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy3 <- hex_binning(
   data = umap_two_curvy_scaled, 
-  bin1 = 17, 
+  bin1 = 23, 
   r2 = r2)
 
 a1_3 <- calc_bins_y(
-  bin1 = 17, 
+  bin1 = 23, 
   r2 = r2
 )$a1
 
@@ -1819,7 +1819,7 @@ error_two_curvy_clust_umap <- read_rds("data/two_curvy_clust/error_two_curvy_clu
 ## Find the minimum MSE when have duplicate a1
 error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
   group_by(a1) |>
-  filter(MSE == min(MSE)) |>
+  filter(bin1 == min(bin1)) |>
   ungroup() |>
   mutate(prop_dens = b_non_empty/side_length) 
 
@@ -1833,14 +1833,14 @@ error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
 mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap, 
                      aes(x = a1, 
                          y = MSE)) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.09,
              linetype="solid",
-           color = "#54278f", linewidth=1) +
-  geom_vline(xintercept = 0.04,
-             color = "#006d2c", linetype=2,
+           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.06,
+             color = "#1b9e77", linetype=2,
              linewidth=1) +
   geom_vline(xintercept = 0.12, linetype=2,
-             color = "#08519c", linewidth=1) +
+             color = "#1f78b4", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   # scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
@@ -1857,16 +1857,16 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
 prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
                      aes(x = a1,
                          y = prop_comp)) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.09,
              linetype="solid",
-           color = "#54278f", linewidth=1) +
-  geom_vline(xintercept = 0.04,
-             color = "#006d2c", linetype=2,
+           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.06,
+             color = "#1b9e77", linetype=2,
              linewidth=1) +
   geom_vline(xintercept = 0.12, linetype=2,
-             color = "#08519c", linewidth=1) +
+             color = "#1f78b4", linewidth=1) +
+  geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
-  geom_line(linewidth = 0.05) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("proportion of densities")) +
@@ -1884,14 +1884,16 @@ error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
 a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
                      aes(x = a1,
                          y = prop_bins)) +
-  geom_vline(xintercept = 0.12, linetype="solid",
-             color = "#006d2c", linewidth=1) +
-  geom_vline(xintercept = 0.10, linetype=2,
-             color = "#54278f", linewidth=1) +
-  geom_vline(xintercept = 0.18, linetype=2,
-             color = "#08519c", linewidth=1) +
+  geom_vline(xintercept = 0.09,
+             linetype="solid",
+           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.06,
+             color = "#1b9e77", linetype=2,
+             linewidth=1) +
+  geom_vline(xintercept = 0.12, linetype=2,
+             color = "#1f78b4", linewidth=1) +
+  geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
-  geom_line(linewidth = 0.05) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
@@ -2109,14 +2111,14 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
     size = 1
     ) +
   geom_line(
-    linewidth = 0.3
+    linewidth = 0.5
     ) + 
   # geom_vline(xintercept = benchmark1, linetype="solid", 
   #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
   # scale_x_continuous("standardized bin count", 
   #        transform = "reverse") + 
   scale_x_continuous(breaks = unique(error_rm_two_curvy$benchmark_rm_lwd)) +
-  scale_color_manual(values=c("#08519c", "#006d2c", "#54278f")) +
+  scale_color_manual(values=c("#1f78b4", "#d95f02", "#1b9e77")) +
   xlab("threshold to remove low-density hexagons") +
   ylab("MSE") +
   ggtitle("(c)") +
