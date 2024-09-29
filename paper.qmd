@@ -1843,7 +1843,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
              color = "#1f78b4", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  # scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -1868,7 +1868,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("proportion of densities")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -1895,7 +1895,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 6, 8, 10:12)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 3, 5, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
@@ -1929,14 +1929,14 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = UMAP2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "Light Grays") +
+  scale_colour_continuous_sequential(palette = "Blues") +
   coord_equal()
 
 ```
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "error"
+#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
 #| out-height: 30%
 #| fig-pos: H
 
@@ -2117,7 +2117,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   #            color = "#bdbdbd", linewidth=1, alpha = 0.5) +
   # scale_x_continuous("standardized bin count", 
   #        transform = "reverse") + 
-  scale_x_continuous(breaks = unique(error_rm_two_curvy$benchmark_rm_lwd)) +
+  scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 3, 5, 7, 9, 11, 13, 15, 17)]) +
   scale_color_manual(values=c("#1f78b4", "#d95f02", "#1b9e77")) +
   xlab("threshold to remove low-density hexagons") +
   ylab("MSE") +
