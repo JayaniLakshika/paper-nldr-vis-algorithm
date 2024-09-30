@@ -786,14 +786,18 @@ low-density hexagons.
 }
 
 \caption{\label{fig-param-two-curvy}Various plots to help assess best
-hexagon bin parameters, thresholds to remove low density bins and large
-edges. Both (b) and (c) show MSE, against number of bins along the
-x-axis and standardised count. A good benchmark value for these
-parameters is when the MSE drops and then flattens out. Plot (a) shows
-the distribution of stadardised counts of hexagons. Plot (d) shows the
-distribution of \(2\text{-}D\) Euclidean distances between bin
-centroids, with a good benchmark value for removing large edges would
-being the distance that shows the first large decrease.}
+hexagon bin parameters and thresholds to remove low-density bins. Both
+(a) and (c) show MSE, against binwidth (\(a_1\)) and threshold. A good
+benchmark value for these parameters is when the MSE drops and then
+flattens out. Three binwidth choices were made: \(0.05\), \(0.09\), and
+\(0.12\) to investigate. As the binwidth increases, the proportion of
+non-empty bins also increases. There are two peaks at binwidths \(0.09\)
+and \(0.12\). The proportion of densities, calculated as a density with
+the smallest possible binwidth, decreases and levels off. Binwidths
+\(0.09\) and \(0.12\) are favorable choices. Based on the MSE, \(0.09\)
+was chosen as the initial best binwidth for further analysis. There is
+no need to remove the low-density hexagons because as shown in (b),
+there is no considerable drop in MSE.}
 
 \end{figure}%
 
