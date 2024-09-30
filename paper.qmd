@@ -1431,6 +1431,53 @@ distance_two_curvy <- cal_2d_dist(
   end_y = "y_to", 
   select_vars = c("from", "to", "distance"))
 
+## To plot the distribution of distances
+
+# Define bin width and starting point
+bin_width <- hb_obj_two_curvy2$a1
+start_point <- bin_width/2
+
+# Create bins and calculate the mean value for each bin range
+bins <- seq(start_point, max(distance_two_curvy$distance) + bin_width, 
+            by = bin_width)
+bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
+
+distance_two_curvy_dist <- distance_two_curvy |> 
+  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) |>
+  dplyr::filter(distance > 0.1) ## To remove a1 distances, since always small
+
+distance_hist <- ggplot(
+  distance_two_curvy_dist, aes(x = distance)) +
+    geom_histogram(
+      aes(y = after_stat(count) / sum(after_stat(count))), 
+      binwidth = bin_width) +
+  scale_x_continuous(breaks = bin_labels, 
+                     labels = c(
+                       expression(a[1]),
+                       expression(2*a[1]),
+                       expression(3*a[1]),
+                       expression(4*a[1]),
+                       expression(5*a[1]),
+                       expression(6*a[1]),
+                       expression(7*a[1]),
+                       expression(8*a[1])
+                     )) +
+  geom_vline(xintercept = start_point + 2*bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  ylab("Proportion of the number of edges") +
+  xlab(expression(d^{(2)})) +
+  #ggtitle("(d)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
+
 ## To find the benchmark value
 benchmark_two_curvy <- find_lg_benchmark(
   distance_edges = distance_two_curvy, 
@@ -2169,12 +2216,9 @@ The decision on edge length removal is made based on the distribution of edge le
 There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
 
 ```{r}
-#| fig-width: 9
-#| fig-height: 2
-#| fig-cap: "long edge removal"
+#| fig-cap: "Wireframes with Delaunay triangulation, and two choices of edge removal in \\gD{} and \\pD{}. "
 
-trimesh_two_curvy2 + trimesh_two_curvy_removed2 + trimesh_two_curvy_removed1 +
-  plot_layout(ncol = 3)
+free(distance_hist) + wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, ncol = 2) 
 ```
 
 
