@@ -1794,7 +1794,7 @@ plot_predict_umap_two_curvy <- ggplot(
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-umap1
-#| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two-curvy clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of UMAP, which compresses the data when transforming the data into \\gD{}."
+#| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two-curvy clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of UMAP, which compresses the data when transforming the data into \\gD{}. Video of the langevitour animations is available at <>."
 #| fig-width: 10
 #| fig-height: 10
 
@@ -2011,7 +2011,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
-#| fig-cap: "Comparison of prediction generated using the exiting `umap` prediction method and our method: (a) A view of the true model in projections from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Need to add concluded sentence after changing the data."
+#| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Both prediction methods work similarly within the clusters, as each method predicts the data within the cluster with slight differences."
 
 proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_two_curvy +
   plot_predict_umap_connect_two_curvy +
