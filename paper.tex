@@ -1154,7 +1154,7 @@ different patterns of digit 1.}
 
 This study makes several important contributions to the field of NLDR.
 We have developed an algorithm to evaluate the most useful NLDR method
-and (hyper-)parameter choices for creating a reasonable \gD{} layout of
+and (hyper-)parameter choices for creating an accurate \gD{} layout of
 high-dimensional data. Our objective is to fit a model for the \gD{}
 layout that preserves the relationships between neighboring points and
 turns it into a high-dimensional wireframe, which can be overlaid on the
@@ -1163,23 +1163,24 @@ data and visualized using a tour. This approach is defined as
 ideal way to examine the fit.
 
 The effectiveness of this approach is illustrated through various
-examples. For instance, the S-curve example demonstrates how the model
-accurately fits the points, capturing both local and global structures
-in high-dimensional space. Our simulation case study further, five
-Gaussian cluster example shows that while all observed NLDR methods
+examples. For instance, the two-curvy clusters example demonstrates how
+the model accurately fits the points, capturing both local and global
+structures in high-dimensional space. Our simulation case study further,
+five Gaussian cluster example shows that while all observed NLDR methods
 preserve the global structure, only tSNE effectively maintains the local
 structure, highlighting the specific strengths and quirks of different
 methods.
 
 Human behavior often shows a desire for more certainty and a tendency to
 prefer well-separated views. This emphasizes the importance of clear and
-distinct clusters. For example, in the UMAP layout of the \textbf{pbmc}
-dataset suggested by \citet{chen2023}, three distant, well-separated
-clusters are shown. However, our model reveals that these clusters are
-actually close to each other in \pD{}. Additionally, the model discovers
-non-uniform data distribution and non-linear structures within the
-clusters that are not visible in the UMAP layout, demonstrating the
-ability of our model in uncovering hidden data characteristics.
+distinct clusters. For example, in the UMAP layout of the
+\textbf{PBMC3k} dataset suggested by \citet{chen2023}, three distant,
+well-separated clusters are shown. However, our model reveals that these
+clusters are actually close to each other in \pD{}. Additionally, the
+model discovers non-uniform data distribution and non-linear structures
+within the clusters that are not visible in the UMAP layout,
+demonstrating the ability of our model in uncovering hidden data
+characteristics.
 
 Evaluating the error or unexplained variance is important for assessing
 how well the model fits the data. By examining the error for different
@@ -1210,8 +1211,19 @@ inadequate.
 
 \section{Supplementary Materials}\label{supplementary-materials}
 
-Code, and data for reproducing this paper are available at
-\url{https://github.com/JayaniLakshika/paper-nldr-vis-algorithm}.
+Appendix: The appendix includes more details about the hexagonal binning
+algorithm (appendix.pdf, Portable Document Format file).
+
+R package \texttt{quollr}: The R package \texttt{quollr} containing
+codes to fit, and visualize the model. (need to add quollr .zip file,
+GNU zipped tar file)
+
+\section{Acknowledgments}\label{acknowledgments}
+
+These \texttt{R} packages were used for the work: The project's GitHub
+repository
+(\url{https://github.com/JayaniLakshika/paper-nldr-vis-algorithm})
+contains all materials required to reproduce this article.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
