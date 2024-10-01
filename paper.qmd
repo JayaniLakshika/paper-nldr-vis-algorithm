@@ -1382,6 +1382,27 @@ umap_data_two_curvy2_with_hb_id <- hb_obj_two_curvy2$data_hb_id
 df_all_two_curvy2 <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy2_with_hb_id)
 df_bin_two_curvy2 <- avg_highd_data(data = df_all_two_curvy2, col_start = "x")
 
+### Compute highD distance
+dist_vec <- proxy::dist(x = df_bin_two_curvy2[, -1], method = "Euclidean") |> as.vector()
+
+from_vec <- c()
+to_vec <- c()
+num_obs <- 1:(NROW(df_bin_two_curvy2) - 1)
+
+for (obs in num_obs) {
+
+  from_val <- rep(obs, (NROW(df_bin_two_curvy2) - obs))
+  if ((obs + 1) <= NROW(df_bin_two_curvy2)) {
+    to_val <- (obs + 1):NROW(df_bin_two_curvy2)
+  }
+  from_vec <- append(from_vec, from_val)
+  to_vec <- append(to_vec, to_val)
+
+}
+
+dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec)
+
+
 df_b_two_curvy2 <- df_bin_two_curvy2 |>
   dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -1456,19 +1477,15 @@ bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
 distance_two_curvy_dist <- distance_two_curvy |> 
   mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) 
 
-distance_two_curvy_dist <- distance_two_curvy_dist |>
-  count(bin) |>
-  mutate(prop = n/sum(n)) 
-
-# distance_two_curvy_dist <- distance_two_curvy_dist |>
-#   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
+distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
 
 distance_hist <- ggplot(
   distance_two_curvy_dist, 
   aes(x = as.numeric(bin),
-      y = prop)) +
-  geom_line() +
-  scale_x_continuous(breaks = as.numeric(distance_two_curvy_dist$bin),
+      y = dist_highd)) +
+  geom_point(alpha = 0.5) +
+  geom_jitter() +
+  scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin))),
                      labels = c(
                        expression(a[1]),
                        expression(2*a[1]),
@@ -1479,15 +1496,15 @@ distance_hist <- ggplot(
                        expression(7*a[1]),
                        expression(8*a[1])
                      )) +
-  geom_vline(xintercept = 2,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  geom_vline(xintercept = 4.5,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  ylab("Proportion of the number of edges") +
+  # geom_vline(xintercept = 2,
+  #            linetype="solid",
+  #            color = "#bdbdbd",
+  #            linewidth=1) +
+  # geom_vline(xintercept = 4.5,
+  #            linetype="solid",
+  #            color = "#bdbdbd",
+  #            linewidth=1) +
+  ylab(expression(d^{(7)})) +
   xlab(expression(d^{(2)})) +
   #ggtitle("(d)") +
   theme_minimal() +
@@ -1497,6 +1514,48 @@ distance_hist <- ggplot(
         panel.grid.major.x = element_blank(),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
+
+# distance_two_curvy_dist <- distance_two_curvy_dist |>
+#   count(bin) |>
+#   mutate(prop = n/sum(n)) 
+
+# distance_two_curvy_dist <- distance_two_curvy_dist |>
+#   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
+
+# distance_hist <- ggplot(
+#   distance_two_curvy_dist, 
+#   aes(x = as.numeric(bin),
+#       y = prop)) +
+#   geom_line() +
+#   scale_x_continuous(breaks = as.numeric(distance_two_curvy_dist$bin),
+#                      labels = c(
+#                        expression(a[1]),
+#                        expression(2*a[1]),
+#                        expression(3*a[1]),
+#                        expression(4*a[1]),
+#                        expression(5*a[1]),
+#                        expression(6*a[1]),
+#                        expression(7*a[1]),
+#                        expression(8*a[1])
+#                      )) +
+#   geom_vline(xintercept = 2,
+#              linetype="solid",
+#              color = "#bdbdbd",
+#              linewidth=1) +
+#   geom_vline(xintercept = 4.5,
+#              linetype="solid",
+#              color = "#bdbdbd",
+#              linewidth=1) +
+#   ylab("Proportion of the number of edges") +
+#   xlab(expression(d^{(2)})) +
+#   #ggtitle("(d)") +
+#   theme_minimal() +
+#   theme(aspect.ratio = 0.75,
+#         panel.border = element_rect(fill = 'transparent'),
+#         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+#         panel.grid.major.x = element_blank(),
+#         axis.ticks.x = element_line(),
+#         axis.ticks.y = element_line())
 
 
 # distance_hist <- ggplot(
