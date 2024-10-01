@@ -1483,7 +1483,7 @@ distance_hist <- ggplot(
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
-  geom_vline(xintercept = 5,
+  geom_vline(xintercept = 4.5,
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
@@ -1592,7 +1592,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 5 * bin_width
+benchmark_two_curvy <- 4.5 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -2392,7 +2392,7 @@ The decision on edge length removal is made based on the distribution of edge le
 There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
 
 ```{r}
-#| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 2$a_1$ and (c) benchmark = 5$a_1$, where $a_1$ = 0.09."
+#| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 4.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.09."
 #| fig-height: 15
 #| fig-width: 15
 #| out-height: 70%
