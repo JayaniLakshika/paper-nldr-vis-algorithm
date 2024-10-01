@@ -534,7 +534,8 @@ nldr_two_curvy <- umap_two_curvy_scaled |>
 nldr_two_curvy_original <- umap_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, color = "#636363", size = 0.5) +
-  xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  theme(aspect.ratio = 1) +
+  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
   interior_annotation("a", sc_ltr_pos)
 ```
 
@@ -2826,7 +2827,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| out-height: 90%
 
 nldr_two_curvy_original + tsne_two_curvy_clust_plt +
-  trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
+  trimesh_two_curvy_removed1 + trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_umap_model +
   two_curvy_proj_tsne_model +
   two_curvy_proj_umap_all_model +
