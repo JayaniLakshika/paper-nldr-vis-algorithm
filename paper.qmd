@@ -1523,6 +1523,12 @@ distance_two_curvy_dist_summary <- distance_two_curvy_dist |>
 # distance_two_curvy_dist <- distance_two_curvy_dist |>
 #   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
 
+text_df <- tibble(
+  x = c(1.9, 3.4),
+  y = c(0.5, 0.5),
+  text = c("c1", "b1")
+)
+
 distance_hist <- ggplot(
   distance_two_curvy_dist_summary,
   aes(x = as.numeric(bin),
@@ -1543,6 +1549,15 @@ distance_hist <- ggplot(
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
+  geom_text(
+    data = text_df,
+    aes(
+      x = x,
+      y = y,
+      label = text
+    ),
+    size = 9
+  ) +
   ylab("Proportion of the number of edges") +
   xlab(expression(d^{(2)})) +
   #ggtitle("(d)") +
