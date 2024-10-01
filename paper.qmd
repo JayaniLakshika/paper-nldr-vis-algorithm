@@ -2967,6 +2967,34 @@ gau1_model <- fit_highd_model(
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
 df_bin_gau1 <- gau1_model$df_bin
 
+## Compute error
+
+error_df_gau_abs <- augment(
+  df_bin_centroids = df_bin_centroids_gau1,
+  df_bin = df_bin_gau1,
+  training_data = training_data_gau,
+  newdata = NULL,
+  type_NLDR = "tSNE",
+  col_start = "x")
+
+error_df_gau_abs <- error_df_gau_abs |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+
+error_df_gau_abs <- error_df_gau_abs |>
+  bind_cols(tsne_gau_scaled |>
+              select(-ID))
+
+error_df_gau_tsne <- error_df_gau_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             colour = sqrt_row_wise_abs_error)) +
+  geom_point(alpha=0.5) + 
+  xlim(c(0.3, 0.66)) + ylim(c(-0.01, 0.35)) +
+  scale_colour_continuous_sequential(palette = "Blues") +
+  interior_annotation("a3", 
+                      position = c(0.08, 0.9),
+                      cex = 2)
+
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
   df_bin_centroids_gau1, x = "c_x", y = "c_y")
@@ -3305,6 +3333,34 @@ gau1_model <- fit_highd_model(
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
 df_bin_gau1 <- gau1_model$df_bin
 
+## Compute error
+
+error_df_gau_abs <- augment(
+  df_bin_centroids = df_bin_centroids_gau1,
+  df_bin = df_bin_gau1,
+  training_data = training_data_gau,
+  newdata = NULL,
+  type_NLDR = "UMAP",
+  col_start = "x")
+
+error_df_gau_abs <- error_df_gau_abs |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+
+error_df_gau_abs <- error_df_gau_abs |>
+  bind_cols(umap_gau_scaled |>
+              select(-ID))
+
+error_df_gau_umap <- error_df_gau_abs |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2,
+             colour = sqrt_row_wise_abs_error)) +
+  geom_point(alpha=0.5) + 
+  xlim(c(0.47, 0.5475)) + ylim(c(0.0125, 0.09)) +
+  scale_colour_continuous_sequential(palette = "Blues") +
+  interior_annotation("b3", 
+                      position = c(0.08, 0.9),
+                      cex = 2)
+
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
   df_bin_centroids_gau1, x = "c_x", y = "c_y")
@@ -3619,6 +3675,35 @@ gau1_model <- fit_highd_model(
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
 df_bin_gau1 <- gau1_model$df_bin
 
+## Compute error
+
+error_df_gau_abs <- augment(
+  df_bin_centroids = df_bin_centroids_gau1,
+  df_bin = df_bin_gau1,
+  training_data = training_data_gau,
+  newdata = NULL,
+  type_NLDR = "PaCMAP",
+  col_start = "x")
+
+error_df_gau_abs <- error_df_gau_abs |>
+  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+
+error_df_gau_abs <- error_df_gau_abs |>
+  bind_cols(pacmap_gau_scaled |>
+              select(-ID))
+
+error_df_gau_pacmap <- error_df_gau_abs |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2,
+             colour = sqrt_row_wise_abs_error)) +
+  geom_point(alpha=0.5) + 
+  xlim(c(-0.02, 0.18)) + ylim(c(0.12, 0.32)) +
+  scale_colour_continuous_sequential(palette = "Blues") +
+  interior_annotation("c3", 
+                      position = c(0.08, 0.9),
+                      cex = 2)
+
+
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
   df_bin_centroids_gau1, x = "c_x", y = "c_y")
@@ -3908,7 +3993,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 #| fig-cap: "Model in \\gD{}, on the layouts a1, b1, and c1, and two views of the fit in projections of each layout from $4\\text{-}D$, for the five Gaussian cluster data. All \\gD{} models show five well-separated clusters with different gaps. Layout a1 shows small separations, while layout b2 shows large gaps. On the other hand, layout b3 shows average gaps with exact positions as in $4\\text{-}D$. Assessing the different models fit for different layouts for a specific cluster (highlighted in red) shows filled-out shape in a1, a2, and b1, b2. On the other hand, c1 and c2 shows pancake shape.  Videos of the langevitour animations are available at <https://youtu.be/5Y1hE4i7N2k>, <https://youtu.be/5Y1hE4i7N2k>, and <https://youtu.be/5Y1hE4i7N2k> respectively."
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
-five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + five_gau_proj_tsne_model2 + five_gau_proj_umap_model2 + five_gau_proj_pacmap_model2 +
+five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
   plot_layout(guides = "collect", nrow = 3) &
   theme(legend.position='none')
 ```
