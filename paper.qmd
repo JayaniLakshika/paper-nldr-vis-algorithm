@@ -2427,7 +2427,7 @@ tsne_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_tsne_perp
 nldr_two_curvy_clust1 <- tsne_two_curvy_clust |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -2436,7 +2436,7 @@ umap_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_umap_n-ne
 nldr_two_curvy_clust2 <- umap_two_curvy_clust |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
-  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  geom_point(alpha=0.1, size=1, colour='#636363') +
   interior_annotation("b", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -2445,7 +2445,7 @@ phate_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_phate_kn
 nldr_two_curvy_clust3 <- phate_two_curvy_clust |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
-  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("c") +
   theme(aspect.ratio = 1)
 
@@ -2503,7 +2503,7 @@ error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust,
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_two_curvy_clust$a1))[append(seq(1, length(unique(error_two_curvy_clust$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a', "#ff7f00",'#a65628')) +
+  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363')) +
   scale_y_log10() +
   ylab("MSE") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
@@ -2545,7 +2545,7 @@ r2_tsne <- diff(lim2)/diff(lim1)
 tsne_two_curvy_clust_plt <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -2635,7 +2635,7 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
                x = tSNE1,
                y = tSNE2
              ),
-             color = "#636363",
+             color = "#a65628",
              alpha = 0.5,
              size = 0.5) +
   coord_equal() +
@@ -2747,7 +2747,7 @@ two_curvy_proj_tsne_model <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#636363") +
+    color = "#a65628") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -2793,7 +2793,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#636363") +
+    color = "#a65628") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
