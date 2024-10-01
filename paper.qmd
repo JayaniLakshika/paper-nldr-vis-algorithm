@@ -1545,25 +1545,25 @@ tr_from_to_df_two_curvy3 <- inner_join(
   tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy2,
   by = c("from", "to"))
 
-# trimesh_two_curvy_removed1 <- ggplot() +
-#   geom_segment(data = tr_from_to_df_two_curvy3,
-#                aes(
-#                  x = x_from,
-#                  y = y_from,
-#                  xend = x_to,
-#                  yend = y_to),
-#                colour = "#000000")+
-#   geom_point(data = umap_two_curvy_scaled,
-#              aes(
-#                x = UMAP1,
-#                y = UMAP2
-#              ),
-#              color = "#636363",
-#             alpha = 0.5,
-#             size = 0.5
-#             ) +
-#   coord_equal() +
-#   interior_annotation("c", position = c(0.92, 0.95))
+trimesh_two_curvy_removed1 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000")+
+  geom_point(data = umap_two_curvy_scaled,
+             aes(
+               x = UMAP1,
+               y = UMAP2
+             ),
+             color = "#636363",
+            alpha = 0.5,
+            size = 0.5
+            ) +
+  coord_equal() +
+  interior_annotation("c", position = c(0.92, 0.95))
 
 trimesh_two_curvy_removed1_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy3,
@@ -2290,10 +2290,10 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 
 ```{r}
 #| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal."
-#| fig-height: 10
+#| fig-height: 15
 #| fig-width: 15
 
-free(distance_hist) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1_with_data, ncol = 3) 
+free(distance_hist) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model, ncol = 3) 
 ```
 
 
