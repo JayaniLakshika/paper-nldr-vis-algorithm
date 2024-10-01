@@ -1479,7 +1479,7 @@ distance_two_curvy_dist <- distance_two_curvy |>
 
 distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
 
-distance_hist <- ggplot(
+distance_points <- ggplot(
   distance_two_curvy_dist, 
   aes(x = as.numeric(bin),
       y = dist_highd)) +
@@ -1515,47 +1515,44 @@ distance_hist <- ggplot(
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
-# distance_two_curvy_dist <- distance_two_curvy_dist |>
-#   count(bin) |>
-#   mutate(prop = n/sum(n)) 
+distance_two_curvy_dist_summary <- distance_two_curvy_dist |>
+  count(bin) |>
+  mutate(prop = n/sum(n)) |>
+  head(4)
 
 # distance_two_curvy_dist <- distance_two_curvy_dist |>
 #   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
 
-# distance_hist <- ggplot(
-#   distance_two_curvy_dist, 
-#   aes(x = as.numeric(bin),
-#       y = prop)) +
-#   geom_line() +
-#   scale_x_continuous(breaks = as.numeric(distance_two_curvy_dist$bin),
-#                      labels = c(
-#                        expression(a[1]),
-#                        expression(2*a[1]),
-#                        expression(3*a[1]),
-#                        expression(4*a[1]),
-#                        expression(5*a[1]),
-#                        expression(6*a[1]),
-#                        expression(7*a[1]),
-#                        expression(8*a[1])
-#                      )) +
-#   geom_vline(xintercept = 2,
-#              linetype="solid",
-#              color = "#bdbdbd",
-#              linewidth=1) +
-#   geom_vline(xintercept = 4.5,
-#              linetype="solid",
-#              color = "#bdbdbd",
-#              linewidth=1) +
-#   ylab("Proportion of the number of edges") +
-#   xlab(expression(d^{(2)})) +
-#   #ggtitle("(d)") +
-#   theme_minimal() +
-#   theme(aspect.ratio = 0.75,
-#         panel.border = element_rect(fill = 'transparent'),
-#         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-#         panel.grid.major.x = element_blank(),
-#         axis.ticks.x = element_line(),
-#         axis.ticks.y = element_line())
+distance_hist <- ggplot(
+  distance_two_curvy_dist_summary,
+  aes(x = as.numeric(bin),
+      y = prop)) +
+  geom_line() +
+  scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin)))[1:4],
+                     labels = c(
+                       expression(a[1]),
+                       expression(2*a[1]),
+                       expression(3*a[1]),
+                       expression(4*a[1])
+                     )) +
+  geom_vline(xintercept = 2,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  geom_vline(xintercept = 3.5,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  ylab("Proportion of the number of edges") +
+  xlab(expression(d^{(2)})) +
+  #ggtitle("(d)") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
 
 
 # distance_hist <- ggplot(
@@ -1651,7 +1648,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 4.5 * bin_width
+benchmark_two_curvy <- 3.5 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -2456,7 +2453,7 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 #| fig-width: 15
 #| out-height: 70%
 
-free(distance_hist) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1,
+wrap_plots(distance_points,distance_hist, ncol = 2) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1,
 two_curvy_proj_umap_model_delaunay,
 two_curvy_proj_umap_model_benchmark2,
 two_curvy_proj_umap_model, ncol = 3) 
