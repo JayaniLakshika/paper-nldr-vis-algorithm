@@ -1467,7 +1467,7 @@ distance_hist <- ggplot(
                        expression(7*a[1]),
                        expression(8*a[1])
                      )) +
-  geom_vline(xintercept = 3,
+  geom_vline(xintercept = 2,
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
@@ -1526,6 +1526,8 @@ benchmark_two_curvy <- find_lg_benchmark(
 
 ## Benchmark 1
 
+benchmark_two_curvy <- 2 * bin_width
+
 distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy) ## 0.231
 
@@ -1568,7 +1570,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 0.42
+benchmark_two_curvy <- 5 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
