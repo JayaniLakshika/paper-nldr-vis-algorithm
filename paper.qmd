@@ -2231,6 +2231,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
+#| out-height: 80%
 #| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, (c) predicted data from our method, and (d) comparison of predictions from both methods. In plot (d), points representing the same data but predicted by different methods are connected by lines. Both prediction methods work similarly within the clusters, as each method predicts the data within the cluster with slight differences."
 
 proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_two_curvy +
@@ -2368,7 +2369,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 #| echo: false
 #| fig-cap: "Various plots to help assess best hexagon bin parameters and thresholds to remove low-density bins. Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.05$, $0.09$, and $0.12$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases. There are two peaks at binwidths $0.09$ and $0.12$. The proportion of densities, calculated as a density with the smallest possible binwidth, decreases and levels off. Binwidths $0.09$ and $0.12$ are favorable choices. Based on the MSE, $0.09$ was chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
 #| label: fig-param-two-curvy
-#| out-width: 100%
+#| out-width: 80%
 #| fig-width: 12
 #| fig-height: 10
 #| fig-pos: H
@@ -2392,6 +2393,7 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 #| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 2$a_1$ and (c) benchmark = 5$a_1$, where $a_1$ = 0.09."
 #| fig-height: 15
 #| fig-width: 15
+#| out-height: 70%
 
 free(distance_hist) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1,
 two_curvy_proj_umap_model_delaunay,
@@ -2524,7 +2526,7 @@ error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust,
 #| fig-cap: "Assessing which of the 5 NLDR layouts on the two_curvy_clust digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-two_curvy_clust-mse
 #| fig-pos: H
-#| out-height: 100%
+#| out-height: 60%
 
 free(error_plot_two_curvy_clust) + wrap_plots(nldr_two_curvy_clust1, nldr_two_curvy_clust2, nldr_two_curvy_clust3, 
                                     nldr_two_curvy_clust4, nldr_two_curvy_clust5, ncol = 2)
@@ -2821,6 +2823,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| fig-cap: "Best fit using UMAP ($a_1$ = 0.09) and tSNE ($a_1$ = 0.16) with the same number of non-empty bins ($m$ = 39). Both models show twist in $7\\text{-}D$."
 #| fig-width: 10
 #| fig-height: 20
+#| out-height: 90%
 
 nldr_two_curvy_original + tsne_two_curvy_clust_plt +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
