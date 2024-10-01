@@ -1460,8 +1460,8 @@ distance_two_curvy_dist <- distance_two_curvy_dist |>
   count(bin) |>
   mutate(prop = n/sum(n)) 
 
-distance_two_curvy_dist <- distance_two_curvy_dist |>
-  filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
+# distance_two_curvy_dist <- distance_two_curvy_dist |>
+#   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
 
 distance_hist <- ggplot(
   distance_two_curvy_dist, 
@@ -1470,6 +1470,7 @@ distance_hist <- ggplot(
   geom_line() +
   scale_x_continuous(breaks = as.numeric(distance_two_curvy_dist$bin),
                      labels = c(
+                       expression(a[1]),
                        expression(2*a[1]),
                        expression(3*a[1]),
                        expression(4*a[1]),
