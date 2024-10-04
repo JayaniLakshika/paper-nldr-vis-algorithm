@@ -3,6 +3,7 @@ library(quollr)
 library(dplyr)
 library(readr)
 library(langevitour)
+library(munsell)
 
 ## Import data
 training_data_two_nonlinear_clusters <- read_rds("data/one_curvy_one_gau_clust/one_curvy_one_gau_clust_data.rds")
@@ -142,13 +143,17 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(PaCMAP_two_nonlinear_clusters_scaled |>
               select(-ID))
 
+my <- "5BG 5/4"
+
 error_plot_two_curvy <- error_df_two_curvy_abs |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "Blues") +
-  coord_equal()
+  #viridis::scale_color_viridis(option = "D") +
+  scale_fill_manual(values = mnsl(c(my, rygbp(my, 10), rygbp(my, 20), rygbp(my, 30)))) +
+  #scale_colour_continuous_sequential(palette = "Blues") +
+  theme(aspect.ratio = 1)
 
 error_plot_two_curvy
 
