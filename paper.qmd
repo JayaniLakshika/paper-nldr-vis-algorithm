@@ -1171,9 +1171,16 @@ hb_obj_notation <- hex_binning(
   r2 = 1.6,
   q = 0.1)
 
+a1_temp <- hb_obj_notation$a1
+a2_temp <- hb_obj_notation$a2
+l_temp <- quad(a=3, b = 2 * a2_temp, c = -(a2_temp^2 + a1_temp^2))
+
 ## Data set with all centroids
 all_centroids_df_temp <- hb_obj_notation$centroids
 hex_grid_temp <- hb_obj_notation$hex_poly
+
+hex_grid_temp45 <- hex_grid_temp |> 
+  filter(hex_poly_id == 45)
 
 start_pt <- all_centroids_df_temp |> 
   filter(hexID == 1)
@@ -1197,6 +1204,12 @@ a2 <- tibble(x = all_centroids_df_temp$c_x[25],
              y = all_centroids_df_temp$c_y[25],
              yend = all_centroids_df_temp$c_y[33],
              label = expression(a[2]))
+l <- tibble(x = hex_grid_temp45$x[2],
+            xend = hex_grid_temp45$x[3],
+            y = hex_grid_temp45$y[2],
+            yend = hex_grid_temp45$y[3],
+            label = expression(l))
+
 hex_param_vis <- ggplot() + 
     geom_polygon(data = hex_grid_temp, 
                         aes(x = x, 
@@ -1287,6 +1300,17 @@ hex_param_vis <- ggplot() +
     annotate("text", x=-0.18, y=-0.24, 
       label = expression(group("(", list(s[1], s[2]), ")")),
       color = "black") +
+  geom_segment(data = l, aes(
+      x = x, #-0.15, 
+      y = y, #-0.1*r2 + 0.1807896*2, 
+      xend = xend, #-0.15, 
+      yend = yend), #-0.1*r2 + 0.1807896*3),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+      color = "black") + 
+    annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
+             label = expression(l), 
+             color = "black", hjust=-0.2) +
   coord_equal()
 ```
 
