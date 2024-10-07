@@ -2234,8 +2234,10 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = UMAP2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "Blues") +
-  coord_equal()
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 10) +
+  theme(
+    aspect.ratio = 1
+  )
 
 ```
 
@@ -3019,7 +3021,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "red", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 13
+num_bins_x_gau1 <- 21
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3061,7 +3063,7 @@ error_df_gau_tsne <- error_df_gau_abs |>
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) + 
   xlim(c(0.3, 0.66)) + ylim(c(-0.01, 0.35)) +
-  scale_colour_continuous_sequential(palette = "Blues") +
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   interior_annotation("a3", 
                       position = c(0.08, 0.9),
                       cex = 2)
@@ -3386,7 +3388,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 45
+num_bins_x_gau1 <- 76
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3727,7 +3729,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 21
+num_bins_x_gau1 <- 33
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)

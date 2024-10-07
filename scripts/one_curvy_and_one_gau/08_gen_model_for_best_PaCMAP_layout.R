@@ -150,9 +150,11 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = PaCMAP2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
+  #scale_colour_gradientn(colors = sequential_hcl(10, palette = "Blues", rev = TRUE)) #+
   #viridis::scale_color_viridis(option = "D") +
-  scale_fill_manual(values = mnsl(c(my, rygbp(my, 10), rygbp(my, 20), rygbp(my, 30)))) +
-  #scale_colour_continuous_sequential(palette = "Blues") +
+  #scale_fill_manual(values = mnsl(c(my, rygbp(my, 10), rygbp(my, 20), rygbp(my, 30)))) +
+  #scale_fill_manual(values = sequential_hcl(10, palette = "Blues"))
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(aspect.ratio = 1)
 
 error_plot_two_curvy
