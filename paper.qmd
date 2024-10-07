@@ -695,7 +695,10 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
              alpha = 0.5,
              size = 0.5) +
   coord_equal() +
-  interior_annotation("b")
+  # theme(
+  #   aspect.ratio = 1
+  #   ) +
+  interior_annotation("b", sc_ltr_pos)
 ```
 
 
@@ -826,7 +829,7 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c") +
+  interior_annotation("c", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -872,7 +875,7 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("d") +
+  interior_annotation("d", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -1452,7 +1455,7 @@ trimesh_two_curvy2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("a")
+  interior_annotation("a1")
 
 ## Compute 2D distances
 distance_two_curvy <- cal_2d_dist(
@@ -1636,7 +1639,7 @@ trimesh_two_curvy_removed1 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("c", position = c(0.92, 0.95))
+  interior_annotation("c1")
 
 trimesh_two_curvy_removed1_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy3,
@@ -1690,7 +1693,7 @@ trimesh_two_curvy_removed2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("b", position = c(0.92, 0.95))
+  interior_annotation("b1")
 
 ```
 
@@ -1839,7 +1842,7 @@ two_curvy_proj_umap_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c") +
+  interior_annotation("c2") +
   theme(
     legend.position = "none"
   )
@@ -1877,7 +1880,7 @@ two_curvy_proj_umap_model_delaunay <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c") +
+  interior_annotation("a2") +
   theme(
     legend.position = "none"
   )
@@ -1915,7 +1918,7 @@ two_curvy_proj_umap_model_benchmark2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c") +
+  interior_annotation("b2") +
   theme(
     legend.position = "none"
   )
@@ -2089,7 +2092,7 @@ plot_predict_umap_two_curvy <- ggplot(
 #| label: best-fit-umap1
 #| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two-curvy clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of UMAP, which compresses the data when transforming the data into \\gD{}. Video of the langevitour animations is available at <>."
 #| fig-width: 10
-#| fig-height: 10
+#| fig-height: 8
 
 nldr_two_curvy_original + 
   trimesh_two_curvy_removed1_umap_with_data +
