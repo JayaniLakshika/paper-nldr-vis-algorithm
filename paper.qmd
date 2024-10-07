@@ -2647,7 +2647,7 @@ error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust,
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 5 NLDR layouts on the two_curvy_clust digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 5 NLDR layouts on the two-curvy clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-two_curvy_clust-mse
 #| fig-pos: H
 #| out-height: 60%
@@ -2947,7 +2947,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 
 ```{r}
 #| label: best-fit-umap-tsne
-#| fig-cap: "Best fit using UMAP ($a_1$ = 0.09) and tSNE ($a_1$ = 0.16) with the same number of non-empty bins ($m$ = 39). Both models show twist in $7\\text{-}D$."
+#| fig-cap: "Best fit for two-curvy clusters data using UMAP (a1-a4) ($a_1$ = 0.09) and tSNE (b1-b4) ($a_1$ = 0.16) with the same number of non-empty bins ($m$ = 39). Both models show twist in $7\\text{-}D$ (a3, a4, b3, b4). Also, both NLDR methods are unable to accurately capture the width of the curvilinear clusters."
 #| fig-width: 10
 #| fig-height: 20
 #| out-height: 90%
@@ -3009,7 +3009,7 @@ nldr_two_curvy_original2 + tsne_two_curvy_clust_plt +
 
 ## Linked plots
 
-It’s important to access the \gD{} layout and the generated model overlaid on data in \pD{} together to understand whether it fits the points everywhere, fits better in some places, or simply mismatches the pattern. Interactivity also helps in understanding the quirks that occur with different NLDR techniques (XXXXRefer the video after finalising the S-curve).
+It’s important to access the \gD{} layout and the generated model overlaid on data in \pD{} together to understand whether it fits the points everywhere, fits better in some places, or simply mismatches the pattern. Interactivity also helps in understanding the quirks that occur with different NLDR techniques (XXXXRefer the video after finalising the two-curvy clusters data).
 
 ## A curious difference between tSNE, UMAP and PaCMAP revealer
 
