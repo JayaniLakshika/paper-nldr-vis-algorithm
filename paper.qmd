@@ -1455,7 +1455,7 @@ trimesh_two_curvy2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("a1")
+  interior_annotation("a1", sc_ltr_pos)
 
 ## Compute 2D distances
 distance_two_curvy <- cal_2d_dist(
@@ -1639,7 +1639,7 @@ trimesh_two_curvy_removed1 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("c1")
+  interior_annotation("c1", sc_ltr_pos)
 
 trimesh_two_curvy_removed1_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy3,
@@ -1693,7 +1693,7 @@ trimesh_two_curvy_removed2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("b1")
+  interior_annotation("b1", sc_ltr_pos)
 
 ```
 
@@ -1842,7 +1842,7 @@ two_curvy_proj_umap_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c2") +
+  interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -1880,7 +1880,7 @@ two_curvy_proj_umap_model_delaunay <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("a2") +
+  interior_annotation("a2", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -1918,7 +1918,7 @@ two_curvy_proj_umap_model_benchmark2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("b2") +
+  interior_annotation("b2", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
