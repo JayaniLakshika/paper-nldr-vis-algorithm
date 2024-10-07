@@ -44,7 +44,7 @@ author:
         postal-code: 3800
     orcid: 0000-0001-6515-827X
     email: michael.lydeamore@monash.edu
-    url: 
+    url: https://www.michaellydeamore.com/
   - name: Thiyanga S. Talagala
     affiliations:
       - name: University of Sri Jayewardenepura
@@ -64,21 +64,9 @@ tbl-cap-location: bottom
 #| echo: false
 library(quollr)
 library(dplyr)
-# remotes::install_github("jlmelville/snedata")
-library(snedata)
-library(ggflowchart)
-library(purrr) ## map function
-library(gridExtra) ## for grid.arrange
-library(rsample)
-library(DT)
-library(ggbeeswarm)
 library(ggplot2)
 library(readr)
 library(tidyr)
-
-library(Rtsne)
-library(uwot)
-library(phateR)
 library(patchwork)
 library(langevitour)
 library(colorspace)
@@ -86,7 +74,7 @@ library(kableExtra)
 library(grid)
 set.seed(20240110)
 
-source("nldr_code.R", local = TRUE)
+#source("nldr_code.R", local = TRUE)
 ```
 
 <!-- To find the number of bins should assign for the model in tSNE-->
@@ -94,6 +82,7 @@ source("nldr_code.R", local = TRUE)
 #| warning: false
 #| echo: false
 #| message: false
+#| eval: false
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
 tSNE_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
@@ -198,6 +187,7 @@ mse_df_gau <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```{r}
 #| warning: false
 #| echo: false
+#| eval: false
 
 mse_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins,
                                        y = log(mse)
@@ -222,6 +212,7 @@ mse_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins,
 #| label: fig-diagnosticpltGau
 #| out-width: 100%
 #| fig-pos: H
+#| eval: false
 
 mse_plot_gau 
 ```
@@ -232,6 +223,7 @@ mse_plot_gau
 #| warning: false
 #| echo: false
 #| message: false
+#| eval: false
 
 ## UMAP
 ## Prediction
@@ -342,6 +334,7 @@ mse_df_pbmc <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```{r}
 #| warning: false
 #| echo: false
+#| eval: false
 
 mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
                                        y = mse
@@ -364,6 +357,7 @@ mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
 #| fig-cap: "Goodness of fit statistics from UMAP applied to training PBMC3k dataset. What is the effective number of bins in UMAP to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 588, the slope of the MSE plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-msepltpbmc
 #| fig-pos: H
+#| eval: false
 
 mse_plot_pbmc
 ```
@@ -374,6 +368,7 @@ mse_plot_pbmc
 #| warning: false
 #| echo: false
 #| message: false
+#| eval: false
 
 ## Import data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
@@ -483,6 +478,7 @@ mse_df_mnist <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```{r}
 #| warning: false
 #| echo: false
+#| eval: false
 
 mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
                                        y = mse
@@ -506,6 +502,7 @@ mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
 #| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in PaCMAP to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 180, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
 #| label: fig-diagnosticpltMNIST
 #| fig-pos: H
+#| eval: false
 
 mse_plot_mnist
 ```
