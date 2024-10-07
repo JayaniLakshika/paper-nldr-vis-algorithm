@@ -477,6 +477,45 @@ assign_data_vis1 + assign_data_vis2 +
 
 The area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$, where $l$ is the side length of the hexagon. $l$ can be computed using $a_1$ and $a_2$.
 
+
+```{r}
+
+triangle_temp <- tibble(
+  x = c(0, 4, 0),
+  y = c(0, 0, 3)
+)
+
+triangle_line_temp <- tibble(
+  x = c(4, 0, 4),
+  xend = c(0, 0, 0),
+  y = c(0, 0, 0),
+  yend = c(0, 3, 3)
+)
+
+triangle_plot <- ggplot() +
+  geom_point(
+    data = triangle_temp,
+    aes(
+      x = x,
+      y = y
+    )
+  ) +
+  geom_segment(
+    data = triangle_line_temp,
+    aes(
+      x = x,
+      xend = xend,
+      y = y,
+      yend = yend
+    )
+  )
+```
+
+```{r}
+#| out-height: 30%
+triangle_plot
+```
+
 By pythagorean theorem,
 
 $$
