@@ -2175,7 +2175,7 @@ error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
   group_by(a1) |>
   filter(bin1 == min(bin1)) |>
   ungroup() |>
-  mutate(prop_dens = b/side_length) 
+  mutate(prop_dens = 1/(b*side_length^2)) 
 
 base_line_prop_dens <- error_two_curvy_clust_umap |>
   filter(a1 == min(a1)) |>
@@ -2432,6 +2432,10 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 
 
 #### Removal of low density bins
+
+##### Density of a bin
+
+Area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). Therefore, the density of a hexagon grid is computed as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The base line proportion is defined as the  
 
 By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-two_curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
 

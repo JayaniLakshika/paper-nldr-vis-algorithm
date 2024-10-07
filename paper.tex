@@ -412,6 +412,8 @@ $m$ & number of non-empty bins\\
 $b$ & number of  hexagons in the grid\\
 \addlinespace
 $h$ & hexagonal id\\
+$l$ & side length\\
+$A$ & area\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -752,6 +754,15 @@ choices of \(b_1\) on the MSE of the fitted model.
 
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
+
+\paragraph{Density of a bin}\label{density-of-a-bin}
+
+Area of a hexagon is defined as \(A = \frac{3\sqrt{3}}{2}l^2\) where
+\(l\) is the side length of the hexagon. If we know \(a_1\) and \(a_2\),
+\(l\) can be computed (see appendix). Therefore, the density of a
+hexagon grid is computed as \(\frac{\sum^{h}_{i=1}n_h}{A}\) and the
+proportion is \(\frac{\sum^{h}_{i=1}n_h}{A \times b}\). The base line
+proportion is defined as the
 
 By default, when assessing the choice of \(b_1\), the total number of
 bins is measured by the number of \textbf{non-empty} bins. This more
