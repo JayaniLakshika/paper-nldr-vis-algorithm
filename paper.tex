@@ -839,8 +839,8 @@ edge lengths. In particular, a gap between values, where there a
 concentration of small values and then a few larger values, likely
 suggests a cutoff for edge removal. Because the triangulation is
 typically done on the hexagon centroids, there are particular discrete
-edge lengths, based on bin widths. \textbf{?@fig-rm-lg} illustrates edge
-length distributions.
+edge lengths, based on bin widths. Figure~\ref{fig-rm-lg} illustrates
+edge length distributions.
 
 There is an additional step that is needed. When the model is lifted
 into \pD{}, if the fit is good all the edges should be relatively small
@@ -850,16 +850,18 @@ layout; (2) identify the edge and remove it from the model, in \gD{} and
 \pD{}; (3) consider different values for the model fit, number of bins,
 initial bin position or removing low density bins.
 
-\begin{figure}[H]
+\begin{figure}
 
-{\centering \includegraphics[width=1\textwidth,height=0.7\textheight]{paper_files/figure-pdf/unnamed-chunk-36-1.pdf}
+\centering{
+
+\includegraphics[width=1\textwidth,height=0.7\textheight]{paper_files/figure-pdf/fig-rm-lg-1.pdf}
 
 }
 
-\caption{Distribution of edge lengths and wireframes in \gD{} and
-\(7\text{-}D\) with Delaunay triangulation, and two choices of long edge
-removal: (b) benchmark = 4.5\(a_1\) and (c) benchmark = 2\(a_1\), where
-\(a_1\) = 0.09.}
+\caption{\label{fig-rm-lg}Distribution of edge lengths and wireframes in
+\gD{} and \(7\text{-}D\) with Delaunay triangulation, and two choices of
+long edge removal: (b) benchmark = 4.5\(a_1\) and (c) benchmark =
+2\(a_1\), where \(a_1\) = 0.09.}
 
 \end{figure}%
 
