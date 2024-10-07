@@ -683,6 +683,20 @@ data within the cluster with slight differences.}
 
 \end{figure}%
 
+\subsection{Diagnostics}\label{diagnostics}
+
+\subsubsection{Relative proportion
+density}\label{relative-proportion-density}
+
+The area of a hexagon is defined as \(A = \frac{3\sqrt{3}}{2}l^2\) where
+\(l\) is the side length of the hexagon. If we know \(a_1\) and \(a_2\),
+\(l\) can be computed (see appendix). The density of a hexagon grid is
+calculated as \(\frac{\sum^{h}_{i=1}n_h}{A}\) and the proportion is
+\(\frac{\sum^{h}_{i=1}n_h}{A \times b}\). The baseline proportion is the
+proportion density at the smallest possible value of \(a_1\). The
+relative proportion density is the ratio of the observed proportion
+density to the baseline proportion density.
+
 \subsection{Tuning}\label{tuning}
 
 The model fitting can be adjusted using these parameters:
@@ -755,15 +769,6 @@ choices of \(b_1\) on the MSE of the fitted model.
 \subsubsection{Removal of low density
 bins}\label{removal-of-low-density-bins}
 
-\paragraph{Density of a bin}\label{density-of-a-bin}
-
-Area of a hexagon is defined as \(A = \frac{3\sqrt{3}}{2}l^2\) where
-\(l\) is the side length of the hexagon. If we know \(a_1\) and \(a_2\),
-\(l\) can be computed (see appendix). Therefore, the density of a
-hexagon grid is computed as \(\frac{\sum^{h}_{i=1}n_h}{A}\) and the
-proportion is \(\frac{\sum^{h}_{i=1}n_h}{A \times b}\). The base line
-proportion is defined as the
-
 By default, when assessing the choice of \(b_1\), the total number of
 bins is measured by the number of \textbf{non-empty} bins. This more
 accurately reflects the hexagon grid relative the MSE than the full
@@ -803,9 +808,8 @@ benchmark value for these parameters is when the MSE drops and then
 flattens out. Three binwidth choices were made: \(0.05\), \(0.09\), and
 \(0.12\) to investigate. As the binwidth increases, the proportion of
 non-empty bins also increases. There are two peaks at binwidths \(0.09\)
-and \(0.12\). The proportion of densities, calculated as a density with
-the smallest possible binwidth, decreases and levels off. Binwidths
-\(0.09\) and \(0.12\) are favorable choices. Based on the MSE, \(0.09\)
+and \(0.12\). The relative proportion density decreases and levels off.
+Binwidths \(0.05\) is the favorable choices. Based on the MSE, \(0.09\)
 was chosen as the initial best binwidth for further analysis. There is
 no need to remove the low-density hexagons because as shown in (b),
 there is no considerable drop in MSE.}

@@ -2379,6 +2379,12 @@ proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_tw
 
 <!-- XXX Prediction should have a jitter option, to spread the predicted points out fully in the hexagons. -->
 
+### Diagnostics
+
+#### Relative proportion density
+
+The area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.   
+
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
 
@@ -2432,10 +2438,6 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 
 
 #### Removal of low density bins
-
-##### Density of a bin
-
-Area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). Therefore, the density of a hexagon grid is computed as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The base line proportion is defined as the  
 
 By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-two_curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
 
@@ -2495,7 +2497,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters and thresholds to remove low-density bins. Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.05$, $0.09$, and $0.12$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases. There are two peaks at binwidths $0.09$ and $0.12$. The proportion of densities, calculated as a density with the smallest possible binwidth, decreases and levels off. Binwidths $0.09$ and $0.12$ are favorable choices. Based on the MSE, $0.09$ was chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
+#| fig-cap: "Various plots to help assess best hexagon bin parameters and thresholds to remove low-density bins. Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.05$, $0.09$, and $0.12$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases. There are two peaks at binwidths $0.09$ and $0.12$. The relative proportion density decreases and levels off. Binwidths $0.05$ is the favorable choices. Based on the MSE, $0.09$ was chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
 #| label: fig-param-two-curvy
 #| out-width: 80%
 #| fig-width: 12
