@@ -537,6 +537,13 @@ nldr_two_curvy_original <- umap_two_curvy_scaled |>
   theme(aspect.ratio = 1) +
   #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
   interior_annotation("a", sc_ltr_pos)
+
+nldr_two_curvy_original2 <- umap_two_curvy_scaled |> 
+  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  geom_point(alpha=0.5, color = "#636363", size = 0.5) +
+  theme(aspect.ratio = 1) +
+  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  interior_annotation("a1", sc_ltr_pos)
 ```
 
 <!--Full hexagon grid with UMAP data-->
@@ -1660,7 +1667,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
             ) +
   coord_equal() +
   #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("a2")
+  interior_annotation("a2", sc_ltr_pos)
 
 
 
@@ -1847,6 +1854,45 @@ two_curvy_proj_umap_model <- projected_df |>
     legend.position = "none"
   )
 
+two_curvy_proj_umap_model2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000") + #31a354
+  geom_point(
+    size = 0.5,
+    alpha = 0.5,
+    color = "#636363") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.126, 0.125)) + 
+  ylim(c(-0.126, 0.125)) +
+  interior_annotation("a3", sc_ltr_pos) +
+  theme(
+    legend.position = "none"
+  )
+
+
 two_curvy_proj_umap_model_delaunay <- projected_df |>
   ggplot(
     aes(
@@ -1964,7 +2010,7 @@ two_curvy_proj_umap_all_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("d") +
+  interior_annotation("a4", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -2626,7 +2672,7 @@ tsne_two_curvy_clust_plt <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#a65628') +
-  interior_annotation("a", c(0.08, 0.93)) +
+  interior_annotation("b1", sc_ltr_pos) +
   theme(aspect.ratio = 1)
 
 ## hexagon binning to have regular hexagons
@@ -2719,7 +2765,7 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
              alpha = 0.5,
              size = 0.5) +
   coord_equal() +
-  interior_annotation("b")
+  interior_annotation("b2", sc_ltr_pos)
 
 ```
 
@@ -2844,7 +2890,7 @@ two_curvy_proj_tsne_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("c") +
+  interior_annotation("b3", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -2890,7 +2936,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("d") +
+  interior_annotation("b4", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -2903,9 +2949,9 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| fig-height: 20
 #| out-height: 90%
 
-nldr_two_curvy_original + tsne_two_curvy_clust_plt +
+nldr_two_curvy_original2 + tsne_two_curvy_clust_plt +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
-  two_curvy_proj_umap_model +
+  two_curvy_proj_umap_model2 +
   two_curvy_proj_tsne_model +
   two_curvy_proj_umap_all_model +
   two_curvy_proj_tsne_all_model +
