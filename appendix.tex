@@ -41,14 +41,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -81,11 +95,6 @@
 \addtolength{\textwidth}{1in}%
 \addtolength{\textheight}{1.7in}%
 \addtolength{\topmargin}{-1in}%
-
-\makeatletter
-\makeatother
-\makeatletter
-\makeatother
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -122,29 +131,23 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
-\makeatother
+
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Appendix: Visualising How Non-linear Dimension Reduction Warps Your Data},
+  pdftitle={Appendix: Looking at Non-Linear Dimension Reductions as Models in the Data Space},
   pdfauthor={Jayani P.G. Lakshika; Dianne Cook; Paul Harrison; Michael Lydeamore; Thiyanga S. Talagala},
   colorlinks=true,
   linkcolor={blue},
@@ -154,16 +157,18 @@
   pdfcreator={LaTeX via pandoc}}
 
 
+
 \begin{document}
 
 
 \def\spacingset#1{\renewcommand{\baselinestretch}%
 {#1}\small\normalsize} \spacingset{1}
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{\bf Appendix: Visualising How Non-linear Dimension Reduction
-Warps Your Data}
+\title{\bf Appendix: Looking at Non-Linear Dimension Reductions as
+Models in the Data Space}
 \author{
 Jayani P.G. Lakshika\\
 Econometrics \& Business Statistics, Monash University\\
@@ -186,100 +191,152 @@ Statistics, University of Sri Jayewardenepura\\
 
 
 \newpage
-\spacingset{1} % DON'T change the spacing! (Default 1.9)
+\spacingset{1.9} % DON'T change the spacing!
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, breakable, enhanced]}{\end{tcolorbox}}\fi
 
-Paramter tunning
+\section{Computing hexagon grid
+configurations}\label{computing-hexagon-grid-configurations}
 
-\hypertarget{total-number-of-bins}{%
-\section{Total number of bins}\label{total-number-of-bins}}
+Given range of embedding component, \(r_2\), number of bins along the
+x-axis, \(b_1\), and buffer proportion, \(q\), hexagonal starting point
+coordinates, \(s_1 = -q\), and \(s_2 = -q \times r_2\). The purpose is
+to find width of the hexagon. \(a_1\), and number of bins along the
+y-axis, \(b_2\).
 
-The total number of bins represents the overall count of hexagonal bins
-within the hexagonal grid. This count is determined by multiplying the
-number of bins along the x-axis (\(b_1\)) with the number of bins along
-the y-axis (\(b_2\)), according to the formula:
+\begin{figure}[H]
 
-\begin{equation}\protect\hypertarget{eq-equationp1}{}{
- b = b_1 \times b_2
-}\label{eq-equationp1}\end{equation}
+\centering{
 
-Here, \(b\) denotes the total number of bins. By adjusting the parameter
-\(b_1\), we have control over the total number of bins (\(b\)). Hence,
-fine-tuning \(b_1\) enables us to customize and optimize the total bin
-count based on the desired configuration along the x-axis.
-
-\includegraphics[width=1\textwidth,height=\textheight]{appendix_files/figure-pdf/unnamed-chunk-9-1.pdf}
-
-\hypertarget{benchmark-value-to-remove-low-density-hexagons}{%
-\section{Benchmark value to remove low-density
-hexagons}\label{benchmark-value-to-remove-low-density-hexagons}}
-
-In the step of addressing low-density hexagons, which can arise from
-sparsely represented data in certain regions, we employ a systematic
-strategy. The goal is to ensure a more comprehensive coverage of the
-data by removing hexagons with low data density. To achieve this, we
-initiate the process by identifying, for each hex bin, the six nearest
-hex bins based on an equal 2D distance metric. Following this, we
-calculate the mean density (see Equation~\ref{eq-equationp3}), as
-outlined in the equation:
-
-\begin{equation}\protect\hypertarget{eq-equationp2}{}{
- \text{standard count} = \frac{\text{count}}{\text{max count}}
-}\label{eq-equationp2}\end{equation}
-
-\begin{equation}\protect\hypertarget{eq-equationp3}{}{
- \text{mean density} = \frac{\text{standard count}}{6}
-}\label{eq-equationp3}\end{equation}
-
-The standard count is derived from the number of observations in the hex
-bins (see Equation~\ref{eq-equationp2}). Next, we examine the
-distribution of mean densities across all hex bins and designate the
-first quartile as the benchmark value for removing low-density hexagons.
-Finally, hex bins with mean densities below this benchmark value are
-removed from consideration. This meticulous procedure ensures the
-elimination of regions with inadequate data density, allowing the focus
-to shift to areas with more significant data representation. The result
-is the preservation of the overall structure of the data in the
-low-dimensional space, as illustrated in \textbf{?@fig-bintorm} (c).
-
-\includegraphics{appendix_files/figure-pdf/unnamed-chunk-14-1.pdf}
-
-\begin{verbatim}
-Joining with `by = join_by(hexID)`
-\end{verbatim}
-
-\includegraphics{appendix_files/figure-pdf/unnamed-chunk-15-1.pdf}
-
-\hypertarget{benchmark-value-to-remove-long-edges}{%
-\section{Benchmark value to remove long
-edges}\label{benchmark-value-to-remove-long-edges}}
-
-In this step, we aim to create a smoother surface in the low-dimensional
-space by removing long edges from the triangular mesh. This process
-helps eliminate outliers and noise while preserving important local
-relationships and intricate structures within the data. To achieve this,
-distances between vertices are sorted, and unique distance values are
-extracted. A data frame is created to calculate the differences between
-consecutive distance values, and the largest difference serves as a
-threshold to identify long edges. By removing edges that exceed this
-threshold, the algorithm refines the triangular mesh (see
-\textbf{?@fig-traingularmeshgr}).
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\textwidth,height=1\textheight]{figures/remove_long_edges_workflow.png}
+\includegraphics[width=1\textwidth,height=0.3\textheight]{appendix_files/figure-pdf/fig-hex-param-1.pdf}
 
 }
 
-\caption{\label{fig-rmlgmeth}A flow diagram detailing the steps taken to
-find the benchmark value to remove long edges.}
+\caption{\label{fig-hex-param}The components of the hexagon grid
+illustrating notation.}
 
-\end{figure}
+\end{figure}%
 
-\includegraphics{appendix_files/figure-pdf/unnamed-chunk-16-1.pdf}
+Geometric arguments give rise to the following constraints.
 
-\includegraphics{appendix_files/figure-pdf/unnamed-chunk-17-1.pdf}
+\(\text{min }a_1 \text{ s.t.}\)
+
+\begin{equation}\phantomsection\label{eq-equation1}{
+s_1 - \frac{a_1}{2} < 0,
+}\end{equation}
+
+\begin{equation}\phantomsection\label{eq-equation2}{
+s_1 + (b_1 - 1) \times a_1 > 1,
+}\end{equation}
+
+\begin{equation}\phantomsection\label{eq-equation4}{
+s_2 - \frac{a_2}{2} < 0,
+}\end{equation}
+
+\begin{equation}\phantomsection\label{eq-equation5}{
+s_2 + (b_2 - 1) \times a_2 > r_2.
+}\end{equation}
+
+Since \(a_1\) and \(a_2\) are distances,
+
+\[
+a_1, a_2 > 0.
+\] Also, \((s_1, s_2) \in (-0.1, -0.05)\) as these are multiplicative
+offsets in the negative direction.
+
+Equation~\ref{eq-equation1} can be rearranged as,
+
+\[
+a_1 > 2s_1
+\]
+
+which given \(s_1 < 0\) and \(a_1 > 0\) will \emph{always} be true. The
+same logic follows for Equation~\ref{eq-equation4} and substituting
+\(a_2 = \frac{\sqrt{3}}{2}a_1\), and \(s_2 = -q \times r_2\) to
+Equation~\ref{eq-equation4} can be written as,
+
+\[
+a_1 > -\frac{4}{\sqrt{3}}qr_2
+\]
+
+Also, substituting \(a_2 = \frac{\sqrt{3}}{2}a_1\),
+\(s_2 = -q \times r_2\) and rearranging Equation~\ref{eq-equation5}
+gives:
+
+\begin{equation}\phantomsection\label{eq-equation6}{
+a_1 > \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+}\end{equation}
+
+Similarly, substituting \(s_1 = -q\) Equation~\ref{eq-equation2}
+becomes,
+
+\begin{equation}\phantomsection\label{eq-equation7}{
+a_1 > \frac{(1 + q)}{(b_1 - 1)}.
+}\end{equation}
+
+This is a linear optimization problem. Therefore, the optimal solution
+must occur on a vertex. So, by setting Equation~\ref{eq-equation6}
+equals to Equation~\ref{eq-equation7} gives,
+
+\[
+\frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1 + q)}{(b_1 - 1)}.
+\] After rearranging this,
+
+\[
+b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
+\]
+
+and since \(b_2\) should be an integer,
+
+\begin{equation}\phantomsection\label{eq-equation8}{
+b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil.
+}\end{equation}
+
+Furthermore, with known \(b_1\) and \(b_2\), by considering
+Equation~\ref{eq-equation2} or Equation~\ref{eq-equation5} as the
+\emph{binding} or \emph{active constraint}, can compute \(a_1\).
+
+If Equation~\ref{eq-equation2} is active, then,
+
+\[
+\frac{(1 + q)}{(b_1 - 1)} < \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+\]
+
+Rearranging this gives,
+
+\[
+r_2 > \frac{\sqrt{3}(b_2 - 1)}{2(b_1 - 1)}.
+\]
+
+Therefore, if this equality is true, then
+\(a_1 = \frac{(1+q)}{(b_1 - 1)}\), otherwise,
+\(a_1 = \frac{2r_2(1+q)}{\sqrt{3}(b_2 - 1)}\).
+
+\newpage
+
+\section{Binning the data}\label{binning-the-data}
+
+Points are assigned to the bin they fall into based on the nearest
+centroid. If a point is equidistant from multiple centroids, it is
+assigned to the centroid with the lowest hexagonal bin ID.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\textwidth,height=\textheight]{appendix_files/figure-pdf/fig-assign-data-1.pdf}
+
+}
+
+\caption{\label{fig-assign-data}Binning the data. Points are assigned to
+the nearest centroid. If a point is equidistant from multiple centroids,
+assigned to the lowest centroid.}
+
+\end{figure}%
+
+\section{Density of a bin}\label{density-of-a-bin}
+
+hjisaghhasouho;uheew
+
 
 
 

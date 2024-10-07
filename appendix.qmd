@@ -1,5 +1,9 @@
 ---
-title: "Appendix: Visualising How Non-linear Dimension Reduction Warps Your Data"
+title: "Appendix: Looking at Non-Linear Dimension Reductions as Models in the Data Space"
+format: 
+    jasa-pdf:
+        keep-tex: true
+    jasa-html: default
 author:
   - name: Jayani P.G. Lakshika
     affiliations:
@@ -7,7 +11,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-6265-6481
     email: jayani.piyadigamage@monash.edu
@@ -18,7 +22,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-3813-7155
     email: dicook@monash.edu 
@@ -29,7 +33,7 @@ author:
         department: MGBP, BDInstitute
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0002-3980-268X
     email: 	paul.harrison@monash.edu
@@ -40,7 +44,7 @@ author:
         department: Econometrics & Business Statistics
         address: Clayton
         city: VIC 
-        country: Austria
+        country: Australia
         postal-code: 3800
     orcid: 0000-0001-6515-827X
     email: michael.lydeamore@monash.edu
@@ -59,450 +63,386 @@ author:
 tbl-cap-location: bottom
 ---
 
+```{r include=FALSE}
+# Set up chunk for for knitr
+knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  code.line.numbers = FALSE,
+  fig.retina = 4,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  dev.args = list(pointsize = 11)
+)
+```
+
 ```{r}
-#| warning: false
-#| echo: false
-library(quollr)
-library(dplyr)
 library(ggplot2)
+library(dplyr)
+library(quollr)
 library(readr)
-library(tidyr)
+library(ggforce)
 library(patchwork)
-library(langevitour)
-library(colorspace)
-library(kableExtra)
-library(grid)
-set.seed(20240110)
 
-#source("nldr_code.R", local = TRUE)
+theme_set(theme_linedraw() +
+   theme(
+     #aspect.ratio = 1,
+     plot.background = element_rect(fill = 'transparent', colour = NA),
+     plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+     panel.background = element_rect(fill = 'transparent', 
+                                     colour = NA),
+     panel.grid.major = element_blank(), 
+     panel.grid.minor = element_blank(), 
+     axis.title.x = element_blank(), axis.title.y = element_blank(),
+     axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+     axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+     legend.background = element_rect(fill = 'transparent', 
+                                      colour = NA),
+     legend.key = element_rect(fill = 'transparent', 
+                               colour = NA),
+     legend.position = "none", 
+     legend.title = element_text(size=5), 
+     legend.text = element_text(size=4),
+     legend.key.height = unit(0.25, 'cm'),
+     legend.key.width = unit(0.25, 'cm')
+   )
+)
 ```
 
-<!-- To find the number of bins should assign for the model in tSNE-->
+## Computing hexagon grid configurations
+
+Given range of embedding component, $r_2$, number of bins along the x-axis, $b_1$, and buffer proportion, $q$, hexagonal starting point coordinates, $s_1 = -q$, and $s_2 = -q \times r_2$. The purpose is to find width of the hexagon. $a_1$, and number of bins along the y-axis, $b_2$.
+
 ```{r}
-#| warning: false
-#| echo: false
-#| message: false
-#| eval: false
+umap_scurve <- read_rds(file = here::here("data/s_curve/s_curve_umap.rds")) 
 
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
-tSNE_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
+scurve_scaled_obj <- gen_scaled_data(
+  data = umap_scurve)
 
-tsne_gau_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = tSNE_data_gau, 
-                                    x = "tSNE1", y = "tSNE2"))) |>
-  dplyr::rename(c("tSNE1" = "scaled_tSNE1", 
-                  "tSNE2" = "scaled_tSNE2")) |>
-  dplyr::mutate(ID = 1:NROW(tSNE_data_gau))    
+umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
+lim1 <- scurve_scaled_obj$lim1
+lim2 <- scurve_scaled_obj$lim2
+r2 <- diff(lim2)/diff(lim1)
 
+sc_ltr_pos <- c(0.08, 0.96)
+sc_xlims <- c(-0.5, 1.47)
+sc_ylims <- c(-0.32, 2.1)
+```
 
-## tSNE
-hex_size_vec <- seq(0.02, 2, by = 0.01)
+<!--Full hexagon grid with UMAP data-->
 
-vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
+```{r}
+## Compute hexbin parameters
+num_bins_x_scurve <- 7
 
-mse_df_gau <- dplyr::bind_rows(vec)[0, ]
-mse_df_gau <- mse_df_gau |>
-  dplyr::mutate_if(is.character, as.numeric)
+## hexagon binning to have regular hexagons
+hb_obj_scurve <- hex_binning(
+  data = umap_scurve_scaled, 
+  bin1 = num_bins_x_scurve, 
+  r2 = r2)
 
-for (i in 1:length(hex_size_vec)) {
-  
-  num_bin_list <- calc_bins(data = tsne_gau_scaled, 
-            x = "tSNE1", y = "tSNE2", 
-            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
-  
-  num_bins_x <- num_bin_list$num_x
-  num_bins_y <- num_bin_list$num_y
-  
-  model_object <- fit_highd_model( training_data = training_data_gau, 
-                                   nldr_df_with_id = tsne_gau_scaled, 
-                                   x = "tSNE1", y = "tSNE2", 
-                                   num_bins_x = num_bins_x, 
-                                   num_bins_y = num_bins_y, 
-                                   x_start = NA, y_start = NA, 
-                                   buffer_x = NA, buffer_y = NA, 
-                                   hex_size = hex_size_vec[i],
-                                   is_rm_lwd_hex = FALSE, 
-                                   benchmark_to_rm_lwd_hex = NA, 
-                                   col_start_2d = "tSNE", 
-                                   col_start_highd = "x")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_emb_list <- predict_emb(test_data = training_data_gau, 
-                                  df_bin_centroids = centroid_df_training, 
-                                  df_bin = avg_df_training, type_NLDR = "tSNE")
-  
-  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
-  
-  eval_list <- gen_summary(test_data = training_data_gau, 
-                                  prediction_df = pred_df_training, 
-                                  df_bin = avg_df_training, col_start = "x")
-  
-  mse_df_gau <- mse_df_gau |>
-    tibble::add_row(num_bins = num_bins_x * num_bins_y,
-                    aic = eval_list$aic,
-                    mse = eval_list$mse,
-                    num_bins_x = num_bins_x,
-                    num_bins_y = num_bins_y,
-                    hex_size = hex_size_vec[i])
-  
+## Data set with all centroids
+all_centroids_df <- hb_obj_scurve$centroids
 
-}
-
-
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df_gau |> 
-  dplyr::count(num_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_bins)
-
-### Group split by duplicated bins
-duplicate_df_list <- mse_df_gau |>
-  dplyr::filter(num_bins %in% dupli_bins) |>
-  dplyr::arrange(num_bins) |>
-  dplyr::group_split(num_bins)
-
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
-    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
-
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df_gau |>
-  dplyr::filter(!(num_bins %in% dupli_bins))
-
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df_gau <- dplyr::bind_rows(not_dupli_df, duplicate_df) 
+## Generate all coordinates of hexagons
+hex_grid <- hb_obj_scurve$hex_poly
 ```
 
 ```{r}
-#| warning: false
-#| echo: false
-#| eval: false
+# Code to draw illustration for notation
+start_pt <- all_centroids_df |> 
+  filter(hexID == 1)
+d_rect <- tibble(x1min = 0, 
+                 x1max = 1,
+                 x2min = 0,
+                 x2max = r2)
 
-mse_plot_gau <- ggplot(mse_df_gau, aes(x = num_bins,
-                                       y = log(mse)
-)) +
-  geom_point(size = 0.8) +
-  geom_line() +
-   geom_vline(xintercept = 588, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("MSE") +
-  xlab("total number of bins")
+c_start <- tibble(s1 = 0.03, s2 = -0.05)
 
+a1 <- tibble(x = all_centroids_df$c_x[4],
+             xend = all_centroids_df$c_x[5],
+             y = all_centroids_df$c_y[21],
+             yend = all_centroids_df$c_y[21],
+             label = expression(a[1]))
+a2 <- tibble(x = all_centroids_df$c_x[27],
+             xend = all_centroids_df$c_x[27],
+             y = all_centroids_df$c_y[27],
+             yend = all_centroids_df$c_y[33],
+             label = expression(a[2]))
+hex_param_vis <- ggplot() + 
+    geom_polygon(data = hex_grid, 
+                        aes(x = x, 
+                            y = y, 
+                            group = hex_poly_id),
+                 fill = "white", 
+                 color = "#bdbdbd") +
+    geom_point(data = all_centroids_df, aes(
+      x = c_x, 
+      y = c_y), 
+      color = "#31a354", size = 0.9) +
+    geom_point(data = start_pt, aes(x = c_x, 
+                                    y = c_y), 
+               color = "black") + 
+    geom_rect(data=d_rect, 
+              aes(xmin = x1min - c_start$s1,# - c_start$s1, 
+                  xmax = x1max - c_start$s1,# - c_start$s1, 
+                  ymin = x2min - c_start$s2,# - c_start$s2, 
+                  ymax = x2max - c_start$s2),# - c_start$s2), 
+              fill = "white", 
+              color = "black", 
+              alpha = 0, 
+              linewidth = 0.7) +
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1max - c_start$s1, 
+                                y=x2min - c_start$s2)) + 
+    geom_point(data=d_rect, aes(x=x1min - c_start$s1, 
+                                y=x2max - c_start$s2)) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,0)", 
+             hjust=-0.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1max - c_start$s1, 
+                     y=d_rect$x2min - c_start$s2,
+                     label = "(0,1)", 
+             hjust=1.1, vjust=-0.3) + 
+    annotate("text", x=d_rect$x1min - c_start$s1, 
+                     y=d_rect$x2max - c_start$s2,
+                     label = expression(group("(", 
+                        list(0, y[2][max]),")")), 
+            hjust=-0.1, vjust=1.2) + 
+    geom_segment(data=d_rect, aes(
+      x = x1min  - c_start$s1, # 0 - 0.03, 
+      y = -0.35, 
+      xend = x1max - c_start$s1, #1 - 0.03, 
+      yend = -0.35), #-0.35),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+                 color = "black")+
+    annotate("text", x=0.5, y=-0.45, 
+             label = expression(r[1]), color = "black") +
+    geom_segment(data=d_rect, aes(
+      x = -0.25, 
+      y = x2min - c_start$s2, #0 - 0.05, 
+      xend = -0.25, 
+      yend = x2max - c_start$s2), #r2 - 0.05),
+      arrow = arrow(length = unit(0.03, "npc"),
+                       ends = "both"), 
+                 color = "black")+ 
+    annotate("text", x=-0.35, y=1, 
+             label = expression(r[2]), color = "black") +
+    geom_segment(data = a1, aes(
+      x = x, #-0.1 + 0.2087578, 
+      y = y, #-0.15, 
+      xend = xend, #-0.1 + 0.2087578*2, 
+      yend = yend), #-0.15),
+      arrow = arrow(length = unit(0.03, "npc"),
+        ends = "both"), 
+        color = "black")+ # a1 = 0.2087578
+    annotate("text", 
+             x=(a1$x+a1$xend)/2, 
+             y=a1$y, 
+             label = expression(a[1]), 
+             color = "black",
+             vjust = 1.2) +
+    geom_segment(data = a2, aes(
+      x = x, #-0.15, 
+      y = y, #-0.1*r2 + 0.1807896*2, 
+      xend = xend, #-0.15, 
+      yend = yend), #-0.1*r2 + 0.1807896*3),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+      color = "black") + # a2 = 0.1807896
+    annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
+             label = expression(a[2]), 
+             color = "black", hjust=-0.2) +
+    annotate("text", x=-0.18, y=-0.25, 
+      label = expression(group("(", list(s[1], s[2]), ")")),
+      color = "black") 
 ```
 
 ```{r}
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from different NLDR techniques applied to training five spherical Gaussian cluster dataset. What is the best NLDR technique to represent the original data in 2D?"
-#| label: fig-diagnosticpltGau
-#| out-width: 100%
+#| label: fig-hex-param
+#| fig-cap: "The components of the hexagon grid illustrating notation."
+#| out-height: 30%
+#| fig-width: 2.5
+#| fig-height: 3.3
 #| fig-pos: H
-#| eval: false
 
-mse_plot_gau 
+hex_param_vis
 ```
 
+Geometric arguments give rise to the following constraints.
 
-<!-- MSE plot to find which is the effective number of bins to use-->
-```{r}
-#| warning: false
-#| echo: false
-#| message: false
-#| eval: false
+$\text{min }a_1 \text{ s.t.}$
 
-## UMAP
-## Prediction
+$$
+s_1 - \frac{a_1}{2} < 0,
+$$ {#eq-equation1}
 
-## Import data
-training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
-training_data_pbmc <- training_data_pbmc[, 1:9] |>
-  mutate(ID = 1:NROW(training_data_pbmc))
+$$
+s_1 + (b_1 - 1) \times a_1 > 1,
+$$ {#eq-equation2}
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
-umap_pbmc_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = umap_pbmc, 
-                                                                 x = "UMAP1", y = "UMAP2"))) |>
-  dplyr::rename(c("UMAP1" = "scaled_UMAP1", 
-                  "UMAP2" = "scaled_UMAP2")) |>
-  dplyr::mutate(ID = 1:NROW(umap_pbmc))
+$$
+s_2 - \frac{a_2}{2} < 0,
+$$ {#eq-equation4}
 
-#tot_num_bin_vec <- 2:51
-hex_size_vec <- seq(0.02, 2, by = 0.01)
+$$
+s_2 + (b_2 - 1) \times a_2 > r_2.
+$$ {#eq-equation5}
 
-vec <- stats::setNames(rep("", 7), c("num_bins", "error", "mse", "num_bins_x", "num_bins_y", "hex_size", "num_non_empty_bins"))  ## Define column names
+Since $a_1$ and $a_2$ are distances,
 
-mse_df_pbmc <- dplyr::bind_rows(vec)[0, ]
-mse_df_pbmc <- mse_df_pbmc |>
-  dplyr::mutate_if(is.character, as.numeric)
+$$
+a_1, a_2 > 0.
+$$ Also, $(s_1, s_2) \in (-0.1, -0.05)$ as these are multiplicative offsets in the negative direction.
 
-for (i in 1:length(hex_size_vec)) {
-  
-  num_bin_list <- calc_bins(data = umap_pbmc_scaled, 
-            x = "UMAP1", y = "UMAP2", 
-            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
-  
-  num_bins_x <- num_bin_list$num_x
-  num_bins_y <- num_bin_list$num_y
-  
-  model_object <- fit_highd_model( training_data = training_data_pbmc, 
-                                   nldr_df_with_id = umap_pbmc_scaled, 
-                                   x = "UMAP1", y = "UMAP2", 
-                                   num_bins_x = num_bins_x, 
-                                   num_bins_y = num_bins_y, 
-                                   x_start = NA, y_start = NA, 
-                                   buffer_x = NA, buffer_y = NA, 
-                                   hex_size = hex_size_vec[i],
-                                   is_rm_lwd_hex = FALSE, 
-                                   benchmark_to_rm_lwd_hex = NA, 
-                                   col_start_2d = "UMAP", 
-                                   col_start_highd = "PC_")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_emb_list <- predict_emb(test_data = training_data_pbmc, 
-                                  df_bin_centroids = centroid_df_training, 
-                                  df_bin = avg_df_training, type_NLDR = "UMAP")
-  
-  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
-  
-  eval_list <- gen_summary(test_data = training_data_pbmc, 
-                                  prediction_df = pred_df_training, 
-                                  df_bin = avg_df_training, col_start = "PC_")
-  
-  mse_df_pbmc <- mse_df_pbmc |>
-    tibble::add_row(num_bins = num_bins_x * num_bins_y,
-                    error = eval_list$error,
-                    mse = eval_list$mse,
-                    num_bins_x = num_bins_x,
-                    num_bins_y = num_bins_y,
-                    hex_size = hex_size_vec[i],
-                    num_non_empty_bins = NROW(centroid_df_training))
-  
+@eq-equation1 can be rearranged as,
 
-}
+$$
+a_1 > 2s_1
+$$
 
+which given $s_1 < 0$ and $a_1 > 0$ will *always* be true. The same logic follows for @eq-equation4 and substituting $a_2 = \frac{\sqrt{3}}{2}a_1$, and $s_2 = -q \times r_2$ to @eq-equation4 can be written as,
 
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df_pbmc |> 
-  dplyr::count(num_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_bins)
+$$
+a_1 > -\frac{4}{\sqrt{3}}qr_2
+$$
 
-### Group split by duplicated bins
-duplicate_df_list <- mse_df_pbmc |>
-  dplyr::filter(num_bins %in% dupli_bins) |>
-  dplyr::arrange(num_bins) |>
-  dplyr::group_split(num_bins)
+Also, substituting $a_2 = \frac{\sqrt{3}}{2}a_1$, $s_2 = -q \times r_2$ and rearranging @eq-equation5 gives:
 
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
+$$
+a_1 > \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+$$ {#eq-equation6}
 
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
-    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
+Similarly, substituting $s_1 = -q$ @eq-equation2 becomes,
 
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df_pbmc |>
-  dplyr::filter(!(num_bins %in% dupli_bins))
+$$
+a_1 > \frac{(1 + q)}{(b_1 - 1)}.
+$$ {#eq-equation7}
 
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df_pbmc <- dplyr::bind_rows(not_dupli_df, duplicate_df)
-```
+This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. So, by setting @eq-equation6 equals to @eq-equation7 gives,
+
+$$
+\frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1 + q)}{(b_1 - 1)}.
+$$ After rearranging this,
+
+$$
+b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
+$$
+
+and since $b_2$ should be an integer,
+
+$$
+b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil.
+$$ {#eq-equation8}
+
+Furthermore, with known $b_1$ and $b_2$, by considering @eq-equation2 or @eq-equation5 as the *binding* or *active constraint*, can compute $a_1$.
+
+If @eq-equation2 is active, then,
+
+$$
+\frac{(1 + q)}{(b_1 - 1)} < \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+$$
+
+Rearranging this gives,
+
+$$
+r_2 > \frac{\sqrt{3}(b_2 - 1)}{2(b_1 - 1)}.
+$$
+
+Therefore, if this equality is true, then $a_1 = \frac{(1+q)}{(b_1 - 1)}$, otherwise, $a_1 = \frac{2r_2(1+q)}{\sqrt{3}(b_2 - 1)}$.
+
+\newpage
+
+## Binning the data
+
+Points are assigned to the bin they fall into based on the nearest centroid. If a point is equidistant from multiple centroids, it is assigned to the centroid with the lowest hexagonal bin ID.
 
 ```{r}
-#| warning: false
-#| echo: false
-#| eval: false
+all_centroids_df <- gen_centroids(bin1 = 4, r2 = r2, q = 0.1)
 
-mse_plot_pbmc <- ggplot(mse_df_pbmc, aes(x = num_bins,
-                                       y = mse
-)) +
-  geom_point() +
-  geom_line() +
-   geom_vline(xintercept = 588, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  ylab("MSE") +
-  xlab("total number of bins")
+hex_grid <- gen_hex_coord(all_centroids_df, a1 = 1.043789)
 
-```
+## Data to generate circle
+circles <- data.frame(
+  x = c(0.422, 0.683),
+  y = c(0.740, 1.19),
+  r = rep(0.301316, 2)
+)
 
-```{r}
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from UMAP applied to training PBMC3k dataset. What is the effective number of bins in UMAP to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 588, the slope of the MSE plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
-#| label: fig-msepltpbmc
-#| fig-pos: H
-#| eval: false
+emb_df1 <- tibble(emb1 = 0.58, emb2 = 0.93) |>
+  add_row(emb1 = 0.5, emb2 = 1.01)
 
-mse_plot_pbmc
-```
+assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+  geom_point(data = emb_df1, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
+  geom_circle(data = circles, aes(x0 = x, y0 = y, r = r), fill = NA) +
+  geom_segment(x = 0.58, y = 0.93, xend = 0.44, yend = 0.76, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#969696") +
+  geom_segment(x = 0.5, y = 1.01, xend = 0.68, yend = 1.16, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#969696")
 
-<!-- MSE plot to find which is the effective number of bins to use-->
+emb_df2 <- tibble(emb1 = 0.161, emb2 = 0.7395) |>
+  add_row(emb1 = 0.683, emb2 = 0.7395) |>
+  add_row(emb1 = 0.2915, emb2 = 0.965) |>
+  add_row(emb1 = 0.5525, emb2 = 0.965) |>
+  add_row(emb1 = 0.2915, emb2 = 0.5135) |>
+  add_row(emb1 = 0.5525, emb2 = 0.5135) |>
+  add_row(emb1 = 0.422, emb2 = 1.04) |>
+  add_row(emb1 = 0.161, emb2 = 0.890) |>
+  add_row(emb1 = 0.161, emb2 = 0.589) |>
+  add_row(emb1 = 0.422, emb2 = 0.438) |>
+  add_row(emb1 = 0.683, emb2 = 0.589) |>
+  add_row(emb1 = 0.683, emb2 = 0.890)
 
-```{r}
-#| warning: false
-#| echo: false
-#| message: false
-#| eval: false
-
-## Import data
-training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
-training_data_mnist <- training_data_mnist |>
-  mutate(ID = 1:NROW(training_data_mnist))
-
-pacmap_minst <- read_rds("data/mnist/mnist_pacmap.rds")
-pacmap_minst_scaled <- as.data.frame(do.call(cbind, gen_scaled_data(data = pacmap_minst, 
-                                    x = "PaCMAP1", y = "PaCMAP2"))) |>
-  dplyr::rename(c("PaCMAP1" = "scaled_PaCMAP1", 
-                  "PaCMAP2" = "scaled_PaCMAP2")) |>
-  dplyr::mutate(ID = 1:NROW(pacmap_minst))
-
-## UMAP
-## Prediction
-
-#tot_num_bin_vec <- 2:51
-hex_size_vec <- seq(0.02, 2, by = 0.01)
-
-vec <- stats::setNames(rep("", 6), c("num_bins", "aic", "mse", "num_bins_x", "num_bins_y", "hex_size"))  ## Define column names
-
-mse_df_mnist <- dplyr::bind_rows(vec)[0, ]
-mse_df_mnist <- mse_df_mnist |>
-  dplyr::mutate_if(is.character, as.numeric)
-
-for (i in 1:length(hex_size_vec)) {
+assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+  geom_point(data = emb_df2, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
+  geom_segment(x = 0.161, y = 0.7395, xend = -0.06, yend = 0.740, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.683, y = 0.7395, xend = 0.45, yend = 0.740, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.2915, y = 0.965, xend = 0.43, yend = 0.79, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.5525, y = 0.965, xend = 0.44, yend = 0.8, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.2915, y = 0.5135, xend = 0.18, yend = 0.32, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.5525, y = 0.5135, xend = 0.67, yend = 0.32, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.422, y = 1.04, xend = 0.42, yend = 0.85, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.161, y = 0.890, xend = -0.02, yend = 0.8, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.161, y = 0.589, xend = 0.161, yend = 0.4, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.422, y = 0.438, xend = 0.25, yend = 0.3, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.683, y = 0.589, xend = 0.683, yend = 0.4, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
+  geom_segment(x = 0.683, y = 0.890, xend = 0.5, yend = 0.82, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd")  
   
-  num_bin_list <- calc_bins(data = pacmap_minst_scaled, 
-            x = "PaCMAP1", y = "PaCMAP2", 
-            hex_size = hex_size_vec[i], buffer_x = NA, buffer_y = NA)
-  
-  num_bins_x <- num_bin_list$num_x
-  num_bins_y <- num_bin_list$num_y
-  
-  model_object <- fit_highd_model( training_data = training_data_mnist, 
-                                   nldr_df_with_id = pacmap_minst_scaled, 
-                                   x = "PaCMAP1", y = "PaCMAP2", 
-                                   num_bins_x = num_bins_x, 
-                                   num_bins_y = num_bins_y, 
-                                   x_start = NA, y_start = NA, 
-                                   buffer_x = NA, buffer_y = NA, 
-                                   hex_size = hex_size_vec[i],
-                                   is_rm_lwd_hex = FALSE, 
-                                   benchmark_to_rm_lwd_hex = NA, 
-                                   col_start_2d = "PaCMAP", 
-                                   col_start_highd = "PC")
-  
-  centroid_df_training <- model_object$df_bin_centroids
-  avg_df_training <- model_object$df_bin
-  
-  pred_emb_list <- predict_emb(test_data = training_data_mnist, 
-                                  df_bin_centroids = centroid_df_training, 
-                                  df_bin = avg_df_training, type_NLDR = "PaCMAP")
-  
-  pred_df_training <- as.data.frame(do.call(cbind, pred_emb_list))
-  
-  eval_list <- gen_summary(test_data = training_data_mnist, 
-                                  prediction_df = pred_df_training, 
-                                  df_bin = avg_df_training, col_start = "PC")
-  
-  mse_df_mnist <- mse_df_mnist |>
-    tibble::add_row(num_bins = num_bins_x * num_bins_y,
-                    aic = eval_list$aic,
-                    mse = eval_list$mse,
-                    num_bins_x = num_bins_x,
-                    num_bins_y = num_bins_y,
-                    hex_size = hex_size_vec[i])
-  
-
-}
-
-
-## If same total number of bins occurred only select ones with minimum error
-### Obtain duplicate bins
-dupli_bins <- mse_df_mnist |> 
-  dplyr::count(num_bins) |> 
-  dplyr::filter(n > 1) |> 
-  dplyr::pull(num_bins)
-
-### Group split by duplicated bins
-duplicate_df_list <- mse_df_mnist |>
-  dplyr::filter(num_bins %in% dupli_bins) |>
-  dplyr::arrange(num_bins) |>
-  dplyr::group_split(num_bins)
-
-### Obtain one row from duplicates which have lowest error and hexsize
-duplicate_df <- data.frame(matrix(nrow = 0, ncol = 0))
-
-for (i in 1:length(duplicate_df_list)) {
-  
-  dd <- duplicate_df_list[[i]] |>
-    dplyr::filter(mse == min(duplicate_df_list[[i]]$mse)) |>
-    dplyr::filter(hex_size == min(duplicate_df_list[[i]]$hex_size))
-  
-  duplicate_df <- dplyr::bind_rows(duplicate_df, dd)
-  
-}
-
-### Obtain the mse_df with not duplicated bins
-not_dupli_df <- mse_df_mnist |>
-  dplyr::filter(!(num_bins %in% dupli_bins))
-
-### Combine duplicated and not duplicated(corrected) bins dfs
-mse_df_mnist <- dplyr::bind_rows(not_dupli_df, duplicate_df)
 ```
 
 ```{r}
-#| warning: false
-#| echo: false
-#| eval: false
-
-mse_plot_mnist <- ggplot(mse_df_mnist, aes(x = num_bins,
-                                       y = mse
-)) +
-  geom_point() +
-  geom_line() +
-   geom_vline(xintercept = 180, linetype="solid",
-                color = "red", size=0.8, alpha = 0.5) +
-  theme_light() +
-  theme(legend.position = "none", legend.title = element_blank(), plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
-        axis.title = element_text(size = 7),
-        axis.text = element_text(size = 7)) +
-  #scale_colour_manual(values = c("#377eb8")) +
-  ylab("MSE") +
-  xlab("total number of bins")
-
+#| label: fig-assign-data
+#| fig-cap: "Binning the data. Points are assigned to the nearest centroid. If a point is equidistant from multiple centroids, assigned to the lowest centroid."
+#| fig-width: 9
+#| fig-height: 6
+assign_data_vis1 + assign_data_vis2 +
+  plot_layout(ncol = 2)
 ```
 
-```{r}
-#| echo: false
-#| fig-cap: "Goodness of fit statistics from PaCMAP applied to training MNIST dataset. What is the effective number of bins in PaCMAP to create a 2D model? The MSE plot have a steep slope at the beginning, indicating that a smaller number of bins causes a larger amount of error. Then, the slope gradually declines or level off, indicating that a higher number of bins generates a smaller error. Using the elbow method, when the total number of bins is set to 180, the slope of the Mean Squared Error (MSE) plot experiences a sudden and noticeable change, resembling an elbow-like shape. This point indicates that adding less bins does not enough to capture the data structure."
-#| label: fig-diagnosticpltMNIST
-#| fig-pos: H
-#| eval: false
+## Density of a bin
 
-mse_plot_mnist
-```
+hjisaghhasouho;uheew
+

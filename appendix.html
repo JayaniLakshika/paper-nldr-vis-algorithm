@@ -12,7 +12,7 @@
 <meta name="author" content="Michael Lydeamore">
 <meta name="author" content="Thiyanga S. Talagala">
 
-<title>Appendix: Visualising How Non-linear Dimension Reduction Warps Your Data</title>
+<title>Appendix: Looking at Non-Linear Dimension Reductions as Models in the Data Space</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -39,6 +39,35 @@ ul.task-list li input[type="checkbox"] {
 <link href="appendix_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="appendix_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -50,7 +79,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Appendix: Visualising How Non-linear Dimension Reduction Warps Your Data</h1>
+<h1 class="title">Appendix: Looking at Non-Linear Dimension Reductions as Models in the Data Space</h1>
 </div>
 
 
@@ -112,9 +141,102 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<!-- To find the number of bins should assign for the model in tSNE-->
-<!-- MSE plot to find which is the effective number of bins to use-->
-<!-- MSE plot to find which is the effective number of bins to use-->
+<section id="computing-hexagon-grid-configurations" class="level2">
+<h2 class="anchored" data-anchor-id="computing-hexagon-grid-configurations">Computing hexagon grid configurations</h2>
+<p>Given range of embedding component, <span class="math inline">\(r_2\)</span>, number of bins along the x-axis, <span class="math inline">\(b_1\)</span>, and buffer proportion, <span class="math inline">\(q\)</span>, hexagonal starting point coordinates, <span class="math inline">\(s_1 = -q\)</span>, and <span class="math inline">\(s_2 = -q \times r_2\)</span>. The purpose is to find width of the hexagon. <span class="math inline">\(a_1\)</span>, and number of bins along the y-axis, <span class="math inline">\(b_2\)</span>.</p>
+<!--Full hexagon grid with UMAP data-->
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-hex-param" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center" data-fig-pos="H">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hex-param-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="appendix_files/figure-html/fig-hex-param-1.png" class="quarto-figure quarto-figure-center figure-img" style="width:100.0%;height:30.0%" data-fig-pos="H">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hex-param-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The components of the hexagon grid illustrating notation.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Geometric arguments give rise to the following constraints.</p>
+<p><span class="math inline">\(\text{min }a_1 \text{ s.t.}\)</span></p>
+<p><span id="eq-equation1"><span class="math display">\[
+s_1 - \frac{a_1}{2} &lt; 0,
+\tag{1}\]</span></span></p>
+<p><span id="eq-equation2"><span class="math display">\[
+s_1 + (b_1 - 1) \times a_1 &gt; 1,
+\tag{2}\]</span></span></p>
+<p><span id="eq-equation4"><span class="math display">\[
+s_2 - \frac{a_2}{2} &lt; 0,
+\tag{3}\]</span></span></p>
+<p><span id="eq-equation5"><span class="math display">\[
+s_2 + (b_2 - 1) \times a_2 &gt; r_2.
+\tag{4}\]</span></span></p>
+<p>Since <span class="math inline">\(a_1\)</span> and <span class="math inline">\(a_2\)</span> are distances,</p>
+<p><span class="math display">\[
+a_1, a_2 &gt; 0.
+\]</span> Also, <span class="math inline">\((s_1, s_2) \in (-0.1, -0.05)\)</span> as these are multiplicative offsets in the negative direction.</p>
+<p><a href="#eq-equation1" class="quarto-xref">Equation&nbsp;1</a> can be rearranged as,</p>
+<p><span class="math display">\[
+a_1 &gt; 2s_1
+\]</span></p>
+<p>which given <span class="math inline">\(s_1 &lt; 0\)</span> and <span class="math inline">\(a_1 &gt; 0\)</span> will <em>always</em> be true. The same logic follows for <a href="#eq-equation4" class="quarto-xref">Equation&nbsp;3</a> and substituting <span class="math inline">\(a_2 = \frac{\sqrt{3}}{2}a_1\)</span>, and <span class="math inline">\(s_2 = -q \times r_2\)</span> to <a href="#eq-equation4" class="quarto-xref">Equation&nbsp;3</a> can be written as,</p>
+<p><span class="math display">\[
+a_1 &gt; -\frac{4}{\sqrt{3}}qr_2
+\]</span></p>
+<p>Also, substituting <span class="math inline">\(a_2 = \frac{\sqrt{3}}{2}a_1\)</span>, <span class="math inline">\(s_2 = -q \times r_2\)</span> and rearranging <a href="#eq-equation5" class="quarto-xref">Equation&nbsp;4</a> gives:</p>
+<p><span id="eq-equation6"><span class="math display">\[
+a_1 &gt; \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+\tag{5}\]</span></span></p>
+<p>Similarly, substituting <span class="math inline">\(s_1 = -q\)</span> <a href="#eq-equation2" class="quarto-xref">Equation&nbsp;2</a> becomes,</p>
+<p><span id="eq-equation7"><span class="math display">\[
+a_1 &gt; \frac{(1 + q)}{(b_1 - 1)}.
+\tag{6}\]</span></span></p>
+<p>This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. So, by setting <a href="#eq-equation6" class="quarto-xref">Equation&nbsp;5</a> equals to <a href="#eq-equation7" class="quarto-xref">Equation&nbsp;6</a> gives,</p>
+<p><span class="math display">\[
+\frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1 + q)}{(b_1 - 1)}.
+\]</span> After rearranging this,</p>
+<p><span class="math display">\[
+b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
+\]</span></p>
+<p>and since <span class="math inline">\(b_2\)</span> should be an integer,</p>
+<p><span id="eq-equation8"><span class="math display">\[
+b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil.
+\tag{7}\]</span></span></p>
+<p>Furthermore, with known <span class="math inline">\(b_1\)</span> and <span class="math inline">\(b_2\)</span>, by considering <a href="#eq-equation2" class="quarto-xref">Equation&nbsp;2</a> or <a href="#eq-equation5" class="quarto-xref">Equation&nbsp;4</a> as the <em>binding</em> or <em>active constraint</em>, can compute <span class="math inline">\(a_1\)</span>.</p>
+<p>If <a href="#eq-equation2" class="quarto-xref">Equation&nbsp;2</a> is active, then,</p>
+<p><span class="math display">\[
+\frac{(1 + q)}{(b_1 - 1)} &lt; \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+\]</span></p>
+<p>Rearranging this gives,</p>
+<p><span class="math display">\[
+r_2 &gt; \frac{\sqrt{3}(b_2 - 1)}{2(b_1 - 1)}.
+\]</span></p>
+<p>Therefore, if this equality is true, then <span class="math inline">\(a_1 = \frac{(1+q)}{(b_1 - 1)}\)</span>, otherwise, <span class="math inline">\(a_1 = \frac{2r_2(1+q)}{\sqrt{3}(b_2 - 1)}\)</span>.</p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="binning-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="binning-the-data">Binning the data</h2>
+<p>Points are assigned to the bin they fall into based on the nearest centroid. If a point is equidistant from multiple centroids, it is assigned to the centroid with the lowest hexagonal bin ID.</p>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div id="fig-assign-data" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-assign-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="appendix_files/figure-html/fig-assign-data-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-assign-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Binning the data. Points are assigned to the nearest centroid. If a point is equidistant from multiple centroids, assigned to the lowest centroid.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="density-of-a-bin" class="level2">
+<h2 class="anchored" data-anchor-id="density-of-a-bin">Density of a bin</h2>
+</section>
 
 </main>
 <!-- /main column -->
