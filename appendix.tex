@@ -95,6 +95,31 @@
 \addtolength{\textwidth}{1in}%
 \addtolength{\textheight}{1.7in}%
 \addtolength{\topmargin}{-1in}%
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{bm}
+\def\tightlist{}
+\usepackage{setspace}
+\newcommand\pD{$p\text{-}D$}
+\newcommand\kD{$k\text{-}D$}
+\newcommand\dD{$d\text{-}D$}
+\newcommand\gD{$2\text{-}D$}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -193,6 +218,48 @@ Statistics, University of Sri Jayewardenepura\\
 \newpage
 \spacingset{1.9} % DON'T change the spacing!
 
+
+\begin{table}
+
+\centering{
+
+\centering\begingroup\fontsize{12}{14}\selectfont
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{3cm}>{\raggedright\arraybackslash}p{12cm}}
+\toprule
+\textbf{Notation} & \textbf{Description}\\
+\midrule
+$n, p, k$ & number of observations, variables, embedding dimension, respectively\\
+$\mathbfit{X}, \mathbfit{x}$ & $p$-dimensional data (population, sample)\\
+$\mathbfit{y}$ & $k$-dimensional layout\\
+$P$ & orthonormal basis, generating a $d\text{-}dimensional$ linear projection of $p$-dimensional data\\
+$T$ & true  model\\
+\addlinespace
+$g$ & functional mapping from \pD{} to \kD{}, especially as prescribed by NLDR\\
+$\mathbfit{\theta}$ & (Hyper-) parameters for NLDR method\\
+$r$ & ranges of the embedding components\\
+$C^{(j)}$ & $j$-dimensional bin centers\\
+$(b_1, b_2)$ & number of bins in each direction\\
+\addlinespace
+$(a_1, a_2)$ & binwidths, distance between centroids in each direction\\
+$(s_1, \ s_2)$ & starting coordinates of the hexagonal grid\\
+$q$ & buffer to ensure hexgrid covers data, proportion of data range, 0-1\\
+$m$ & number of non-empty bins\\
+$b$ & number of  hexagons in the grid\\
+\addlinespace
+$h$ & hexagonal id\\
+$l$ & side length\\
+$A$ & area\\
+\bottomrule
+\end{tabular}
+\endgroup{}
+
+}
+
+\caption{\label{tbl-notation}Summary of notation for describing new
+methodology.}
+
+\end{table}%
 
 \section{Computing hexagon grid
 configurations}\label{computing-hexagon-grid-configurations}
@@ -333,9 +400,11 @@ assigned to the lowest centroid.}
 
 \end{figure}%
 
-\section{Density of a bin}\label{density-of-a-bin}
+\section{Area of a hexagon}\label{area-of-a-hexagon}
 
-hjisaghhasouho;uheew
+The area of a hexagon is defined as \(A = \frac{3\sqrt{3}}{2}l^2\),
+where \(l\) is the side length of the hexagon. \(l\) can be computed
+using \(a_1\) and \(a_2\).
 
 
 
