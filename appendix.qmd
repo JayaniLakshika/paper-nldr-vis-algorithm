@@ -492,14 +492,21 @@ triangle_line_temp <- tibble(
   yend = c(0, 3, 3)
 )
 
+triangle_arrow_temp <- tibble(
+  x = c(4 + 0.04, 0 - 0.06, 4 + 0.06),
+  xend = c(0 + 0.04, 0 - 0.06, 0 + 0.06),
+  y = c(0 - 0.04, 0 - 0.06, 0 + 0.06),
+  yend = c(0 - 0.04, 3 - 0.06, 3 + 0.06)
+)
+
 triangle_plot <- ggplot() +
-  geom_point(
-    data = triangle_temp,
-    aes(
-      x = x,
-      y = y
-    )
-  ) +
+  # geom_point(
+  #   data = triangle_temp,
+  #   aes(
+  #     x = x,
+  #     y = y
+  #   )
+  # ) +
   geom_segment(
     data = triangle_line_temp,
     aes(
@@ -508,7 +515,16 @@ triangle_plot <- ggplot() +
       y = y,
       yend = yend
     )
-  )
+  ) + 
+  annotate("text", x=-1, y= 1.5, 
+           label = expression(frac(a[2] - a[1], 2)), 
+           color = "black", hjust=-0.2) + 
+  annotate("text", x=1.5, y= -0.3, 
+           label = expression(frac(a[1], 2)), 
+           color = "black", hjust=-0.2) + 
+  annotate("text", x=2.5, y= 1.5, 
+           label = expression(l), 
+           color = "black", hjust=-0.2)
 ```
 
 ```{r}
