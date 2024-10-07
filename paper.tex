@@ -731,13 +731,13 @@ fit.
 
 The values \((s_1, \ s_2)\) define the position of the centroid of the
 bottom left hexagon. By default, this is at \(s_1 = -q, s_2 = -qr_2\),
-where \(q\) is the buffer sound the data. The choice of these values can
+where \(q\) is the buffer bound the data. The choice of these values can
 have some effect on the distribution of bin counts.
-\textbf{?@fig-param-two\_curvy} (a) illustrates this. The distribution
-of bin counts for \(s_1\) varying between \(-0.1-0.0\) is shown.
-Generally, a more uniform distribution among these possibilities would
-indicate that the bins are reliably capturing the underlying
-distribution of observations.
+Figure~\ref{fig-bins-two-curvy} illustrates this. The distribution of
+bin counts for \(s_1\) varying between \(-0.1-0.0\) is shown. Generally,
+a more uniform distribution among these possibilities would indicate
+that the bins are reliably capturing the underlying distribution of
+observations.
 
 \begin{figure}[H]
 
@@ -763,7 +763,7 @@ sample size, by setting \(b_1=n^{1/3}\), consistent with the
 Diaconis-Freedman rule \citep{freedman1981}. The value of \(b_2\) is
 determined analytically by \(b_1, q, r_2\). Values of \(b_1\) between
 \(2\) and \(b_1 = \sqrt{\frac{n}{r_2}}\) are allowed.
-\textbf{?@fig-param-two\_curvy} (b) shows the effect of different
+Figure~\ref{fig-param-two-curvy} (a) shows the effect of different
 choices of \(b_1\) on the MSE of the fitted model.
 
 \subsubsection{Removal of low density
@@ -780,15 +780,15 @@ density which puts the counts on a standard scale. If there is something
 of a gap at low values, this would suggest a potential value to use as a
 cutoff. Alternatively, one could choose to remove based on a percentile,
 the bins with density in the lowest 5\% of all bins, for example.
-\textbf{?@fig-param-two\_curvy} (c) illustrates the effect on the model
+Figure~\ref{fig-param-two-curvy} (c) illustrates the effect on the model
 representation of removing bins below different percentages. Generally,
 we would urge caution in removing low count bins.
 
 The benchmark value for removing low-density hexagons ranges between
 \(0\) and \(1\). When analyzing how these benchmark values influence
 model performance, it's essential to observe the change in MSE as the
-benchmark value increases (\textbf{?@fig-param-two\_curvy}). The MSE
-shows a gradual decrease as the benchmark value goes from \(1\) to
+benchmark value increases (Figure~\ref{fig-param-two-curvy} (c)). The
+MSE shows a gradual decrease as the benchmark value goes from \(1\) to
 \(0\). Evaluating this rate of increase is important. If the increment
 is not considerable, the decision might lean towards retaining
 low-density hexagons.
@@ -820,10 +820,10 @@ there is no considerable drop in MSE.}
 
 Edges define the neighbourhood structure, in order to provide a smooth
 \gD{} representation of the fitted model.
-\textbf{?@fig-two\_curvy-true-sc} shows a wire frame of the true model
-that was used to generate the S-curve example data. The ideal is that
-the representation of the fitted model, at least for this example where
-we know the true model, should look similar to this.
+Figure~\ref{fig-two-curvy-true-proj} shows a wire frame of the true
+model that was used to generate the two C-shaped clusters example data.
+The ideal is that the representation of the fitted model, at least for
+this example where we know the true model, should look similar to this.
 
 The Delaunay triangulation will ensure that all centroids are connected
 into a triangular mesh. For some structures, like clustered data, or
@@ -839,8 +839,8 @@ edge lengths. In particular, a gap between values, where there a
 concentration of small values and then a few larger values, likely
 suggests a cutoff for edge removal. Because the triangulation is
 typically done on the hexagon centroids, there are particular discrete
-edge lengths, based on bin widths. Figure~\ref{fig-NLDR-two-curvy} (d)
-illustrates edge length distributions.
+edge lengths, based on bin widths. \textbf{?@fig-rm-lg} illustrates edge
+length distributions.
 
 There is an additional step that is needed. When the model is lifted
 into \pD{}, if the fit is good all the edges should be relatively small
