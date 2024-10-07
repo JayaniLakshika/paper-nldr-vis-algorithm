@@ -2283,7 +2283,7 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = UMAP2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 10) +
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
     aspect.ratio = 1
   )
@@ -3598,9 +3598,13 @@ scaled_gau_data_model <- scaled_gau |>
 # projection <- cbind(
 #   c(0.02743,0.21427,0.62893,-0.49816),
 #   c(-0.70709,0.42156,-0.02593,0.10965))
+# projection <- cbind(
+#   c(-0.00215,-0.68905,-0.04778,-0.54223),
+#   c(0.42558,-0.23854,-0.63659,0.35753))
+
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+  c(-0.04778, -0.54223, -0.00215, -0.68905),
+  c(-0.63659, 0.35753, 0.42558, -0.23854))
 
 projected <- as.matrix(scaled_gau_data) %*% projection
 
@@ -3821,9 +3825,10 @@ error_df_gau_pacmap <- error_df_gau_abs |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2,
              colour = sqrt_row_wise_abs_error)) +
-  geom_point(alpha=0.5) + 
+  geom_point(alpha=0.6,
+             size = 1.5) + 
   xlim(c(-0.02, 0.18)) + ylim(c(0.12, 0.32)) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  scale_colour_continuous_sequential(palette = "YlOrRd", breaks = 20) +
   interior_annotation("c3", 
                       position = c(0.08, 0.9),
                       cex = 2)
