@@ -2742,11 +2742,14 @@ benchmark_two_curvy4 <- 0.2
 ## Benchmark 1
 
 distance_df_small_edges_two_curvy4 <- distance_two_curvy4 |>
-  filter(distance < benchmark_two_curvy4) ## 0.221
+  filter(distance < benchmark_two_curvy4) |> ## 0.221
+  filter(!(row_number() %in% c(35, 89, 83, 25, 80, 56, 13, 59, 16)))
 
 tr_from_to_df_two_curvy4 <- inner_join(
   tr_from_to_df_two_curvy4, distance_df_small_edges_two_curvy4,
   by = c("from", "to"))
+
+
 
 trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy4,
