@@ -464,7 +464,7 @@ geometric structure (true model) that we hope to capture.
 
 \caption{\label{fig-two-curvy-true-proj}Two views of the true model
 (blue lines) in \(2\text{-}D\) projections from \(7\text{-}D\), for the
-two-curvy clusters data (grey points). The data is spread along the
+two C-shaped clusters data (grey points). The data is spread along the
 non-linear shaped clusters, and does not vary much from the curves. The
 \textbf{langevitour} software is used to view the data with a tour, and
 the full video is available at \textless\textgreater.}
@@ -481,8 +481,8 @@ the full video is available at \textless\textgreater.}
 
 \caption{\label{fig-NLDR-two-curvy}Key steps for constructing the model
 on the UMAP layout (\(k=2\)): (a) data, (b) hexagon bins, (c) bin
-centroids, and (d) triangulated centroids. The two-curvy clusters data
-is shown.}
+centroids, and (d) triangulated centroids. The two C-shaped clusters
+data is shown.}
 
 \end{figure}%
 
@@ -603,11 +603,11 @@ accurately captures the data.
 }
 
 \caption{Model in \gD{} (\(a_1 = 0.12\)), on the layout and two views of
-the fit in projections from \(7\text{-}D\), for the two-curvy clusters
-data (\(n =  2000\) and \(p = 7\)). One view shows the fitted model, and
-the other shows the fitted and true models alongside the data. The
-fitted model accurately represents the shape of the clusters but does
-not capture the edges of the structure. This illustrates a
+the fit in projections from \(7\text{-}D\), for the two C-shaped
+clusters data (\(n =  2000\) and \(p = 7\)). One view shows the fitted
+model, and the other shows the fitted and true models alongside the
+data. The fitted model accurately represents the shape of the clusters
+but does not capture the edges of the structure. This illustrates a
 characteristic of UMAP, which compresses the data when transforming the
 data into \gD{}. Video of the langevitour animations is available at
 \textless\textgreater.}
@@ -748,7 +748,7 @@ distribution of observations.
 }
 
 \caption{\label{fig-bins-two-curvy}Hexbin density plots of UMAP layout
-of the two-curvy clusters data, using three different bin inputs: (a)
+of the two C-shaped clusters data, using three different bin inputs: (a)
 \(b = 80 \text{ } (10, \text{ }8)\), (b)
 \(b = 130 \text{ } (13, \text{ }10)\), and (c)
 \(b = 391 \text{ } (23, \text{ }17)\). Color indicates standardized
@@ -829,10 +829,10 @@ The Delaunay triangulation will ensure that all centroids are connected
 into a triangular mesh. For some structures, like clustered data, or
 highly non-linear shapes, breaks in the mesh are meaningful. When
 separated clusters are present the mesh should be broken across the
-gaps. For non-linear structures like the S-curve, the mesh should run
-unbroken along the S, but there should be no edges connecting the top of
-the S directly to the bottom of the S. For these reasons it is necessary
-to remove edges from the mesh in some applications.
+gaps. For non-linear structures like the C-shaped curvilinear, the mesh
+should run unbroken along the C, but there should be no edges connecting
+the top of the C directly to the bottom of the C. For these reasons it
+is necessary to remove edges from the mesh in some applications.
 
 The decision on edge length removal is made based on the distribution of
 edge lengths. In particular, a gap between values, where there a
@@ -892,7 +892,7 @@ data well. However, it technically might be quite variable.
 }
 
 \caption{\label{fig-two_curvy_clust-mse}Assessing which of the 5 NLDR
-layouts on the two-curvy clusters data is the better representation
+layouts on the two C-shaped clusters data is the better representation
 using MSE for varying binwidth (\(a_1\)). Colour used for the lines and
 points in the left plot and in the scatterplots represents NLDR layout
 (a-e). Layout d is universally poor. Layouts a that show two close
@@ -906,7 +906,7 @@ clusters are universally suboptimal. Layout a is the best choice.}
 
 }
 
-\caption{Best fit for two-curvy clusters data using UMAP (a1-a4)
+\caption{Best fit for two C-shaped clusters data using UMAP (a1-a4)
 (\(a_1\) = 0.09) and tSNE (b1-b4) (\(a_1\) = 0.16) with the same number
 of non-empty bins (\(m\) = 39). Both models show twist in \(7\text{-}D\)
 (a3, a4, b3, b4). Also, both NLDR methods are unable to accurately
@@ -921,7 +921,7 @@ overlaid on data in \pD{} together to understand whether it fits the
 points everywhere, fits better in some places, or simply mismatches the
 pattern. Interactivity also helps in understanding the quirks that occur
 with different NLDR techniques (XXXXRefer the video after finalising the
-two-curvy clusters data).
+two C-shaped clusters data).
 
 \section{A curious difference between tSNE, UMAP and PaCMAP
 revealer}\label{a-curious-difference-between-tsne-umap-and-pacmap-revealer}
