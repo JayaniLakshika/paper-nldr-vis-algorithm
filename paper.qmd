@@ -2402,12 +2402,6 @@ proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_tw
 
 <!-- XXX Prediction should have a jitter option, to spread the predicted points out fully in the hexagons. -->
 
-### Diagnostics
-
-#### Relative proportion density
-
-The area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.   
-
 ### Tuning
 <!-- removal of low density bins, removing long edges, choice of bins-->
 
@@ -2458,7 +2452,9 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 
 <!--To generate errors for different total number of bins-->
 
+#### Measurement of capturing the data shape in 2-D 
 
+The area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
 
 #### Removal of low density bins
 
