@@ -1540,7 +1540,7 @@ distance_points <- ggplot(
   #            linewidth=1) +
   ylab(expression(d^{(7)})) +
   xlab(expression(d^{(2)})) +
-  ggtitle("(a)") +
+  #ggtitle("(a)") +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -2546,14 +2546,13 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 ```{r}
 #| label: fig-rm-lg
 #| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 4.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.09."
-#| fig-height: 15
-#| fig-width: 15
-#| out-height: 70%
+#| fig-height: 4
+#| fig-width: 20
 
-wrap_plots(distance_points,distance_hist, ncol = 2) / wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1,
-two_curvy_proj_umap_model_delaunay,
-two_curvy_proj_umap_model_benchmark2,
-two_curvy_proj_umap_model, ncol = 3) 
+free(distance_points) + plot_annotation(tag_levels = 'A') +
+ (trimesh_two_curvy2 + trimesh_two_curvy_removed2 + trimesh_two_curvy_removed1 + two_curvy_proj_umap_model_delaunay + two_curvy_proj_umap_model_benchmark2 + two_curvy_proj_umap_model) +
+  plot_layout(widths = c(0.5, 1, 1, 1)) +
+  plot_annotation(tag_levels = list(c("(a)", "(b)"))) 
 ```
 
 
