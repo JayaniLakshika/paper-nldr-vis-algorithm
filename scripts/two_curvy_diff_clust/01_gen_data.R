@@ -6,17 +6,19 @@ library(readr)
 set.seed(20240110)
 
 # Function to gen a curvilinear cluster in 4D space with an offset
-gen_curv_3d <- function(n) {
+gen_curv1_3d <- function(n) {
   if (n <= 0) {
     stop("Number of points should be a positive number.")
   }
 
-  # gen the core curvilinear pattern in 2D
-  x1 <- stats::runif(n, 0, 2)
+  # Generate more points in the lower values of x1 using a skewed distribution
+  x1 <- stats::rbeta(n, 2, 5) * 2  # Skew towards lower values in range [0, 2]
+
+  # Generate x2 with more points in the lower part of the curve
   x2 <- -(x1^3 + stats::runif(n, 0, 3)) + stats::runif(n, 0, 0.5)
 
-  # Define additional dimensions for 4D
-  x3 <- -sin(x1 * pi) + runif(n, -0.5, 0.5)  # A sine-based curve
+  # Define additional dimensions for 4D, keeping the non-linearity in x3
+  x3 <- -sin(x1 * pi) + runif(n, -0.5, 0.5)
 
   curvilinear_df <- tibble::tibble(
     x1 = x1,
@@ -27,7 +29,7 @@ gen_curv_3d <- function(n) {
   curvilinear_df
 }
 
-curve_3d <- function(n) {
+gen_curv2_3d <- function(n) {
   a <- 3 * pi * stats::runif(n = n, min = -0.5, max = 0)
   x1 <- sin(a)
   x2 <- 2.0 * stats::runif(n = n)
@@ -43,10 +45,10 @@ curve_3d <- function(n) {
 # Simulate some s_curve_noise
 
 sample_size <- 1000
-curve1 <- curve_3d(n = sample_size)
+curve1 <- gen_curv1_3d(n = sample_size)
 langevitour(curve1)
 
-curve2 <- gen_curv_3d(n = sample_size)
+curve2 <- gen_curv2_3d(n = sample_size)
 langevitour(curve2)
 
 
