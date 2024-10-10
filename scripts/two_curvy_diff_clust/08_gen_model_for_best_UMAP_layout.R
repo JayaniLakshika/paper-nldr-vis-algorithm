@@ -3,6 +3,11 @@ library(quollr)
 library(dplyr)
 library(readr)
 library(langevitour)
+library(conflicted)
+library(ggplot2)
+library(colorspace)
+
+conflicts_prefer(dplyr::filter)
 
 ## Import data
 training_data_two_nonlinear_clusters <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_data.rds")
