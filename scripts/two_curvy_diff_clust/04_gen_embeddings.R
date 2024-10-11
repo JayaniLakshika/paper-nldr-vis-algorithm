@@ -74,18 +74,18 @@ names(UMAP_data) <- c("UMAP1", "UMAP2")
 ## Run only once
 write_rds(UMAP_data, file = paste0("data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
 
-# ## Predict for true model
-# true_model_data <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_true_model.rds")
-# true_model_data <- true_model_data |>
-#   select(-ID)
-#
-# predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
-#   as_tibble()
-#
-# names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
-#
-# ## Run only once
-# write_rds(predict_UMAP_df, file = "data/two_curvy_diff_clust/two_curvy_diff_clust_umap_predict_true.rds")
+## Predict for true model
+true_model_data <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_true_model.rds")
+true_model_data <- true_model_data |>
+  select(-ID)
+
+predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
+  as_tibble()
+
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+
+## Run only once
+write_rds(predict_UMAP_df, file = "data/two_curvy_diff_clust/two_curvy_diff_clust_umap_predict_true.rds")
 
 ## PHATE
 knn <- 5

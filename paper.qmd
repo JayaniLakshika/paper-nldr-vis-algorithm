@@ -488,14 +488,14 @@ With our goal being to make a representation of this \gD{} layout that can be li
 
 ```{r}
 #| label: two-curvy-training
-training_data_two_curvy <- read_rds("data/two_curvy_clust/two_curvy_clust_data.rds")
+training_data_two_curvy <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_data.rds")
 ```
 
 ```{r}
 #| label: two-curvy-true-proj-data
 
-true_model_df <- read_rds("data/two_curvy_clust/two_curvy_clust_true_model.rds")
-wireframe_true_model <- read_rds("data/two_curvy_clust/two_curvy_clust_true_model_connections.rds")
+true_model_df <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_true_model.rds")
+wireframe_true_model <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_true_model_connections.rds")
 
 data_two_curvy <- training_data_two_curvy |>
   mutate(type = "data")
@@ -508,7 +508,7 @@ true_model_two_curvy <- true_model_df |>
 <!--UMAP applied for Two curvy data-->
 ```{r}
 #| label: umap-two-curvy
-umap_two_curvy <- read_rds(file = "data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds") 
+umap_two_curvy <- read_rds(file = "data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_15_min-dist_0.1.rds") 
 
 two_curvy_scaled_obj <- gen_scaled_data(
   data = umap_two_curvy)
@@ -2192,23 +2192,23 @@ where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the
 ```{r}
 #| label: error-two-curvy
 
-error_two_curvy_clust_umap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_umap.rds")
+error_two_curvy_diff_clust_umap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_umap.rds")
 
 ## Find the minimum MSE when have duplicate a1
-error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+error_two_curvy_diff_clust_umap <- error_two_curvy_diff_clust_umap |>
   group_by(a1) |>
   filter(bin1 == min(bin1)) |>
   ungroup() |>
   mutate(prop_dens = 1/(b*side_length^2)) 
 
-base_line_prop_dens <- error_two_curvy_clust_umap |>
+base_line_prop_dens <- error_two_curvy_diff_clust_umap |>
   filter(a1 == min(a1)) |>
   pull(prop_dens)
 
-error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+error_two_curvy_diff_clust_umap <- error_two_curvy_diff_clust_umap |>
   mutate(prop_comp = prop_dens/base_line_prop_dens)
 
-mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap, 
+mse_two_curvy_b <- ggplot(error_two_curvy_diff_clust_umap, 
                      aes(x = a1, 
                          y = MSE)) +
   geom_vline(xintercept = 0.09,
@@ -2221,7 +2221,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
              color = "#1f78b4", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_diff_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -2232,7 +2232,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_clust_umap,
         axis.ticks.y = element_line())
 
 
-prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
+prop_dens_a1 <- ggplot(error_two_curvy_diff_clust_umap,
                      aes(x = a1,
                          y = prop_comp)) +
   geom_vline(xintercept = 0.09,
@@ -2246,7 +2246,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_diff_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -2256,10 +2256,10 @@ prop_dens_a1 <- ggplot(error_two_curvy_clust_umap,
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
-error_two_curvy_clust_umap <- error_two_curvy_clust_umap |>
+error_two_curvy_diff_clust_umap <- error_two_curvy_diff_clust_umap |>
   mutate(prop_bins = b_non_empty/b)
 
-a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
+a1_m_two_curvy <- ggplot(error_two_curvy_diff_clust_umap,
                      aes(x = a1,
                          y = prop_bins)) +
   geom_vline(xintercept = 0.09,
@@ -2273,7 +2273,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_clust_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_diff_clust_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
@@ -2331,7 +2331,7 @@ A new benefit of this fitted model is that it allows us to now predict a new obs
 ```{r}
 #| label: model-prediction-umap-original
 
-predict_umap_two_curvy <- read_rds(file = "data/two_curvy_clust/two_curvy_clust_umap_predict_true.rds")
+predict_umap_two_curvy <- read_rds(file = "data/two_curvy_diff_clust/two_curvy_diff_clust_umap_predict_true.rds")
 
 predict_two_curvy_obj <- gen_scaled_data(
     data = predict_umap_two_curvy)
@@ -2482,7 +2482,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 ```{r}
 #| label: rm-lwd-bin-error
 
-error_rm_two_curvy <- read_rds("data/two_curvy_clust/error_rm_lwd_diff_bin.rds") |>
+error_rm_two_curvy <- read_rds("data/two_curvy_diff_clust/error_rm_lwd_diff_bin.rds") |>
   mutate(bin1  = as.factor(bin1))
 
 mse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
@@ -2571,47 +2571,47 @@ Comparing the MSE to obtain the best fit is suitable if one starts from the same
 
 ```{r}
 #| label: read-two-curvy-clust-nldr
-# Read a variety of different NLDR representations of two_curvy_clust
+# Read a variety of different NLDR representations of two_curvy_diff_clust
 # and plot them on same aspect ratio
-tsne_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_tsne_perplexity_30.rds")
+tsne_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_tsne_perplexity_30.rds")
 
-nldr_two_curvy_clust1 <- tsne_two_curvy_clust |>
+nldr_two_curvy_diff_clust1 <- tsne_two_curvy_diff_clust |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
-umap_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_umap_n-neigbors_15_min-dist_0.1.rds")
+umap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_15_min-dist_0.1.rds")
 
-nldr_two_curvy_clust2 <- umap_two_curvy_clust |>
+nldr_two_curvy_diff_clust2 <- umap_two_curvy_diff_clust |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour='#636363') +
   interior_annotation("b", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
-phate_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_phate_knn_5.rds")
+phate_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_phate_knn_5.rds")
 
-nldr_two_curvy_clust3 <- phate_two_curvy_clust |>
+nldr_two_curvy_diff_clust3 <- phate_two_curvy_diff_clust |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
   geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("c") +
   theme(aspect.ratio = 1)
 
-trimap_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+trimap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
 
-nldr_two_curvy_clust4 <- trimap_two_curvy_clust |>
+nldr_two_curvy_diff_clust4 <- trimap_two_curvy_diff_clust |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
   geom_point(alpha=0.1, size=1, colour='#4daf4a') +
   interior_annotation("d") +
   theme(aspect.ratio = 1)
 
-pacmap_two_curvy_clust <- read_rds("data/two_curvy_clust/two_curvy_clust_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+pacmap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
 
-nldr_two_curvy_clust5 <- pacmap_two_curvy_clust |>
+nldr_two_curvy_diff_clust5 <- pacmap_two_curvy_diff_clust |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
@@ -2620,21 +2620,21 @@ nldr_two_curvy_clust5 <- pacmap_two_curvy_clust |>
 ```
 
 ```{r}
-#| label: combine-data-two_curvy_clust
+#| label: combine-data-two_curvy_diff_clust
 
-error_two_curvy_clust_umap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_umap.rds")
-error_two_curvy_clust_tsne <- read_rds("data/two_curvy_clust/error_two_curvy_clust_tsne.rds")
-error_two_curvy_clust_phate <- read_rds("data/two_curvy_clust/error_two_curvy_clust_phate.rds")
-error_two_curvy_clust_trimap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_trimap.rds")
-error_two_curvy_clust_pacmap <- read_rds("data/two_curvy_clust/error_two_curvy_clust_pacmap.rds")
+error_two_curvy_diff_clust_umap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_umap.rds")
+error_two_curvy_diff_clust_tsne <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_tsne.rds")
+error_two_curvy_diff_clust_phate <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_phate.rds")
+error_two_curvy_diff_clust_trimap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_trimap.rds")
+error_two_curvy_diff_clust_pacmap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_pacmap.rds")
 
-error_two_curvy_clust <- bind_rows(error_two_curvy_clust_umap, 
-                         error_two_curvy_clust_tsne,
-                         error_two_curvy_clust_phate,
-                         error_two_curvy_clust_trimap,
-                         error_two_curvy_clust_pacmap)
+error_two_curvy_diff_clust <- bind_rows(error_two_curvy_diff_clust_umap, 
+                         error_two_curvy_diff_clust_tsne,
+                         error_two_curvy_diff_clust_phate,
+                         error_two_curvy_diff_clust_trimap,
+                         error_two_curvy_diff_clust_pacmap)
 
-error_two_curvy_clust <- error_two_curvy_clust |>
+error_two_curvy_diff_clust <- error_two_curvy_diff_clust |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
@@ -2643,9 +2643,9 @@ error_two_curvy_clust <- error_two_curvy_clust |>
 ```
 
 ```{r}
-#| label: error-comp-two_curvy_clust
+#| label: error-comp-two_curvy_diff_clust
 
-error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust, 
+error_plot_two_curvy_diff_clust <- ggplot(error_two_curvy_diff_clust, 
                            aes(x = a1, 
                                y = MSE, 
                                colour = method)) + 
@@ -2653,7 +2653,7 @@ error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust,
   geom_line(linewidth = 0.3) + 
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_x_continuous(breaks = sort(unique(error_two_curvy_clust$a1))[seq(1, length(unique(error_two_curvy_clust$a1)), by = 5)]) +
+  scale_x_continuous(breaks = sort(unique(error_two_curvy_diff_clust$a1))[seq(1, length(unique(error_two_curvy_diff_clust$a1)), by = 5)]) +
   scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363')) +
   scale_y_log10() +
   ylab("log(MSE)") +
@@ -2673,19 +2673,19 @@ error_plot_two_curvy_clust <- ggplot(error_two_curvy_clust,
 
 ```{r}
 #| fig-cap: "Assessing which of the 5 NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
-#| label: fig-two_curvy_clust-mse
+#| label: fig-two_curvy_diff_clust-mse
 #| fig-pos: H
 #| out-height: 60%
 
-free(error_plot_two_curvy_clust) + wrap_plots(nldr_two_curvy_clust1, nldr_two_curvy_clust2, nldr_two_curvy_clust3, 
-                                    nldr_two_curvy_clust4, nldr_two_curvy_clust5, ncol = 2)
+free(error_plot_two_curvy_diff_clust) + wrap_plots(nldr_two_curvy_diff_clust1, nldr_two_curvy_diff_clust2, nldr_two_curvy_diff_clust3, 
+                                    nldr_two_curvy_diff_clust4, nldr_two_curvy_diff_clust5, ncol = 2)
 ```
 
 ```{r}
 #| label: best-fit-tsne-two-curvy
 
 two_curvy_tsne_scaled_obj <- gen_scaled_data(
-  data = tsne_two_curvy_clust)
+  data = tsne_two_curvy_diff_clust)
 
 tsne_two_curvy_scaled <- two_curvy_tsne_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
@@ -2693,7 +2693,7 @@ lim1 <- two_curvy_tsne_scaled_obj$lim1
 lim2 <- two_curvy_tsne_scaled_obj$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
 
-tsne_two_curvy_clust_plt <- tsne_two_curvy_scaled |>
+tsne_two_curvy_diff_clust_plt <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#a65628') +
@@ -2977,7 +2977,7 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 #| fig-height: 20
 #| out-height: 90%
 
-nldr_two_curvy_original2 + tsne_two_curvy_clust_plt +
+nldr_two_curvy_original2 + tsne_two_curvy_diff_clust_plt +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_umap_model2 +
   two_curvy_proj_tsne_model +
