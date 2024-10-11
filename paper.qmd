@@ -1515,21 +1515,21 @@ distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c
 
 distance_points <- ggplot(
   distance_two_curvy_dist, 
-  aes(x = as.numeric(bin),
+  aes(x = distance,
       y = dist_highd)) +
   geom_point(alpha = 0.5) +
   #geom_jitter() +
-  scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin))),
-                     labels = c(
-                       expression(a[1]),
-                       expression(2*a[1]),
-                       expression(3*a[1]),
-                       expression(4*a[1]),
-                       expression(5*a[1]),
-                       expression(6*a[1]),
-                       expression(7*a[1]),
-                       expression(8*a[1])
-                     )) +
+  # scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin))),
+  #                    labels = c(
+  #                      expression(a[1]),
+  #                      expression(2*a[1]),
+  #                      expression(3*a[1]),
+  #                      expression(4*a[1]),
+  #                      expression(5*a[1]),
+  #                      expression(6*a[1]),
+  #                      expression(7*a[1]),
+  #                      expression(8*a[1])
+  #                    )) +
   # geom_vline(xintercept = 2,
   #            linetype="solid",
   #            color = "#bdbdbd",
@@ -5415,7 +5415,7 @@ highd_error_2d_mnist <- error_df |>
              y = tSNE2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.2) +
-  scale_colour_continuous_sequential(palette = "Blues") +
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   geom_rect(aes(xmin = 0.8, xmax = 0.9, ymin = 0.45, ymax = 0.6),
                fill = "transparent", color = "#000000", linewidth = 0.7) +
   geom_rect(aes(xmin = 0.75, xmax = 0.85, ymin = 0.8, ymax = 0.95),
