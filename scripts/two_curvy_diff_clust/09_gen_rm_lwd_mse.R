@@ -37,7 +37,7 @@ df_bin_two_curvy1 <- two_curvy_model1$df_bin
 error_rm_two_curvy1 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
+benchmark_rm_hex_vec <- seq(0, 0.47, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
@@ -84,7 +84,7 @@ df_bin_two_curvy2 <- two_curvy_model2$df_bin
 error_rm_two_curvy2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
+benchmark_rm_hex_vec <- seq(0, 0.47, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
@@ -131,7 +131,7 @@ df_bin_two_curvy3 <- two_curvy_model3$df_bin
 error_rm_two_curvy3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.52, by=0.03)
+benchmark_rm_hex_vec <- seq(0, 0.47, by=0.03)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
