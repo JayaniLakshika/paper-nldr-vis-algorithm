@@ -2971,66 +2971,311 @@ two_curvy_proj_tsne_all_model <- projected_df |>
 ```
 
 ```{r}
-#| label: best-fit-umap-tsne
+#| label: best-fit-pacmap-two-curvy
+
+two_curvy_pacmap_scaled_obj <- gen_scaled_data(
+  data = pacmap_two_c_shaped_clust)
+
+pacmap_two_curvy_scaled <- two_curvy_pacmap_scaled_obj$scaled_nldr |>
+  mutate(ID = row_number())
+lim1 <- two_curvy_pacmap_scaled_obj$lim1
+lim2 <- two_curvy_pacmap_scaled_obj$lim2
+r2_pacmap <- diff(lim2)/diff(lim1)
+
+pacmap_two_c_shaped_clust_plt <- pacmap_two_curvy_scaled |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("b1", sc_ltr_pos) +
+  theme(aspect.ratio = 1)
+
+## hexagon binning to have regular hexagons
+hb_obj_pacmap_two_curvy2 <- hex_binning(
+  data = pacmap_two_curvy_scaled, 
+  bin1 = 8, 
+  r2 = r2_pacmap)
+
+a1_2_pacmap <- calc_bins_y(
+  bin1 = 8, 
+  r2 = r2_pacmap
+)$a1
+
+## Data set with all centroids
+all_centroids_df4 <- hb_obj_pacmap_two_curvy2$centroids
+
+## Generate all coordinates of hexagons
+hex_grid4 <- hb_obj_pacmap_two_curvy2$hex_poly
+
+## To obtain the standardise counts within hexbins
+counts_df4 <- hb_obj_pacmap_two_curvy2$std_cts
+df_bin_centroids4 <- extract_hexbin_centroids(
+  centroids_df = all_centroids_df4, 
+  counts_df = counts_df4) |>
+  filter(drop_empty == FALSE) |>
+  mutate(b1 = "b1 = 11")
+
+hex_grid_with_counts_two_curvy4 <- full_join(
+  hex_grid4, 
+  df_bin_centroids4 |> select(hexID, std_counts), 
+  by = c("hex_poly_id" = "hexID")) 
+
+pacmap_data_two_curvy2_with_hb_id <- hb_obj_pacmap_two_curvy2$data_hb_id
+df_all_two_curvy4 <- dplyr::bind_cols(training_data_two_curvy, pacmap_data_two_curvy2_with_hb_id)
+df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4, col_start = "x")
+
+df_b_two_curvy4 <- df_bin_two_curvy4 |>
+  dplyr::filter(hb_id %in% df_bin_centroids4$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b_two_curvy4 <- df_b_two_curvy4[match(df_bin_centroids4$hexID, df_b_two_curvy4$hb_id),] |>
+  dplyr::select(-hb_id) 
+
+## Triangulate bin centroids
+tr1_object_two_curvy4 <- tri_bin_centroids(
+  df_bin_centroids4, x = "c_x", y = "c_y")
+tr_from_to_df_two_curvy4 <- gen_edges(
+  tri_object = tr1_object_two_curvy4)
+
+## Compute 2D distances
+distance_two_curvy4 <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_two_curvy4, 
+  start_x = "x_from", 
+  start_y = "y_from", 
+  end_x = "x_to", 
+  end_y = "y_to", 
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_two_curvy4 <- find_lg_benchmark(
+  distance_edges = distance_two_curvy4, 
+  distance_col = "distance")
+
+benchmark_two_curvy4 <- 0.2
+
+## Benchmark 1
+
+distance_df_small_edges_two_curvy4 <- distance_two_curvy4 |>
+  filter(distance < benchmark_two_curvy4) |> ## 0.221
+  filter(!(row_number() %in% c(35, 89, 83, 25, 80, 56, 13, 59, 16)))
+
+tr_from_to_df_two_curvy4 <- inner_join(
+  tr_from_to_df_two_curvy4, distance_df_small_edges_two_curvy4,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed1_pacmap_with_data <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy4,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = pacmap_two_curvy_scaled,
+             aes(
+               x = PaCMAP1,
+               y = PaCMAP2
+             ),
+             color = "#a65628",
+             alpha = 0.5,
+             size = 0.5) +
+  coord_equal() +
+  interior_annotation("b2", sc_ltr_pos)
+
+```
+
+```{r}
+#| label: best-fit-pacmap-two-curvy-proj
+
+# Apply the scaling
+df_model_data_two_curvy <- bind_rows(data_two_curvy, true_model_two_curvy, df_b_two_curvy4)
+
+scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
+  as_tibble()
+
+scaled_two_curvy_data <- scaled_two_curvy |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_two_curvy_data_true_model <- scaled_two_curvy |>
+  filter(type == "true model") |>
+  select(-type)
+
+scaled_two_curvy_data_model <- scaled_two_curvy |>
+  filter(type == "model") |>
+  select(-type)
+
+
+## First projection
+projection <- cbind(
+  c(-0.08707,-0.06493,0.07017,-0.07349,-0.02955,-0.05286,-0.02765),
+  c(0.03398,0.03735,0.09272,0.01871,-0.09224,0.00451,0.08079))
+
+projection_scaled <- projection * 1
+
+projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number()) 
+
+## For fitted model
+projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_two_curvy4 |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+## For true model
+
+projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
+
+projected_true_model_df <- projected_true_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+true_model_df_proj <- dplyr::left_join(
+  wireframe_true_model, 
+  projected_true_model_df, 
+  by = c("from" = "ID"))
+
+names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
+
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
+
+
+axes_obj <- gen_axes(  
+  proj = projection * 5,
+  limits = 0.15,
+  axis_pos_x = -0.1,
+  axis_pos_y = -0.1,
+  axis_labels = names(scaled_two_curvy_data),
+  threshold = 0.01)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+two_curvy_proj_pacmap_model <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000") + #31a354
+  geom_point(
+    size = 0.5,
+    alpha = 0.5,
+    color = "#a65628") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.126, 0.125)) + 
+  ylim(c(-0.126, 0.125)) +
+  interior_annotation("b3", sc_ltr_pos) +
+  theme(
+    legend.position = "none"
+  )
+
+two_curvy_proj_pacmap_all_model <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = true_model_df_proj, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#2b8cbe") +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.5,
+    color = "#a65628") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.126, 0.125)) + 
+  ylim(c(-0.126, 0.125)) +
+  interior_annotation("b4", sc_ltr_pos) +
+  theme(
+    legend.position = "none"
+  )
+```
+
+```{r}
+#| label: best-fit-umap-tsne-pacamp
 #| fig-cap: "Best fit for two C-shaped clusters data using UMAP (a1-a4) ($a_1$ = 0.09) and tSNE (b1-b4) ($a_1$ = 0.16) with the same number of non-empty bins ($m$ = 39). Both models show twist in $7\\text{-}D$ (a3, a4, b3, b4). Also, both NLDR methods are unable to accurately capture the width of the curvilinear clusters."
-#| fig-width: 10
+#| fig-width: 15
 #| fig-height: 20
 #| out-height: 90%
 
 nldr_two_curvy_original2 + tsne_two_c_shaped_clust_plt +
+  pacmap_two_c_shaped_clust_plt +
   trimesh_two_curvy_removed1_with_data + trimesh_two_curvy_removed1_tsne_with_data +
+trimesh_two_curvy_removed1_pacmap_with_data +
   two_curvy_proj_umap_model2 +
   two_curvy_proj_tsne_model +
+  two_curvy_proj_pacmap_model +
   two_curvy_proj_umap_all_model +
   two_curvy_proj_tsne_all_model +
-  plot_layout(ncol = 2)
+  two_curvy_proj_pacmap_all_model +
+  plot_layout(ncol = 3)
 ```
-
-<!-- @fig-two_curvy-sc-best shows one of the best fits for S-curve data. TriMAP with $15$ nearest neighbors for forming the nearest neighbor triplet (`n_inliers`), $3$ outliers for forming the nearest neighbor triplets (`n_outliers`), $3$ random triplets per point (`n_random`) is used as the NLDR method. The model is generated with $103$ bins, which have a width of $0.154$ and a height of $0.133$. Edges with lengths greater than $0.266$ are removed.  -->
-
-<!-- The appropriate model for the S-curve using UMAP (n_neighbors: $15$) was created with $420$ bins. It was determined to be the best model after removing edges with a length greater than $0.134$. The decision was made considering that the model accurately captures the geometry of the S-curve. But better in some places only (@fig-scurve_sc_best). -->
-
-<!-- In contrast, a poor model for the S-curve with PHATE was created using only $190$ bins and removing edges with a length greater than $0.3$. This model is inadequate as it has a higher MSE compared to the appropriate model. Visually, the model squeezed to the middle of the geometry of the S-curve (@fig-scurve-sc-bad). -->
-
-<!-- XXX BEST FIT FOR S-CURVE MIGHT BE A DIFFERENT NLDR.  -->
-<!-- SHOW THE SEVERAL SUB-OPTIMAL FITS. -->
-
-<!--langevitour with best pD model for S-curve--> 
-<!-- ::: {#fig-scurve-sc-best layout-ncol="3" fig-pos="H"} -->
-<!-- ![](figures/scurve/sc_best_1.png) -->
-
-<!-- ![](figures/scurve/sc_best_2.png) -->
-
-<!-- ![](figures/scurve/sc_best_3.png) -->
-
-<!-- Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/4RFNENX_fXk>). MSE with $0.035$. -->
-<!-- ::: -->
-
-<!--langevitour with bad pD model for S-curve--> 
-<!-- ::: {#fig-scurve-sc-bad layout-ncol="3" fig-pos="H"} -->
-<!-- ![](figures/scurve/sc_bad_1.png) -->
-
-<!-- ![](figures/scurve/sc_bad_2.png) -->
-
-<!-- ![](figures/scurve/sc_bad_3.png) -->
-
-<!-- Screen shots of the **langevitour** of the S-curve, shows the model-in-data space, a video of the tour animation is available at (<https://youtu.be/DHPvhkZ0lUM>). MSE with $0.090$. -->
-<!-- ::: -->
-
-
-
-<!------>
-<!--add more details regarding to the how the change happening with different number of bins-->
-
-<!--best model-->
-<!--need to mention why it is the best-->
-
-<!--bad model-->
-<!--need to mention why it is the bad-->
-<!--Not represented the whole data structure because there are some discontinuity in the S-curve-->
-<!-- Why? bad 
-
-<!-- add MSE values for the screenshot figure names-->
 
 ## Linked plots
 
