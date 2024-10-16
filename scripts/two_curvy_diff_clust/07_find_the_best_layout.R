@@ -4,26 +4,26 @@ library(readr)
 
 conflicted::conflicts_prefer(dplyr::filter)
 
-error_two_curvy_diff_clust_umap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_umap.rds")
-error_two_curvy_diff_clust_tsne <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_tsne.rds")
-error_two_curvy_diff_clust_phate <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_phate.rds")
-error_two_curvy_diff_clust_trimap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_trimap.rds")
-error_two_curvy_diff_clust_pacmap <- read_rds("data/two_curvy_diff_clust/error_two_curvy_diff_clust_pacmap.rds")
+error_two_c_shaped_clust_umap <- read_rds("data/two_c_shaped_clust/error_two_c_shaped_clust_umap.rds")
+error_two_c_shaped_clust_tsne <- read_rds("data/two_c_shaped_clust/error_two_c_shaped_clust_tsne.rds")
+error_two_c_shaped_clust_phate <- read_rds("data/two_c_shaped_clust/error_two_c_shaped_clust_phate.rds")
+error_two_c_shaped_clust_trimap <- read_rds("data/two_c_shaped_clust/error_two_c_shaped_clust_trimap.rds")
+error_two_c_shaped_clust_pacmap <- read_rds("data/two_c_shaped_clust/error_two_c_shaped_clust_pacmap.rds")
 
-error_two_curvy_diff_clust <- bind_rows(error_two_curvy_diff_clust_umap,
-                                   error_two_curvy_diff_clust_tsne,
-                                   error_two_curvy_diff_clust_phate,
-                                   error_two_curvy_diff_clust_trimap,
-                                   error_two_curvy_diff_clust_pacmap)
+error_two_c_shaped_clust <- bind_rows(error_two_c_shaped_clust_umap,
+                                   error_two_c_shaped_clust_tsne,
+                                   error_two_c_shaped_clust_phate,
+                                   error_two_c_shaped_clust_trimap,
+                                   error_two_c_shaped_clust_pacmap)
 
-error_two_curvy_diff_clust <- error_two_curvy_diff_clust |>
+error_two_c_shaped_clust <- error_two_c_shaped_clust |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
   filter(MSE == min(MSE)) |>
   ungroup()
 
-error_plot_two_curvy_diff_clust <- ggplot(error_two_curvy_diff_clust,
+error_plot_two_c_shaped_clust <- ggplot(error_two_c_shaped_clust,
                                      aes(x = a1,
                                          y = MSE,
                                          colour = method)) +
@@ -31,7 +31,7 @@ error_plot_two_curvy_diff_clust <- ggplot(error_two_curvy_diff_clust,
   geom_line(linewidth = 0.3) +
   # geom_vline(xintercept = 15, linetype="solid",
   #            color = "black", linewidth=0.8, alpha = 0.5) +
-  scale_x_continuous(breaks = sort(unique(error_two_curvy_diff_clust$a1))[seq(1, length(unique(error_two_curvy_diff_clust$a1)), by = 5)]) +
+  scale_x_continuous(breaks = sort(unique(error_two_c_shaped_clust$a1))[seq(1, length(unique(error_two_c_shaped_clust$a1)), by = 5)]) +
   scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363')) +
   scale_y_log10() +
   ylab("log(MSE)") +
@@ -47,6 +47,6 @@ error_plot_two_curvy_diff_clust <- ggplot(error_two_curvy_diff_clust,
         axis.title.x = element_text(size = 7),
         axis.title.y = element_text(size = 7))
 
-error_plot_two_curvy_diff_clust
+error_plot_two_c_shaped_clust
 
 ## PaCMAP is best because in tSNE the non-linear curve is separated.

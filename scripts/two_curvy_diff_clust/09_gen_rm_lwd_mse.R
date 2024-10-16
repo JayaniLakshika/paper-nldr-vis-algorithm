@@ -3,11 +3,11 @@ library(readr)
 library(quollr)
 library(dplyr)
 
-training_data_two_curvy <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_data.rds")
+training_data_two_curvy <- read_rds("data/two_c_shaped_clust/two_c_shaped_clust_data.rds")
 training_data_two_curvy <- training_data_two_curvy |>
   mutate(ID = row_number())
 
-umap_two_curvy <- read_rds(file = "data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_15_min-dist_0.1.rds")
+umap_two_curvy <- read_rds(file = "data/two_c_shaped_clust/two_c_shaped_clust_umap_n-neigbors_15_min-dist_0.1.rds")
 
 two_curvy_scaled_obj <- gen_scaled_data(
   data = umap_two_curvy)
@@ -166,4 +166,4 @@ error_rm_two_curvy <- bind_rows(
   error_rm_two_curvy3
 )
 
-write_rds(error_rm_two_curvy, here::here("data/two_curvy_diff_clust/error_rm_lwd_diff_bin.rds"))
+write_rds(error_rm_two_curvy, here::here("data/two_c_shaped_clust/error_rm_lwd_diff_bin.rds"))
