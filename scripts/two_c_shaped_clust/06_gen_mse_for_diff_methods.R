@@ -18,7 +18,7 @@ training_data_two_curvy_diff_clust <- training_data_two_curvy_diff_clust |>
   mutate(ID = 1:NROW(training_data_two_curvy_diff_clust))
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:60 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_umap)
+bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_umap)
 
 ## For umap
 umap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_15_min-dist_0.1.rds")
@@ -81,7 +81,7 @@ write_rds(error_two_curvy_diff_clust_umap, "data/two_curvy_diff_clust/error_two_
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:60 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_tsne)
+bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_tsne)
 
 ## For tsne
 #tsne_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_tsne89.rds")
@@ -145,7 +145,7 @@ write_rds(error_two_curvy_diff_clust_tsne, "data/two_curvy_diff_clust/error_two_
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:60 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
+bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
 
 ## For phate
 phate_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_phate_knn_5.rds")
@@ -208,7 +208,7 @@ write_rds(error_two_curvy_diff_clust_phate, "data/two_curvy_diff_clust/error_two
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:60 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
+bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
 
 ## For trimap
 trimap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
@@ -271,7 +271,7 @@ write_rds(error_two_curvy_diff_clust_trimap, "data/two_curvy_diff_clust/error_tw
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:60 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
+bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/2)
 
 ## For pacmap
 pacmap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
