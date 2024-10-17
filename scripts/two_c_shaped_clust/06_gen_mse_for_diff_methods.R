@@ -18,7 +18,7 @@ training_data_two_curvy_diff_clust <- training_data_two_curvy_diff_clust |>
   mutate(ID = 1:NROW(training_data_two_curvy_diff_clust))
 
 ## To initialize number of bins along the x-axis
-bin1_vec_two_curvy_diff_clust <- 5:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_umap)
+bin1_vec_two_curvy_diff_clust <- 4:67 #sqrt(NROW(training_data_two_curvy_diff_clust)/r2_umap)
 
 ## For umap
 umap_two_curvy_diff_clust <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_umap_n-neigbors_15_min-dist_0.1.rds")
