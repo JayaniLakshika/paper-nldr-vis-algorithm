@@ -1055,12 +1055,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(  
-  proj = projection * 5,
-  limits = 0.12,
+  proj = projection * 6,
+  limits = 0.13,
   axis_pos_x = -0.1,
   axis_pos_y = -0.1,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.01)
+  threshold = 0.0113)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -1096,8 +1096,8 @@ two_curvy_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.125, 0.075)) + 
-  ylim(c(-0.125, 0.075)) +
+  xlim(c(-0.125, 0.13)) + 
+  ylim(c(-0.125, 0.13)) +
   interior_annotation("b", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
