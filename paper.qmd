@@ -2541,24 +2541,17 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 ```{r}
 #| label: fig-rm-lg
 #| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 4.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.09."
-#| fig-height: 4
-#| fig-width: 20
+#| fig-height: 15
+#| fig-width: 15
 
-free(distance_points) + plot_annotation(tag_levels = 'A') +
- (trimesh_two_curvy2 + trimesh_two_curvy_removed2 + trimesh_two_curvy_removed1 + two_curvy_proj_umap_model_delaunay + two_curvy_proj_umap_model_benchmark2 + two_curvy_proj_umap_model) +
-  plot_layout(widths = c(0.5, 1, 1, 1)) +
-  plot_annotation(tag_levels = list(c("(a)", "(b)"))) 
+free(distance_points) /
+  wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model_delaunay, two_curvy_proj_umap_model_benchmark2, two_curvy_proj_umap_model, ncol = 3)
+
+# free(distance_points) + plot_annotation(tag_levels = 'A') +
+#  (trimesh_two_curvy2 + trimesh_two_curvy_removed2 + trimesh_two_curvy_removed1 + two_curvy_proj_umap_model_delaunay + two_curvy_proj_umap_model_benchmark2 + two_curvy_proj_umap_model) +
+#   plot_layout(widths = c(0.5, 1, 1, 1)) +
+#   plot_annotation(tag_levels = list(c("(a)", "(b)"))) 
 ```
-
-
-<!-- (@fig-NLDR-two-curvy (d)), it is necessary to remove edges that connect distant bin centroids in the triangular mesh. These edges only exist in the \gD{} model and do not extend into \pD{}, so their removal does not impact the model in \pD{}. Although there are no specific criteria for determining the benchmark value to remove long edges, the following steps provide an approach to identifying a suitable threshold:
-
-1. Plot the distribution of the \gD{} Euclidean distances (@fig-param-two_curvy (d)).
-2. Identify the first largest difference between consecutive distance values.
-3. Take the distance value corresponding to this difference as the benchmark value.-->
-
-<!--distribution of distance along with the default benchmark-->
-
 
 ## Best fit
 
