@@ -3,6 +3,8 @@ library(readr)
 library(quollr)
 library(dplyr)
 
+conflicted::conflicts_prefer(dplyr::filter)
+
 training_data_two_curvy <- read_rds("data/two_curvy_diff_clust/two_curvy_diff_clust_data.rds")
 training_data_two_curvy <- training_data_two_curvy |>
   mutate(ID = row_number())

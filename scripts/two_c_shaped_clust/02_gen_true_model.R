@@ -82,7 +82,7 @@ names(curvy1) <- paste0("x", 1:3)
 
 curvy2 <- true_model
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(2, 2, 2)  # Adjust these values to set the desired distance
+offset <- c(2.5, 2.5, 2.5)  # Adjust these values to set the desired distance
 curvy2 <- sweep(curvy2, 2, offset, "+") |>
   mutate(ID = NROW(true_model) + row_number())
 
