@@ -2980,7 +2980,7 @@ pacmap_two_c_shaped_clust_plt <- pacmap_two_curvy_scaled |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
-  interior_annotation("b1", sc_ltr_pos) +
+  interior_annotation("c1", sc_ltr_pos) +
   theme(aspect.ratio = 1)
 
 ## hexagon binning to have regular hexagons
@@ -3070,11 +3070,11 @@ trimesh_two_curvy_removed1_pacmap_with_data <- ggplot() +
                x = PaCMAP1,
                y = PaCMAP2
              ),
-             color = "#a65628",
+             color = "#e41a1c",
              alpha = 0.5,
              size = 0.5) +
   coord_equal() +
-  interior_annotation("b2", sc_ltr_pos)
+  interior_annotation("c2", sc_ltr_pos)
 
 ```
 
@@ -3182,7 +3182,7 @@ two_curvy_proj_pacmap_model <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#a65628") +
+    color = "#e41a1c") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -3199,7 +3199,7 @@ two_curvy_proj_pacmap_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("b3", sc_ltr_pos) +
+  interior_annotation("c3", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -3228,7 +3228,7 @@ two_curvy_proj_pacmap_all_model <- projected_df |>
   geom_point(
     size = 0.5,
     alpha = 0.5,
-    color = "#a65628") +
+    color = "#e41a1c") +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -3245,7 +3245,7 @@ two_curvy_proj_pacmap_all_model <- projected_df |>
   coord_fixed() +
   xlim(c(-0.126, 0.125)) + 
   ylim(c(-0.126, 0.125)) +
-  interior_annotation("b4", sc_ltr_pos) +
+  interior_annotation("c4", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -3268,7 +3268,8 @@ trimesh_two_curvy_removed1_pacmap_with_data +
   two_curvy_proj_umap_all_model +
   two_curvy_proj_tsne_all_model +
   two_curvy_proj_pacmap_all_model +
-  plot_layout(ncol = 3)
+  plot_layout(ncol = 3) +
+  plot_annotation(tag_levels = list(c("(a)", "(b)", "(c)")))
 ```
 
 ## Linked plots
