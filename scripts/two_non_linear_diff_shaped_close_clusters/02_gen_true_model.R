@@ -75,8 +75,8 @@ langevitour(true_model1 |> select(-ID),
 
 # Function to generate a curvilinear grid pattern in 2D
 generate_curvilinear_grid_2d <- function(n_grid_x, n_grid_y) {
-  x <- seq(0, 2, length.out = n_grid_x)
-  y <- seq(-3, 0.5, length.out = n_grid_y)
+  x <- seq(-1, 2, length.out = n_grid_x)
+  y <- seq(-0.5, 3, length.out = n_grid_y)
 
   # Use expand.grid to create a grid of (x, y) pairs
   curvilinear_grid <- expand.grid(x1 = x, x2 = y)
@@ -96,7 +96,7 @@ curvilinear_grid1 <- generate_curvilinear_grid_2d(n_grid_x, n_grid_y) |>
   as_tibble()
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(1, 1.5, 1)  # Adjust these values to set the desired distance
+offset <- c(2.3, 3, 1)  # Adjust these values to set the desired distance
 curvilinear_grid1 <- sweep(curvilinear_grid1, 2, offset, "+")
 
 # Add small noise to the grid data to match dimensions with curvilinear data

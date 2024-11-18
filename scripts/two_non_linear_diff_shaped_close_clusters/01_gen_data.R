@@ -39,15 +39,15 @@ gen_curv2_3d <- function(n) {
 # Simulate some s_curve_noise
 
 sample_size <- 1000
-curve1 <- gen_curv1_3d(n = sample_size)
-langevitour(curve1)
-
-curve2 <- gen_curv2_3d(n = sample_size)
+curve2 <- gen_curv1_3d(n = sample_size)
 langevitour(curve2)
+
+curve1 <- gen_curv2_3d(n = sample_size)
+langevitour(curve1)
 
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(1, 1.5, 1)  # Adjust these values to set the desired distance
+offset <- c(2.3, 3, 1)  # Adjust these values to set the desired distance
 curve2 <- sweep(curve2, 2, offset, "+")
 
 df <- bind_rows(
