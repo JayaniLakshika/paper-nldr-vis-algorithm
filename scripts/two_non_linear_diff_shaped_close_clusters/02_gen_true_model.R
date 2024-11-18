@@ -84,10 +84,6 @@ generate_curvilinear_grid_2d <- function(n_grid_x, n_grid_y) {
   # Adjust y values according to a curvilinear pattern based on x
   curvilinear_grid$x3 <- -(curvilinear_grid$x1^3 + curvilinear_grid$x2)
 
-  curvilinear_grid <- curvilinear_grid |>
-    rename(c("x3" = "x2",
-             "x2" = "x3"))
-
   return(curvilinear_grid)
 }
 
@@ -157,14 +153,26 @@ model_data <- model_data |>
 
 connections_all <- bind_rows(connections, connections1)
 
+model_data <- model_data |>
+  select(x1, x2, x3, x4, x5, x6, x7, ID)
+
 # Visualize with langevitour
 langevitour(model_data |> select(-ID),
             lineFrom = connections_all$from,
             lineTo = connections_all$to)
 
-model_data <- model_data |>
-  select(x1, x2, x3, x4, x5, x6, x7, ID)
-
 write_rds(model_data, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
+
+data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds"))
+
+df <- bind_rows(model_data |> select(-ID) |> mutate(type = "model"),
+                data |> mutate(type = "data"))
+
+# Visualize with langevitour
+langevitour(df |> select(-type),
+            lineFrom = connections_all$from,
+            lineTo = connections_all$to,
+            group = df$type,
+            levelColors = c("#6a3d9a", "#33a02c"))
