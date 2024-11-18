@@ -75,8 +75,8 @@ langevitour(true_model1 |> select(-ID),
 
 # Function to generate a curvilinear grid pattern in 2D
 generate_curvilinear_grid_2d <- function(n_grid_x, n_grid_y) {
-  x <- seq(-1, 2, length.out = n_grid_x)
-  y <- seq(-0.5, 3, length.out = n_grid_y)
+  x <- seq(0, 2, length.out = n_grid_x)
+  y <- seq(0, 3, length.out = n_grid_y)
 
   # Use expand.grid to create a grid of (x, y) pairs
   curvilinear_grid <- expand.grid(x1 = x, x2 = y)

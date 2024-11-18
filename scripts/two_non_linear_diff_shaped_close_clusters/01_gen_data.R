@@ -7,9 +7,9 @@ set.seed(20240110)
 
 gen_curv1_3d <- function(n = 100) {
 
-  x1 <- runif(n, -1, 2)
-  x2 <- runif(n, -0.5, 3)
-  x3 <- -(x1^3 + runif(n, 0, 3)) + runif(n, 0, 0.5)
+  x1 <- runif(n, 0, 2)
+  x2 <- runif(n, 0, 3)
+  x3 <- -(x1^3 + x2) + runif(n, 0, 0.5)
 
   df <- tibble(
     x1 = x1,
