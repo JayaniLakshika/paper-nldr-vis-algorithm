@@ -47,7 +47,7 @@ langevitour(curve1)
 
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(2.3, 3, 1)  # Adjust these values to set the desired distance
+offset <- c(1.5, 1.3, 1)  # Adjust these values to set the desired distance
 curve2 <- sweep(curve2, 2, offset, "+")
 
 df <- bind_rows(

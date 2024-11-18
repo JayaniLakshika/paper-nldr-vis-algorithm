@@ -96,7 +96,7 @@ curvilinear_grid1 <- generate_curvilinear_grid_2d(n_grid_x, n_grid_y) |>
   as_tibble()
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(2.3, 3, 1)  # Adjust these values to set the desired distance
+offset <- c(1.5, 1.3, 1)  # Adjust these values to set the desired distance
 curvilinear_grid1 <- sweep(curvilinear_grid1, 2, offset, "+")
 
 # Add small noise to the grid data to match dimensions with curvilinear data
