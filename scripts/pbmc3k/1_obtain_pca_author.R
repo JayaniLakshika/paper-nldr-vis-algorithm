@@ -16,7 +16,7 @@ pbmc_umap <- umap.list$Festem@cell.embeddings |>
 #write_rds(pbmc_umap, "data/pbmc/pbmc_3k_festem/pbmc_umap.rds")
 
 rownames(umap.list$Festem@cell.embeddings)
-plots.list[[1]]
+#plots.list[[1]]
 
 ## Obtain gene names
 rw_names <- rownames(umap.list$Festem@cell.embeddings) |> str_split("-")
