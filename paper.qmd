@@ -5332,6 +5332,18 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 <!-- Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>). -->
 <!-- ::: -->
 
+#### scDEED
+
+```{r}
+result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
+
+result_umap |>
+  kableExtra::kable(format = "latex",
+                    booktabs = TRUE,
+                    longtable = TRUE,
+                    label = "scdeedumap") |>
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
 
 ### Hand-written digits
 <!--
