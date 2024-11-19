@@ -64,7 +64,7 @@ optimize_add_seu_obj <- function (input_data, input_data.permuted, pre_embedding
                                   trustworthy_cutoff, check_duplicates = T, rerun = T)
 {
   if (reduction.method == "umap") {
-    results <- Distances.UMAP(pbmc = input_data, pbmc.permuted = input_data.permuted,
+    results <- Distances.UMAP_add_seu_obj(pbmc = input_data, pbmc.permuted = input_data.permuted,
                               K = K, pre_embedding = pre_embedding, n = n, m = m,
                               rerun = rerun)
   }
@@ -121,7 +121,7 @@ scDEED_add_seu_obj <- function (input_data, K, n_neighbors = c(5, 20, 30, 40, 50
       start = Sys.time()
       original = suppressMessages(foreach::`%do%`(foreach::foreach(n = all_pairs$Var1[1],
                                                                    m = all_pairs$Var2[1], .combine = "cbind"),
-                                                  optimize(input_data, input_data.permuted, pre_embedding,
+                                                  optimize_add_seu_obj(input_data, input_data.permuted, pre_embedding,
                                                            reduction.method, K, n = n, m = m, perplexity = NA,
                                                            results.PCA = results.PCA, similarity_percent = similarity_percent,
                                                            dubious_cutoff = dubious_cutoff, trustworthy_cutoff = trustworthy_cutoff,
@@ -135,7 +135,7 @@ scDEED_add_seu_obj <- function (input_data, K, n_neighbors = c(5, 20, 30, 40, 50
       original = as.matrix(original)
       all_dub <- suppressMessages(foreach::`%do%`(foreach::foreach(n = all_pairs$Var1[-1],
                                                                    m = all_pairs$Var2[-1], .combine = "cbind"),
-                                                  optimize(input_data, input_data.permuted, pre_embedding,
+                                                  optimize_add_seu_obj(input_data, input_data.permuted, pre_embedding,
                                                            reduction.method, K, n = n, m = m, perplexity = NA,
                                                            results.PCA = results.PCA, similarity_percent = similarity_percent,
                                                            dubious_cutoff = dubious_cutoff, trustworthy_cutoff = trustworthy_cutoff,
@@ -147,7 +147,7 @@ scDEED_add_seu_obj <- function (input_data, K, n_neighbors = c(5, 20, 30, 40, 50
     }
     else {
       all_dub = suppressMessages(foreach::`%do%`(foreach::foreach(n = all_pairs$Var1,
-                                                                  m = all_pairs$Var2, .combine = "cbind"), optimize(input_data,
+                                                                  m = all_pairs$Var2, .combine = "cbind"), optimize_add_seu_obj(input_data,
                                                                                                                     input_data.permuted, pre_embedding, reduction.method,
                                                                                                                     K, n = n, m = m, perplexity = NA, results.PCA = results.PCA,
                                                                                                                     similarity_percent = similarity_percent, dubious_cutoff = dubious_cutoff,
@@ -195,7 +195,7 @@ scDEED_add_seu_obj <- function (input_data, K, n_neighbors = c(5, 20, 30, 40, 50
     }
     else {
       dubious_number_tSNE <- suppressMessages(foreach::`%do%`(foreach::foreach(p = perplexity,
-                                                                               .combine = "cbind"), optimize(input_data, input_data.permuted,
+                                                                               .combine = "cbind"), optimize_add_seu_obj(input_data, input_data.permuted,
                                                                                                              pre_embedding, reduction.method, K, n, m, perplexity = p,
                                                                                                              results.PCA = results.PCA, similarity_percent = similarity_percent,
                                                                                                              dubious_cutoff = dubious_cutoff, trustworthy_cutoff,

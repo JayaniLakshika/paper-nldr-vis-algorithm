@@ -5345,6 +5345,50 @@ result_umap |>
   kableExtra::kable_styling(latex_options = "scale_down")
 ```
 
+```{r}
+#| label: read-pbmc-umap-layouts
+# Read a variety of different NLDR representations of PBMC
+# and plot them on same aspect ratio
+umap_pbmc1 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
+umap_pbmc1 <- as_tibble(umap_pbmc1)
+names(umap_pbmc1) <- c("UMAP1", "UMAP2")
+
+nldr1c <- umap_pbmc1 |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a")
+
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_5_min_dist_0.01.rds")
+umap_pbmc2 <- as_tibble(umap_pbmc2)
+names(umap_pbmc2) <- c("UMAP1", "UMAP2")
+
+nldr2c <- umap_pbmc2 |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
+  interior_annotation("b")
+
+
+umap_pbmc3 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_15_min_dist_0.99.rds")
+umap_pbmc3 <- as_tibble(umap_pbmc3)
+names(umap_pbmc3) <- c("UMAP1", "UMAP2")
+
+nldr3c <- umap_pbmc3 |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  interior_annotation("c")
+```
+
+```{r}
+#| label: fig-pbmc-mse-umap
+#| fig-pos: H
+#| out-height: 100%
+
+wrap_plots(nldr1c, nldr2c, nldr3c, ncol = 3)
+```
+
 ### Hand-written digits
 <!--
 - NLDR is used to illustrate different ways 1's are drawn
