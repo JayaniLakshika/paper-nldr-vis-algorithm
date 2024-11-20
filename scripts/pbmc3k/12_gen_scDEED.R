@@ -16,7 +16,7 @@ Distances.tSNE_add_seu_obj <- function (pbmc, pbmc.permuted, K, perplexity_score
 {
   distances <- distances::distances
   if (rerun) {
-    pbmc = Seurat::RunTSNE(pbmc, seed.use = 100, perplexity = perplexity_score,
+    pbmc = Seurat::RunTSNE(pbmc, seed.use = 20240110, perplexity = perplexity_score,
                            reduction = pre_embedding, do.fast = T, check_duplicates = check_duplicates)
   }
   ## To obtain tSNE embeddings
@@ -25,7 +25,7 @@ Distances.tSNE_add_seu_obj <- function (pbmc, pbmc.permuted, K, perplexity_score
   write_rds(tSNE_data, here::here(paste0("data/pbmc3k/pbmc_scdeed_tsne_perplexity_", perplexity_score, ".rds")))
 
   tSNE_distances = distances(tSNE_data)
-  pbmc.permuted <- Seurat::RunTSNE(pbmc.permuted, seed.use = 100,
+  pbmc.permuted <- Seurat::RunTSNE(pbmc.permuted, seed.use = 20240110,
                                    perplexity = perplexity_score, reduction = pre_embedding,
                                    do.fast = T, check_duplicates = check_duplicates)
   tSNE_distances_permuted = distances(pbmc.permuted@reductions$tsne@cell.embeddings)
@@ -39,7 +39,32 @@ Distances.UMAP_add_seu_obj <- function (pbmc, pbmc.permuted, K, pre_embedding = 
 {
   distances <- distances::distances
   if (rerun) {
-    pbmc <- Seurat::RunUMAP(pbmc, dims = 1:K, seed.use = 100,
+
+
+    # # Run UMAP using uwot with init = "spca"
+    # umap_results <- uwot::umap(
+    #   X = Seurat::Embeddings(pbmc.permuted, reduction = pre_embedding)[, 1:K],
+    #   n_neighbors = n,
+    #   min_dist = m,
+    #   init = "spca",                # Use scaled PCA for initialization
+    #   metric = "cosine",         # Default metric, can be changed
+    #   seed = 100                    # Seed for reproducibility
+    # )
+    #
+    # # Add column names for compatibility with Seurat
+    # colnames(umap_results) <- paste0("UMAP_", 1:ncol(umap_results))
+    #
+    # # Add the UMAP embeddings back to the Seurat object
+    # umap_reduction <- Seurat::CreateDimReducObject(
+    #   embeddings = umap_results,
+    #   key = "UMAP_",                # Prefix for UMAP embeddings
+    #   assay = DefaultAssay(pbmc.permuted)
+    # )
+    #
+    # # Save the UMAP reduction back into the Seurat object
+    # pbmc.permuted[["umap"]] <- umap_reduction
+
+    pbmc <- Seurat::RunUMAP(pbmc, dims = 1:K, seed.use = 20240110,
                             reduction = pre_embedding, n.neighbors = n, min.dist = m)
   }
 
@@ -51,7 +76,7 @@ Distances.UMAP_add_seu_obj <- function (pbmc, pbmc.permuted, K, pre_embedding = 
 
   UMAP_distances = distances(UMAP_data)
   pbmc.permuted <- Seurat::RunUMAP(pbmc.permuted, dims = 1:K,
-                                   seed.use = 100, reduction = pre_embedding, n.neighbors = n,
+                                   seed.use = 20240110, reduction = pre_embedding, n.neighbors = n,
                                    min.dist = m)
   UMAP_distances_permuted = distances(pbmc.permuted@reductions$umap@cell.embeddings)
   results.PCA <- list(reduced_dim_distances = UMAP_distances,
