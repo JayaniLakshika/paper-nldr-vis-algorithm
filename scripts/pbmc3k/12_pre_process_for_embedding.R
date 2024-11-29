@@ -40,3 +40,19 @@ trustworthy_cells =  result$full_results$trustworthy_cells[result$full_results$p
 trustworthy_cells = as.numeric(strsplit(trustworthy_cells, ',')[[1]])
 
 DimPlot(data, reduction = 'tsne', cells.highlight = list('dubious' = dubious_cells, 'trustworthy' = trustworthy_cells)) + scale_color_manual(values = c('gray', 'blue', 'red'))
+
+#############
+## For tSNE
+result <- scDEED_add_seu_obj(obj1, K = 50, reduction.method = 'tsne', perplexity = seq(5, 145, 5))
+result$num_dubious
+saveRDS(result$num_dubious, 'data/pbmc3k/pbmc_scdeed_tsne_results.rds')
+
+## For UMAP
+result_umap <- scDEED_add_seu_obj(obj1, K = 50,
+                                  reduction.method = 'umap',
+                                  n_neighbors = c(5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 80, 160, 240),
+                                  min.dist = c(0.0125, 0.05, 0.1, 0.3, 0.5, 0.7, 0.9))
+
+#head(result$num_dubious)
+result_umap$num_dubious
+saveRDS(result_umap$num_dubious, 'data/pbmc3k/pbmc_scdeed_umap_results.rds')
