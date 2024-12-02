@@ -56,3 +56,6 @@ result_umap <- scDEED_add_seu_obj(obj1, K = 50,
 #head(result$num_dubious)
 result_umap$num_dubious
 saveRDS(result_umap$num_dubious, 'data/pbmc3k/pbmc_scdeed_umap_results.rds')
+
+## To compute adjusted Rand index (ARI): compute the adjusted rand index between two classifications
+##library(aricode)
