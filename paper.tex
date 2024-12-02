@@ -1086,133 +1086,37 @@ langevitour animations are available at
 
 \subsubsection{scDEED}\label{scdeed}
 
-Motivated by this challenge, we present a statistical method, scDEED,
-for detecting dubious cell embeddings output by a 2D-embedding method.
-By calculating a reliability score for every cell embedding based on the
-similarity between the cell's 2D-embedding neighbors and pre-embedding
-neighbors, scDEED identifies the cell embeddings with low reliability
-scores as dubious and those with high reliability scores as trustworthy.
-Moreover, by minimizing the number of dubious cell embeddings, scDEED
-provides intuitive guidance for optimizing the hyperparameters of an
-embedding method.
+In the field of single-cell studies, clustering is a common analytical
+task used to identify groups of cells with similar expression profiles.
+Non-linear dimensional reduction (NLDR) methods are frequently employed
+to visualize these clusters and help validate the results. However, it
+is well known that the 2D embeddings produced by t-SNE and UMAP may not
+accurately reflect the similarities among cell clusters.
 
-\textbf{UMAP}
+To address this challenge, \citet{xia2023} introduces a statistical
+method called scDEED, which detects unreliable cell embeddings generated
+by \gD{} embedding techniques. scDEED calculates a reliability score for
+each cell embedding based on the similarity between the cell's \gD{}
+embedding neighbors and its neighbors prior to embedding. By identifying
+embeddings with low reliability scores as dubious and those with high
+scores as trustworthy, scDEED minimizes the number of questionable cell
+embeddings. This approach also provides clear guidance for optimizing
+the hyperparameters of an embedding method.
 
-\begin{longtable*}{rrr}
-\toprule
-n\_neighbors & min.dist & number\_dubious\_cells\\
-\midrule
-5 & 0.0125 & 14\\
-6 & 0.0125 & 7\\
-7 & 0.0125 & 5\\
-8 & 0.0125 & 10\\
-9 & 0.0125 & 29\\
-\addlinespace
-10 & 0.0125 & 7\\
-20 & 0.0125 & 9\\
-30 & 0.0125 & 10\\
-40 & 0.0125 & 4\\
-50 & 0.0125 & 3\\
-\addlinespace
-80 & 0.0125 & 47\\
-160 & 0.0125 & 13\\
-240 & 0.0125 & 74\\
-5 & 0.0500 & 12\\
-6 & 0.0500 & 37\\
-\addlinespace
-7 & 0.0500 & 6\\
-8 & 0.0500 & 15\\
-9 & 0.0500 & 33\\
-10 & 0.0500 & 5\\
-20 & 0.0500 & 13\\
-\addlinespace
-30 & 0.0500 & 4\\
-40 & 0.0500 & 4\\
-50 & 0.0500 & 8\\
-80 & 0.0500 & 15\\
-160 & 0.0500 & 55\\
-\addlinespace
-240 & 0.0500 & 75\\
-5 & 0.1000 & 271\\
-6 & 0.1000 & 9\\
-7 & 0.1000 & 16\\
-8 & 0.1000 & 37\\
-\addlinespace
-9 & 0.1000 & 4\\
-10 & 0.1000 & 20\\
-20 & 0.1000 & 5\\
-30 & 0.1000 & 5\\
-40 & 0.1000 & 5\\
-\addlinespace
-50 & 0.1000 & 25\\
-80 & 0.1000 & 4\\
-160 & 0.1000 & 4\\
-240 & 0.1000 & 13\\
-5 & 0.3000 & 45\\
-\addlinespace
-6 & 0.3000 & 10\\
-7 & 0.3000 & 12\\
-8 & 0.3000 & 4\\
-9 & 0.3000 & 3\\
-10 & 0.3000 & 3\\
-\addlinespace
-20 & 0.3000 & 2\\
-30 & 0.3000 & 46\\
-40 & 0.3000 & 2\\
-50 & 0.3000 & 3\\
-80 & 0.3000 & 2\\
-\addlinespace
-160 & 0.3000 & 2\\
-240 & 0.3000 & 21\\
-5 & 0.5000 & 88\\
-6 & 0.5000 & 3\\
-7 & 0.5000 & 5\\
-\addlinespace
-8 & 0.5000 & 4\\
-9 & 0.5000 & 92\\
-10 & 0.5000 & 5\\
-20 & 0.5000 & 72\\
-30 & 0.5000 & 70\\
-\addlinespace
-40 & 0.5000 & 1\\
-50 & 0.5000 & 2\\
-80 & 0.5000 & 2\\
-160 & 0.5000 & 3\\
-240 & 0.5000 & 4\\
-\addlinespace
-5 & 0.7000 & 13\\
-6 & 0.7000 & 86\\
-7 & 0.7000 & 95\\
-8 & 0.7000 & 29\\
-9 & 0.7000 & 95\\
-\addlinespace
-10 & 0.7000 & 6\\
-20 & 0.7000 & 3\\
-30 & 0.7000 & 5\\
-40 & 0.7000 & 2\\
-50 & 0.7000 & 3\\
-\addlinespace
-80 & 0.7000 & 4\\
-160 & 0.7000 & 5\\
-240 & 0.7000 & 4\\
-5 & 0.9000 & 192\\
-6 & 0.9000 & 95\\
-\addlinespace
-7 & 0.9000 & 233\\
-8 & 0.9000 & 228\\
-9 & 0.9000 & 101\\
-10 & 0.9000 & 7\\
-20 & 0.9000 & 3\\
-\addlinespace
-30 & 0.9000 & 79\\
-40 & 0.9000 & 3\\
-50 & 0.9000 & 5\\
-80 & 0.9000 & 4\\
-160 & 0.9000 & 5\\
-\addlinespace
-240 & 0.9000 & 3\\
-\bottomrule
-\end{longtable*}
+To verify that the \gD{} cell embeddings became better aligned with the
+cell types after scDEED's optimization, the Human Peripheral Blood
+Mononuclear Cells (PBMC) dataset was used. It contained \(31,021\) cells
+with cell type labels, and the gene expression levels were in the unit
+of log-transformed UMI count per \(10,000\). They focused on three
+sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell
+types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell.
+
+For illustration purposes, we only selected cells generated with inDrops
+(\(n=5858\) cells) and UMAP cell embeddings. Also, \citet{xia2023} used
+first \(50\) principal components to generate the UMAP. The objective is
+to assess the optimized layout by scDEED, and if it does not accurately
+represent the three clusters with small separations of the PBMC dataset,
+then select a reasonable \gD{} layout.
 
 \begin{figure}[H]
 
@@ -1222,11 +1126,12 @@ n\_neighbors & min.dist & number\_dubious\_cells\\
 
 }
 
-\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 tSNE layouts
-with different perplexity (\(30\) (red), \(320\) (blue)) on the PBMC
-data is the better representation using MSE for varying binwidth
+\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 UMAP layouts
+with different hyperparameter settings (n\_neighbors: \(30\), min\_dist:
+\(0.3\) (red), n\_neighbors: \(80\), min\_dist: \(0.5\) (blue)) on the
+PBMC data is the better representation using MSE for varying binwidth
 (\(a_1\)). Colour used for the lines and points in the left plot and in
-the scatterplots represents tSNE layout (a, b). Layout b is universally
+the scatterplots represents UMAP layout (a, b). Layout b is universally
 suboptimal. Layout b is the best choice.}
 
 \end{figure}%
