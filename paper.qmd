@@ -5334,19 +5334,65 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 #### scDEED
 
+**tSNE**
+
+```{r}
+result_tsne <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_tsne_results.rds'))
+```
+
+```{r}
+result_tsne |>
+  kableExtra::kable(format = "latex",
+                    booktabs = TRUE,
+                    longtable = TRUE,
+                    label = "scdeedtsne") |>
+  kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+#| out-width: 50%
+
+ggplot(data = result_tsne,
+       aes(
+         x = as.numeric(perplexity),
+         y = number_dubious_cells
+       )) +
+  geom_line() +
+  geom_point() +
+  labs(x = "perplexity",
+       y = "# of dubious cells") +
+  theme_minimal()
+```
+
+**UMAP**
+
 ```{r}
 result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
+```
 
-result_umap <- result_umap |>
-  mutate(plot = c("b", "i", "h", "g", "f", "a", "e", "c", "d")) |>
-  arrange(number_dubious_cells)
-
+```{r}
 result_umap |>
   kableExtra::kable(format = "latex",
                     booktabs = TRUE,
                     longtable = TRUE,
                     label = "scdeedumap") |>
   kableExtra::kable_styling(latex_options = "scale_down")
+```
+
+```{r}
+#| out-width: 50%
+
+result_umap |>
+  filter(min.dist == 0.5) |>
+  ggplot(aes(
+           x = as.numeric(n_neighbors),
+           y = number_dubious_cells
+         )) +
+    geom_line() +
+    geom_point() +
+    labs(x = "n_neighbors",
+         y = "# of dubious cells") +
+    theme_minimal()
 ```
 
 ```{r}
@@ -5360,113 +5406,29 @@ names(umap_pbmc1) <- c("UMAP1", "UMAP2")
 nldr1c <- umap_pbmc1 |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("a")
 
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_5_min_dist_0.01.rds")
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_80_min_dist_0.5.rds")
 umap_pbmc2 <- as_tibble(umap_pbmc2)
 names(umap_pbmc2) <- c("UMAP1", "UMAP2")
 
 nldr2c <- umap_pbmc2 |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
   interior_annotation("b")
 
-
-umap_pbmc3 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_15_min_dist_0.99.rds")
-umap_pbmc3 <- as_tibble(umap_pbmc3)
-names(umap_pbmc3) <- c("UMAP1", "UMAP2")
-
-nldr3c <- umap_pbmc3 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
-  interior_annotation("c")
-
-umap_pbmc4 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.99.rds")
-umap_pbmc4 <- as_tibble(umap_pbmc4)
-names(umap_pbmc4) <- c("UMAP1", "UMAP2")
-
-nldr4c <- umap_pbmc4 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#8dd3c7') +
-  interior_annotation("d")
-
-umap_pbmc5 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_5_min_dist_0.99.rds")
-umap_pbmc5 <- as_tibble(umap_pbmc5)
-names(umap_pbmc5) <- c("UMAP1", "UMAP2")
-
-nldr5c <- umap_pbmc5 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#999999') +
-  interior_annotation("e")
-
-umap_pbmc6 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_15_min_dist_0.3.rds")
-umap_pbmc6 <- as_tibble(umap_pbmc6)
-names(umap_pbmc6) <- c("UMAP1", "UMAP2")
-
-nldr6c <- umap_pbmc6 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#377eb8') +
-  interior_annotation("f")
-
-umap_pbmc7 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_5_min_dist_0.3.rds")
-umap_pbmc7 <- as_tibble(umap_pbmc7)
-names(umap_pbmc7) <- c("UMAP1", "UMAP2")
-
-nldr7c <- umap_pbmc7 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#f781bf') +
-  interior_annotation("g")
-
-umap_pbmc8 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.01.rds")
-umap_pbmc8 <- as_tibble(umap_pbmc8)
-names(umap_pbmc8) <- c("UMAP1", "UMAP2")
-
-nldr8c <- umap_pbmc8 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#984ea3') +
-  interior_annotation("h")
-
-umap_pbmc9 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_15_min_dist_0.01.rds")
-umap_pbmc9 <- as_tibble(umap_pbmc9)
-names(umap_pbmc9) <- c("UMAP1", "UMAP2")
-
-nldr9c <- umap_pbmc9 |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
-  interior_annotation("i")
 ```
 
 ```{r}
 #| label: combine-data-pbmc-umap
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.3.rds")
-error_pbmc_umap2 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_5_min_dist_0.01.rds")
-error_pbmc_umap3 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_15_min_dist_0.99.rds")
-error_pbmc_umap4 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.99.rds")
-error_pbmc_umap5 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_5_min_dist_0.99.rds")
-error_pbmc_umap6 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_15_min_dist_0.3.rds")
-error_pbmc_umap7 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_5_min_dist_0.3.rds")
-error_pbmc_umap8 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.01.rds")
-error_pbmc_umap9 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_15_min_dist_0.01.rds")
+error_pbmc_umap2 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_80_min_dist_0.5.rds")
 
 error_pbmc <- bind_rows(error_pbmc_umap, 
-                        error_pbmc_umap2,
-                        error_pbmc_umap3,
-                        error_pbmc_umap4,
-                        error_pbmc_umap5,
-                        error_pbmc_umap6,
-                        error_pbmc_umap7,
-                        error_pbmc_umap8,
-                        error_pbmc_umap9)
+                        error_pbmc_umap2)
 
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
@@ -5480,15 +5442,15 @@ error_pbmc <- error_pbmc |>
 #| label: error-comp-pbmc-umap
 
 error_umap_plot_pbmc <- ggplot(error_pbmc, 
-                          aes(x = a1, 
-                              y = MSE, 
-                              colour = method)) + 
+                               aes(x = a1, 
+                                   y = MSE, 
+                                   colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#8dd3c7','#a65628','#f781bf','#999999')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8')) +
   scale_y_log10() +
   ylab("log(MSE)") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
@@ -5510,7 +5472,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 #| fig-pos: H
 #| out-height: 100%
 
-free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c, nldr5c, nldr6c, nldr7c, nldr8c, nldr9c, ncol = 2)
+free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2)
 ```
 
 ### Hand-written digits

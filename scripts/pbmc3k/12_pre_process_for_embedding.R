@@ -57,5 +57,10 @@ result_umap <- scDEED_add_seu_obj(obj1, K = 50,
 result_umap$num_dubious
 saveRDS(result_umap$num_dubious, 'data/pbmc3k/pbmc_scdeed_umap_results.rds')
 
+## To save PCA
+pca_df <- obj1@reductions$pca@cell.embeddings
+pca_df <- as_tibble(pca_df)
+write_rds(pca_df, 'data/pbmc3k/pbmc_pca_50_scdeed.rds')
+
 ## To compute adjusted Rand index (ARI): compute the adjusted rand index between two classifications
 ##library(aricode)
