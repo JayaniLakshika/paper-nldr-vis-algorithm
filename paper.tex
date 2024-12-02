@@ -1086,65 +1086,6 @@ langevitour animations are available at
 
 \subsubsection{scDEED}\label{scdeed}
 
-\textbf{tSNE}
-
-\begin{longtable*}{lr}
-\toprule
-perplexity & number\_dubious\_cells\\
-\midrule
-5 & 87\\
-10 & 143\\
-15 & 146\\
-20 & 101\\
-25 & 93\\
-\addlinespace
-30 & 83\\
-35 & 82\\
-40 & 85\\
-45 & 71\\
-50 & 41\\
-\addlinespace
-55 & 48\\
-60 & 46\\
-65 & 35\\
-70 & 36\\
-75 & 49\\
-\addlinespace
-80 & 46\\
-85 & 75\\
-90 & 82\\
-95 & 62\\
-100 & 20\\
-\addlinespace
-105 & 19\\
-110 & 19\\
-115 & 21\\
-120 & 18\\
-125 & 17\\
-\addlinespace
-130 & 15\\
-135 & 17\\
-140 & 17\\
-145 & 18\\
-\bottomrule
-\end{longtable*}
-
-\begin{center}
-\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-62-1.pdf}
-\end{center}
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-pbmc-mse-tsne-1.pdf}
-
-}
-
-\caption{\label{fig-pbmc-mse-tsne}}
-
-\end{figure}%
-
 \textbf{UMAP}
 
 \begin{longtable*}{rrr}
@@ -1263,10 +1204,6 @@ n\_neighbors & min.dist & number\_dubious\_cells\\
 \bottomrule
 \end{longtable*}
 
-\begin{center}
-\includegraphics[width=0.5\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-69-1.pdf}
-\end{center}
-
 \begin{figure}[H]
 
 \centering{
@@ -1275,7 +1212,12 @@ n\_neighbors & min.dist & number\_dubious\_cells\\
 
 }
 
-\caption{\label{fig-pbmc-mse-umap}}
+\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 tSNE layouts
+with different perplexity (\(30\) (red), \(320\) (blue)) on the PBMC
+data is the better representation using MSE for varying binwidth
+(\(a_1\)). Colour used for the lines and points in the left plot and in
+the scatterplots represents tSNE layout (a, b). Layout b is universally
+suboptimal. Layout b is the best choice.}
 
 \end{figure}%
 
