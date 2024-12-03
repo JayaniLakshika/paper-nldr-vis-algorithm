@@ -508,7 +508,7 @@ true_model_two_curvy <- true_model_df |>
 <!--UMAP applied for Two curvy data-->
 ```{r}
 #| label: umap-two-curvy
-umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds") 
+umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") 
 
 two_curvy_scaled_obj <- gen_scaled_data(
   data = umap_two_curvy)
@@ -526,13 +526,13 @@ sc_xlims <- c(-0.27, 1.2)
 sc_ylims <- c(-0.2, 0.8)
 
 nldr_two_curvy <- umap_two_curvy_scaled |> 
-  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 
 nldr_two_curvy2 <- umap_two_curvy_scaled |> 
-  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   interior_annotation("a", sc_ltr_pos)
 
@@ -544,7 +544,7 @@ nldr_two_curvy_original <- umap_two_curvy_scaled |>
   interior_annotation("a", sc_ltr_pos)
 
 nldr_two_curvy_original2 <- umap_two_curvy_scaled |> 
-  ggplot(aes(x = UMAP1, y = UMAP2)) + 
+  ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, color = "#636363", size = 0.5) +
   theme(aspect.ratio = 1) +
   #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
@@ -596,7 +596,7 @@ hex_grid_two_curvy <- ggplot(
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = umap_two_curvy_scaled, 
-             aes(x = UMAP1, y = UMAP2), 
+             aes(x = tSNE1, y = tSNE2), 
              alpha = 0.5, size = 0.5, color = "#636363") +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos)
@@ -608,7 +608,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
       group = hex_poly_id, 
       fill = std_counts), color = "grey70", linewidth=0.2) +
   geom_point(data = umap_two_curvy_scaled,
-             aes(x = UMAP1, y = UMAP2),
+             aes(x = tSNE1, y = tSNE2),
              alpha = 0.3,
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
@@ -700,8 +700,8 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
                colour = "#000000") +
   geom_point(data = umap_two_curvy_scaled,
              aes(
-               x = UMAP1,
-               y = UMAP2
+               x = tSNE1,
+               y = tSNE2
              ),
              color = "#636363",
              alpha = 0.5,
@@ -1459,7 +1459,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
         color = "grey70", 
         linewidth=0.2) +
   geom_point(data = umap_two_curvy_scaled,
-           aes(x = UMAP1, y = UMAP2),
+           aes(x = tSNE1, y = tSNE2),
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
@@ -1483,8 +1483,8 @@ trimesh_two_curvy2 <- ggplot() +
                colour = "#000000") +
   geom_point(data = umap_two_curvy_scaled,
              aes(
-               x = UMAP1,
-               y = UMAP2
+               x = tSNE1,
+               y = tSNE2
              ),
              color = "#636363",
             alpha = 0.5,
@@ -1667,8 +1667,8 @@ trimesh_two_curvy_removed1 <- ggplot() +
                colour = "#000000")+
   geom_point(data = umap_two_curvy_scaled,
              aes(
-               x = UMAP1,
-               y = UMAP2
+               x = tSNE1,
+               y = tSNE2
              ),
              color = "#636363",
             alpha = 0.5,
@@ -1687,8 +1687,8 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
                colour = "#000000") +
   geom_point(data = umap_two_curvy_scaled,
              aes(
-               x = UMAP1,
-               y = UMAP2
+               x = tSNE1,
+               y = tSNE2
              ),
              color = "#636363",
             alpha = 0.5,
@@ -1721,8 +1721,8 @@ trimesh_two_curvy_removed2 <- ggplot() +
                colour = "#000000")+
   geom_point(data = umap_two_curvy_scaled,
              aes(
-               x = UMAP1,
-               y = UMAP2
+               x = tSNE1,
+               y = tSNE2
              ),
              color = "#636363",
             alpha = 0.5,
@@ -2085,7 +2085,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
         fill = std_counts), 
         color = "grey70", linewidth=0.2) +
   geom_point(data = umap_two_curvy_scaled,
-           aes(x = UMAP1, y = UMAP2),
+           aes(x = tSNE1, y = tSNE2),
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
@@ -2308,8 +2308,8 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
               select(-ID))
 
 error_plot_two_curvy <- error_df_two_curvy_abs |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2,
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
@@ -2386,6 +2386,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
 #| fig-height: 10
 #| out-height: 80%
 #| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, and (c) predicted data from our method."
+#| eval: false
 
 proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_two_curvy +
   plot_layout(ncol = 3)
@@ -5772,7 +5773,6 @@ free(trimesh_removed_pbmc) +
   plot_layout(ncol=3) &
   theme(legend.position='none')
 ```
-
 
 ### Hand-written digits
 <!--
