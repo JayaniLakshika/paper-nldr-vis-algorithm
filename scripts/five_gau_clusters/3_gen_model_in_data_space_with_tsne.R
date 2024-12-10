@@ -14,7 +14,7 @@ gau1_scaled_obj <- gen_scaled_data(
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 13
+num_bins_x_gau1 <- 20 #13 DHC: Note 13 produces long edges that cannot be filtered
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -61,18 +61,20 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-benchmark_gau1 <- 0.1
+#benchmark_gau1 <- 0.1
+benchmark_gau1 <- 0.1 # Benchmark value is a fraction too big, and produces long edges
 
 # tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
 #   filter(row_number() != 149)
 
+# DHC: Add comment describing what happens here
 trimesh_removed_gau1 <- vis_rmlg_mesh(
   distance_edges = distance_gau1,
   benchmark_value = benchmark_gau1,
   tr_coord_df = tr_from_to_df_gau1,
   distance_col = "distance")
 
-
+## DHC: Why does the binning get done again?
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
   data = tsne_gau_scaled,
@@ -80,24 +82,30 @@ hb_obj_gau1 <- hex_binning(
   r2 = r2_gau1,
   q = 0.1)
 
+# DHC: Add comment describing what happens here
 tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
 
+# DHC: Add comment describing what happens here
 df_all_gau1 <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID),
                                   tsne_data_with_hb_id)
 
+# DHC: Add comment describing what happens here
 ### Define type column
 df <- df_all_gau1 |>
   dplyr::select(tidyselect::starts_with("x")) |>
   dplyr::mutate(type = "data") ## original dataset
 
+# DHC: Add comment describing what happens here
 df_b <- df_bin_gau1 |>
   dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+## DHC: This is dangerous!!! Why re-ordering, and why matching
 df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
   dplyr::select(-hb_id)
 
+# DHC: Add comment describing what happens here
 df_exe <- dplyr::bind_rows(df_b, df)
 
 ## Set the maximum difference as the criteria
