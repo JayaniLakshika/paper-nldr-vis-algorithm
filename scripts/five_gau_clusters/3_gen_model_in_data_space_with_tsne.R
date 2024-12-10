@@ -113,6 +113,8 @@ distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 ## Since erase brushing is considerd.
 
+## Add the selected cluster data
+
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges$from,
                          lineTo = distance_df_small_edges$to,
@@ -120,7 +122,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          levelColors = c("#6a3d9a", "#33a02c"))
 
 
-## First projection
+## First projection (add proper comments)
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
