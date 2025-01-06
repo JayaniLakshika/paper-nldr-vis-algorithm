@@ -1322,7 +1322,7 @@ hex_param_vis <- ggplot() +
 ```{r}
 #| label: fig-hex-param
 #| fig-cap: "The components of the hexagon grid illustrating notation."
-#| out-height: 30%
+#| out-width: 30%
 #| fig-pos: H
  
 hex_param_vis
@@ -2326,7 +2326,7 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
 #| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
-#| out-height: 30%
+#| out-width: 30%
 #| fig-pos: H
 
 error_plot_two_curvy
@@ -2388,7 +2388,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
-#| out-height: 80%
+#| out-width: 80%
 #| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, and (c) predicted data from our method."
 #| eval: false
 
@@ -2435,7 +2435,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins. XXX All look the same"
 #| fig-width: 9
 #| fig-height: 3
 
@@ -2679,7 +2679,7 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
 #| fig-cap: "Assessing which of the 5 NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-two_non_linear_diff_shaped_close_clusters-mse
 #| fig-pos: H
-#| out-height: 60%
+#| out-width: 60%
 
 free(error_plot_two_non_linear_diff_shaped_close_clusters) + wrap_plots(nldr_two_non_linear_diff_shaped_close_clusters1, nldr_two_non_linear_diff_shaped_close_clusters2, nldr_two_non_linear_diff_shaped_close_clusters3, 
                                     nldr_two_non_linear_diff_shaped_close_clusters4, nldr_two_non_linear_diff_shaped_close_clusters5, ncol = 2)
@@ -3266,7 +3266,7 @@ two_curvy_proj_pacmap_all_model <- projected_df |>
 #| fig-cap: "Best fit for two C-shaped clusters data using UMAP (a1-a4) ($a_1$ = 0.09) and tSNE (b1-b4) ($a_1$ = 0.16) with the same number of non-empty bins ($m$ = 39). Both models show twist in $7\\text{-}D$ (a3, a4, b3, b4). Also, both NLDR methods are unable to accurately capture the width of the curvilinear clusters."
 #| fig-width: 15
 #| fig-height: 20
-#| out-height: 90%
+#| out-width: 90%
 
 nldr_two_curvy_original2 + tsne_two_non_linear_diff_shaped_close_clusters_plt +
   pacmap_two_non_linear_diff_shaped_close_clusters_plt +
@@ -4396,14 +4396,14 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-five-gau-projs
-#| fig-height: 15
+#| fig-height: 10
 #| fig-width: 15
 #| fig-pos: H
-#| fig-cap: "Model in \\gD{}, on the layouts a1, b1, and c1, and two views of the fit in projections of each layout from $4\\text{-}D$, for the five Gaussian cluster data. All \\gD{} models show five well-separated clusters with different gaps. Layout a1 shows small separations, while layout b2 shows large gaps. On the other hand, layout b3 shows average gaps with exact positions as in $4\\text{-}D$. Assessing the different models fit for different layouts for a specific cluster (highlighted in red) shows filled-out shape in a1, a2, and b1, b2. On the other hand, c1 and c2 shows pancake shape.  Videos of the langevitour animations are available at <https://youtu.be/5Y1hE4i7N2k>, <https://youtu.be/5Y1hE4i7N2k>, and <https://youtu.be/5Y1hE4i7N2k> respectively."
+#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) t-SNE, (b) UMAP, (c) PaCMap. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
-five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
-  plot_layout(guides = "collect", nrow = 3) &
+five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + #error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
+  plot_layout(guides = "collect", nrow = 2) &
   theme(legend.position='none')
 ```
 
@@ -4931,7 +4931,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 #| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
-#| out-height: 100%
+#| out-width: 100%
 
 free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
            nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
@@ -5322,7 +5322,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 15
-#| out-height: 80%
+#| out-width: 80%
 
 free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
@@ -5343,7 +5343,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 <!-- Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>). -->
 <!-- ::: -->
 
-#### scDEED
+#### Comparison with results of scDEED recommendations
 
 In the field of single-cell studies, clustering is a common analytical task used to identify groups of cells with similar expression profiles. Non-linear dimensional reduction (NLDR) methods are frequently employed to visualize these clusters and help validate the results. However, it is well known that the 2D embeddings produced by t-SNE and UMAP may not accurately reflect the similarities among cell clusters. 
 
@@ -5459,7 +5459,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 ```{r}
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
-#| out-height: 100%
+#| out-width: 100%
 #| fig-cap: "Assessing which of the 2 UMAP layouts with different hyperparameter settings (n_neighbors: $30$, min_dist: $0.3$ (red), n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents UMAP layout (a, b). Layout b is universally suboptimal. Layout b is the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
@@ -5775,7 +5775,7 @@ pbmc_proj_umap_model2 <- projected_df |>
 #| fig-pos: H
 #| fig-width: 15
 #| fig-height: 5
-#| out-height: 80%
+#| out-width: 80%
 
 free(trimesh_removed_pbmc) + 
   pbmc_proj_umap_model1 + 
@@ -5905,7 +5905,7 @@ error_plot_mnist <- ggplot(error_mnist,
 #| fig-cap: "Assessing which of the 5 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). All the layouts appear to be very similar. Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
-#| out-height: 100%
+#| out-width: 100%
 
 free(error_plot_mnist) + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, ncol = 2)
@@ -5969,7 +5969,7 @@ tsne_plot_mnist <- tsne_plot_mnist +
 #| fig-cap: "The $\\gD{}$ layout from tSNE applied for the MNIST digit 1 dataset with defualt (hyper-)parameters. We use our model in the $10\\text{-}D$ space to assess whether this is an accurate representation of data structure present in $10\\text{-}D$, or if it is misleading. The angle of the digit 1 images varies along this structure. Images at the top-right of the $\\gD{}$ layout show the digit 1 angled more to the right, while those at the bottom-right show the digit 1 angled more to the left."
 #| label: fig-tsne-best
 #| fig-pos: H
-#| out-height: 22%
+#| out-width: 22%
 #| eval: false
 
 tsne_plot_mnist
@@ -6576,7 +6576,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
-#| out-height: 80%
+#| out-width: 80%
 
 highd_error_2d_mnist + (imge_error_sample_outside / right_top_img / middle_img / right_bottom_img)
 ```

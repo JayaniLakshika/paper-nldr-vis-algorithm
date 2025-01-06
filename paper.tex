@@ -78,15 +78,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 
@@ -162,9 +164,6 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
 \usepackage{bookmark}
@@ -265,7 +264,7 @@ tools to aid with this decision.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-variety-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-NLDR-variety-1.pdf}
 
 }
 
@@ -458,7 +457,7 @@ geometric structure (true model) that we hope to capture.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-two-curvy-true-proj-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-two-curvy-true-proj-1.pdf}
 
 }
 
@@ -476,7 +475,7 @@ the full video is available at \textless\textgreater.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-two-curvy-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-NLDR-two-curvy-1.pdf}
 
 }
 
@@ -541,7 +540,7 @@ on a vertex. Therefore,
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-hex-param-1.pdf}
+\includegraphics[width=0.3\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-hex-param-1.pdf}
 
 }
 
@@ -599,7 +598,7 @@ accurately captures the data.
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/best-fit-umap1-1.pdf}
+{\centering \includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/best-fit-umap1-1.pdf}
 
 }
 
@@ -640,7 +639,7 @@ dimensional data of \(i^{th}\) observation in \(h^{th}\) hexagon.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.3\textheight]{paper_files/figure-pdf/fig-p-d-error-in-2d-two-curvy-1.pdf}
+\includegraphics[width=0.3\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-p-d-error-in-2d-two-curvy-1.pdf}
 
 }
 
@@ -710,7 +709,7 @@ observations.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-bins-two-curvy-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-bins-two-curvy-1.pdf}
 
 }
 
@@ -722,7 +721,8 @@ of the two C-shaped clusters data, using three different bin inputs: (a)
 counts, dark indicating high count and light indicates low count. At the
 smallest bin size, the data structure is discontinuous, suggesting that
 there are too many bins. Using the MSE of the model fit in
-\(7\text{-}D\) helps decide on a useful choice of number of bins.}
+\(7\text{-}D\) helps decide on a useful choice of number of bins. XXX
+All look the same}
 
 \end{figure}%
 
@@ -777,7 +777,7 @@ low-density hexagons.
 
 \centering{
 
-\includegraphics[width=0.8\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-two-curvy-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-param-two-curvy-1.pdf}
 
 }
 
@@ -834,7 +834,7 @@ initial bin position or removing low density bins.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-rm-lg-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-rm-lg-1.pdf}
 
 }
 
@@ -869,7 +869,7 @@ data well. However, it technically might be quite variable.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.6\textheight]{paper_files/figure-pdf/fig-two_non_linear_diff_shaped_close_clusters-mse-1.pdf}
+\includegraphics[width=0.6\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-two_non_linear_diff_shaped_close_clusters-mse-1.pdf}
 
 }
 
@@ -885,7 +885,7 @@ best choice.}
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=1\textwidth,height=0.9\textheight]{paper_files/figure-pdf/best-fit-umap-tsne-pacamp-1.pdf}
+{\centering \includegraphics[width=0.9\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/best-fit-umap-tsne-pacamp-1.pdf}
 
 }
 
@@ -947,22 +947,24 @@ more points in the middle that are further from the fitted model.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-five-gau-projs-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-five-gau-projs-1.pdf}
 
 }
 
-\caption{\label{fig-five-gau-projs}Model in \gD{}, on the layouts a1,
-b1, and c1, and two views of the fit in projections of each layout from
-\(4\text{-}D\), for the five Gaussian cluster data. All \gD{} models
-show five well-separated clusters with different gaps. Layout a1 shows
-small separations, while layout b2 shows large gaps. On the other hand,
-layout b3 shows average gaps with exact positions as in \(4\text{-}D\).
-Assessing the different models fit for different layouts for a specific
-cluster (highlighted in red) shows filled-out shape in a1, a2, and b1,
-b2. On the other hand, c1 and c2 shows pancake shape. Videos of the
-langevitour animations are available at
-\url{https://youtu.be/5Y1hE4i7N2k}, \url{https://youtu.be/5Y1hE4i7N2k},
-and \url{https://youtu.be/5Y1hE4i7N2k} respectively.}
+\caption{\label{fig-five-gau-projs}NLDR's organise points in the \gD{}
+layout in different ways, possibly misleadingly, illustrated using three
+layouts: (a) t-SNE, (b) UMAP, (c) PaCMap. The data has five Gaussian
+cluster in \(4\text{-}D\). The bottom row of plots shows a \gD{}
+projection from a tour on \(4\text{-}D\) revealing the differences
+generated by the layouts on the model fits. We would expect the model
+fit to be like that in (a2) where it is distinctly is separate for each
+cluster but like a hairball in each. This would indicate the distinct
+clusters, each being fully \(4\text{-}D\). With (c2), the curiousity is
+that the model is a \gD{} pancake shape in \(4\text{-}D\), indicating
+that there is some ordering of points done by PaCMAP, posisbly along
+some principal component axes. Videos of the langevitour animations are
+available at \url{https://youtu.be/oQxEb4wRdHI},
+\url{https://youtu.be/JW49csPpDx4}, and XXX respectively.}
 
 \end{figure}%
 
@@ -1015,7 +1017,7 @@ clusters, resulting in dense areas (Figure~\ref{fig-mnist-tri-proj}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
 
 }
 
@@ -1036,7 +1038,7 @@ between oddly shaped clusters. Layout e is the best choice.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.8\textheight]{paper_files/figure-pdf/fig-model-pbmc-author-proj-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-pbmc-author-proj-1.pdf}
 
 }
 
@@ -1056,7 +1058,8 @@ langevitour animations are available at
 
 \end{figure}%
 
-\subsubsection{scDEED}\label{scdeed}
+\subsubsection{Comparison with results of scDEED
+recommendations}\label{comparison-with-results-of-scdeed-recommendations}
 
 In the field of single-cell studies, clustering is a common analytical
 task used to identify groups of cells with similar expression profiles.
@@ -1094,7 +1097,7 @@ then select a reasonable \gD{} layout.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
 
 }
 
@@ -1112,7 +1115,7 @@ suboptimal. Layout b is the best choice.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.8\textheight]{paper_files/figure-pdf/fig-model-pbmc-author-proj-scdeed-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-pbmc-author-proj-scdeed-1.pdf}
 
 }
 
@@ -1137,7 +1140,7 @@ non-linear structure of the digit 1 dataset in \(10\text{-}D\)
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=1\textheight]{paper_files/figure-pdf/fig-mnist-mse-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-mnist-mse-1.pdf}
 
 }
 
@@ -1181,7 +1184,7 @@ together (Figure~\ref{fig-mnist-tri-proj} (c)).
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
 
 }
 
@@ -1198,7 +1201,7 @@ the static plot. Video of the langevitour animation are available at .}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.8\textheight]{paper_files/figure-pdf/fig-model-error-mnist-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-error-mnist-1.pdf}
 
 }
 
