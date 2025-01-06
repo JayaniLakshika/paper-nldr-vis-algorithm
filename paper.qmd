@@ -556,7 +556,7 @@ nldr_two_curvy_original2 <- tsne_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 20
+num_bins_x_two_curvy <- 23
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -839,8 +839,8 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.126, 0.125)) + 
-  ylim(c(-0.126, 0.125)) +
+  xlim(c(-0.165, 0.165)) + 
+  ylim(c(-0.165, 0.165)) +
   interior_annotation("c", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -885,8 +885,8 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.126, 0.125)) + 
-  ylim(c(-0.126, 0.125)) +
+  xlim(c(-0.165, 0.165)) + 
+  ylim(c(-0.165, 0.165)) +
   interior_annotation("d", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -915,8 +915,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-    c(-0.08707,-0.06493,0.07017,-0.07349,-0.02955,-0.05286,-0.02765),
-    c(0.03398,0.03735,0.09272,0.01871,-0.09224,0.00451,0.08079))
+    c(0.11062,-0.02743,0.02786,-0.01930,0.02374,-0.03493,0.03159),
+    c(-0.01110,-0.06886,0.04730,0.09890,-0.00571,-0.00038,0.00169))
 
 projection_scaled <- projection * 1
 
@@ -950,10 +950,10 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(  
   proj = projection * 5,
   limits = 0.15,
-  axis_pos_x = -0.1,
-  axis_pos_y = -0.1,
+  axis_pos_x = -0.067,
+  axis_pos_y = -0.067,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.01)
+  threshold = 0.007)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -989,8 +989,8 @@ two_curvy_proj_umap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.126, 0.125)) + 
-  ylim(c(-0.126, 0.125)) +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
   interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
@@ -1018,8 +1018,8 @@ proj_plot_two_curvy_true <- model_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.126, 0.125)) + 
-  ylim(c(-0.126, 0.125)) +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
   interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
@@ -1027,8 +1027,8 @@ proj_plot_two_curvy_true <- model_df |>
 
 ## Second projection
 projection <- cbind(
-    c(-0.02704,0.08281,-0.07671,-0.02996,0.08674,0.06497,-0.02090),
-    c(0.00095,0.08031,0.05721,0.10299,0.04816,-0.05837,-0.02226))
+    c(-0.03372,0.07726,0.03948,-0.00096,-0.02976,-0.07968,0.03194),
+    c(0.07080,0.00316,-0.00382,0.05069,-0.07334,-0.02506,-0.05749))
 
 projection_scaled <- projection * 1
 
@@ -1061,11 +1061,11 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection * 6,
-  limits = 0.13,
-  axis_pos_x = -0.1,
-  axis_pos_y = -0.1,
+  limits = 0.1,
+  axis_pos_x = -0.05,
+  axis_pos_y = -0.05,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.0113)
+  threshold = 0.007)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -1101,8 +1101,8 @@ two_curvy_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.125, 0.13)) + 
-  ylim(c(-0.125, 0.13)) +
+  xlim(c(-0.07, 0.07)) + 
+  ylim(c(-0.07, 0.07)) +
   interior_annotation("b", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
