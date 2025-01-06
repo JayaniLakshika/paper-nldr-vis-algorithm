@@ -744,8 +744,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(-0.08707,-0.06493,0.07017,-0.07349,-0.02955,-0.05286,-0.02765),
-  c(0.03398,0.03735,0.09272,0.01871,-0.09224,0.00451,0.08079))
+    c(0.11062,-0.02743,0.02786,-0.01930,0.02374,-0.03493,0.03159),
+    c(-0.01110,-0.06886,0.04730,0.09890,-0.00571,-0.00038,0.00169))
 
 projection_scaled <- projection * 1
 
@@ -800,10 +800,10 @@ names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df
 axes_obj <- gen_axes(  
   proj = projection * 5,
   limits = 0.15,
-  axis_pos_x = -0.1,
-  axis_pos_y = -0.1,
+  axis_pos_x = -0.067,
+  axis_pos_y = -0.067,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.01)
+  threshold = 0.007)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -839,8 +839,8 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.165, 0.165)) + 
-  ylim(c(-0.165, 0.165)) +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
   interior_annotation("c", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -885,8 +885,8 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.165, 0.165)) + 
-  ylim(c(-0.165, 0.165)) +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
   interior_annotation("d", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -2167,13 +2167,13 @@ plot_predict_tsne_two_curvy <- ggplot(
 #| label: best-fit-umap1
 #| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two C-shaped clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of UMAP, which compresses the data when transforming the data into \\gD{}. Video of the langevitour animations is available at <>."
 #| fig-width: 10
-#| fig-height: 8
+#| fig-height: 10
 
 nldr_two_curvy2 + 
   trimesh_two_curvy_removed1_umap_with_data +
   two_curvy_proj_umap_first_model1 +
   two_curvy_proj_umap_all_model1 +
-  plot_layout(ncol = 2, heights = c(1, 2))
+  plot_layout(ncol = 2)
 ```
 
 
