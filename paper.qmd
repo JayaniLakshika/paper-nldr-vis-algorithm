@@ -2220,14 +2220,15 @@ error_two_non_linear_diff_shaped_close_clusters_umap <- error_two_non_linear_dif
 mse_two_curvy_b <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap, 
                      aes(x = a1, 
                          y = MSE)) +
-  geom_vline(xintercept = 0.09,
-             linetype="solid",
-           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.08,
+           color = "#d95f02", linetype=2, 
+           linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1b9e77", linetype=2,
+             color = "#1f78b4", 
+             linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.13, linetype=2,
-             color = "#1f78b4", linewidth=1) +
+  geom_vline(xintercept = 0.02, linetype=2,
+             color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
@@ -2244,14 +2245,15 @@ mse_two_curvy_b <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
 prop_dens_a1 <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
                      aes(x = a1,
                          y = prop_comp)) +
-  geom_vline(xintercept = 0.09,
-             linetype="solid",
-           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.08,
+           color = "#d95f02", linetype=2, 
+           linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1b9e77", linetype=2,
+             color = "#1f78b4", 
+             linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.13, linetype=2,
-             color = "#1f78b4", linewidth=1) +
+  geom_vline(xintercept = 0.02, linetype=2,
+             color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
@@ -2271,14 +2273,15 @@ error_two_non_linear_diff_shaped_close_clusters_umap <- error_two_non_linear_dif
 a1_m_two_curvy <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
                      aes(x = a1,
                          y = prop_bins)) +
-  geom_vline(xintercept = 0.09,
-             linetype="solid",
-           color = "#d95f02", linewidth=1) +
+  geom_vline(xintercept = 0.08,
+           color = "#d95f02", linetype=2, 
+           linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1b9e77", linetype=2,
+             color = "#1f78b4", 
+             linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.13, linetype=2,
-             color = "#1f78b4", linewidth=1) +
+  geom_vline(xintercept = 0.02, linetype=2,
+             color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
@@ -2510,7 +2513,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   # scale_x_continuous("standardized bin count", 
   #        transform = "reverse") + 
   scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 3, 5, 7, 9, 11, 13, 15, 17)]) +
-  scale_color_manual(values=c("#1f78b4", "#d95f02", "#1b9e77")) +
+  scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77")) +
   xlab("threshold to remove low-density hexagons") +
   ylab("MSE") +
   ggtitle("(c)") +
