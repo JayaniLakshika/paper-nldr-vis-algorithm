@@ -556,7 +556,7 @@ nldr_two_curvy_original2 <- tsne_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 23
+num_bins_x_two_curvy <- 15
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -2055,11 +2055,11 @@ two_curvy_proj_umap_all_model <- projected_df |>
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy3 <- hex_binning(
   data = tsne_two_curvy_scaled, 
-  bin1 = 23, 
+  bin1 = 48, 
   r2 = r2)
 
 a1_3 <- calc_bins_y(
-  bin1 = 23, 
+  bin1 = 48, 
   r2 = r2
 )$a1
 
