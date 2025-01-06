@@ -614,7 +614,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "E") +
   interior_annotation("a", sc_ltr_pos) + 
-  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) 
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) 
 
 
 ```
@@ -1464,7 +1464,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) +
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) +
   interior_annotation("b", sc_ltr_pos)
 
 ## Triangulate bin centroids
@@ -2089,7 +2089,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
-  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 0.78)) +
+  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) +
   interior_annotation("c", sc_ltr_pos)
 ```
 
@@ -2431,9 +2431,9 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of UMAP layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
-#| fig-height: 2
+#| fig-height: 3
 
 # hex_grid_coloured_two_curvy1 + 
 #   hex_grid_coloured_two_curvy2 + 
