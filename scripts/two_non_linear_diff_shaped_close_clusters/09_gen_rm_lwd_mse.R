@@ -7,12 +7,12 @@ training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clust
 training_data_two_curvy <- training_data_two_curvy |>
   mutate(ID = row_number())
 
-umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds")
 
 two_curvy_scaled_obj <- gen_scaled_data(
-  data = umap_two_curvy)
+  data = tsne_two_curvy)
 
-umap_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
+tsne_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
 lim1 <- two_curvy_scaled_obj$lim1
 lim2 <- two_curvy_scaled_obj$lim2
@@ -23,8 +23,8 @@ r2 <- diff(lim2)/diff(lim1)
 
 two_curvy_model1 <- fit_highd_model(
   training_data = training_data_two_curvy,
-  emb_df = umap_two_curvy_scaled,
-  bin1 = 10,
+  emb_df = tsne_two_curvy_scaled,
+  bin1 = 15,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -53,7 +53,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     df_bin = df_bin_two_curvy_high_dens,
     training_data = training_data_two_curvy,
     newdata = NULL,
-    type_NLDR = "UMAP",
+    type_NLDR = "tsne",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
            bin1 = 10,
@@ -70,8 +70,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
 two_curvy_model2 <- fit_highd_model(
   training_data = training_data_two_curvy,
-  emb_df = umap_two_curvy_scaled,
-  bin1 = 13,
+  emb_df = tsne_two_curvy_scaled,
+  bin1 = 23,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -100,7 +100,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     df_bin = df_bin_two_curvy_high_dens,
     training_data = training_data_two_curvy,
     newdata = NULL,
-    type_NLDR = "UMAP",
+    type_NLDR = "tsne",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
            bin1 = 13,
@@ -117,8 +117,8 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
 two_curvy_model3 <- fit_highd_model(
   training_data = training_data_two_curvy,
-  emb_df = umap_two_curvy_scaled,
-  bin1 = 23,
+  emb_df = tsne_two_curvy_scaled,
+  bin1 = 48,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
@@ -147,7 +147,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     df_bin = df_bin_two_curvy_high_dens,
     training_data = training_data_two_curvy,
     newdata = NULL,
-    type_NLDR = "UMAP",
+    type_NLDR = "tsne",
     col_start = "x") |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
            bin1 = 23,
