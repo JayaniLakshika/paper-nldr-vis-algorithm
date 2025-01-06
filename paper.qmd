@@ -2304,7 +2304,7 @@ error_df_two_curvy_abs <- augment(
   df_bin = df_bin_two_curvy2,
   training_data = training_data_two_curvy,
   newdata = NULL,
-  type_NLDR = "UMAP",
+  type_NLDR = "tSNE",
   col_start = "x")
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
@@ -4442,6 +4442,17 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 <!-- ::: -->
 
 ### The effect of density
+
+```{r}
+source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
+```
+
+```{r}
+#| fig-height: 5
+#| fig-width: 15
+#| fig-pos: H
+generate_error_plots_one_c_shaped()
+```
 
 ## Applications {#sec-applications}
 
