@@ -508,12 +508,12 @@ true_model_two_curvy <- true_model_df |>
 <!--UMAP applied for Two curvy data-->
 ```{r}
 #| label: umap-two-curvy
-umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") 
+tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") 
 
 two_curvy_scaled_obj <- gen_scaled_data(
-  data = umap_two_curvy)
+  data = tsne_two_curvy)
 
-umap_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
+tsne_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
 lim1 <- two_curvy_scaled_obj$lim1
 lim2 <- two_curvy_scaled_obj$lim2
@@ -523,27 +523,27 @@ sc_ltr_pos <- c(0.08, 0.9)
 # sc_xlims <- c(-0.5, 1.47)
 # sc_ylims <- c(-0.32, 2.1)
 sc_xlims <- c(-0.27, 1.2)
-sc_ylims <- c(-0.2, 0.8)
+sc_ylims <- c(-0.2, 1.1)
 
-nldr_two_curvy <- umap_two_curvy_scaled |> 
+nldr_two_curvy <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 
-nldr_two_curvy2 <- umap_two_curvy_scaled |> 
+nldr_two_curvy2 <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   interior_annotation("a", sc_ltr_pos)
 
-nldr_two_curvy_original <- umap_two_curvy_scaled |> 
+nldr_two_curvy_original <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
   geom_point(alpha=0.5, color = "#636363", size = 0.5) +
   theme(aspect.ratio = 1) +
   #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
   interior_annotation("a", sc_ltr_pos)
 
-nldr_two_curvy_original2 <- umap_two_curvy_scaled |> 
+nldr_two_curvy_original2 <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, color = "#636363", size = 0.5) +
   theme(aspect.ratio = 1) +
@@ -556,11 +556,11 @@ nldr_two_curvy_original2 <- umap_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 12
+num_bins_x_two_curvy <- 20
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
-  data = umap_two_curvy_scaled, 
+  data = tsne_two_curvy_scaled, 
   bin1 = num_bins_x_two_curvy, 
   r2 = r2,
   q = 0.1)
@@ -595,7 +595,7 @@ hex_grid_two_curvy <- ggplot(
   geom_polygon(color = "grey70", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
-  geom_point(data = umap_two_curvy_scaled, 
+  geom_point(data = tsne_two_curvy_scaled, 
              aes(x = tSNE1, y = tSNE2), 
              alpha = 0.5, size = 0.5, color = "#636363") +
   xlim(sc_xlims) + ylim(sc_ylims) +
@@ -607,7 +607,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
     aes(x = x, y = y,
       group = hex_poly_id, 
       fill = std_counts), color = "grey70", linewidth=0.2) +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(x = tSNE1, y = tSNE2),
              alpha = 0.3,
              size = 0.5) +
@@ -698,7 +698,7 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000") +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
@@ -1171,7 +1171,7 @@ The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of 
 # Code to draw illustration for notation
 ## hexagon binning to have regular hexagons
 hb_obj_notation <- hex_binning(
-  data = umap_two_curvy_scaled, 
+  data = tsne_two_curvy_scaled, 
   bin1 = 7, 
   r2 = 1.6,
   q = 0.1)
@@ -1389,7 +1389,7 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 #| label: hexbin-regular-two-curvy2
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy2 <- hex_binning(
-  data = umap_two_curvy_scaled, 
+  data = tsne_two_curvy_scaled, 
   bin1 = 13, 
   r2 = r2)
 
@@ -1458,7 +1458,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
         fill = std_counts), 
         color = "grey70", 
         linewidth=0.2) +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
            aes(x = tSNE1, y = tSNE2),
            alpha = 0.3,
            size = 0.5) +
@@ -1481,7 +1481,7 @@ trimesh_two_curvy2 <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000") +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
@@ -1665,7 +1665,7 @@ trimesh_two_curvy_removed1 <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000")+
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
@@ -1685,7 +1685,7 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000") +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
@@ -1719,7 +1719,7 @@ trimesh_two_curvy_removed2 <- ggplot() +
                  xend = x_to,
                  yend = y_to),
                colour = "#000000")+
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
                y = tSNE2
@@ -2050,7 +2050,7 @@ two_curvy_proj_umap_all_model <- projected_df |>
 #| label: hexbin-regular-two-curvy3
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy3 <- hex_binning(
-  data = umap_two_curvy_scaled, 
+  data = tsne_two_curvy_scaled, 
   bin1 = 23, 
   r2 = r2)
 
@@ -2084,7 +2084,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
         group = hex_poly_id, 
         fill = std_counts), 
         color = "grey70", linewidth=0.2) +
-  geom_point(data = umap_two_curvy_scaled,
+  geom_point(data = tsne_two_curvy_scaled,
            aes(x = tSNE1, y = tSNE2),
            alpha = 0.3,
            size = 0.5) +
@@ -2150,7 +2150,7 @@ for (hex_id in unique(true_pred_df$pred_hb_id)) {
   }
 }
 
-plot_predict_umap_two_curvy <- ggplot(
+plot_predict_tsne_two_curvy <- ggplot(
   data = true_pred_df, 
   aes(x = pred_UMAP_1,
       y = pred_UMAP_2)) +
@@ -2304,7 +2304,7 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  bind_cols(umap_two_curvy_scaled |>
+  bind_cols(tsne_two_curvy_scaled |>
               select(-ID))
 
 error_plot_two_curvy <- error_df_two_curvy_abs |>
@@ -2336,15 +2336,15 @@ A new benefit of this fitted model is that it allows us to now predict a new obs
 ```{r}
 #| label: model-prediction-umap-original
 
-predict_umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_predict_true.rds")
+predict_tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_predict_true.rds")
 
 predict_two_curvy_obj <- gen_scaled_data(
-    data = predict_umap_two_curvy)
+    data = predict_tsne_two_curvy)
 
-predict_umap_two_curvy_scaled <- predict_two_curvy_obj$scaled_nldr
+predict_tsne_two_curvy_scaled <- predict_two_curvy_obj$scaled_nldr
 
 plot_predict_umap_fun_two_curvy <- ggplot(
-  data = predict_umap_two_curvy_scaled, 
+  data = predict_tsne_two_curvy_scaled, 
   aes(x = UMAP1, 
       y = UMAP2)) +
   geom_point(alpha = 0.5) +
@@ -2354,7 +2354,7 @@ plot_predict_umap_fun_two_curvy <- ggplot(
 ```{r}
 #| label: model-prediction-points-line
 
-predict_umap_two_curvy_scaled <- predict_umap_two_curvy_scaled |>
+predict_tsne_two_curvy_scaled <- predict_tsne_two_curvy_scaled |>
   mutate(ID = row_number()) |>
   mutate(type = "predict_from_umap") 
 
@@ -2362,7 +2362,7 @@ jittered_points_df <- jittered_points_df |>
   mutate(type = "predict_from_model") 
 
 predict_point_df <- bind_rows(
-  predict_umap_two_curvy_scaled,
+  predict_tsne_two_curvy_scaled,
   jittered_points_df
 )
 
@@ -2388,7 +2388,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
 #| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, and (c) predicted data from our method."
 #| eval: false
 
-proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_umap_two_curvy +
+proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_tsne_two_curvy +
   plot_layout(ncol = 3)
 ```
 
