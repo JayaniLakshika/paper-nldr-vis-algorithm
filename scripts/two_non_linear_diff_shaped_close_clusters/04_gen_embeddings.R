@@ -27,7 +27,7 @@ data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_
 # data <- data |>
 #   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
-## tSNE
+## tSNE (default)
 perplexity <- 30
 
 tSNE_fit <- data |>
@@ -40,6 +40,21 @@ tSNE_data <- tSNE_fit$Y |>
 names(tSNE_data) <- c("tSNE1", "tSNE2")
 
 write_rds(tSNE_data, file = paste0("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_", perplexity, ".rds"))
+
+## tSNE (another choice)
+perplexity <- 62
+
+tSNE_fit <- data |>
+  dplyr::select(where(is.numeric)) |>
+  Rtsne::Rtsne(perplexity = perplexity,
+               pca = FALSE)
+
+tSNE_data <- tSNE_fit$Y |>
+  tibble::as_tibble(.name_repair = "unique")
+names(tSNE_data) <- c("tSNE1", "tSNE2")
+
+write_rds(tSNE_data, file = paste0("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_", perplexity, ".rds"))
+
 
 ## UMAP
 
