@@ -173,3 +173,12 @@ langevitour(df |> dplyr::select(-type),
             lineColors = rep("#33a02c", nrow(distance_df_small_edges_one_nonlinear_structure)))
 
 
+projection <- cbind(
+  c(0.27849,-0.22530,0.28729,-0.11996,0.02673,0.34438,0.38104),
+  c(0.17038,-0.50007,-0.36804,0.19774,0.16088,-0.10109,-0.00039))
+
+gen_proj_langevitour(
+  points_df = df_exe,
+  projection = projection,
+  edge_df = distance_df_small_edges |> select(-distance)
+)
