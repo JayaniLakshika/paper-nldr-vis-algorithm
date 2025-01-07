@@ -78,17 +78,15 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\newsavebox\pandoc@box
-\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
-  \sbox\pandoc@box{#1}%
-  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
-  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
-  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
-  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}%
-  \fi%
-}
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 % Set default figure placement to htbp
+\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 
@@ -164,6 +162,9 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
 \usepackage{bookmark}
@@ -264,7 +265,7 @@ tools to aid with this decision.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-NLDR-variety-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-variety-1.pdf}
 
 }
 
@@ -457,7 +458,7 @@ geometric structure (true model) that we hope to capture.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-two-curvy-true-proj-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-two-curvy-true-proj-1.pdf}
 
 }
 
@@ -475,7 +476,7 @@ the full video is available at \textless\textgreater.}
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-NLDR-two-curvy-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-NLDR-two-curvy-1.pdf}
 
 }
 
@@ -540,7 +541,7 @@ on a vertex. Therefore,
 
 \centering{
 
-\includegraphics[width=0.3\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-hex-param-1.pdf}
+\includegraphics[width=0.3\textwidth,height=\textheight]{paper_files/figure-pdf/fig-hex-param-1.pdf}
 
 }
 
@@ -598,7 +599,7 @@ accurately captures the data.
 
 \begin{figure}[H]
 
-{\centering \includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/best-fit-umap1-1.pdf}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/best-fit-umap1-1.pdf}
 
 }
 
@@ -642,7 +643,7 @@ be the residual for each observation.
 
 \centering{
 
-\includegraphics[width=0.6\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-p-d-error-in-2d-two-curvy-1.pdf}
+\includegraphics[width=0.6\textwidth,height=\textheight]{paper_files/figure-pdf/fig-p-d-error-in-2d-two-curvy-1.pdf}
 
 }
 
@@ -712,7 +713,7 @@ observations.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-bins-two-curvy-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-bins-two-curvy-1.pdf}
 
 }
 
@@ -779,7 +780,7 @@ low-density hexagons.
 
 \centering{
 
-\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-param-two-curvy-1.pdf}
+\includegraphics[width=0.8\textwidth,height=\textheight]{paper_files/figure-pdf/fig-param-two-curvy-1.pdf}
 
 }
 
@@ -836,7 +837,7 @@ initial bin position or removing low density bins.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-rm-lg-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-rm-lg-1.pdf}
 
 }
 
@@ -871,7 +872,7 @@ data well. However, it technically might be quite variable.
 
 \centering{
 
-\includegraphics[width=0.6\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-two_non_linear_diff_shaped_close_clusters-mse-1.pdf}
+\includegraphics[width=0.6\textwidth,height=\textheight]{paper_files/figure-pdf/fig-two_non_linear_diff_shaped_close_clusters-mse-1.pdf}
 
 }
 
@@ -935,7 +936,7 @@ more points in the middle that are further from the fitted model.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-five-gau-projs-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-five-gau-projs-1.pdf}
 
 }
 
@@ -956,6 +957,10 @@ available at \url{https://youtu.be/oQxEb4wRdHI},
 
 \end{figure}%
 
+\begin{center}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/unnamed-chunk-51-1.pdf}
+\end{center}
+
 \subsection{The effect of density}\label{the-effect-of-density}
 
 To illustrate how the methods organise difference number of points
@@ -966,7 +971,7 @@ having C-shaped structure is used.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-one-dens_clust-error-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-one-dens_clust-error-1.pdf}
 
 }
 
@@ -1027,7 +1032,7 @@ clusters, resulting in dense areas (Figure~\ref{fig-mnist-tri-proj}
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-mse-1.pdf}
 
 }
 
@@ -1048,7 +1053,7 @@ between oddly shaped clusters. Layout e is the best choice.}
 
 \centering{
 
-\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-pbmc-author-proj-1.pdf}
+\includegraphics[width=0.8\textwidth,height=\textheight]{paper_files/figure-pdf/fig-model-pbmc-author-proj-1.pdf}
 
 }
 
@@ -1107,7 +1112,7 @@ then select a reasonable \gD{} layout.
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
 
 }
 
@@ -1125,7 +1130,7 @@ suboptimal. Layout b is the best choice.}
 
 \centering{
 
-\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-pbmc-author-proj-scdeed-1.pdf}
+\includegraphics[width=0.8\textwidth,height=\textheight]{paper_files/figure-pdf/fig-model-pbmc-author-proj-scdeed-1.pdf}
 
 }
 
@@ -1150,7 +1155,7 @@ non-linear structure of the digit 1 dataset in \(10\text{-}D\)
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-mnist-mse-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mnist-mse-1.pdf}
 
 }
 
@@ -1194,7 +1199,7 @@ together (Figure~\ref{fig-mnist-tri-proj} (c)).
 
 \centering{
 
-\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
+\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-mnist-tri-proj-1.pdf}
 
 }
 
@@ -1211,7 +1216,7 @@ the static plot. Video of the langevitour animation are available at .}
 
 \centering{
 
-\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{paper_files/figure-pdf/fig-model-error-mnist-1.pdf}
+\includegraphics[width=0.8\textwidth,height=\textheight]{paper_files/figure-pdf/fig-model-error-mnist-1.pdf}
 
 }
 

@@ -1,4 +1,4 @@
-### This script is to generate error plot for one_c_shaped_dens cluster with tSNE, UMAP, and PaCMAP
+### This script is to generate error plot for one_c_shaped_dens and one_c_shaped_uni_dens cluster with tSNE
 library(readr)
 library(dplyr)
 set.seed(20240110)
@@ -13,7 +13,7 @@ one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c
 one_c_shaped_data <- one_c_shaped_data |>
   mutate(ID = row_number())
 
-##1. With tSNE
+##1. With one_c_shaped_dens
 
 tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_30.rds")
 
@@ -90,103 +90,24 @@ error_plot_tsne <- error_df_one_curvy_abs |>
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
-##2. With UMAP
+##2. With one_c_shaped_uni_dens
 
-umap_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_umap_n-neigbors_15_min-dist_0.1.rds")
+tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_structure_tsne_perplexity_30.rds")
 
-umap_one_c_shaped_scaled_obj <- gen_scaled_data(
-  data = umap_one_c_shaped)
+tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
+  data = tsne_one_c_shaped)
 
-umap_one_c_shaped_scaled <- umap_one_c_shaped_scaled_obj$scaled_nldr |>
+tsne_one_c_shaped_scaled <- tsne_one_c_shaped_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
-lim1 <- umap_one_c_shaped_scaled_obj$lim1
-lim2 <- umap_one_c_shaped_scaled_obj$lim2
-r2 <- diff(lim2)/diff(lim1)
-
-num_bins <- 18
-
-## hexagon binning to have regular hexagons
-hb_obj_one_c_shaped <- hex_binning(
-  data = umap_one_c_shaped_scaled,
-  bin1 = num_bins,
-  r2 = r2)
-
-a1_2 <- calc_bins_y(
-  bin1 = num_bins,
-  r2 = r2
-)$a1
-
-## Data set with all centroids
-all_centroids_df2 <- hb_obj_one_c_shaped$centroids
-
-## Generate all coordinates of hexagons
-hex_grid2 <- hb_obj_one_c_shaped$hex_poly
-
-## To obtain the standardise counts within hexbins
-counts_df2 <- hb_obj_one_c_shaped$std_cts
-df_bin_centroids2 <- extract_hexbin_centroids(
-  centroids_df = all_centroids_df2,
-  counts_df = counts_df2) |>
-  filter(drop_empty == FALSE)
-
-umap_data_one_c_shaped_with_hb_id <- hb_obj_one_c_shaped$data_hb_id
-df_all_one_curvy2 <- dplyr::bind_cols(one_c_shaped_data,
-                                      umap_data_one_c_shaped_with_hb_id)
-
-df_bin_one_curvy2 <- avg_highd_data(data = df_all_one_curvy2, col_start = "x")
-
-## Compute error
-error_df_one_curvy_abs <- augment(
-  df_bin_centroids = df_bin_centroids2,
-  df_bin = df_bin_one_curvy2,
-  training_data = one_c_shaped_data,
-  newdata = NULL,
-  type_NLDR = "UMAP",
-  col_start = "x")
-
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
-
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  bind_cols(umap_one_c_shaped_scaled |>
-              select(-ID))
-
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = standardize(sqrt_row_wise_abs_error))
-
-
-error_plot_umap <- error_df_one_curvy_abs |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2,
-             colour = sqrt_row_wise_abs_error)) +
-  geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
-  theme(
-    aspect.ratio = 1
-  ) +
-  interior_annotation("b",
-                      position = c(0.08, 0.95),
-                      cex = 1.5)
-
-
-##3. With PaCMAP
-
-pacmap_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
-
-pacmap_one_c_shaped_scaled_obj <- gen_scaled_data(
-  data = pacmap_one_c_shaped)
-
-pacmap_one_c_shaped_scaled <- pacmap_one_c_shaped_scaled_obj$scaled_nldr |>
-  mutate(ID = row_number())
-lim1 <- pacmap_one_c_shaped_scaled_obj$lim1
-lim2 <- pacmap_one_c_shaped_scaled_obj$lim2
+lim1 <- tsne_one_c_shaped_scaled_obj$lim1
+lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 num_bins <- 17
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
-  data = pacmap_one_c_shaped_scaled,
+  data = tsne_one_c_shaped_scaled,
   bin1 = num_bins,
   r2 = r2)
 
@@ -208,9 +129,9 @@ df_bin_centroids2 <- extract_hexbin_centroids(
   counts_df = counts_df2) |>
   filter(drop_empty == FALSE)
 
-pacmap_data_one_c_shaped_with_hb_id <- hb_obj_one_c_shaped$data_hb_id
+tsne_data_one_c_shaped_with_hb_id <- hb_obj_one_c_shaped$data_hb_id
 df_all_one_curvy2 <- dplyr::bind_cols(one_c_shaped_data,
-                                      pacmap_data_one_c_shaped_with_hb_id)
+                                      tsne_data_one_c_shaped_with_hb_id)
 
 df_bin_one_curvy2 <- avg_highd_data(data = df_all_one_curvy2, col_start = "x")
 
@@ -220,31 +141,32 @@ error_df_one_curvy_abs <- augment(
   df_bin = df_bin_one_curvy2,
   training_data = one_c_shaped_data,
   newdata = NULL,
-  type_NLDR = "PaCMAP",
+  type_NLDR = "tSNE",
   col_start = "x")
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  bind_cols(pacmap_one_c_shaped_scaled |>
+  bind_cols(tsne_one_c_shaped_scaled |>
               select(-ID))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_abs_error = standardize(sqrt_row_wise_abs_error))
 
-error_plot_pacmap <- error_df_one_curvy_abs |>
-  ggplot(aes(x = PaCMAP1,
-             y = PaCMAP2,
+error_plot_tsne_uni <- error_df_one_curvy_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
              colour = sqrt_row_wise_abs_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("c",
+  interior_annotation("a",
                       position = c(0.08, 0.95),
                       cex = 1.5)
+
 
 
 ## Function to print all the plots together

@@ -261,6 +261,7 @@ quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
 ```{r}
 #| label: import-scripts
 source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
+source("scripts/five_gau_clusters/5_gen_model_with_tsne.R")
 ```
 
 ```{r}
@@ -4453,6 +4454,10 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 
 <!-- The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and shows *flat* shaped clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/z07cKXi8EJQ>).  -->
 <!-- ::: -->
+
+```{r}
+gen_proj_five_clust()[[1]] + gen_proj_five_clust()[[2]] + plot_layout(nrow = 2)
+```
 
 ### The effect of density
 

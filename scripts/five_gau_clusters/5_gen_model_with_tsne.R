@@ -3,7 +3,6 @@ library(readr)
 library(dplyr)
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
-training_data_gau_with_label <- read_rds("data/five_gau_clusters/data_five_gau_with_labels.rds")
 
 data_gau <- training_data_gau |>
   select(-ID) |>
@@ -14,25 +13,10 @@ gau1_scaled_obj <- gen_scaled_data(
   data = tsne_data_gau)
 tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
 
-## To find the sepcific cluster
-df <- bind_cols(training_data_gau_with_label,
-                tsne_gau_scaled)
-
-df |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             color = cluster)) +
-  geom_point(alpha=0.3) +
-  geom_rect(aes(xmin = -0.05, xmax = 0.35, ymin = 0.28, ymax = 0.6),
-            fill = "transparent", color = "grey50", linewidth = 0.8)
-### Selected cluster 2
-
 tsne_gau <- tsne_gau_scaled |>
   ggplot(aes(x = tSNE1,
              y = tSNE2)) +
-  geom_point(alpha=0.3) +
-  geom_rect(aes(xmin = -0.05, xmax = 0.35, ymin = 0.28, ymax = 0.6),
-            fill = "transparent", color = "grey50", linewidth = 0.8)
+  geom_point(alpha=0.3)
 
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 20 #13
@@ -130,14 +114,6 @@ tr_from_to_df_gau1 <- inner_join(
   by = c("from", "to"))
 
 trimesh_removed_gau_tsne <- ggplot() +
-  #geom_segment(data = tr_from_to_df_gau1,
-  #             aes(
-  #               x = x_from,
-  #               y = y_from,
-  #               xend = x_to,
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = tsne_gau_scaled,
     aes(
@@ -203,15 +179,6 @@ scaled_gau_data_model <- scaled_gau |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
-# library(langevitour)
-
-# distance_df_small_edges <- distance_df_small_edges |>
-#   filter(row_number() != 108)
-
-## First projection
-# projection <- cbind(
-#     c(0.46477,-0.02024,0.56378,0.39736),
-#     c(0.15607,-0.54876,-0.44090,0.41505))
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
@@ -248,8 +215,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(
   proj = projection,
   limits = 0.3,
-  axis_pos_x = 0.05,
-  axis_pos_y = -0.85,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.6,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
@@ -288,92 +255,12 @@ five_gau_proj_tsne_model1 <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0, 0.4)) +
-  ylim(c(-0.9, -0.5)) +
+  xlim(c(-0.83, 0.83)) +
+  ylim(c(-0.83, 0.83)) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 2)
 
-## Second projection
-# projection <- cbind(
-#     c(-0.71895,0.29250,-0.29905,-0.01656),
-#     c(-0.16698,-0.62707,-0.23756,0.46328))
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance),
-  projected_model_df,
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(
-  proj = projection,
-  limits = 0.3,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_tsne_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1,
-      y = proj2)) +
-  geom_segment(
-    data = model_df,
-    aes(
-      x = proj1_from,
-      y = proj2_from,
-      xend = proj1_to,
-      yend = proj2_to),
-    color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle,
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.75, -0.36)) +
-  ylim(c(-0.75, -0.36)) +
-  interior_annotation("a3",
-                      position = c(0.08, 0.9),
-                      cex = 2)
+gen_proj_five_clust <- function(){
+  list(tsne_gau, five_gau_proj_tsne_model1)
+}

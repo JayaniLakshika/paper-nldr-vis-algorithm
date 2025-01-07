@@ -8,9 +8,6 @@ library(ggplot2)
 ## Import data
 training_data_one_nonlinear_structure <- read_rds("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds")
 
-# training_data_one_nonlinear_structure <- training_data_one_nonlinear_structure |>
-#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
-
 training_data_one_nonlinear_structure <- training_data_one_nonlinear_structure |>
   mutate(ID = 1:NROW(training_data_one_nonlinear_structure))
 
