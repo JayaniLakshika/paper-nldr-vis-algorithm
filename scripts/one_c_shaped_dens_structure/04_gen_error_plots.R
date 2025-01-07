@@ -22,11 +22,11 @@ interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="g
                                    gp = grid::gpar(cex = cex, col=col)))
 }
 
+##1. With one_c_shaped_dens
+
 one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds"))
 one_c_shaped_data <- one_c_shaped_data |>
   mutate(ID = row_number())
-
-##1. With one_c_shaped_dens
 
 tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
 
@@ -39,7 +39,7 @@ lim1 <- tsne_one_c_shaped_scaled_obj$lim1
 lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 17
+num_bins <- 20
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
@@ -117,7 +117,7 @@ lim1 <- tsne_one_c_shaped_scaled_obj$lim1
 lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 13
+num_bins <- 15
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(

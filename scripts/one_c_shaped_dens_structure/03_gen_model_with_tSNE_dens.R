@@ -5,13 +5,15 @@ library(readr)
 library(langevitour)
 library(ggplot2)
 
+set.seed(20240110)
+
 ## Import data
 training_data_one_nonlinear_structure <- read_rds("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds")
 
 training_data_one_nonlinear_structure <- training_data_one_nonlinear_structure |>
   mutate(ID = 1:NROW(training_data_one_nonlinear_structure))
 
-tSNE_one_nonlinear_structure <- read_rds("data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_30.rds")
+tSNE_one_nonlinear_structure <- read_rds("data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
 
 one_nonlinear_structure_scaled_obj <- gen_scaled_data(
   data = tSNE_one_nonlinear_structure)
@@ -19,7 +21,7 @@ tSNE_one_nonlinear_structure_scaled <- one_nonlinear_structure_scaled_obj$scaled
   mutate(ID = 1:NROW(tSNE_one_nonlinear_structure))
 
 ## Compute hexbin parameters
-num_bins_x_one_nonlinear_structure <- 12
+num_bins_x_one_nonlinear_structure <- 20
 lim1 <- one_nonlinear_structure_scaled_obj$lim1
 lim2 <- one_nonlinear_structure_scaled_obj$lim2
 r2_one_nonlinear_structure <- diff(lim2)/diff(lim1)
