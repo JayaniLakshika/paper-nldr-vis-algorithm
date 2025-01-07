@@ -117,7 +117,7 @@ lim1 <- tsne_one_c_shaped_scaled_obj$lim1
 lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 17
+num_bins <- 13
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
