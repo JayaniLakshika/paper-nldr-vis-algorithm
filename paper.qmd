@@ -3394,7 +3394,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "grey50", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 20 #13
+num_bins_x_gau1 <- 35
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3468,7 +3468,7 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-benchmark_gau1 <- 0.1
+# benchmark_gau1 <- 0.1
 
 # trimesh_removed_gau1 <- vis_rmlg_mesh(
 #   distance_edges = distance_gau1,
@@ -3481,22 +3481,13 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) |>
-  filter(!(row_number() %in% c(33, 40, 48, 138, 143)))
+  filter(distance < benchmark_gau1) 
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
 trimesh_removed_gau_tsne <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = tsne_gau_scaled,
     aes(
@@ -3504,14 +3495,14 @@ trimesh_removed_gau_tsne <- ggplot() +
       y = tSNE2
     ),
     alpha = 0.2) + 
-  geom_rect(
-      aes(xmin = 0.3, 
-          xmax = 0.65, 
-          ymin = -0.05, 
-          ymax = 0.35),
-          fill = "transparent", 
-      color = "grey50", 
-      linewidth = 0.5) +
+  # geom_rect(
+  #     aes(xmin = 0.3, 
+  #         xmax = 0.65, 
+  #         ymin = -0.05, 
+  #         ymax = 0.35),
+  #         fill = "transparent", 
+  #     color = "grey50", 
+  #     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -3606,9 +3597,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.3,
-  axis_pos_x = 0.05,
-  axis_pos_y = -0.85,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
@@ -3620,6 +3611,10 @@ five_gau_proj_tsne_model1 <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
+  geom_point(
+    #size = 0.5,
+    alpha = 0.3,
+    color = "#999999") +
   geom_segment(
     data = model_df, 
     aes(
@@ -3628,11 +3623,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -3647,103 +3639,11 @@ five_gau_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0, 0.4)) +
-  ylim(c(-0.9, -0.5)) +
+  xlim(c(-0.84, 0.84)) +
+  ylim(c(-0.84, 0.84)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
                       cex = 2)
-
-## Second projection
-# projection <- cbind(
-#     c(-0.71895,0.29250,-0.29905,-0.01656),
-#     c(-0.16698,-0.62707,-0.23756,0.46328))
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.3,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_tsne_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2), 
-    label=rownames(axes), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.75, -0.36)) +
-  ylim(c(-0.75, -0.36)) +
-  interior_annotation("a3", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-# five_gau_proj_tsne_model <- gen_proj_langevitour(
-#   points_df = df_exe,
-#   projection = projection,
-#   edge_df = distance_df_small_edges |> select(-distance)
-# ) +
-#   xlim(c(-0.18, 0.1)) +
-#   ylim(c(-0.78, -0.55))
 ```
 
 ```{r}
@@ -3760,7 +3660,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 45
+num_bins_x_gau1 <- 127
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3832,22 +3732,14 @@ tr_df <- distinct(tibble(
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
   filter(distance < benchmark_gau1) |>
-  mutate(ID = row_number()) |>
-  filter(!(ID %in% c(112)))
+  mutate(ID = row_number()) #|>
+  #filter(!(ID %in% c(112)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
 trimesh_removed_gau_umap <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = umap_gau_scaled,
     aes(
@@ -3855,14 +3747,14 @@ trimesh_removed_gau_umap <- ggplot() +
       y = UMAP2
     ),
     alpha = 0.05) + 
-  geom_rect(
-    aes(xmin = 0.45, 
-        xmax = 0.57, 
-        ymin = 0, 
-        ymax = 0.1),
-    fill = "transparent", 
-    color = "grey50", 
-    linewidth = 0.5)  +
+  # geom_rect(
+  #   aes(xmin = 0.45, 
+  #       xmax = 0.57, 
+  #       ymin = 0, 
+  #       ymax = 0.1),
+  #   fill = "transparent", 
+  #   color = "grey50", 
+  #   linewidth = 0.5)  +
   interior_annotation("b1", 
                       position = c(0.06, 0.95),
                       cex = 2) +
@@ -3952,9 +3844,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.28,
-  axis_pos_x = -0.58,
-  axis_pos_y = -0.35,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
   
@@ -3966,87 +3858,11 @@ five_gau_proj_umap_model1 <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
   geom_point(
     #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.64, -0.29)) +
-  ylim(c(-0.4, -0.05)) +
-  interior_annotation("b2", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-## Second projection
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.28,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_umap_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
     data = model_df, 
     aes(
       x = proj1_from, 
@@ -4054,11 +3870,8 @@ five_gau_proj_umap_model2 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -4072,19 +3885,11 @@ five_gau_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.4)) +
-  ylim(c(-0.75, -0.4)) +
-  interior_annotation("b3", 
+  xlim(c(-0.83, 0.83)) +
+  ylim(c(-0.83, 0.83)) +
+  interior_annotation("b2", 
                       position = c(0.08, 0.9),
                       cex = 2)
-
-# five_gau_proj_umap_model <- gen_proj_langevitour(
-#   points_df = df_exe,
-#   projection = projection,
-#   edge_df = distance_df_small_edges |> select(-distance)
-# ) +
-#   xlim(c(-0.18, 0.1)) +
-#   ylim(c(-0.78, -0.55))
 ```
 
 ```{r}
@@ -4102,7 +3907,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 21
+num_bins_x_gau1 <- 56
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -4190,14 +3995,6 @@ tr_from_to_df_gau1 <- inner_join(
   by = c("from", "to"))
 
 trimesh_removed_gau_pacmap <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = pacmap_gau_scaled,
     aes(
@@ -4205,14 +4002,14 @@ trimesh_removed_gau_pacmap <- ggplot() +
       y = PaCMAP2
     ),
     alpha = 0.3) +
-  geom_rect(
-    aes(xmin = -0.04, 
-        xmax = 0.22, 
-        ymin = 0.08, 
-        ymax = 0.34),
-    fill = "transparent", 
-    color = "grey50", 
-    linewidth = 0.5) +
+  # geom_rect(
+  #   aes(xmin = -0.04, 
+  #       xmax = 0.22, 
+  #       ymin = 0.08, 
+  #       ymax = 0.34),
+  #   fill = "transparent", 
+  #   color = "grey50", 
+  #   linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -4296,9 +4093,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.25,
-  axis_pos_x = -0.41,
-  axis_pos_y = 0.23,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
@@ -4308,123 +4105,40 @@ circle <- axes_obj$circle
 five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
     aes(
-      x = proj1, 
+      x = proj1,
       y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
   geom_point(
     #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.46, -0.12)) +
-  ylim(c(0.18, 0.52)) +
-  interior_annotation("c2", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-### Second projection
-# projection <- cbind(
-#     c(-0.60995,0.33361,0.32920,-0.31518),
-#     c(0.19525,-0.30554,0.74417,0.07600))
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.3,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_pacmap_model2 <- projected_df |>
-  ggplot(
+    data = model_df,
     aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
+      x = proj1_from,
+      y = proj2_from,
+      xend = proj1_to,
+      yend = proj2_to),
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.8,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2, label=rownames(axes)),
     colour="grey50",
     size = 5) +
   geom_path(
-    data=circle, 
+    data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.35)) +
-  ylim(c(-0.75, -0.35))+
-  interior_annotation("c3", 
+  xlim(c(-0.83, 0.83)) +
+  ylim(c(-0.83, 0.83)) +
+  interior_annotation("c2",
                       position = c(0.08, 0.9),
                       cex = 2)
-
 
 ```
 
@@ -4433,7 +4147,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 #| fig-height: 10
 #| fig-width: 15
 #| fig-pos: H
-#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) t-SNE, (b) UMAP, (c) PaCMap. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
+#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) tSNE, (b) UMAP, (c) PaCMAP. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
 five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + #error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
@@ -4472,7 +4186,7 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 <!-- ::: -->
 
 ```{r}
-gen_proj_five_clust()[[1]] + gen_proj_five_clust()[[2]] + plot_layout(nrow = 2)
+# gen_proj_five_clust()[[1]] + gen_proj_five_clust()[[2]] + plot_layout(nrow = 2)
 ```
 
 ### The effect of density
