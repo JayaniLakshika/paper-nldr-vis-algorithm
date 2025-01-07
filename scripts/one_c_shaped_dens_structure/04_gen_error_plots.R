@@ -26,7 +26,7 @@ lim1 <- tsne_one_c_shaped_scaled_obj$lim1
 lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 23
+num_bins <- 17
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
@@ -103,7 +103,7 @@ lim1 <- umap_one_c_shaped_scaled_obj$lim1
 lim2 <- umap_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 23
+num_bins <- 18
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
@@ -182,7 +182,7 @@ lim1 <- pacmap_one_c_shaped_scaled_obj$lim1
 lim2 <- pacmap_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
-num_bins <- 23
+num_bins <- 17
 
 ## hexagon binning to have regular hexagons
 hb_obj_one_c_shaped <- hex_binning(
