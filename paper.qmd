@@ -259,6 +259,11 @@ quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
 ```
 
 ```{r}
+#| label: import-scripts
+source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
+```
+
+```{r}
 #| label: code-setup
 set.seed(20240110)
 #source("nldr_code.R", local = TRUE)
@@ -4451,9 +4456,7 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 
 ### The effect of density
 
-```{r}
-source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
-```
+To illustrate how the methods organise difference number of points within the structure in the NLDR layout, simulated $7\text{-}D$ data having C-shaped structure is used. 
 
 ```{r}
 #| label: fig-one-dens_clust-error
