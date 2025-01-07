@@ -2196,7 +2196,7 @@ The error is computed by taking the squared \pD{} Euclidean distance, correspond
 
 $$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$${#eq-equation1} 
 
-where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon.
+where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hj} = \sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$ to be the residual for each observation.
 
 ```{r}
 #| label: error-two-curvy
@@ -2324,15 +2324,23 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
     aspect.ratio = 1
   )
 
+error_plot_two_curvy_hist <- 
+  ggplot(error_df_two_curvy_abs) +
+  geom_histogram(aes(x=sqrt_row_wise_abs_error, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_abs_error, y=..density..), colour="red") +
+  xlab(expression(group("|", e[hj], "|"))) +
+  ylab("") +
+  theme_bw() 
 ```
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
 #| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
-#| out-width: 30%
+#| out-width: 60%
 #| fig-pos: H
 
-error_plot_two_curvy
+error_plot_two_curvy + error_plot_two_curvy_hist +
+  plot_layout(ncol=2)
 ```
 
 ### Prediction into \gD{}
@@ -2438,7 +2446,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins. XXX All look the same"
+#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
