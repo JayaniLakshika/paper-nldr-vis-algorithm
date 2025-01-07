@@ -26,6 +26,12 @@ gen_curv1_3d <- function(n) {
 
 sample_size <- 1000
 curve1 <- gen_curv1_3d(n = sample_size)
+
+curve1$x4 <- runif(NROW(curve1), -0.05, 0.05)
+curve1$x5 <- runif(NROW(curve1), -0.02, 0.02)
+curve1$x6 <- runif(NROW(curve1), -0.01, 0.01)
+curve1$x7 <- runif(NROW(curve1), -0.01, 0.01)
+
 langevitour(curve1)
 
 write_rds(curve1, here::here("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds"))
@@ -47,6 +53,12 @@ gen_curv2_3d <- function(n) {
 
 sample_size <- 1000
 curve2 <- gen_curv2_3d(n = sample_size)
+
+curve2$x4 <- runif(NROW(curve2), -0.05, 0.05)
+curve2$x5 <- runif(NROW(curve2), -0.02, 0.02)
+curve2$x6 <- runif(NROW(curve2), -0.01, 0.01)
+curve2$x7 <- runif(NROW(curve2), -0.01, 0.01)
+
 langevitour(curve2)
 
 write_rds(curve2, here::here("data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_data.rds"))

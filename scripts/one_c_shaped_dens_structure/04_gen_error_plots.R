@@ -28,7 +28,7 @@ one_c_shaped_data <- one_c_shaped_data |>
 
 ##1. With one_c_shaped_dens
 
-tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_30.rds")
+tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
 
 tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
   data = tsne_one_c_shaped)
@@ -106,7 +106,7 @@ one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c
 one_c_shaped_data <- one_c_shaped_data |>
   mutate(ID = row_number())
 
-tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_structure_tsne_perplexity_30.rds")
+tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_structure_tsne_perplexity_52.rds")
 
 tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
   data = tsne_one_c_shaped)

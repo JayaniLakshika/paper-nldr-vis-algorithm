@@ -20,7 +20,7 @@ use_condaenv("pcamp_env")
 data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_data.rds"))
 
 ## tSNE
-perplexity <- 30
+perplexity <- 52
 
 tSNE_fit <- data |>
   dplyr::select(where(is.numeric)) |>
@@ -38,7 +38,7 @@ write_rds(tSNE_data, file = paste0("data/one_c_shaped_dens_structure/one_c_shape
 data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds"))
 
 ## tSNE
-perplexity <- 30
+perplexity <- 52
 
 tSNE_fit <- data |>
   dplyr::select(where(is.numeric)) |>
