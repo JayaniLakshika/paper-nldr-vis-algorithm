@@ -1,12 +1,25 @@
 ### This script is to generate error plot for one_c_shaped_dens and one_c_shaped_uni_dens cluster with tSNE
 library(readr)
 library(dplyr)
+library(quollr)
+library(ggplot2)
+library(colorspace)
+library(patchwork)
 set.seed(20240110)
+
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
 
 # creating Standardization function
 standardize = function(x){
   z <- (x - mean(x)) / sd(x)
   return( z)
+}
+
+interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="grey70") {
+  annotation_custom(grid::textGrob(label = label,
+                                   x = unit(position[1], "npc"), y = unit(position[2], "npc"),
+                                   gp = grid::gpar(cex = cex, col=col)))
 }
 
 one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds"))
@@ -68,29 +81,30 @@ error_df_one_curvy_abs <- augment(
   col_start = "x")
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
-
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   bind_cols(tsne_one_c_shaped_scaled |>
               select(-ID))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = standardize(sqrt_row_wise_abs_error))
+  mutate(row_wise_total_error = standardize(row_wise_total_error))
 
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = sqrt_row_wise_abs_error)) +
+             colour = row_wise_total_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("a",
+  interior_annotation("a1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
 ##2. With one_c_shaped_uni_dens
+
+one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_data.rds"))
+one_c_shaped_data <- one_c_shaped_data |>
+  mutate(ID = row_number())
 
 tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_structure_tsne_perplexity_30.rds")
 
@@ -145,25 +159,22 @@ error_df_one_curvy_abs <- augment(
   col_start = "x")
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
-
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   bind_cols(tsne_one_c_shaped_scaled |>
               select(-ID))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = standardize(sqrt_row_wise_abs_error))
+  mutate(row_wise_total_error = standardize(row_wise_total_error))
 
 error_plot_tsne_uni <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = sqrt_row_wise_abs_error)) +
+             colour = row_wise_total_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("a",
+  interior_annotation("b1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
@@ -173,8 +184,8 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
 
 generate_error_plots_one_c_shaped <- function(){
 
-  error_plot_tsne + error_plot_umap + error_plot_pacmap +
-    plot_layout(guides = "collect", ncol = 3) &
+  error_plot_tsne + error_plot_tsne_uni +
+    plot_layout(guides = "collect", ncol = 2) &
     theme(legend.position='none')
 
 }
