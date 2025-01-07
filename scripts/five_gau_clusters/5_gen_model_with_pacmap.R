@@ -1,48 +1,23 @@
-### This script is to generate the model withn tSNE for five Gaussian clusters data
-library(readr)
-library(dplyr)
-
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
-training_data_gau_with_label <- read_rds("data/five_gau_clusters/data_five_gau_with_labels.rds")
-
-data_gau <- training_data_gau |>
-  select(-ID) |>
-  mutate(type = "data")
-
-tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
+pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 gau1_scaled_obj <- gen_scaled_data(
-  data = tsne_data_gau)
-tsne_gau_scaled <- gau1_scaled_obj$scaled_nldr
+  data = pacmap_data_gau)
+pacmap_gau_scaled <- gau1_scaled_obj$scaled_nldr |>
+  select(PaCMAP1, PaCMAP2, ID)
 
-## To find the sepcific cluster
-df <- bind_cols(training_data_gau_with_label,
-                tsne_gau_scaled)
-
-df |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             color = cluster)) +
-  geom_point(alpha=0.3) +
-  geom_rect(aes(xmin = -0.05, xmax = 0.35, ymin = 0.28, ymax = 0.6),
-            fill = "transparent", color = "grey50", linewidth = 0.8)
-### Selected cluster 2
-
-tsne_gau <- tsne_gau_scaled |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2)) +
-  geom_point(alpha=0.3) +
-  geom_rect(aes(xmin = -0.05, xmax = 0.35, ymin = 0.28, ymax = 0.6),
-            fill = "transparent", color = "grey50", linewidth = 0.8)
+pacmap_gau <- pacmap_gau_scaled |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2)) +
+  geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 20 #13
+num_bins_x_gau1 <- 21
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
 gau1_model <- fit_highd_model(
   training_data = training_data_gau,
-  emb_df = tsne_gau_scaled,
+  emb_df = pacmap_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
@@ -61,39 +36,33 @@ error_df_gau_abs <- augment(
   df_bin = df_bin_gau1,
   training_data = training_data_gau,
   newdata = NULL,
-  type_NLDR = "tSNE",
+  type_NLDR = "PaCMAP",
   col_start = "x")
 
 error_df_gau_abs <- error_df_gau_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
 
 error_df_gau_abs <- error_df_gau_abs |>
-  bind_cols(tsne_gau_scaled |>
+  bind_cols(pacmap_gau_scaled |>
               select(-ID))
 
-error_df_gau_tsne <- error_df_gau_abs |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
+error_df_gau_pacmap <- error_df_gau_abs |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2,
              z = sqrt_row_wise_abs_error)) +
   stat_summary_hex(bins=15) +
-  xlim(c(0.3, 0.66)) + ylim(c(-0.01, 0.35)) +
-  scale_fill_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
-  interior_annotation("a3",
+  xlim(c(-0.02, 0.18)) + ylim(c(0.12, 0.32)) +
+  scale_fill_continuous_sequential(palette = "YlOrRd", breaks = 20) +
+  interior_annotation("c3",
                       position = c(0.08, 0.9),
                       cex = 2)
+
 
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
   df_bin_centroids_gau1, x = "c_x", y = "c_y")
 tr_from_to_df_gau1 <- gen_edges(
   tri_object = tr1_object_gau1)
-
-# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-#   filter(row_number() != 76) |>
-#   filter(row_number() != 34)
-
-# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-#   filter(row_number() != 149)
 
 ## Compute 2D distances
 distance_gau1 <- cal_2d_dist(
@@ -109,8 +78,6 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-benchmark_gau1 <- 0.1
-
 # trimesh_removed_gau1 <- vis_rmlg_mesh(
 #   distance_edges = distance_gau1,
 #   benchmark_value = benchmark_gau1,
@@ -123,13 +90,14 @@ tr_df <- distinct(tibble(
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
   filter(distance < benchmark_gau1) |>
-  filter(!(row_number() %in% c(33, 40, 48, 138, 143)))
+  mutate(ID = row_number()) |>
+  filter(!(ID %in% c(97)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1,
   by = c("from", "to"))
 
-trimesh_removed_gau_tsne <- ggplot() +
+trimesh_removed_gau_pacmap <- ggplot() +
   #geom_segment(data = tr_from_to_df_gau1,
   #             aes(
   #               x = x_from,
@@ -139,39 +107,38 @@ trimesh_removed_gau_tsne <- ggplot() +
   #             colour = "#000000",
   #             linewidth = 1) +
   geom_point(
-    data = tsne_gau_scaled,
+    data = pacmap_gau_scaled,
     aes(
-      x = tSNE1,
-      y = tSNE2
+      x = PaCMAP1,
+      y = PaCMAP2
     ),
-    alpha = 0.2) +
+    alpha = 0.3) +
   geom_rect(
-    aes(xmin = 0.3,
-        xmax = 0.65,
-        ymin = -0.05,
-        ymax = 0.35),
+    aes(xmin = -0.04,
+        xmax = 0.22,
+        ymin = 0.08,
+        ymax = 0.34),
     fill = "transparent",
     color = "grey50",
     linewidth = 0.5) +
-  interior_annotation("a1",
+  interior_annotation("c1",
                       position = c(0.08, 0.95),
                       cex = 2) +
   theme(
     aspect.ratio = 1
   )
 
-
 ## Hexagonal binning to have regular hexagons
 hb_obj_gau1 <- hex_binning(
-  data = tsne_gau_scaled,
+  data = pacmap_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   q = 0.1)
 
-tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
+pacmap_data_with_hb_id <- hb_obj_gau1$data_hb_id
 
 df_all_gau1 <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID),
-                                tsne_data_with_hb_id)
+                                pacmap_data_with_hb_id)
 
 ### Define type column
 df <- df_all_gau1 |>
@@ -203,22 +170,12 @@ scaled_gau_data_model <- scaled_gau |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
-# library(langevitour)
-
-# distance_df_small_edges <- distance_df_small_edges |>
-#   filter(row_number() != 108)
-
 ## First projection
-# projection <- cbind(
-#     c(0.46477,-0.02024,0.56378,0.39736),
-#     c(0.15607,-0.54876,-0.44090,0.41505))
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
 
-projection_scaled <- projection * 1
-
-projected <- as.matrix(scaled_gau_data) %*% projection_scaled
+projected <- as.matrix(scaled_gau_data) %*% projection
 
 projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -227,7 +184,7 @@ projected_df <- projected |>
   #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection_scaled
+projected_model <- as.matrix(scaled_gau_data_model) %*% projection
 
 projected_model_df <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
@@ -247,16 +204,16 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 0.3,
-  axis_pos_x = 0.05,
-  axis_pos_y = -0.85,
+  limits = 0.25,
+  axis_pos_x = -0.41,
+  axis_pos_y = 0.23,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-five_gau_proj_tsne_model1 <- projected_df |>
+five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1,
@@ -272,7 +229,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
     linewidth = 1) +
   geom_point(
     #size = 0.5,
-    alpha = 0.2,
+    alpha = 0.3,
     color = "#999999") +
   geom_segment(
     data=axes,
@@ -280,24 +237,23 @@ five_gau_proj_tsne_model1 <- projected_df |>
     colour="grey70") +
   geom_text(
     data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
+    aes(x=x2, y=y2, label=rownames(axes)),
     colour="grey50",
     size = 5) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0, 0.4)) +
-  ylim(c(-0.9, -0.5)) +
-  interior_annotation("a2",
+  xlim(c(-0.46, -0.12)) +
+  ylim(c(0.18, 0.52)) +
+  interior_annotation("c2",
                       position = c(0.08, 0.9),
                       cex = 2)
 
-## Second projection
+### Second projection
 # projection <- cbind(
-#     c(-0.71895,0.29250,-0.29905,-0.01656),
-#     c(-0.16698,-0.62707,-0.23756,0.46328))
+#     c(-0.60995,0.33361,0.32920,-0.31518),
+#     c(0.19525,-0.30554,0.74417,0.07600))
 projection <- cbind(
   c(0.36030,0.00630,0.66545,-0.34307),
   c(-0.01861,0.14409,-0.36798,-0.73066))
@@ -340,7 +296,7 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
-five_gau_proj_tsne_model2 <- projected_df |>
+five_gau_proj_pacmap_model2 <- projected_df |>
   ggplot(
     aes(
       x = proj1,
@@ -355,7 +311,7 @@ five_gau_proj_tsne_model2 <- projected_df |>
     color = "#000000",
     linewidth = 1) +
   geom_point(
-    #size = 0.5,
+    #size = 0.8,
     alpha = 0.2,
     color = "#999999") +
   geom_segment(
@@ -364,16 +320,15 @@ five_gau_proj_tsne_model2 <- projected_df |>
     colour="grey70") +
   geom_text(
     data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
+    aes(x=x2, y=y2, label=rownames(axes)),
     colour="grey50",
     size = 5) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.36)) +
-  ylim(c(-0.75, -0.36)) +
-  interior_annotation("a3",
+  xlim(c(-0.75, -0.35)) +
+  ylim(c(-0.75, -0.35))+
+  interior_annotation("c3",
                       position = c(0.08, 0.9),
                       cex = 2)
