@@ -2314,7 +2314,7 @@ error_df_two_curvy_abs <- augment(
   col_start = "x")
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(tsne_two_curvy_scaled |>
@@ -2323,7 +2323,7 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
 error_plot_two_curvy <- error_df_two_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = sqrt_row_wise_abs_error)) +
+             colour = sqrt_row_wise_total_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
@@ -2332,8 +2332,8 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
 
 error_plot_two_curvy_hist <- 
   ggplot(error_df_two_curvy_abs) +
-  geom_histogram(aes(x=sqrt_row_wise_abs_error, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_abs_error, y=..density..), colour="red") +
+  geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
   xlab(expression(group("|", e[hj], "|"))) +
   ylab("") +
   theme_bw() 
@@ -2341,7 +2341,7 @@ error_plot_two_curvy_hist <-
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
+#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
 #| out-width: 60%
 #| fig-pos: H
 
