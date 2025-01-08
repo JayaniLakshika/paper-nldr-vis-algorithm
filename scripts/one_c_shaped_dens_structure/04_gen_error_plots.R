@@ -85,7 +85,8 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
               select(-ID))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(row_wise_total_error = standardize(row_wise_total_error))
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
+  mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
@@ -335,7 +336,8 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
               select(-ID))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(row_wise_total_error = standardize(row_wise_total_error))
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
+  mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
 error_plot_tsne_uni <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
@@ -517,7 +519,7 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("a2",
+  interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 2)
 
