@@ -100,6 +100,80 @@ error_plot_tsne <- error_df_one_curvy_abs |>
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
+
+## Triangulate bin centroids
+tr1_object_c_shaped_structure <- tri_bin_centroids(
+  df_bin_centroids2, x = "c_x", y = "c_y")
+tr_from_to_df_c_shaped_structure <- gen_edges(
+  tri_object = tr1_object_c_shaped_structure)
+
+## Compute 2D distances
+distance_c_shaped_structure <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_c_shaped_structure,
+  start_x = "x_from",
+  start_y = "y_from",
+  end_x = "x_to",
+  end_y = "y_to",
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_c_shaped_structure <- find_lg_benchmark(
+  distance_edges = distance_c_shaped_structure,
+  distance_col = "distance")
+
+tr_df <- distinct(tibble::tibble(
+  x = c(tr_from_to_df_c_shaped_structure[["x_from"]], tr_from_to_df_c_shaped_structure[["x_to"]]),
+  y = c(tr_from_to_df_c_shaped_structure[["y_from"]], tr_from_to_df_c_shaped_structure[["y_to"]])))
+
+distance_df_small_edges_c_shaped_structure <- distance_c_shaped_structure |>
+  filter(distance < benchmark_c_shaped_structure)
+
+tr_from_to_df_c_shaped_structure <- inner_join(
+  tr_from_to_df_c_shaped_structure, distance_df_small_edges_c_shaped_structure,
+  by = c("from", "to"))
+
+trimesh_removed_c_shaped_structure <- ggplot() +
+  geom_segment(data = tr_from_to_df_c_shaped_structure,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#33a02c",
+               linewidth = 1) +
+  geom_point(data = tsne_one_c_shaped_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             alpha=0.1) +
+  theme(aspect.ratio = 1)
+
+trimesh_removed_c_shaped_structure
+
+
+### Define type column
+df <- df_all_one_curvy2 |>
+  dplyr::select(tidyselect::starts_with("x")) |>
+  dplyr::mutate(type = "data") ## original dataset
+
+df_b <- df_bin_one_curvy2 |>
+  dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids2$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id)
+
+df_exe <- dplyr::bind_rows(df_b, df)
+
+langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
+                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
+                         lineTo = distance_df_small_edges_c_shaped_structure$to,
+                         group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c("#6a3d9a", "#33a02c"))
+
+
 ##2. With one_c_shaped_uni_dens
 
 one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_data.rds"))
@@ -177,6 +251,79 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
   interior_annotation("b1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
+
+## Triangulate bin centroids
+tr1_object_c_shaped_structure <- tri_bin_centroids(
+  df_bin_centroids2, x = "c_x", y = "c_y")
+tr_from_to_df_c_shaped_structure <- gen_edges(
+  tri_object = tr1_object_c_shaped_structure)
+
+## Compute 2D distances
+distance_c_shaped_structure <- cal_2d_dist(
+  tr_coord_df = tr_from_to_df_c_shaped_structure,
+  start_x = "x_from",
+  start_y = "y_from",
+  end_x = "x_to",
+  end_y = "y_to",
+  select_vars = c("from", "to", "distance"))
+
+## To find the benchmark value
+benchmark_c_shaped_structure <- find_lg_benchmark(
+  distance_edges = distance_c_shaped_structure,
+  distance_col = "distance")
+
+tr_df <- distinct(tibble::tibble(
+  x = c(tr_from_to_df_c_shaped_structure[["x_from"]], tr_from_to_df_c_shaped_structure[["x_to"]]),
+  y = c(tr_from_to_df_c_shaped_structure[["y_from"]], tr_from_to_df_c_shaped_structure[["y_to"]])))
+
+distance_df_small_edges_c_shaped_structure <- distance_c_shaped_structure |>
+  filter(distance < benchmark_c_shaped_structure)
+
+tr_from_to_df_c_shaped_structure <- inner_join(
+  tr_from_to_df_c_shaped_structure, distance_df_small_edges_c_shaped_structure,
+  by = c("from", "to"))
+
+trimesh_removed_c_shaped_structure <- ggplot() +
+  geom_segment(data = tr_from_to_df_c_shaped_structure,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#33a02c",
+               linewidth = 1) +
+  geom_point(data = tsne_one_c_shaped_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             alpha=0.1) +
+  theme(aspect.ratio = 1)
+
+trimesh_removed_c_shaped_structure
+
+
+### Define type column
+df <- df_all_one_curvy2 |>
+  dplyr::select(tidyselect::starts_with("x")) |>
+  dplyr::mutate(type = "data") ## original dataset
+
+df_b <- df_bin_one_curvy2 |>
+  dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
+  dplyr::mutate(type = "model") ## Data with summarized mean
+
+## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids2$hexID, df_b$hb_id),] |>
+  dplyr::select(-hb_id)
+
+df_exe <- dplyr::bind_rows(df_b, df)
+
+langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
+                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
+                         lineTo = distance_df_small_edges_c_shaped_structure$to,
+                         group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c("#6a3d9a", "#33a02c"))
+
 
 
 
