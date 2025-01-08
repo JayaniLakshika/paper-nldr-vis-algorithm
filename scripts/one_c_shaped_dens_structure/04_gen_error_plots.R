@@ -149,8 +149,6 @@ trimesh_removed_c_shaped_structure <- ggplot() +
              alpha=0.1) +
   theme(aspect.ratio = 1)
 
-trimesh_removed_c_shaped_structure
-
 
 ### Define type column
 df <- df_all_one_curvy2 |>
@@ -167,12 +165,110 @@ df_b <- df_b[match(df_bin_centroids2$hexID, df_b$hb_id),] |>
 
 df_exe <- dplyr::bind_rows(df_b, df)
 
-langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
-                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
-                         lineTo = distance_df_small_edges_c_shaped_structure$to,
-                         group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c("#6a3d9a", "#33a02c"))
+# langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
+#                          lineFrom = distance_df_small_edges_c_shaped_structure$from,
+#                          lineTo = distance_df_small_edges_c_shaped_structure$to,
+#                          group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+#                          levelColors = c("#6a3d9a", "#33a02c"))
 
+
+# Apply the scaling
+
+data_c_shaped <- one_c_shaped_data |>
+  select(-ID) |>
+  mutate(type = "data")
+
+df_model_data <- bind_rows(data_c_shaped, df_b)
+scaled_c_shaped <- scale_data_manual(df_model_data, "type") |>
+  as_tibble()
+
+scaled_c_shaped_data <- scaled_c_shaped |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_c_shaped_data_model <- scaled_c_shaped |>
+  filter(type == "model") |>
+  select(-type)
+
+## First projection
+projection <- cbind(
+  c(0.17644,-0.44793,0.07894,-0.11400,-0.43738,0.03550,0.19782),
+  c(0.16137,-0.16206,-0.24300,0.35147,0.13482,0.47921,0.00071))
+
+projected <- as.matrix(scaled_c_shaped_data) %*% projection
+
+projected_df <- projected |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  #dplyr::mutate(type = df_exe$type) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+projected_model <- as.matrix(scaled_c_shaped_data_model) %*% projection
+
+projected_model_df <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_df <- dplyr::left_join(
+  distance_df_small_edges_c_shaped_structure |> select(-distance),
+  projected_model_df,
+  by = c("from" = "ID"))
+
+names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+axes_obj <- gen_axes(
+  proj = projection,
+  limits = 0.5,
+  axis_pos_x = -0.5,
+  axis_pos_y = -0.5,
+  axis_labels = names(scaled_c_shaped_data),
+  threshold = 0.03)
+
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+five_c_shaped_proj_tsne_model1 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1,
+      y = proj2)) +
+  geom_segment(
+    data = model_df,
+    aes(
+      x = proj1_from,
+      y = proj2_from,
+      xend = proj1_to,
+      yend = proj2_to),
+    color = "#000000",
+    linewidth = 1) +
+  geom_point(
+    #size = 0.5,
+    alpha = 0.3,
+    color = "#999999") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2, label=rownames(axes)),
+    colour="grey50",
+    size = 5) +
+  geom_path(
+    data=circle,
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.6, 0.6)) +
+  ylim(c(-0.6, 0.6)) +
+  interior_annotation("a2",
+                      position = c(0.08, 0.9),
+                      cex = 2)
 
 ##2. With one_c_shaped_uni_dens
 
@@ -276,11 +372,11 @@ tr_df <- distinct(tibble::tibble(
   x = c(tr_from_to_df_c_shaped_structure[["x_from"]], tr_from_to_df_c_shaped_structure[["x_to"]]),
   y = c(tr_from_to_df_c_shaped_structure[["y_from"]], tr_from_to_df_c_shaped_structure[["y_to"]])))
 
-distance_df_small_edges_c_shaped_structure <- distance_c_shaped_structure |>
+distance_df_small_edges_c_shaped_structure_c_shaped_structure <- distance_c_shaped_structure |>
   filter(distance < benchmark_c_shaped_structure)
 
 tr_from_to_df_c_shaped_structure <- inner_join(
-  tr_from_to_df_c_shaped_structure, distance_df_small_edges_c_shaped_structure,
+  tr_from_to_df_c_shaped_structure, distance_df_small_edges_c_shaped_structure_c_shaped_structure,
   by = c("from", "to"))
 
 trimesh_removed_c_shaped_structure <- ggplot() +
@@ -319,8 +415,8 @@ df_b <- df_b[match(df_bin_centroids2$hexID, df_b$hb_id),] |>
 df_exe <- dplyr::bind_rows(df_b, df)
 
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
-                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
-                         lineTo = distance_df_small_edges_c_shaped_structure$to,
+                         lineFrom = distance_df_small_edges_c_shaped_structure_c_shaped_structure$from,
+                         lineTo = distance_df_small_edges_c_shaped_structure_c_shaped_structure$to,
                          group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
                          levelColors = c("#6a3d9a", "#33a02c"))
 
@@ -332,6 +428,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 generate_error_plots_one_c_shaped <- function(){
 
   error_plot_tsne + error_plot_tsne_uni +
+    five_c_shaped_proj_tsne_model1 + five_c_shaped_proj_tsne_model1 +
     plot_layout(guides = "collect", ncol = 2) &
     theme(legend.position='none')
 
