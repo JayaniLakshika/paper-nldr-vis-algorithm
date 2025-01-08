@@ -88,20 +88,42 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
   mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
-quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error)
+quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
+                      probs = seq(0, 1, 0.09))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat = if_else(
   sqrt_row_wise_total_error <= quant_val[1], "first", if_else(
     sqrt_row_wise_total_error <= quant_val[2], "second", if_else(
-      sqrt_row_wise_total_error <= quant_val[3], "third", "fourth"))))
+      sqrt_row_wise_total_error <= quant_val[3], "third",
+      if_else(
+        sqrt_row_wise_total_error <= quant_val[4], "fourth",
+        if_else(
+          sqrt_row_wise_total_error <= quant_val[5], "fifth",
+          if_else(
+            sqrt_row_wise_total_error <= quant_val[6], "sixth", if_else(
+              sqrt_row_wise_total_error <= quant_val[7], "seventh",
+              if_else(
+                sqrt_row_wise_total_error <= quant_val[8], "eighth",
+                if_else(
+                  sqrt_row_wise_total_error <= quant_val[9], "nineth",
+                  if_else(
+                    sqrt_row_wise_total_error <= quant_val[10], "tenth",
+                    if_else(
+                      sqrt_row_wise_total_error <= quant_val[11], "eleventh", "twelveth"))))))))))))
 
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = error_cat)) +
+             colour = factor(error_cat,
+                             levels = c("first", "second", "third",
+                                        "fourth", "fifth", "sixth",
+                                        "seventh", "eighth", "nineth",
+                                        "tenth", "eleventh", "twelveth")))) +
   geom_point(alpha=0.5) +
-  #scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                               '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                               '#ffff99','#b15928')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -279,7 +301,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   ylim(c(-0.6, 0.6)) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 ##2. With one_c_shaped_uni_dens
 
@@ -347,18 +369,49 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
   mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
+quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
+                      probs = seq(0, 1, 0.09))
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(error_cat = if_else(
+    sqrt_row_wise_total_error <= quant_val[1], "first", if_else(
+      sqrt_row_wise_total_error <= quant_val[2], "second", if_else(
+        sqrt_row_wise_total_error <= quant_val[3], "third",
+        if_else(
+          sqrt_row_wise_total_error <= quant_val[4], "fourth",
+          if_else(
+            sqrt_row_wise_total_error <= quant_val[5], "fifth",
+            if_else(
+              sqrt_row_wise_total_error <= quant_val[6], "sixth", if_else(
+                sqrt_row_wise_total_error <= quant_val[7], "seventh",
+                if_else(
+                  sqrt_row_wise_total_error <= quant_val[8], "eighth",
+                  if_else(
+                    sqrt_row_wise_total_error <= quant_val[9], "nineth",
+                    if_else(
+                      sqrt_row_wise_total_error <= quant_val[10], "tenth",
+                      if_else(
+                        sqrt_row_wise_total_error <= quant_val[11], "eleventh", "twelveth"))))))))))))
+
 error_plot_tsne_uni <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = row_wise_total_error)) +
+             colour = factor(error_cat,
+                             levels = c("first", "second", "third",
+                                        "fourth", "fifth", "sixth",
+                                        "seventh", "eighth", "nineth",
+                                        "tenth", "eleventh", "twelveth")))) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                              '#ffff99','#b15928')) +
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("b1",
+  interior_annotation("a1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
+
 
 ## Triangulate bin centroids
 tr1_object_c_shaped_structure <- tri_bin_centroids(
@@ -529,7 +582,7 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   ylim(c(-0.6, 0.6)) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 
 
