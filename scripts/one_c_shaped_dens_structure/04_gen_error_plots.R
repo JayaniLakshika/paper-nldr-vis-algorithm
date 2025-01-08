@@ -192,8 +192,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(0.17644,-0.44793,0.07894,-0.11400,-0.43738,0.03550,0.19782),
-  c(0.16137,-0.16206,-0.24300,0.35147,0.13482,0.47921,0.00071))
+  c(0.26984,0.06151,-0.26435,-0.20792,0.28298,0.03515,0.01322),
+  c(-0.30794,0.27695,-0.29798,0.01445,-0.03009,-0.06272,0.07641))
 
 projection_scaled <- projection * 1
 
@@ -230,7 +230,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.5,
   axis_pos_y = -0.5,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.03)
+  threshold = 0.02)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -441,8 +441,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(0.17644,-0.44793,0.07894,-0.11400,-0.43738,0.03550,0.19782),
-  c(0.16137,-0.16206,-0.24300,0.35147,0.13482,0.47921,0.00071))
+  c(0.26984,0.06151,-0.26435,-0.20792,0.28298,0.03515,0.01322),
+  c(-0.30794,0.27695,-0.29798,0.01445,-0.03009,-0.06272,0.07641))
 
 projection_scaled <- projection * 1
 
@@ -479,7 +479,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.5,
   axis_pos_y = -0.5,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.03)
+  threshold = 0.02)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
