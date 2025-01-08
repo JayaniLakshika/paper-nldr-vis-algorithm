@@ -88,12 +88,20 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
   mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
+quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error)
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(error_cat = if_else(
+  sqrt_row_wise_total_error <= quant_val[1], "first", if_else(
+    sqrt_row_wise_total_error <= quant_val[2], "second", if_else(
+      sqrt_row_wise_total_error <= quant_val[3], "third", "fourth"))))
+
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = row_wise_total_error)) +
+             colour = error_cat)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  #scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
     aspect.ratio = 1
   ) +
