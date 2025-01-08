@@ -184,7 +184,7 @@ trimesh_removed_c_shaped_structure <- ggplot() +
 ### Define type column
 df <- df_all_one_curvy2 |>
   dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = "data") ## original dataset
+  dplyr::mutate(type = error_df_one_curvy_abs$error_cat) ## original dataset
 
 df_b <- df_bin_one_curvy2 |>
   dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
@@ -196,11 +196,17 @@ df_b <- df_b[match(df_bin_centroids2$hexID, df_b$hb_id),] |>
 
 df_exe <- dplyr::bind_rows(df_b, df)
 
-# langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
-#                          lineFrom = distance_df_small_edges_c_shaped_structure$from,
-#                          lineTo = distance_df_small_edges_c_shaped_structure$to,
-#                          group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-#                          levelColors = c("#6a3d9a", "#33a02c"))
+langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
+                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
+                         lineTo = distance_df_small_edges_c_shaped_structure$to,
+                         group = factor(df_exe$type,
+                                        c("first", "second", "third",
+                                          "fourth", "fifth", "sixth",
+                                          "seventh", "eighth", "nineth",
+                                          "tenth", "eleventh", "twelveth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                                         '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                                         '#ffff99','#b15928', "#000000"))
 
 
 # Apply the scaling
@@ -266,6 +272,10 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
+## To add error category
+projected_df <- projected_df |>
+  mutate(error_cat = error_df_one_curvy_abs$error_cat)
+
 five_c_shaped_proj_tsne_model1 <- projected_df |>
   ggplot(
     aes(
@@ -282,8 +292,14 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
     linewidth = 1) +
   geom_point(
     #size = 0.5,
-    alpha = 0.3,
-    color = "#999999") +
+    aes(
+      color = factor(error_cat,
+                     levels = c("first", "second", "third",
+                                "fourth", "fifth", "sixth",
+                                "seventh", "eighth", "nineth",
+                                "tenth", "eleventh", "twelveth"))
+    ),
+    alpha = 0.3) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -296,12 +312,16 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                              '#ffff99','#b15928', "#000000")) +
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("a2",
+  interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
+
 
 ##2. With one_c_shaped_uni_dens
 
@@ -465,7 +485,7 @@ trimesh_removed_c_shaped_structure <- ggplot() +
 ### Define type column
 df <- df_all_one_curvy2 |>
   dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = "data") ## original dataset
+  dplyr::mutate(type = error_df_one_curvy_abs$error_cat) ## original dataset
 
 df_b <- df_bin_one_curvy2 |>
   dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
@@ -480,8 +500,14 @@ df_exe <- dplyr::bind_rows(df_b, df)
 langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges_c_shaped_structure$from,
                          lineTo = distance_df_small_edges_c_shaped_structure$to,
-                         group = df_exe$type, pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c("#6a3d9a", "#33a02c"))
+                         group = factor(df_exe$type,
+                                      c("first", "second", "third",
+                                        "fourth", "fifth", "sixth",
+                                        "seventh", "eighth", "nineth",
+                                        "tenth", "eleventh", "twelveth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                                         '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                                         '#ffff99','#b15928', "#000000"))
 
 
 # Apply the scaling
@@ -547,6 +573,10 @@ axes_obj <- gen_axes(
 axes <- axes_obj$axes
 circle <- axes_obj$circle
 
+## To add error category
+projected_df <- projected_df |>
+  mutate(error_cat = error_df_one_curvy_abs$error_cat)
+
 five_c_shaped_proj_tsne_model2 <- projected_df |>
   ggplot(
     aes(
@@ -563,8 +593,14 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
     linewidth = 1) +
   geom_point(
     #size = 0.5,
-    alpha = 0.3,
-    color = "#999999") +
+    aes(
+      color = factor(error_cat,
+                     levels = c("first", "second", "third",
+                                "fourth", "fifth", "sixth",
+                                "seventh", "eighth", "nineth",
+                                "tenth", "eleventh", "twelveth"))
+    ),
+    alpha = 0.3) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -577,6 +613,9 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
+  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
+                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
+                              '#ffff99','#b15928', "#000000")) +
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
