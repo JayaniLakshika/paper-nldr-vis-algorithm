@@ -704,6 +704,94 @@ distance_df_small_edges_two_curvy <- distance_two_curvy |>
 #   xlim(sc_xlims) + ylim(sc_ylims) +
 #   interior_annotation("d", sc_ltr_pos) 
 
+bin_width <- hb_obj_two_curvy$a1
+
+####With diff benchmark values
+
+## Benchmark 2
+
+benchmark_two_curvy <- 2.5 * bin_width
+
+distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy)
+
+tr_from_to_df_two_curvy4 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy3,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy4,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000")+
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("b1", sc_ltr_pos)
+
+## Benchmark 1
+
+benchmark_two_curvy <- 2 * bin_width
+
+distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy) ## 0.231
+
+tr_from_to_df_two_curvy3 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy2,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed1 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000")+
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("c1", sc_ltr_pos)
+
+trimesh_two_curvy_removed1_with_data <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  interior_annotation("a2", sc_ltr_pos)
+
+## Computed benchmark value
 tr_from_to_df_two_curvy <- inner_join(
   tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy,
   by = c("from", "to"))
@@ -772,7 +860,6 @@ dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec
 ## To plot the distribution of distances
 
 # Define bin width and starting point
-bin_width <- hb_obj_two_curvy$a1
 start_point <- bin_width/2
 
 # Create bins and calculate the mean value for each bin range
@@ -1584,91 +1671,6 @@ distance_two_curvy <- cal_2d_dist(
 benchmark_two_curvy <- find_lg_benchmark(
   distance_edges = distance_two_curvy, 
   distance_col = "distance")
-
-## Benchmark 1
-
-benchmark_two_curvy <- 2 * bin_width
-
-distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy) ## 0.231
-
-tr_from_to_df_two_curvy3 <- inner_join(
-  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy2,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed1 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  interior_annotation("c1", sc_ltr_pos)
-
-trimesh_two_curvy_removed1_with_data <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000") +
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("a2", sc_ltr_pos)
-
-
-
-## Benchmark 2
-
-benchmark_two_curvy <- 2.5 * bin_width
-
-distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy)
-
-tr_from_to_df_two_curvy4 <- inner_join(
-  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy3,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed2 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy4,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  interior_annotation("b1", sc_ltr_pos)
 
 ```
 
