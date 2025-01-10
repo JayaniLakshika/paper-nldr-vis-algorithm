@@ -289,7 +289,8 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
       xend = proj1_to,
       yend = proj2_to),
     color = "#000000",
-    linewidth = 1) +
+    linewidth = 0.8,
+    alpha = 0.6) +
   geom_point(
     #size = 0.5,
     aes(
@@ -318,7 +319,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("b2",
+  interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -428,7 +429,7 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("a1",
+  interior_annotation("b1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
@@ -590,7 +591,8 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
       xend = proj1_to,
       yend = proj2_to),
     color = "#000000",
-    linewidth = 1) +
+    linewidth = 0.8,
+    alpha = 0.6) +
   geom_point(
     #size = 0.5,
     aes(
