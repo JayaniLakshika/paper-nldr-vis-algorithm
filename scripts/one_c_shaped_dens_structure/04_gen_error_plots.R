@@ -89,7 +89,7 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
 quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
-                      probs = seq(0, 1, 0.09))
+                      probs = seq(0, 1, 0.12))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat = if_else(
@@ -105,12 +105,7 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
               sqrt_row_wise_total_error <= quant_val[7], "seventh",
               if_else(
                 sqrt_row_wise_total_error <= quant_val[8], "eighth",
-                if_else(
-                  sqrt_row_wise_total_error <= quant_val[9], "nineth",
-                  if_else(
-                    sqrt_row_wise_total_error <= quant_val[10], "tenth",
-                    if_else(
-                      sqrt_row_wise_total_error <= quant_val[11], "eleventh", "twelveth"))))))))))))
+                "nineth")))))))))
 
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
@@ -118,12 +113,10 @@ error_plot_tsne <- error_df_one_curvy_abs |>
              colour = factor(error_cat,
                              levels = c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
-                                        "seventh", "eighth", "nineth",
-                                        "tenth", "eleventh", "twelveth")))) +
+                                        "seventh", "eighth", "nineth")))) +
   geom_point(alpha=0.5) +
-  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                               '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                               '#ffff99','#b15928')) +
+  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                               '#ef6548','#d7301f','#b30000','#7f0000')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -202,11 +195,10 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = factor(df_exe$type,
                                         c("first", "second", "third",
                                           "fourth", "fifth", "sixth",
-                                          "seventh", "eighth", "nineth",
-                                          "tenth", "eleventh", "twelveth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                                         '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                                         '#ffff99','#b15928', "#000000"))
+                                          "seventh", "eighth", "nineth","model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                                         '#ef6548','#d7301f','#b30000','#7f0000',
+                                         "#000000"))
 
 
 # Apply the scaling
@@ -297,8 +289,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
       color = factor(error_cat,
                      levels = c("first", "second", "third",
                                 "fourth", "fifth", "sixth",
-                                "seventh", "eighth", "nineth",
-                                "tenth", "eleventh", "twelveth"))
+                                "seventh", "eighth", "nineth"))
     ),
     alpha = 0.3) +
   geom_segment(
@@ -313,9 +304,9 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                              '#ffff99','#b15928', "#000000")) +
+  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                              '#ef6548','#d7301f','#b30000','#7f0000',
+                              "#000000")) +
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
@@ -407,12 +398,7 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
                 sqrt_row_wise_total_error <= quant_val[7], "seventh",
                 if_else(
                   sqrt_row_wise_total_error <= quant_val[8], "eighth",
-                  if_else(
-                    sqrt_row_wise_total_error <= quant_val[9], "nineth",
-                    if_else(
-                      sqrt_row_wise_total_error <= quant_val[10], "tenth",
-                      if_else(
-                        sqrt_row_wise_total_error <= quant_val[11], "eleventh", "twelveth"))))))))))))
+                  "nineth")))))))))
 
 error_plot_tsne_uni <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
@@ -420,12 +406,10 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
              colour = factor(error_cat,
                              levels = c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
-                                        "seventh", "eighth", "nineth",
-                                        "tenth", "eleventh", "twelveth")))) +
+                                        "seventh", "eighth", "nineth")))) +
   geom_point(alpha=0.5) +
-  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                              '#ffff99','#b15928')) +
+  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                              '#ef6548','#d7301f','#b30000','#7f0000')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -504,11 +488,10 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = factor(df_exe$type,
                                       c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
-                                        "seventh", "eighth", "nineth",
-                                        "tenth", "eleventh", "twelveth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                                         '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                                         '#ffff99','#b15928', "#000000"))
+                                        "seventh", "eighth", "nineth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                         levelColors = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                                         '#ef6548','#d7301f','#b30000','#7f0000',
+                                         "#000000"))
 
 
 # Apply the scaling
@@ -599,8 +582,7 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
       color = factor(error_cat,
                      levels = c("first", "second", "third",
                                 "fourth", "fifth", "sixth",
-                                "seventh", "eighth", "nineth",
-                                "tenth", "eleventh", "twelveth"))
+                                "seventh", "eighth", "nineth"))
     ),
     alpha = 0.3) +
   geom_segment(
@@ -615,9 +597,9 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99',
-                              '#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a',
-                              '#ffff99','#b15928', "#000000")) +
+  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
+                              '#ef6548','#d7301f','#b30000','#7f0000',
+                              "#000000")) +
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
