@@ -659,6 +659,26 @@ tr1_object_two_curvy <- tri_bin_centroids(
 tr_from_to_df_two_curvy <- gen_edges(
   tri_object = tr1_object_two_curvy)
 
+trimesh_two_curvy <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("a1", sc_ltr_pos)
+
 ## Compute 2D distances
 distance_two_curvy <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_two_curvy, 
@@ -2486,7 +2506,7 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 #| fig-width: 15
 
 free(distance_points) /
-  wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model_delaunay, two_curvy_proj_umap_model_benchmark2, two_curvy_proj_umap_model, ncol = 3) +
+  wrap_plots(trimesh_two_curvy, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model_delaunay, two_curvy_proj_umap_model_benchmark2, two_curvy_proj_umap_model, ncol = 3) +
   plot_annotation(tag_levels = list(c("(a)", "(b)")))
 
 # free(distance_points) + plot_annotation(tag_levels = 'A') +
