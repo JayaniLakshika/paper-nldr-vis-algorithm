@@ -2331,8 +2331,8 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
 
 error_plot_two_curvy_hist <- 
   ggplot(error_df_two_curvy_abs) +
-  geom_histogram(aes(x=sqrt_row_wise_abs_error, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_abs_error, y=..density..), colour="red") +
+  geom_histogram(aes(x=sqrt_row_wise_abs_error^2, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_abs_error^2, y=..density..), colour="red") +
   xlab(expression(group("|", e[hj], "|"))) +
   ylab("") +
   theme_bw() 
