@@ -261,6 +261,7 @@ quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
 ```{r}
 #| label: import-scripts
 source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
+source("scripts/five_gau_clusters/5_gen_model_with_tsne.R")
 ```
 
 ```{r}
@@ -585,6 +586,10 @@ df_bin_centroids_two_curvy <- extract_hexbin_centroids(
   counts_df = counts_df) |>
   filter(drop_empty == FALSE)
 
+boxplot2 <- ggplot(df_bin_centroids_two_curvy, 
+       aes(x=bin_counts)) + 
+  geom_histogram()
+
 umap_data_two_curvy_with_hb_id <- hb_obj_two_curvy$data_hb_id
 df_all_two_curvy <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy_with_hb_id)
 df_bin_two_curvy <- avg_highd_data(data = df_all_two_curvy, col_start = "x")
@@ -618,7 +623,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "E") +
-  interior_annotation("a", sc_ltr_pos) + 
+  interior_annotation("b", sc_ltr_pos) + 
   xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) 
 
 
@@ -654,6 +659,26 @@ tr1_object_two_curvy <- tri_bin_centroids(
 tr_from_to_df_two_curvy <- gen_edges(
   tri_object = tr1_object_two_curvy)
 
+trimesh_two_curvy <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("a1", sc_ltr_pos)
+
 ## Compute 2D distances
 distance_two_curvy <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_two_curvy, 
@@ -679,6 +704,94 @@ distance_df_small_edges_two_curvy <- distance_two_curvy |>
 #   xlim(sc_xlims) + ylim(sc_ylims) +
 #   interior_annotation("d", sc_ltr_pos) 
 
+bin_width <- hb_obj_two_curvy$a1
+
+####With diff benchmark values
+
+## Benchmark 2
+
+benchmark_two_curvy <- 2.5 * bin_width
+
+distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy)
+
+tr_from_to_df_two_curvy4 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy3,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy4,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000")+
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("b1", sc_ltr_pos)
+
+## Benchmark 1
+
+benchmark_two_curvy <- 2 * bin_width
+
+distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy) ## 0.231
+
+tr_from_to_df_two_curvy3 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy2,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed1 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000")+
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  interior_annotation("c1", sc_ltr_pos)
+
+trimesh_two_curvy_removed1_with_data <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  interior_annotation("a2", sc_ltr_pos)
+
+## Computed benchmark value
 tr_from_to_df_two_curvy <- inner_join(
   tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy,
   by = c("from", "to"))
@@ -718,11 +831,75 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
   interior_annotation("b", sc_ltr_pos)
 ```
 
+```{r}
+#| label: dist-plot
+
+df_bin_two_curvy_temp <- df_bin_two_curvy
+
+### Compute highD distance
+dist_vec <- proxy::dist(x = df_bin_two_curvy_temp[, -1], method = "Euclidean") |> as.vector()
+
+from_vec <- c()
+to_vec <- c()
+num_obs <- 1:(NROW(df_bin_two_curvy_temp) - 1)
+
+for (obs in num_obs) {
+
+  from_val <- rep(obs, (NROW(df_bin_two_curvy_temp) - obs))
+  if ((obs + 1) <= NROW(df_bin_two_curvy_temp)) {
+    to_val <- (obs + 1):NROW(df_bin_two_curvy_temp)
+  }
+  from_vec <- append(from_vec, from_val)
+  to_vec <- append(to_vec, to_val)
+
+}
+
+dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec)
+
+
+## To plot the distribution of distances
+
+# Define bin width and starting point
+start_point <- bin_width/2
+
+# Create bins and calculate the mean value for each bin range
+bins <- seq(start_point, max(distance_two_curvy$distance) + bin_width, 
+            by = bin_width)
+bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
+
+distance_two_curvy_dist <- distance_two_curvy |> 
+  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) 
+
+distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
+
+distance_points <- ggplot(
+  distance_two_curvy_dist, 
+  aes(x = distance,
+      y = dist_highd)) +
+  geom_point(alpha = 0.5) +
+  geom_vline(xintercept = 2.5 * bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  geom_vline(xintercept = 2 * bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  ylab(expression(d^{(7)})) +
+  xlab(expression(d^{(2)})) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line())
+
+
+```
 
 ```{r}
 #| label: best-fit-two-curvy-proj-umap1
-
-df_bin_two_curvy_temp <- df_bin_two_curvy
 
 df_bin_two_curvy <- df_bin_two_curvy |>
   select(-hb_id) |>
@@ -781,6 +958,30 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
+## Projection with Delauany triangulation
+
+model_df1 <- dplyr::left_join(
+  distance_two_curvy |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df1)[3:NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df1 <- dplyr::left_join(model_df1, projected_model_df, by = c("to" = "ID"))
+names(model_df1)[(2 + NCOL(projected_model_df)):NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+## With benchmark option 2
+
+model_df2 <- dplyr::left_join(
+  distance_df_small_edges_two_curvy3 |> select(-distance), 
+  projected_model_df, 
+  by = c("from" = "ID"))
+
+names(model_df2)[3:NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID"))
+names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
 ## For true model
 
 projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
@@ -828,7 +1029,7 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
     color = "#000000") + #31a354
   geom_point(
     size = 0.5,
-    alpha = 0.5,
+    alpha = 0.2,
     color = "#636363") +
   geom_segment(
     data=axes,
@@ -874,7 +1075,7 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
     color = "#000000") +
   geom_point(
     size = 0.5,
-    alpha = 0.5,
+    alpha = 0.2,
     color = "#636363") +
   geom_segment(
     data=axes,
@@ -897,6 +1098,83 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
     legend.position = "none"
   )
 
+## Projection with Delauany triangulation
+
+two_curvy_proj_umap_model_delaunay <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df1, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000") + #31a354
+  geom_point(
+    size = 0.5,
+    alpha = 0.2,
+    color = "#636363") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
+  interior_annotation("a2", sc_ltr_pos) +
+  theme(
+    legend.position = "none"
+  )
+
+two_curvy_proj_umap_model_benchmark2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = model_df2, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000") + #31a354
+  geom_point(
+    size = 0.5,
+    alpha = 0.2,
+    color = "#636363") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.1, 0.1)) + 
+  ylim(c(-0.1, 0.1)) +
+  interior_annotation("b2", sc_ltr_pos) +
+  theme(
+    legend.position = "none"
+  )
 ```
 
 
@@ -1417,6 +1695,10 @@ df_bin_centroids2 <- extract_hexbin_centroids(
   filter(drop_empty == FALSE) |>
   mutate(b1 = "b1 = 11")
 
+boxplot1 <- ggplot(df_bin_centroids2, 
+                   aes(x=bin_counts)) + 
+    geom_histogram()
+
 hex_grid_with_counts_two_curvy2 <- full_join(
   hex_grid2, 
   df_bin_centroids2 |> select(hexID, std_counts), 
@@ -1425,27 +1707,6 @@ hex_grid_with_counts_two_curvy2 <- full_join(
 umap_data_two_curvy2_with_hb_id <- hb_obj_two_curvy2$data_hb_id
 df_all_two_curvy2 <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy2_with_hb_id)
 df_bin_two_curvy2 <- avg_highd_data(data = df_all_two_curvy2, col_start = "x")
-
-### Compute highD distance
-dist_vec <- proxy::dist(x = df_bin_two_curvy2[, -1], method = "Euclidean") |> as.vector()
-
-from_vec <- c()
-to_vec <- c()
-num_obs <- 1:(NROW(df_bin_two_curvy2) - 1)
-
-for (obs in num_obs) {
-
-  from_val <- rep(obs, (NROW(df_bin_two_curvy2) - obs))
-  if ((obs + 1) <= NROW(df_bin_two_curvy2)) {
-    to_val <- (obs + 1):NROW(df_bin_two_curvy2)
-  }
-  from_vec <- append(from_vec, from_val)
-  to_vec <- append(to_vec, to_val)
-
-}
-
-dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec)
-
 
 df_b_two_curvy2 <- df_bin_two_curvy2 |>
   dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
@@ -1470,7 +1731,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
   xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) +
-  interior_annotation("b", sc_ltr_pos)
+  interior_annotation("a", sc_ltr_pos)
 
 ## Triangulate bin centroids
 tr1_object_two_curvy2 <- tri_bin_centroids(
@@ -1507,238 +1768,10 @@ distance_two_curvy <- cal_2d_dist(
   end_y = "y_to", 
   select_vars = c("from", "to", "distance"))
 
-## To plot the distribution of distances
-
-# Define bin width and starting point
-bin_width <- hb_obj_two_curvy2$a1
-start_point <- bin_width/2
-
-# Create bins and calculate the mean value for each bin range
-bins <- seq(start_point, max(distance_two_curvy$distance) + bin_width, 
-            by = bin_width)
-bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
-
-distance_two_curvy_dist <- distance_two_curvy |> 
-  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) 
-
-distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
-
-distance_points <- ggplot(
-  distance_two_curvy_dist, 
-  aes(x = distance,
-      y = dist_highd)) +
-  geom_point(alpha = 0.5) +
-  #geom_jitter() +
-  # scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin))),
-  #                    labels = c(
-  #                      expression(a[1]),
-  #                      expression(2*a[1]),
-  #                      expression(3*a[1]),
-  #                      expression(4*a[1]),
-  #                      expression(5*a[1]),
-  #                      expression(6*a[1]),
-  #                      expression(7*a[1]),
-  #                      expression(8*a[1])
-  #                    )) +
-  geom_vline(xintercept = 2.5 * bin_width,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  geom_vline(xintercept = 2 * bin_width,
-           linetype="solid",
-           color = "#bdbdbd",
-           linewidth=1) +
-  # geom_vline(xintercept = 4.5,
-  #            linetype="solid",
-  #            color = "#bdbdbd",
-  #            linewidth=1) +
-  ylab(expression(d^{(7)})) +
-  xlab(expression(d^{(2)})) +
-  #ggtitle("(a)") +
-  theme_minimal() +
-  theme(aspect.ratio = 0.75,
-        panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        panel.grid.major.x = element_blank(),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
-
-distance_two_curvy_dist_summary <- distance_two_curvy_dist |>
-  count(bin) |>
-  mutate(prop = n/sum(n)) |>
-  head(4)
-
-# distance_two_curvy_dist <- distance_two_curvy_dist |>
-#   filter(bin != unique(distance_two_curvy_dist$bin)[1]) ## To remove a1 distances, since always small
-
-text_df <- tibble(
-  x = c(1.9, 3.4),
-  y = c(0.5, 0.5),
-  text = c("e1", "d1")
-)
-
-distance_hist <- ggplot(
-  distance_two_curvy_dist_summary,
-  aes(x = as.numeric(bin),
-      y = prop)) +
-  geom_line() +
-  scale_x_continuous(breaks = sort(unique(as.numeric(distance_two_curvy_dist$bin)))[1:4],
-                     labels = c(
-                       expression(a[1]),
-                       expression(2*a[1]),
-                       expression(3*a[1]),
-                       expression(4*a[1])
-                     )) +
-  geom_vline(xintercept = 2,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  geom_vline(xintercept = 3.5,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  geom_text(
-    data = text_df,
-    aes(
-      x = x,
-      y = y,
-      label = text
-    ),
-    size = 9
-  ) +
-  ylab("Proportion of the number of edges") +
-  xlab(expression(d^{(2)})) +
-  ggtitle("(b)") +
-  theme_minimal() +
-  theme(aspect.ratio = 0.75,
-        panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        panel.grid.major.x = element_blank(),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
-
-
-# distance_hist <- ggplot(
-#   distance_two_curvy_dist, aes(x = distance)) +
-#     geom_histogram(
-#       aes(y = after_stat(count) / sum(after_stat(count))), 
-#       binwidth = bin_width) +
-#   scale_x_continuous(breaks = bin_labels, 
-#                      labels = c(
-#                        expression(a[1]),
-#                        expression(2*a[1]),
-#                        expression(3*a[1]),
-#                        expression(4*a[1]),
-#                        expression(5*a[1]),
-#                        expression(6*a[1]),
-#                        expression(7*a[1]),
-#                        expression(8*a[1])
-#                      )) +
-#   geom_vline(xintercept = start_point + 2*bin_width,
-#              linetype="solid",
-#              color = "#bdbdbd",
-#              linewidth=1) +
-#   ylab("Proportion of the number of edges") +
-#   xlab(expression(d^{(2)})) +
-#   #ggtitle("(d)") +
-#   theme_minimal() +
-#   theme(aspect.ratio = 0.75,
-#         panel.border = element_rect(fill = 'transparent'),
-#         plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-#         panel.grid.major.x = element_blank(),
-#         axis.ticks.x = element_line(),
-#         axis.ticks.y = element_line())
-
-
 ## To find the benchmark value
 benchmark_two_curvy <- find_lg_benchmark(
   distance_edges = distance_two_curvy, 
   distance_col = "distance")
-
-## Benchmark 1
-
-benchmark_two_curvy <- 2 * bin_width
-
-distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy) ## 0.231
-
-tr_from_to_df_two_curvy3 <- inner_join(
-  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy2,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed1 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  interior_annotation("c1", sc_ltr_pos)
-
-trimesh_two_curvy_removed1_with_data <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000") +
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("a2", sc_ltr_pos)
-
-
-
-## Benchmark 2
-
-benchmark_two_curvy <- 2.5 * bin_width
-
-distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy)
-
-tr_from_to_df_two_curvy4 <- inner_join(
-  tr_from_to_df_two_curvy2, distance_df_small_edges_two_curvy3,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed2 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy4,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-            alpha = 0.5,
-            size = 0.5
-            ) +
-  coord_equal() +
-  interior_annotation("b1", sc_ltr_pos)
 
 ```
 
@@ -1797,30 +1830,6 @@ names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(proj
 
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-## Projection with Delauany triangulation
-
-model_df1 <- dplyr::left_join(
-  distance_two_curvy |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df1)[3:NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df1 <- dplyr::left_join(model_df1, projected_model_df, by = c("to" = "ID"))
-names(model_df1)[(2 + NCOL(projected_model_df)):NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-## With benchmark option 2
-
-model_df2 <- dplyr::left_join(
-  distance_df_small_edges_two_curvy3 |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df2)[3:NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID"))
-names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 ## For true model
 
@@ -1930,83 +1939,6 @@ two_curvy_proj_umap_model2 <- projected_df |>
     legend.position = "none"
   )
 
-
-two_curvy_proj_umap_model_delaunay <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df1, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") + #31a354
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
-  interior_annotation("a2", sc_ltr_pos) +
-  theme(
-    legend.position = "none"
-  )
-
-two_curvy_proj_umap_model_benchmark2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df2, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") + #31a354
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
-  interior_annotation("b2", sc_ltr_pos) +
-  theme(
-    legend.position = "none"
-  )
-
 two_curvy_proj_umap_all_model <- projected_df |>
   ggplot(
     aes(
@@ -2081,6 +2013,10 @@ df_bin_centroids3 <- extract_hexbin_centroids(
   counts_df = counts_df3) |>
   filter(drop_empty == FALSE) |>
   mutate(b1 = "b1 = 14")
+
+boxplot3 <- ggplot(df_bin_centroids3, 
+                   aes(x=bin_counts)) + 
+    geom_histogram()
 
 hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
                                           df_bin_centroids3 |> select(hexID, std_counts), 
@@ -2313,7 +2249,7 @@ error_df_two_curvy_abs <- augment(
   col_start = "x")
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(tsne_two_curvy_scaled |>
@@ -2322,7 +2258,7 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
 error_plot_two_curvy <- error_df_two_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = sqrt_row_wise_abs_error)) +
+             colour = sqrt_row_wise_total_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   theme(
@@ -2331,8 +2267,8 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
 
 error_plot_two_curvy_hist <- 
   ggplot(error_df_two_curvy_abs) +
-  geom_histogram(aes(x=sqrt_row_wise_abs_error^2, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_abs_error^2, y=..density..), colour="red") +
+  geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
   xlab(expression(group("|", e[hj], "|"))) +
   ylab("") +
   theme_bw() 
@@ -2340,7 +2276,7 @@ error_plot_two_curvy_hist <-
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of absolute error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
+#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark blue indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
 #| out-width: 60%
 #| fig-pos: H
 
@@ -2451,7 +2387,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 80 \\text{ } (10, \\text{ }8)$, (b) $b = 130 \\text{ } (13, \\text{ }10)$, and (c) $b = 391 \\text{ } (23, \\text{ }17)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the two C-shaped clusters data, using three different bin inputs: (a) $b = 255 \\text{ } (15, \\text{ }17)$, (b) $b = 598 \\text{ } (23, \\text{ }26)$, and (c) $b = 2544 \\text{ } (48, \\text{ }53)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -2465,12 +2401,13 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 hex_grid_coloured_two_curvy2 +
   hex_grid_coloured_two_curvy1 +
   hex_grid_coloured_two_curvy3 +
+  #boxplot1 + boxplot2 + boxplot3 +
   plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='none', plot.tag = element_text(size = 8))
 ``` 
 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{\frac{n}{r_2}}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model. 
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{\frac{n}{r_2}}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
 
 <!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-two_curvy (a)).--> 
 
@@ -2566,12 +2503,12 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 
 ```{r}
 #| label: fig-rm-lg
-#| fig-cap: "Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 2.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.09."
+#| fig-cap: "XXX Shouldn't the middle one have an edge connecting inside a C, so that it is clearly not as good as c? XXX Distribution of edge lengths and wireframes in \\gD{} and $7\\text{-}D$ with Delaunay triangulation, and two choices of long edge removal: (b) benchmark = 2.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.09."
 #| fig-height: 15
 #| fig-width: 15
 
 free(distance_points) /
-  wrap_plots(trimesh_two_curvy2, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model_delaunay, two_curvy_proj_umap_model_benchmark2, two_curvy_proj_umap_model, ncol = 3) +
+  wrap_plots(trimesh_two_curvy, trimesh_two_curvy_removed2, trimesh_two_curvy_removed1, two_curvy_proj_umap_model_delaunay, two_curvy_proj_umap_model_benchmark2, two_curvy_proj_umap_first_model1, ncol = 3) +
   plot_annotation(tag_levels = list(c("(a)", "(b)")))
 
 # free(distance_points) + plot_annotation(tag_levels = 'A') +
@@ -2600,6 +2537,16 @@ nldr_two_non_linear_diff_shaped_close_clusters1 <- tsne_two_non_linear_diff_shap
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a", c(0.08, 0.93)) +
+  theme(aspect.ratio = 1)
+
+
+tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds")
+
+nldr_two_non_linear_diff_shaped_close_clusters6 <- tsne_two_non_linear_diff_shaped_close_clusters |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("f", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
 umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
@@ -2647,12 +2594,17 @@ error_two_non_linear_diff_shaped_close_clusters_tsne <- read_rds("data/two_non_l
 error_two_non_linear_diff_shaped_close_clusters_phate <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
 error_two_non_linear_diff_shaped_close_clusters_trimap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
 error_two_non_linear_diff_shaped_close_clusters_pacmap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
+error_two_non_linear_diff_shaped_close_clusters_tsne2 <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
+
+error_two_non_linear_diff_shaped_close_clusters_tsne2 <- error_two_non_linear_diff_shaped_close_clusters_tsne2 |>
+  mutate(method = "tSNE2")
 
 error_two_non_linear_diff_shaped_close_clusters <- bind_rows(error_two_non_linear_diff_shaped_close_clusters_umap, 
                          error_two_non_linear_diff_shaped_close_clusters_tsne,
                          error_two_non_linear_diff_shaped_close_clusters_phate,
                          error_two_non_linear_diff_shaped_close_clusters_trimap,
-                         error_two_non_linear_diff_shaped_close_clusters_pacmap)
+                         error_two_non_linear_diff_shaped_close_clusters_pacmap,
+                         error_two_non_linear_diff_shaped_close_clusters_tsne2)
 
 error_two_non_linear_diff_shaped_close_clusters <- error_two_non_linear_diff_shaped_close_clusters |>
   mutate(a1 = round(a1, 2)) |>
@@ -2674,7 +2626,7 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_two_non_linear_diff_shaped_close_clusters$a1))[seq(1, length(unique(error_two_non_linear_diff_shaped_close_clusters$a1)), by = 5)]) +
-  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363')) +
+  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363', '#984ea3')) +
   scale_y_log10() +
   ylab("log(MSE)") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
@@ -2692,13 +2644,14 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 5 NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-two_non_linear_diff_shaped_close_clusters-mse
 #| fig-pos: H
 #| out-width: 60%
 
 free(error_plot_two_non_linear_diff_shaped_close_clusters) + wrap_plots(nldr_two_non_linear_diff_shaped_close_clusters1, nldr_two_non_linear_diff_shaped_close_clusters2, nldr_two_non_linear_diff_shaped_close_clusters3, 
-                                    nldr_two_non_linear_diff_shaped_close_clusters4, nldr_two_non_linear_diff_shaped_close_clusters5, ncol = 2)
+                                    nldr_two_non_linear_diff_shaped_close_clusters4, nldr_two_non_linear_diff_shaped_close_clusters5,
+                                    nldr_two_non_linear_diff_shaped_close_clusters6, ncol = 2)
 ```
 
 ```{r}
@@ -3377,7 +3330,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "grey50", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 20 #13
+num_bins_x_gau1 <- 26
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3451,7 +3404,7 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-benchmark_gau1 <- 0.1
+# benchmark_gau1 <- 0.1
 
 # trimesh_removed_gau1 <- vis_rmlg_mesh(
 #   distance_edges = distance_gau1,
@@ -3464,22 +3417,13 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) |>
-  filter(!(row_number() %in% c(33, 40, 48, 138, 143)))
+  filter(distance < benchmark_gau1) 
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
 trimesh_removed_gau_tsne <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = tsne_gau_scaled,
     aes(
@@ -3487,14 +3431,14 @@ trimesh_removed_gau_tsne <- ggplot() +
       y = tSNE2
     ),
     alpha = 0.2) + 
-  geom_rect(
-      aes(xmin = 0.3, 
-          xmax = 0.65, 
-          ymin = -0.05, 
-          ymax = 0.35),
-          fill = "transparent", 
-      color = "grey50", 
-      linewidth = 0.5) +
+  # geom_rect(
+  #     aes(xmin = 0.3, 
+  #         xmax = 0.65, 
+  #         ymin = -0.05, 
+  #         ymax = 0.35),
+  #         fill = "transparent", 
+  #     color = "grey50", 
+  #     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -3589,9 +3533,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.3,
-  axis_pos_x = 0.05,
-  axis_pos_y = -0.85,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
@@ -3603,6 +3547,10 @@ five_gau_proj_tsne_model1 <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
+  geom_point(
+    #size = 0.5,
+    alpha = 0.3,
+    color = "#999999") +
   geom_segment(
     data = model_df, 
     aes(
@@ -3611,11 +3559,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -3630,103 +3575,11 @@ five_gau_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(0, 0.4)) +
-  ylim(c(-0.9, -0.5)) +
+  xlim(c(-0.84, 0.84)) +
+  ylim(c(-0.84, 0.84)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
                       cex = 2)
-
-## Second projection
-# projection <- cbind(
-#     c(-0.71895,0.29250,-0.29905,-0.01656),
-#     c(-0.16698,-0.62707,-0.23756,0.46328))
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.3,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_tsne_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2), 
-    label=rownames(axes), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.75, -0.36)) +
-  ylim(c(-0.75, -0.36)) +
-  interior_annotation("a3", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-# five_gau_proj_tsne_model <- gen_proj_langevitour(
-#   points_df = df_exe,
-#   projection = projection,
-#   edge_df = distance_df_small_edges |> select(-distance)
-# ) +
-#   xlim(c(-0.18, 0.1)) +
-#   ylim(c(-0.78, -0.55))
 ```
 
 ```{r}
@@ -3743,7 +3596,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 45
+num_bins_x_gau1 <- 90
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3815,22 +3668,14 @@ tr_df <- distinct(tibble(
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
   filter(distance < benchmark_gau1) |>
-  mutate(ID = row_number()) |>
-  filter(!(ID %in% c(112)))
+  mutate(ID = row_number()) #|>
+  #filter(!(ID %in% c(112)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
 trimesh_removed_gau_umap <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = umap_gau_scaled,
     aes(
@@ -3838,14 +3683,14 @@ trimesh_removed_gau_umap <- ggplot() +
       y = UMAP2
     ),
     alpha = 0.05) + 
-  geom_rect(
-    aes(xmin = 0.45, 
-        xmax = 0.57, 
-        ymin = 0, 
-        ymax = 0.1),
-    fill = "transparent", 
-    color = "grey50", 
-    linewidth = 0.5)  +
+  # geom_rect(
+  #   aes(xmin = 0.45, 
+  #       xmax = 0.57, 
+  #       ymin = 0, 
+  #       ymax = 0.1),
+  #   fill = "transparent", 
+  #   color = "grey50", 
+  #   linewidth = 0.5)  +
   interior_annotation("b1", 
                       position = c(0.06, 0.95),
                       cex = 2) +
@@ -3935,9 +3780,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.28,
-  axis_pos_x = -0.58,
-  axis_pos_y = -0.35,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
   
@@ -3949,87 +3794,11 @@ five_gau_proj_umap_model1 <- projected_df |>
     aes(
       x = proj1, 
       y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
   geom_point(
     #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.64, -0.29)) +
-  ylim(c(-0.4, -0.05)) +
-  interior_annotation("b2", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-## Second projection
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.28,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_umap_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
     data = model_df, 
     aes(
       x = proj1_from, 
@@ -4037,11 +3806,8 @@ five_gau_proj_umap_model2 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -4055,19 +3821,11 @@ five_gau_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.4)) +
-  ylim(c(-0.75, -0.4)) +
-  interior_annotation("b3", 
+  xlim(c(-0.83, 0.83)) +
+  ylim(c(-0.83, 0.83)) +
+  interior_annotation("b2", 
                       position = c(0.08, 0.9),
                       cex = 2)
-
-# five_gau_proj_umap_model <- gen_proj_langevitour(
-#   points_df = df_exe,
-#   projection = projection,
-#   edge_df = distance_df_small_edges |> select(-distance)
-# ) +
-#   xlim(c(-0.18, 0.1)) +
-#   ylim(c(-0.78, -0.55))
 ```
 
 ```{r}
@@ -4085,7 +3843,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 21
+num_bins_x_gau1 <- 40
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -4173,14 +3931,6 @@ tr_from_to_df_gau1 <- inner_join(
   by = c("from", "to"))
 
 trimesh_removed_gau_pacmap <- ggplot() + 
-  #geom_segment(data = tr_from_to_df_gau1, 
-  #             aes(
-  #               x = x_from, 
-  #               y = y_from, 
-  #               xend = x_to, 
-  #               yend = y_to),
-  #             colour = "#000000",
-  #             linewidth = 1) +
   geom_point(
     data = pacmap_gau_scaled,
     aes(
@@ -4188,14 +3938,14 @@ trimesh_removed_gau_pacmap <- ggplot() +
       y = PaCMAP2
     ),
     alpha = 0.3) +
-  geom_rect(
-    aes(xmin = -0.04, 
-        xmax = 0.22, 
-        ymin = 0.08, 
-        ymax = 0.34),
-    fill = "transparent", 
-    color = "grey50", 
-    linewidth = 0.5) +
+  # geom_rect(
+  #   aes(xmin = -0.04, 
+  #       xmax = 0.22, 
+  #       ymin = 0.08, 
+  #       ymax = 0.34),
+  #   fill = "transparent", 
+  #   color = "grey50", 
+  #   linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -4279,9 +4029,9 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(  
   proj = projection,
-  limits = 0.25,
-  axis_pos_x = -0.41,
-  axis_pos_y = 0.23,
+  limits = 1,
+  axis_pos_x = -0.6,
+  axis_pos_y = -0.63,
   axis_labels = names(scaled_gau_data),
   threshold = 0)
 
@@ -4291,123 +4041,40 @@ circle <- axes_obj$circle
 five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
     aes(
-      x = proj1, 
+      x = proj1,
       y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 1) +
   geom_point(
     #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.46, -0.12)) +
-  ylim(c(0.18, 0.52)) +
-  interior_annotation("c2", 
-                      position = c(0.08, 0.9),
-                      cex = 2)
-
-### Second projection
-# projection <- cbind(
-#     c(-0.60995,0.33361,0.32920,-0.31518),
-#     c(0.19525,-0.30554,0.74417,0.07600))
-projection <- cbind(
-  c(0.36030,0.00630,0.66545,-0.34307),
-  c(-0.01861,0.14409,-0.36798,-0.73066))
-
-projected <- as.matrix(scaled_gau_data) %*% projection
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 0.3,
-  axis_pos_x = -0.7,
-  axis_pos_y = -0.7,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-five_gau_proj_pacmap_model2 <- projected_df |>
-  ggplot(
+    data = model_df,
     aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
+      x = proj1_from,
+      y = proj2_from,
+      xend = proj1_to,
+      yend = proj2_to),
     color = "#000000",
-    linewidth = 1) +
-  geom_point(
-    #size = 0.8,
-    alpha = 0.2,
-    color = "#999999") +
+    alpha = 0.4,
+    linewidth = 0.1) +
   geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
   geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
+    data=axes,
+    aes(x=x2, y=y2, label=rownames(axes)),
     colour="grey50",
     size = 5) +
   geom_path(
-    data=circle, 
+    data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.75, -0.35)) +
-  ylim(c(-0.75, -0.35))+
-  interior_annotation("c3", 
+  xlim(c(-0.83, 0.83)) +
+  ylim(c(-0.83, 0.83)) +
+  interior_annotation("c2",
                       position = c(0.08, 0.9),
                       cex = 2)
-
 
 ```
 
@@ -4416,7 +4083,7 @@ five_gau_proj_pacmap_model2 <- projected_df |>
 #| fig-height: 10
 #| fig-width: 15
 #| fig-pos: H
-#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) t-SNE, (b) UMAP, (c) PaCMap. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
+#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) tSNE, (b) UMAP, (c) PaCMAP. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
 five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + #error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
@@ -4454,23 +4121,29 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 <!-- The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and shows *flat* shaped clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/z07cKXi8EJQ>).  -->
 <!-- ::: -->
 
+```{r}
+# gen_proj_five_clust()[[1]] + gen_proj_five_clust()[[2]] + plot_layout(nrow = 2)
+```
+
 ### The effect of density
 
-To illustrate how the methods organise difference number of points within the structure in the NLDR layout, simulated $7\text{-}D$ data having C-shaped structure is used. 
+To illustrate how the methods organize difference number of points within the structure in the NLDR layout, simulated $7\text{-}D$ data having C-shaped structure is used. 
 
 ```{r}
 #| label: fig-one-dens_clust-error
-#| fig-height: 3
-#| fig-width: 9
+#| fig-height: 10
+#| fig-width: 10
 #| fig-pos: H
-#| fig-cap: "All \\gD{} layouts exhibit high error in the sparse end. The three \\gD{} layouts are: (a) tSNE, (b) UMAP, and (c) PaCMaP, which represent a C-shaped dense cluster colored according to the high-dimensional absolute error. Darker colors indicate high error, while lighter colors indicate low error. Regardless of the NLDR method used, the dense end of the structure shows low error, whereas the sparse end displays high error."
+#| fig-cap: "The sparse end of the structure exhibits a high model error, while the dense end shows a low model error. The tSNE layouts of the C-shaped cluster, with uniform points (a1) and dense points (b1), along with their selected projections (a2 and b2), are displayed. Darker colors represent a high error, while lighter colors indicate a low error. The uniformly distributed points demonstrate random model errors throughout the structure, whereas the dense structure shows large model error at the sparse end."
 
 generate_error_plots_one_c_shaped()
 ```
 
 ## Applications {#sec-applications}
 
-### Single-cell gene expression
+XXX WHY THESE EXAMPLES. NEEDS AN OVERVIEW PARAGRAPH
+
+### Single-cell gene expression {#sec-pbmc}
 <!--
 - NLDR view used to illustrate clusters
 - Use our method to assess is it a reasonable representation
@@ -4478,7 +4151,9 @@ generate_error_plots_one_c_shaped()
 - Illustrate how to use our method to get a better representation
 -->
 
-In the field of single-cell studies, a common analytical task involves clustering to identify groups of cells with similar expression profiles. NLDR methods are commonly used to display clusters, and help to verify the results. For example, @chen2023 illustrates the use of UMAP to identify clusters in Human Peripheral Blood Mononuclear Cells (PBMC3k). There are $2622$ single cells. First 9 principal components are used to generate the UMAP. @fig-NLDR-variety (a) is the reproduction of the published plot. The objective is to assess the published layout, and if it does not accurately represent the three clusters with small separations of the PBMC3k dataset (@fig-model-pbmc-author-proj (a2)), then select a reasonable \gD{} layout. 
+XXX What is single cell data????
+
+Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the discovered clusters, and help to understand the results. The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2023 are examined. There are $2622$ single cells, with XXX gene expressions. Following their pre-processing, UMAP was performed using nine principal components. @fig-NLDR-variety (a) is the reproduction of the published plot, with colour indicating the clustering results overlaid on the NLDR layout. The question is whether this accurately represents the cluster structure in the data. Our method can help here, and also help to provide a better \gD{} layout, as needed. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -4503,7 +4178,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 
 The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj (a2), there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset.
 
-As a result, it is necessary to find an appropriate layout for the dataset. MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)parameter settings were computed (@fig-pbmc-mse). Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.
+As a result, it is necessary to find an appropriate layout for the dataset. MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings were computed (@fig-pbmc-mse). Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.
 
 The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-mnist-tri-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-mnist-tri-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-mnist-tri-proj (b3)).
 
@@ -5346,7 +5021,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows three clusters with two of them being close and one separated from the others. This is why b1, b2, and b3 shows a connected edge between the close clusters, as proven by @fig-pbmc-mse as a reasonable layout. Viewing the fitted model in $9\\text{-}D$, helps to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "XXX Number of bins for b is inadequate. Caption needs to start with what this figure is for XXX Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows three clusters with two of them being close and one separated from the others. This is why b1, b2, and b3 shows a connected edge between the close clusters, as proven by @fig-pbmc-mse as a reasonable layout. Viewing the fitted model in $9\\text{-}D$, helps to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -5374,13 +5049,27 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 #### Comparison with results of scDEED recommendations
 
-In the field of single-cell studies, clustering is a common analytical task used to identify groups of cells with similar expression profiles. Non-linear dimensional reduction (NLDR) methods are frequently employed to visualize these clusters and help validate the results. However, it is well known that the 2D embeddings produced by t-SNE and UMAP may not accurately reflect the similarities among cell clusters. 
+<!--
+XXX What this section needs:
 
-To address this challenge, @xia2023 introduces a statistical method called scDEED, which detects unreliable cell embeddings generated by \gD{} embedding techniques. scDEED calculates a reliability score for each cell embedding based on the similarity between the cell’s \gD{} embedding neighbors and its neighbors prior to embedding. By identifying embeddings with low reliability scores as dubious and those with high scores as trustworthy, scDEED minimizes the number of questionable cell embeddings. This approach also provides clear guidance for optimizing the hyperparameters of an embedding method.
+- connect this with previous section, not make it seem like a completely new. connections are: nldr used to show clustering, scDEED provides a different approach to decide which is best.
+- why these two? assume one is the published figure, and second is one recommended by scDEED, which our results confirm is better.
+- Refer to figure in text
+- Fig 16 not necessary
 
-To verify that the \gD{} cell embeddings became better aligned with the cell types after scDEED’s optimization, the Human Peripheral Blood Mononuclear Cells (PBMC) dataset was used. It contained $31,021$ cells with cell type labels, and the gene expression levels were in the unit of log-transformed UMI count per $10,000$. They focused on three sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell. 
+CHANGES WERE MADE BASED ON THIS THINKING
+-->
+
+
+<!-- In the field of single-cell studies, clustering is a common analytical task used to identify groups of cells with similar expression profiles. Non-linear dimensional reduction (NLDR) methods are frequently employed to visualize these clusters and help validate the results. However, it is well known that the 2D embeddings produced by t-SNE and UMAP may not accurately reflect the similarities among cell clusters. ALREADY STATED IN PREVIOUS SECTION --> 
+
+As we were writing this paper @xia2023 appeared proposing a new method called scDEED helping to assess the validity of a \gD{} embedding. scDEED calculates a reliability score for each cell embedding based on the similarity between the cell’s \gD{} embedding neighbors and its neighbors prior to embedding. A low reliability score suggests a dubious embedding. It can help in the deciding on optimal hyperparameters. Here we illustrate how our method compares with the results from scDEED
+
+Following the process in @xia2023 again using the Human Peripheral Blood Mononuclear Cells (PBMC) data. Note that @xia2023 uses a different subset from @sec-pbmc, which contains $31,021$ cells including cell type labels, and the gene expression levels were in the unit of log-transformed UMI count per $10,000$. They focused on three sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell. 
 
 For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells) and UMAP cell embeddings. Also, @xia2023 used first $50$ principal components to generate the UMAP. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout. 
+
+@fig-model-pbmc-author-proj-scdeed shows layout from the original published article along with that suggested by scDEED to be more accurate. The log MSE vs binwidth plot illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the data.
 
 ```{r}
 result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
@@ -5489,7 +5178,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the 2 UMAP layouts with different hyperparameter settings (n_neighbors: $30$, min_dist: $0.3$ (red), n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents UMAP layout (a, b). Layout b is universally suboptimal. Layout b is the best choice."
+#| fig-cap: "Assessing which of the 2 UMAP layouts with different hyperparameter settings (n_neighbors: $30$, min_dist: $0.3$ (red), n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
   plot_layout(ncol = 1, heights = c(1, 1))
@@ -5799,6 +5488,7 @@ pbmc_proj_umap_model2 <- projected_df |>
 
 ```{r}
 #| echo: false
+#| eval: false
 #| fig-cap: "Model in \\gD{}, on the layout a, and two views of the fit in projections from $50\\text{-}D$, for the PBMC data ($n =  5858$ and $p = 50$). Layout shows close clusters. In $50\\text{-}D$, the data shows "
 #| label: fig-model-pbmc-author-proj-scdeed
 #| fig-pos: H

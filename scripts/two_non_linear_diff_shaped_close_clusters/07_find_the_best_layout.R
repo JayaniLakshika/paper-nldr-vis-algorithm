@@ -6,15 +6,20 @@ conflicted::conflicts_prefer(dplyr::filter)
 
 error_two_non_linear_diff_shaped_close_clusters_umap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
 error_two_non_linear_diff_shaped_close_clusters_tsne <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
+error_two_non_linear_diff_shaped_close_clusters_tsne2 <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 error_two_non_linear_diff_shaped_close_clusters_phate <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
 error_two_non_linear_diff_shaped_close_clusters_trimap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
 error_two_non_linear_diff_shaped_close_clusters_pacmap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
+
+error_two_non_linear_diff_shaped_close_clusters_tsne2 <- error_two_non_linear_diff_shaped_close_clusters_tsne2 |>
+  mutate(method = "tSNE2")
 
 error_two_non_linear_diff_shaped_close_clusters <- bind_rows(error_two_non_linear_diff_shaped_close_clusters_umap,
                                    error_two_non_linear_diff_shaped_close_clusters_tsne,
                                    error_two_non_linear_diff_shaped_close_clusters_phate,
                                    error_two_non_linear_diff_shaped_close_clusters_trimap,
-                                   error_two_non_linear_diff_shaped_close_clusters_pacmap)
+                                   error_two_non_linear_diff_shaped_close_clusters_pacmap,
+                                   error_two_non_linear_diff_shaped_close_clusters_tsne2)
 
 error_two_non_linear_diff_shaped_close_clusters <- error_two_non_linear_diff_shaped_close_clusters |>
   mutate(a1 = round(a1, 2)) |>
@@ -32,7 +37,7 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
   # geom_vline(xintercept = 15, linetype="solid",
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_two_non_linear_diff_shaped_close_clusters$a1))[seq(1, length(unique(error_two_non_linear_diff_shaped_close_clusters$a1)), by = 5)]) +
-  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363')) +
+  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363', '#984ea3')) +
   scale_y_log10() +
   ylab("log(MSE)") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
