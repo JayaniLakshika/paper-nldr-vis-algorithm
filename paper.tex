@@ -955,30 +955,38 @@ To illustrate how tSNE organize different number of points within the
 structure in the tSNE layout, simulated \(7\text{-}D\) data having
 C-shaped structure is used. Figure~\ref{fig-one-dens_clust-error} a1 and
 b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used.
+The \gD{} layouts are colored according to the high-dimensional model
+error. In b1, the large model error points are clustered in the top left
+corner, forming a separate cluster with high model errors.
 
 The models are fitted to these layouts.
 Figure~\ref{fig-one-dens_clust-error} b1 and b2 show the fitted models
-in projections of the \(7\text{-}D\) space. In these projection the
-difference between the distribution of high-dimensional model error can
-be seen. The uniform densed C-shaped cluster
+in projections of the \(7\text{-}D\) space. In these projections, the
+differences in the distribution of high-dimensional model errors can be
+observed. The uniform C-shaped cluster displays randomly distributed
+model errors, while the dense C-shaped cluster shows high model errors
+at the sparse end. In the dense C-shaped cluster, the high model errors
+occur because there are fewer data points positioned within the bins at
+the sparse end of the structure.
 
 \begin{figure}[H]
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{paper_files/figure-pdf/fig-one-dens_clust-error-1.pdf}
+\includegraphics[width=1\textwidth,height=0.5\textheight]{paper_files/figure-pdf/fig-one-dens_clust-error-1.pdf}
 
 }
 
 \caption{\label{fig-one-dens_clust-error}The sparse end of the structure
 exhibits a high model error, while the dense end shows a low model
-error. The tSNE layouts of the C-shaped cluster, with uniform points
+error. The tSNE layouts of the C-shaped structure, with uniform points
 (a1) and dense points (b1) are colored according to their
 high-dimensional error, along with their selected projections (a2 and
 b2), are displayed. Darker colors represent a high error, while lighter
 colors indicate a low error. The uniformly distributed points
 demonstrate random model errors throughout the structure, whereas the
-dense structure shows large model error at the sparse end.}
+dense structure shows large model error at the sparse end. Videos of the
+langevitour animations are available at.}
 
 \end{figure}%
 

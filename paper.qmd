@@ -4058,16 +4058,17 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 
 ### The effect of density
 
-To illustrate how tSNE organize different number of points within the structure in the tSNE layout, simulated $7\text{-}D$ data having C-shaped structure is used. @fig-one-dens_clust-error a1 and b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used. 
+To illustrate how tSNE organize different number of points within the structure in the tSNE layout, simulated $7\text{-}D$ data having C-shaped structure is used. @fig-one-dens_clust-error a1 and b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used. The \gD{} layouts are colored according to the high-dimensional model error. In b1, the large model error points are clustered in the top left corner, forming a separate cluster with high model errors.   
 
-The models are fitted to these layouts. @fig-one-dens_clust-error b1 and b2 show the fitted models in projections of the $7\text{-}D$ space. In these projection the difference between the distribution of high-dimensional model error can be seen. The uniform densed C-shaped cluster    
+The models are fitted to these layouts. @fig-one-dens_clust-error b1 and b2 show the fitted models in projections of the $7\text{-}D$ space. In these projections, the differences in the distribution of high-dimensional model errors can be observed. The uniform C-shaped cluster displays randomly distributed model errors, while the dense C-shaped cluster shows high model errors at the sparse end. In the dense C-shaped cluster, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.
 
 ```{r}
 #| label: fig-one-dens_clust-error
 #| fig-height: 10
 #| fig-width: 10
 #| fig-pos: H
-#| fig-cap: "The sparse end of the structure exhibits a high model error, while the dense end shows a low model error. The tSNE layouts of the C-shaped cluster, with uniform points (a1) and dense points (b1) are colored according to their high-dimensional error, along with their selected projections (a2 and b2), are displayed. Darker colors represent a high error, while lighter colors indicate a low error. The uniformly distributed points demonstrate random model errors throughout the structure, whereas the dense structure shows large model error at the sparse end."
+#| out-height: 50%
+#| fig-cap: "The sparse end of the structure exhibits a high model error, while the dense end shows a low model error. The tSNE layouts of the C-shaped structure, with uniform points (a1) and dense points (b1) are colored according to their high-dimensional error, along with their selected projections (a2 and b2), are displayed. Darker colors represent a high error, while lighter colors indicate a low error. The uniformly distributed points demonstrate random model errors throughout the structure, whereas the dense structure shows large model error at the sparse end. Videos of the langevitour animations are available at."
 
 generate_error_plots_one_c_shaped()
 ```
