@@ -903,35 +903,27 @@ differences between NLDR methods can be observed.
 
 \subsection{Ordering of points}\label{ordering-of-points}
 
-DHC: Will need to have more bins in each of the methods to illustrate
-this properly.
-
 To illustrate a difference in how the methods organise points in the
-NLDR layout, simulated 4D data having five Gaussian clusters is used.
-Figure~\ref{fig-five-gau-projs} a1, b1, c1 show the 2D layouts for (a)
-t-SNE, (b) UMAP, and (c) PaCMAP, respectively. The default
-hyper-parameters are used. All three methods show the five clusters,
-with varying degrees of separation.
+NLDR layout, simulated \(4\text{-}D\) data having five Gaussian clusters
+is used. Figure~\ref{fig-five-gau-projs} a1, b1, c1 show the \gD{}
+layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The
+default hyper-parameters are used. All three methods show the five
+clusters, with varying degrees of separation.
 
 The models are fitted to these layouts, but we focus on a single cluster
 to illustrate the curious detail. Figure~\ref{fig-five-gau-projs} a2,
-b2, c2 show the fitted models in a projection of the 4D space. In this
-projection the difference between methods can be seen. These clusters
-are fully 4D in nature, so we would expect the model to be a
-\emph{crumpled 2D sheet} that stretches in all four dimensions. This is
-what is observed for t-SNE and UMAP. The curious detail is that the
-model for PaCMAP is closer to a \emph{pancake} in shape! What this means
-is that there has to be some ordering of points in the 2D PaCMAP layout
-that induces the flat model, likely that the points are organised by the
-global principal components. So the layout of the model in 4D doesn't
-reflect the dimension of each cluster. DHC: is there something in the
-documentation that might help to explain what has happened?
-
-This pattern can also be observed by examining the error from the model
-fit (Figure~\ref{fig-five-gau-projs} a3, b3, c3). With t-SNE and UMAP
-the error is relatively uniformly distributed, but with PaCMAP there is
-more error in the center of the 2D layout, reflecting that there are
-more points in the middle that are further from the fitted model.
+b2, c2 show the fitted models in a projection of the \(4\text{-}D\)
+space. In this projection the difference between methods can be seen.
+These clusters are fully \(4\text{-}D\) in nature, so we would expect
+the model to be a \emph{crumpled \gD{} sheet} that stretches in all four
+dimensions. This is what is observed for tSNE and UMAP. The curious
+detail is that the model for PaCMAP is closer to a \emph{pancake} in
+shape! What this means is that there has to be some ordering of points
+in the \gD{} PaCMAP layout that induces the flat model, likely that the
+points are organised by the global principal components. So the layout
+of the model in \(4\text{-}D\) doesn't reflect the dimension of each
+cluster. DHC: is there something in the documentation that might help to
+explain what has happened?
 
 \begin{figure}[H]
 
@@ -960,9 +952,16 @@ available at \url{https://youtu.be/oQxEb4wRdHI},
 
 \subsection{The effect of density}\label{the-effect-of-density}
 
-To illustrate how the methods organize difference number of points
-within the structure in the NLDR layout, simulated \(7\text{-}D\) data
-having C-shaped structure is used.
+To illustrate how tSNE organize different number of points within the
+structure in the tSNE layout, simulated \(7\text{-}D\) data having
+C-shaped structure is used. Figure~\ref{fig-one-dens_clust-error} a1 and
+b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used.
+
+The models are fitted to these layouts.
+Figure~\ref{fig-one-dens_clust-error} b1 and b2 show the fitted models
+in projections of the \(7\text{-}D\) space. In these projection the
+difference between the distribution of high-dimensional model error can
+be seen. The uniform densed C-shaped cluster
 
 \begin{figure}[H]
 
@@ -975,9 +974,10 @@ having C-shaped structure is used.
 \caption{\label{fig-one-dens_clust-error}The sparse end of the structure
 exhibits a high model error, while the dense end shows a low model
 error. The tSNE layouts of the C-shaped cluster, with uniform points
-(a1) and dense points (b1), along with their selected projections (a2
-and b2), are displayed. Darker colors represent a high error, while
-lighter colors indicate a low error. The uniformly distributed points
+(a1) and dense points (b1) are colored according to their
+high-dimensional error, along with their selected projections (a2 and
+b2), are displayed. Darker colors represent a high error, while lighter
+colors indicate a low error. The uniformly distributed points
 demonstrate random model errors throughout the structure, whereas the
 dense structure shows large model error at the sparse end.}
 
