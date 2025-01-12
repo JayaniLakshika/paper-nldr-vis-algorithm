@@ -924,12 +924,6 @@ of the model in \(4\text{-}D\) doesn't reflect the dimension of each
 cluster. DHC: is there something in the documentation that might help to
 explain what has happened?
 
-This pattern can also be observed by examining the error from the model
-fit (Figure~\ref{fig-five-gau-projs} a3, b3, c3). With tSNE and UMAP the
-error is relatively uniformly distributed, but with PaCMAP there is more
-error in the center of the \gD{} layout, reflecting that there are more
-points in the middle that are further from the fitted model.
-
 \begin{figure}[H]
 
 \centering{
@@ -957,9 +951,16 @@ available at \url{https://youtu.be/oQxEb4wRdHI},
 
 \subsection{The effect of density}\label{the-effect-of-density}
 
-To illustrate how the methods organize difference number of points
-within the structure in the NLDR layout, simulated \(7\text{-}D\) data
-having C-shaped structure is used.
+To illustrate how tSNE organize different number of points within the
+structure in the tSNE layout, simulated \(7\text{-}D\) data having
+C-shaped structure is used. Figure~\ref{fig-one-dens_clust-error} a1 and
+b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used.
+
+The models are fitted to these layouts.
+Figure~\ref{fig-one-dens_clust-error} b1 and b2 show the fitted models
+in projections of the \(7\text{-}D\) space. In these projection the
+difference between the distribution of high-dimensional model error can
+be seen. The uniform densed C-shaped cluster
 
 \begin{figure}[H]
 

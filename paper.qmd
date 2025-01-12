@@ -3270,42 +3270,7 @@ To illustrate a difference in how the methods organise points in the NLDR layout
 
 The models are fitted to these layouts, but we focus on a single cluster to illustrate the curious detail. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the $4\text{-}D$ space. In this projection the difference between methods can be seen. These clusters are fully $4\text{-}D$ in nature, so we would expect the model to be a *crumpled \gD{} sheet* that stretches in all four dimensions. This is what is observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape! What this means is that there has to be some ordering of points in the \gD{} PaCMAP layout that induces the flat model, likely that the points are organised by the global principal components. So the layout of the model in $4\text{-}D$ doesn't reflect the dimension of each cluster. DHC: is there something in the documentation that might help to explain what has happened?
 
-This pattern can also be observed by examining the error from the model fit (@fig-five-gau-projs a3, b3, c3). With tSNE and UMAP the error is relatively uniformly distributed, but with PaCMAP there is more error in the center of the \gD{} layout, reflecting that there are more points in the middle that are further from the fitted model.
-
-<!-- In this section, the evaluation focuses on how effectively the tSNE, UMAP, and PaCMAP algorithms preserve the clustering structure. The data consists of five $4\text{-}D$ clusters, each with $1000$ points generated from a multivariate normal distribution with a small variance of $0.0025$. The first cluster is centered at $(0, 0, 0, 0)$, the second at $(1, 0, 0, 0)$, the third at $(0, 1, 0, 0)$, the fourth at $(0, 0, 1, 0)$, and the fifth at $(0, 0, 0, 1)$.-->
-
-<!-- In this section, we will assess how tSNE, UMAP, and PaCMAP algorithms preserve the clustering structure. We use a simulated dataset consisting of five spherical Gaussian clusters where each cluster occupies a different corner of the $4\text{-}D$ space, with each cluster containing an equal number of points ($1000$) and the same within-cluster variation. The data simulated from $\Sigma = \begin{pmatrix} -->
-<!-- 0.0025 & 0 & 0 & 0 \\ -->
-<!-- 0 & 0.0025 & 0 & 0 \\ -->
-<!-- 0 & 0 & 0.0025 & 0 \\ -->
-<!-- 0 & 0 & 0 & 0.0025 \\ -->
-<!-- \end{pmatrix}$. -->
-
-<!-- In the tSNE layout (@fig-five-gau-projs (a1)), the distances between clusters appear smaller, leading to more tightly packed clusters, which is typical of tSNE's focus on preserving local structures. This often results in less emphasis on the global distances between clusters. On the other hand, UMAP (@fig-five-gau-projs (b1)) tends to maintain larger separations between clusters, better reflecting the global structure and preserving the relative distances between clusters more effectively. In contrast, PaCMAP (@fig-five-gau-projs (c1)) aim to balance these aspects by maintaining the distance between clusters and accurately positioning them, effectively capturing both global and local structures.-->
-
-<!-- By visualizing the model of different layouts in $4\text{-}D$ reveal different characteristics of each NLDR method. When examining the model of a specific cluster, which appears more like a filled-out shape in tSNE (@fig-five-gau-projs (a2, a3)), and UMAP (@fig-five-gau-projs (b2, b3)), while the model has a pancake shape in PaCMAP (@fig-five-gau-projs (c2, c3)). The reason to have filled-out shaped clusters in tSNE and UMAP is that the ability of capture the local structure. On the other hand, the reason for the pancake shape in PaCMAP is the fail to capture the local structure. -->   
-
-<!-- The tSNE, UMAP, and PaCMAP layouts each reveal different characteristics of the clustering structure within the dataset.  -->
-
-
-<!-- When examining the model of a specific cluster, which appears more like a filled-out pancake in $4\text{-}D$, we observe that tSNE, UMAP, and PaCMAP all effectively capture global structures. However, there is evidence suggesting that PaCMAP, with its default hyper-parameter settings, struggles to preserve the local structure as effectively as tSNE and UMAP. -->
-
-<!-- The differences in performance can be attributed to several factors. One key element is the choice of hyper-parameters, particularly the number of neighbors considered during the dimensionality reduction process. This parameter significantly impacts how well local structures are maintained. Additionally, the balance between global and local structures, and issues related to optimization and initialization all contribute to the observed outcomes. 
-
-It's important to note that these layouts are made with default hyper-parameter settings. Adjusting these parameters could lead to different results, potentially improving PaCMAP's ability to capture local structures or altering how tSNE and UMAP handle global and local structures. Thus, while PaCMAP generally balances global and local preservation, careful tuning of its parameters is important for achieving the best results in any given dataset.-->
-
-
-
-<!-- In this section, the effectiveness of the algorithm is described using a simulated dataset. The dataset consists of five spherical Gaussian clusters in $4\text{-}D$, with each cluster containing an equal number of points and the same within-cluster variation. -->
-
-<!-- XXX Add tSNE, UMAP, and PaCMAP NLDR layouts and describe what is happening -->
-<!-- XXX Discuss the models of one specific cluster (filled out, pancakes): tSNE, UMAP, PaCMAP are useful to capture global structures, but this is an evidence where PaCMAP fail to capture the local structure with default hyper-parameter settings than tSNE and UMAP -->
-<!-- XXX Why? hyper-parameter choice specially number of neighbors, data characteristics (intrinsic dimensionality), imbalance between global and local structures, optimization and initialization issues -->
-<!-- XXX Add this is with specific hyper-parameter choices -->
-
-<!-- The \gD{} layouts generated by tSNE, UMAP, and PaCMAP show five well-separated clusters which evident these methods effectively preserve the global structure. In tSNE (@fig-gau-tsne-sc (a)), these clusters appear closely. UMAP arranges all clusters in a parallel manner, with three aligned in one line and the other two in a separate line (@fig-gau-umap-sc (a)). In contrast, PaCMAP shows one central cluster and the remaining four spread out in different directions (@fig-gau-pacmap-sc (a)). -->
-
-<!-- The tSNE and UMAP shows *filled out* clusters which provide evidence that these methods preserve the local structure (@fig-gau-tsne-sc (c) and @fig-gau-umap-sc (c)). On the other hand, PaCMAP shows *flat* shapes clusters in the model and evident that PaCMAP fail to capture the within-cluster variation (@fig-gau-pacmap-sc (c)).  -->
+<!-- This pattern can also be observed by examining the error from the model fit (@fig-five-gau-projs a3, b3, c3). With tSNE and UMAP the error is relatively uniformly distributed, but with PaCMAP there is more error in the center of the \gD{} layout, reflecting that there are more points in the middle that are further from the fitted model. -->
 
 <!--Projections-->
 ```{r}
@@ -4091,43 +4056,11 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
   theme(legend.position='none')
 ```
 
-<!-- ::: {#fig-gau-tsne-sc layout-ncol="3" fig-pos="H"} -->
-<!-- ![](figures/five_gau_clusters/tsne_layout.png) -->
-
-<!-- ![](figures/five_gau_clusters/2d_model_tsne.png) -->
-
-<!-- ![](figures/five_gau_clusters/sc_tsne_3.png) -->
-
-<!-- The tSNE layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/RASEE7N5MbM>).  -->
-<!-- ::: -->
-
-<!-- ::: {#fig-gau-umap-sc layout-ncol="3" fig-pos="H"} -->
-<!-- ![](figures/five_gau_clusters/umap_layout.png) -->
-
-<!-- ![](figures/five_gau_clusters/2d_model_umap.png) -->
-
-<!-- ![](figures/five_gau_clusters/sc_umap_3.png) -->
-
-<!-- The UMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and tries to *filled out* the clusters, but not as much as tSNE. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/iG4bCPkJilw>).  -->
-<!-- ::: -->
-
-<!-- ::: {#fig-gau-pacmap-sc layout-ncol="3" fig-pos="H"} -->
-<!-- ![](figures/five_gau_clusters/pacmap_layout.png) -->
-
-<!-- ![](figures/five_gau_clusters/2d_model_pacmap.png) -->
-
-<!-- ![](figures/five_gau_clusters/sc_pacmap_2.png) -->
-
-<!-- The PaCMAP layout, model in \gD{}, and a view of the fit in projections from $4\text{-}D$, for the five Gaussian cluster data. The model fits the separation and shows *flat* shaped clusters. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/z07cKXi8EJQ>).  -->
-<!-- ::: -->
-
-```{r}
-# gen_proj_five_clust()[[1]] + gen_proj_five_clust()[[2]] + plot_layout(nrow = 2)
-```
-
 ### The effect of density
 
-To illustrate how the methods organize difference number of points within the structure in the NLDR layout, simulated $7\text{-}D$ data having C-shaped structure is used. 
+To illustrate how tSNE organize different number of points within the structure in the tSNE layout, simulated $7\text{-}D$ data having C-shaped structure is used. @fig-one-dens_clust-error a1 and b1 shows \gD{} layouts for tSNE. The default hyper-parameters are used. 
+
+The models are fitted to these layouts. @fig-one-dens_clust-error b1 and b2 show the fitted models in projections of the $7\text{-}D$ space. In these projection the difference between the distribution of high-dimensional model error can be seen. The uniform densed C-shaped cluster    
 
 ```{r}
 #| label: fig-one-dens_clust-error
