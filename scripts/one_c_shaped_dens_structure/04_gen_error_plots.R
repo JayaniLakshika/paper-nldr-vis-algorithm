@@ -114,9 +114,9 @@ error_plot_tsne <- error_df_one_curvy_abs |>
                              levels = c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
                                         "seventh", "eighth", "nineth")))) +
-  geom_point(alpha=0.5) +
-  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                               '#ef6548','#d7301f','#b30000','#7f0000')) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#ffffcc','#ffeda0','#fed976','#feb24c',
+                              '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -196,8 +196,8 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                                         c("first", "second", "third",
                                           "fourth", "fifth", "sixth",
                                           "seventh", "eighth", "nineth","model")), pointSize = append(rep(1, NROW(df_b)), rep(2, NROW(df))),
-                         levelColors = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                                         '#ef6548','#d7301f','#b30000','#7f0000',
+                         levelColors = c('#ffffcc','#ffeda0','#fed976','#feb24c',
+                                         '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
                                          "#000000"))
 
 
@@ -304,8 +304,8 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                              '#ef6548','#d7301f','#b30000','#7f0000',
+  scale_color_manual(values=c('#ffffcc','#ffeda0','#fed976','#feb24c',
+                              '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
                               "#000000")) +
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
@@ -407,9 +407,9 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
                              levels = c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
                                         "seventh", "eighth", "nineth")))) +
-  geom_point(alpha=0.5) +
-  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                              '#ef6548','#d7301f','#b30000','#7f0000')) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c',
+                              '#fc4e2a','#e31a1c','#bd0026','#800026')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -489,8 +489,8 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                                       c("first", "second", "third",
                                         "fourth", "fifth", "sixth",
                                         "seventh", "eighth", "nineth", "model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
-                         levelColors = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                                         '#ef6548','#d7301f','#b30000','#7f0000',
+                         levelColors = c('#ffffcc','#ffeda0','#fed976','#feb24c',
+                                         '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
                                          "#000000"))
 
 
@@ -598,8 +598,8 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   geom_path(
     data=circle1,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
-                              '#ef6548','#d7301f','#b30000','#7f0000',
+  scale_color_manual(values=c('#ffffcc','#ffeda0','#fed976','#feb24c',
+                              '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
                               "#000000")) +
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
