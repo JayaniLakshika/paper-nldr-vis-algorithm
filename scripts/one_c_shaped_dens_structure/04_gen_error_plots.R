@@ -120,7 +120,7 @@ error_plot_tsne <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("a1",
+  interior_annotation("b1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
@@ -195,7 +195,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          group = factor(df_exe$type,
                                         c("first", "second", "third",
                                           "fourth", "fifth", "sixth",
-                                          "seventh", "eighth", "nineth","model")), pointSize = append(rep(1, NROW(df_b)), rep(0.5, NROW(df))),
+                                          "seventh", "eighth", "nineth","model")), pointSize = append(rep(1, NROW(df_b)), rep(2, NROW(df))),
                          levelColors = c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
                                          '#ef6548','#d7301f','#b30000','#7f0000',
                                          "#000000"))
@@ -221,8 +221,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(0.26984,0.06151,-0.26435,-0.20792,0.28298,0.03515,0.01322),
-  c(-0.30794,0.27695,-0.29798,0.01445,-0.03009,-0.06272,0.07641))
+  c(-0.13604,0.52435,-0.14250,0.05602,0.27313,-0.00379,-0.30198),
+  c(-0.15151,-0.26081,-0.27535,-0.21461,-0.14673,0.25122,-0.43036))
 
 projection_scaled <- projection * 1
 
@@ -259,7 +259,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.5,
   axis_pos_y = -0.5,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.02)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -296,11 +296,11 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2, label=rownames(axes)),
-    colour="grey50",
-    size = 3) +
+  # geom_text(
+  #   data=axes,
+  #   aes(x=x2, y=y2, label=rownames(axes)),
+  #   colour="grey50",
+  #   size = 3) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
@@ -310,7 +310,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("a2",
+  interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -413,7 +413,7 @@ error_plot_tsne_uni <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("b1",
+  interior_annotation("a1",
                       position = c(0.08, 0.95),
                       cex = 1.5)
 
@@ -514,8 +514,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(0.26984,0.06151,-0.26435,-0.20792,0.28298,0.03515,0.01322),
-  c(-0.30794,0.27695,-0.29798,0.01445,-0.03009,-0.06272,0.07641))
+  c(-0.13604,0.52435,-0.14250,0.05602,0.27313,-0.00379,-0.30198),
+  c(-0.15151,-0.26081,-0.27535,-0.21461,-0.14673,0.25122,-0.43036))
 
 projection_scaled <- projection * 1
 
@@ -552,7 +552,7 @@ axes_obj <- gen_axes(
   axis_pos_x = -0.5,
   axis_pos_y = -0.5,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.02)
+  threshold = 0)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -589,11 +589,11 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2, label=rownames(axes)),
-    colour="grey50",
-    size = 3) +
+  # geom_text(
+  #   data=axes,
+  #   aes(x=x2, y=y2, label=rownames(axes)),
+  #   colour="grey50",
+  #   size = 3) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
@@ -603,7 +603,7 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("b2",
+  interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -613,8 +613,8 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
 
 generate_error_plots_one_c_shaped <- function(){
 
-  error_plot_tsne + error_plot_tsne_uni +
-    five_c_shaped_proj_tsne_model1 + five_c_shaped_proj_tsne_model2 +
+  error_plot_tsne_uni + error_plot_tsne +
+    five_c_shaped_proj_tsne_model2 + five_c_shaped_proj_tsne_model1 +
     plot_layout(guides = "collect", ncol = 2) &
     theme(legend.position='none')
 
