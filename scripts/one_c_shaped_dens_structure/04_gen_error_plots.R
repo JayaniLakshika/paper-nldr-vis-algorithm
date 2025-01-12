@@ -221,8 +221,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(-0.13604,0.52435,-0.14250,0.05602,0.27313,-0.00379,-0.30198),
-  c(-0.15151,-0.26081,-0.27535,-0.21461,-0.14673,0.25122,-0.43036))
+  c(-0.02893,-0.29715,0.03575,0.21857,0.25865,-0.47632,0.22524),
+  c(0.12055,-0.06246,-0.29669,-0.19943,0.54627,0.16620,-0.10214))
 
 projection_scaled <- projection * 1
 
@@ -255,13 +255,13 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 0.5,
-  axis_pos_x = -0.5,
-  axis_pos_y = -0.5,
+  limits = 0.35,
+  axis_pos_x = -0.28,
+  axis_pos_y = -0.28,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0)
+  threshold = 0.025)
 
-axes <- axes_obj$axes
+axes2 <- axes_obj$axes
 circle <- axes_obj$circle
 
 ## To add error category
@@ -282,7 +282,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
       yend = proj2_to),
     color = "#000000",
     linewidth = 0.8,
-    alpha = 0.6) +
+    alpha = 0.4) +
   geom_point(
     #size = 0.5,
     aes(
@@ -291,16 +291,16 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
                                 "fourth", "fifth", "sixth",
                                 "seventh", "eighth", "nineth"))
     ),
-    alpha = 0.3) +
+    alpha = 0.5) +
   geom_segment(
-    data=axes,
+    data=axes2,
     aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
-  # geom_text(
-  #   data=axes,
-  #   aes(x=x2, y=y2, label=rownames(axes)),
-  #   colour="grey50",
-  #   size = 3) +
+  geom_text(
+    data=axes2,
+    aes(x=x2, y=y2, label=rownames(axes2)),
+    colour="grey50",
+    size = 3) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
@@ -308,8 +308,8 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
                               '#ef6548','#d7301f','#b30000','#7f0000',
                               "#000000")) +
   coord_fixed() +
-  xlim(c(-0.6, 0.6)) +
-  ylim(c(-0.6, 0.6)) +
+  xlim(c(-0.35, 0.35)) +
+  ylim(c(-0.35, 0.35)) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
@@ -513,9 +513,10 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
   select(-type)
 
 ## First projection
+
 projection <- cbind(
-  c(-0.13604,0.52435,-0.14250,0.05602,0.27313,-0.00379,-0.30198),
-  c(-0.15151,-0.26081,-0.27535,-0.21461,-0.14673,0.25122,-0.43036))
+  c(-0.25559,0.10281,-0.00471,-0.20475,-0.35147,-0.14407,-0.09528),
+  c(0.06178,-0.06294,0.22117,0.24064,-0.27216,0.25174,-0.13841))
 
 projection_scaled <- projection * 1
 
@@ -548,14 +549,14 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 
 axes_obj <- gen_axes(
   proj = projection,
-  limits = 0.5,
-  axis_pos_x = -0.5,
-  axis_pos_y = -0.5,
+  limits = 0.4,
+  axis_pos_x = -0.26,
+  axis_pos_y = -0.26,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0)
+  threshold = 0.02)
 
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+axes1 <- axes_obj$axes
+circle1 <- axes_obj$circle
 
 ## To add error category
 projected_df <- projected_df |>
@@ -575,7 +576,7 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
       yend = proj2_to),
     color = "#000000",
     linewidth = 0.8,
-    alpha = 0.6) +
+    alpha = 0.4) +
   geom_point(
     #size = 0.5,
     aes(
@@ -584,25 +585,25 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
                                 "fourth", "fifth", "sixth",
                                 "seventh", "eighth", "nineth"))
     ),
-    alpha = 0.3) +
+    alpha = 0.5) +
   geom_segment(
-    data=axes,
+    data=axes1,
     aes(x=x1, y=y1, xend=x2, yend=y2),
     colour="grey70") +
-  # geom_text(
-  #   data=axes,
-  #   aes(x=x2, y=y2, label=rownames(axes)),
-  #   colour="grey50",
-  #   size = 3) +
+  geom_text(
+    data=axes1,
+    aes(x=x2, y=y2, label=rownames(axes1)),
+    colour="grey50",
+    size = 3) +
   geom_path(
-    data=circle,
+    data=circle1,
     aes(x=c1, y=c2), colour="grey70") +
   scale_color_manual(values=c('#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59',
                               '#ef6548','#d7301f','#b30000','#7f0000',
                               "#000000")) +
   coord_fixed() +
-  xlim(c(-0.6, 0.6)) +
-  ylim(c(-0.6, 0.6)) +
+  xlim(c(-0.35, 0.35)) +
+  ylim(c(-0.35, 0.35)) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
