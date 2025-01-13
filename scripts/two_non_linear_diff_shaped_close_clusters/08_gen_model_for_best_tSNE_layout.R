@@ -50,6 +50,14 @@ tr1_object_two_nonlinear_clusters <- tri_bin_centroids(
 tr_from_to_df_two_nonlinear_clusters <- gen_edges(
   tri_object = tr1_object_two_nonlinear_clusters)
 
+## Hexagonal binning to have regular hexagons
+hb_obj_two_nonlinear_clusters <- hex_binning(
+  data = tSNE_two_nonlinear_clusters_scaled,
+  bin1 = num_bins_x_two_nonlinear_clusters,
+  r2 = r2_two_nonlinear_clusters)
+
+bin_width <- hb_obj_two_nonlinear_clusters$a1
+
 ## Compute 2D distances
 distance_two_nonlinear_clusters <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_two_nonlinear_clusters,
@@ -95,11 +103,7 @@ trimesh_removed_two_nonlinear_clusters <- ggplot() +
 trimesh_removed_two_nonlinear_clusters
 
 
-## Hexagonal binning to have regular hexagons
-hb_obj_two_nonlinear_clusters <- hex_binning(
-  data = tSNE_two_nonlinear_clusters_scaled,
-  bin1 = num_bins_x_two_nonlinear_clusters,
-  r2 = r2_two_nonlinear_clusters)
+
 
 tSNE_data_with_hb_id <- hb_obj_two_nonlinear_clusters$data_hb_id
 df_all_two_nonlinear_clusters <- dplyr::bind_cols(training_data_two_nonlinear_clusters |> dplyr::select(-ID),
