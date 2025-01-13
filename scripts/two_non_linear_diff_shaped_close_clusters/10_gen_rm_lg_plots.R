@@ -96,6 +96,8 @@ trimesh_two_curvy_umap <- ggplot() +
              size = 0.5
   ) +
   coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
   interior_annotation("a1", sc_ltr_pos)
 
 ## Compute 2D distances
@@ -121,7 +123,7 @@ bin_width <- hb_obj_two_curvy$a1
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 4.5 * bin_width
+benchmark_two_curvy <- 2.5 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -148,6 +150,8 @@ trimesh_two_curvy_removed2_umap <- ggplot() +
              size = 0.5
   ) +
   coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
   interior_annotation("b1", sc_ltr_pos)
 
 ## Benchmark 1
@@ -179,6 +183,8 @@ trimesh_two_curvy_removed1_umap <- ggplot() +
              size = 0.5
   ) +
   coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
   interior_annotation("c1", sc_ltr_pos)
 
 trimesh_two_curvy_removed1_with_data <- ggplot() +
@@ -199,7 +205,8 @@ trimesh_two_curvy_removed1_with_data <- ggplot() +
              size = 0.5
   ) +
   coord_equal() +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
   interior_annotation("a2", sc_ltr_pos)
 
 ## Computed benchmark value
@@ -290,10 +297,10 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(0.08497,-0.00376,0.05928,-0.08003,-0.00770,-0.00466,0.00394),
-  c(-0.01944,-0.01157,0.07178,0.03253,0.05677,-0.01317,0.08445))
+  c(-0.10339,0.00736,0.01669,-0.01263,0.05880,0.03529,-0.04416),
+  c(-0.03400,-0.01555,-0.05365,-0.03780,-0.09379,-0.00051,-0.05773))
 
-projection_scaled <- projection * 1
+projection_scaled <- projection * 5
 
 projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
 
@@ -348,11 +355,11 @@ names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names
 
 axes_obj <- gen_axes(
   proj = projection * 5,
-  limits = 0.15,
-  axis_pos_x = -0.067,
-  axis_pos_y = -0.067,
+  limits = 0.5,
+  axis_pos_x = -0.3,
+  axis_pos_y = -0.3,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.0107)
+  threshold = 0.02)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -388,8 +395,8 @@ two_curvy_proj_first_model1_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.1)) +
-  ylim(c(-0.1, 0.1)) +
+  xlim(c(-0.4, 0.4)) +
+  ylim(c(-0.4, 0.4)) +
   interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -428,8 +435,8 @@ two_curvy_proj_model_delaunay_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.1)) +
-  ylim(c(-0.1, 0.1)) +
+  xlim(c(-0.4, 0.4)) +
+  ylim(c(-0.4, 0.4)) +
   interior_annotation("a2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -466,8 +473,8 @@ two_curvy_proj_model_benchmark2_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.1)) +
-  ylim(c(-0.1, 0.1)) +
+  xlim(c(-0.4, 0.4)) +
+  ylim(c(-0.4, 0.4)) +
   interior_annotation("b2", sc_ltr_pos) +
   theme(
     legend.position = "none"
