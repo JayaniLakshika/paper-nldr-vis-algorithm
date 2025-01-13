@@ -252,11 +252,23 @@ distance_two_curvy_dist <- distance_two_curvy |>
 
 distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
 
+text_df <- tibble::tibble(
+  x = c(0.035, 0.15),
+  y = c(10, 10),
+  text = c("c", "b")
+)
+
 distance_points_umap <- ggplot(
   distance_two_curvy_dist,
   aes(x = distance,
       y = dist_highd)) +
   geom_point(alpha = 0.5) +
+  geom_text(
+    data=text_df,
+    aes(x=x, y=y,
+        label=text),
+    colour="#bdbdbd",
+    size = 10) +
   geom_vline(xintercept = 6.5 * bin_width,
              linetype="solid",
              color = "#bdbdbd",
