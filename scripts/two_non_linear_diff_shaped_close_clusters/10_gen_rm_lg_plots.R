@@ -32,7 +32,7 @@ sc_ltr_pos <- c(0.08, 0.9)
 ##Full hexagon grid with UMAP data
 
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 23
+num_bins_x_two_curvy <- 42
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -123,7 +123,7 @@ bin_width <- hb_obj_two_curvy$a1
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 2.5 * bin_width
+benchmark_two_curvy <- 6.5 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -252,12 +252,12 @@ distance_two_curvy_dist <- distance_two_curvy |>
 
 distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
 
-distance_points <- ggplot(
+distance_points_umap <- ggplot(
   distance_two_curvy_dist,
   aes(x = distance,
       y = dist_highd)) +
   geom_point(alpha = 0.5) +
-  geom_vline(xintercept = 2.5 * bin_width,
+  geom_vline(xintercept = 6.5 * bin_width,
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
@@ -297,8 +297,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(-0.10339,0.00736,0.01669,-0.01263,0.05880,0.03529,-0.04416),
-  c(-0.03400,-0.01555,-0.05365,-0.03780,-0.09379,-0.00051,-0.05773))
+  c(-0.02291,-0.00834,0.06450,-0.09921,0.00761,-0.05518,-0.01158),
+  c(-0.11183,-0.02761,-0.04394,-0.01066,0.04229,0.02054,0.01768))
 
 projection_scaled <- projection * 5
 
@@ -356,10 +356,10 @@ names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names
 axes_obj <- gen_axes(
   proj = projection * 5,
   limits = 0.5,
-  axis_pos_x = -0.3,
-  axis_pos_y = -0.3,
+  axis_pos_x = -0.4,
+  axis_pos_y = -0.4,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.02)
+  threshold = 0.03)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -395,8 +395,8 @@ two_curvy_proj_first_model1_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.4, 0.4)) +
-  ylim(c(-0.4, 0.4)) +
+  xlim(c(-0.5, 0.5)) +
+  ylim(c(-0.5, 0.5)) +
   interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -435,8 +435,8 @@ two_curvy_proj_model_delaunay_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.4, 0.4)) +
-  ylim(c(-0.4, 0.4)) +
+  xlim(c(-0.5, 0.5)) +
+  ylim(c(-0.5, 0.5)) +
   interior_annotation("a2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -473,8 +473,8 @@ two_curvy_proj_model_benchmark2_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.4, 0.4)) +
-  ylim(c(-0.4, 0.4)) +
+  xlim(c(-0.5, 0.5)) +
+  ylim(c(-0.5, 0.5)) +
   interior_annotation("b2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -482,11 +482,12 @@ two_curvy_proj_model_benchmark2_umap <- projected_df |>
 
 gen_tuning_lg_plots <- function() {
 
-  free(distance_points) /
+  free(distance_points_umap) /
     wrap_plots(trimesh_two_curvy_umap, trimesh_two_curvy_removed2_umap,
                trimesh_two_curvy_removed1_umap, two_curvy_proj_model_delaunay_umap,
                two_curvy_proj_model_benchmark2_umap, two_curvy_proj_first_model1_umap,
                ncol = 3) +
+    plot_layout(heights = c(0.8, 1)) +
     plot_annotation(tag_levels = list(c("(a)", "(b)")))
 
 }
