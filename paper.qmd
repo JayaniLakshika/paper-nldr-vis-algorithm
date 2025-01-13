@@ -562,7 +562,7 @@ nldr_two_curvy_original2 <- tsne_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 27
+num_bins_x_two_curvy <- 23
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -710,7 +710,7 @@ bin_width <- hb_obj_two_curvy$a1
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 2.5 * bin_width
+benchmark_two_curvy <- 2.8 * bin_width
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
