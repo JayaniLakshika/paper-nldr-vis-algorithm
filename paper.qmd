@@ -2644,7 +2644,7 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
+#| fig-cap: "Assessing which of the six NLDR layouts on the two C-shaped clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). Layout d is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-two_non_linear_diff_shaped_close_clusters-mse
 #| fig-pos: H
 #| out-width: 60%
@@ -4571,7 +4571,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 #| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
-#| out-width: 100%
+#| out-width: 60%
 
 free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
            nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
@@ -4962,7 +4962,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 15
-#| out-width: 80%
+#| out-width: 60%
 
 free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
@@ -5560,7 +5560,7 @@ error_plot_mnist <- ggplot(error_mnist,
 #| fig-cap: "Assessing which of the 5 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). All the layouts appear to be very similar. Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
-#| out-width: 100%
+#| out-width: 60%
 
 free(error_plot_mnist) + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, ncol = 2)
@@ -6112,6 +6112,7 @@ mnist_proj_tsne_model3 <- projected_df |>
 #| fig-pos: H
 #| fig-height: 10
 #| fig-width: 10
+#| out-width: 60%
 #| fig-cap: "Model in \\gD{}, on the layout a and three views of the fit in projections from $10\\text{-}D$, for the MNIST digit 1 data ($n =  7877$ and $p = 10$). There is a big non-linear cluster and a small clusterlocated very close to one corner of the big cluster. There is a twisted pattern that is hardly visible in the static plot. Video of the langevitour animation are available at <need to add the link>."
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
