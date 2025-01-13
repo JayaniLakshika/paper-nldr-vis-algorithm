@@ -5040,7 +5040,7 @@ tsne_mnist <- read_rds("data/mnist/mnist_tsne30.rds")
 nldr_mnist1 <- tsne_mnist |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#999999') +
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
   interior_annotation("a", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -5049,7 +5049,7 @@ tsne_mnist2 <- read_rds("data/mnist/mnist_tsne89.rds")
 nldr_mnist6 <- tsne_mnist2 |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("f", c(0.08, 0.93)) +
   theme(aspect.ratio = 1)
 
@@ -5127,7 +5127,7 @@ error_plot_mnist <- ggplot(error_mnist,
   # geom_vline(xintercept = 15, linetype="solid", 
   #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#999999', '#984ea3', '#a65628')) +
+  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#984ea3', '#999999', '#a65628')) +
   scale_y_log10() +
   ylab("log(MSE)") +
   xlab(expression(paste("binwidth (", a[1], ")"))) +
@@ -5146,7 +5146,7 @@ error_plot_mnist <- ggplot(error_mnist,
 
 
 ```{r}
-#| fig-cap: "Assessing which of the 5 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). All the layouts appear to be very similar. Layout c is universally poor. Layouts a that show two close clusters are universally suboptimal. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 5 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-e). All the layouts appear to be very similar. Layout c is universally poor. Layouts f that show two close clusters are universally suboptimal. Layout f is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
 #| out-width: 80%
@@ -5177,7 +5177,7 @@ data_mnist <- training_data_mnist |>
   mutate(type = "data")
 
 mnist_scaled_obj <- gen_scaled_data(
-  data = tsne_mnist)
+  data = tsne_mnist2)
 tsne_minst_scaled <- mnist_scaled_obj$scaled_nldr 
 
 tsne_plot_mnist <- tsne_minst_scaled |> 
@@ -5223,7 +5223,7 @@ tsne_plot_mnist
 ```{r}
 #| label: hexbin-mnist
 ## Compute hexbin parameters
-num_bins_x_mnist <- 19
+num_bins_x_mnist <- 30
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1) 
@@ -5234,7 +5234,7 @@ mnist_model <- fit_highd_model(
   bin1 = num_bins_x_mnist,
   r2 = r2_mnist,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "PC"
 )
 
@@ -5261,7 +5261,7 @@ benchmark_mnist <- find_lg_benchmark(
   distance_edges = distance_mnist, 
   distance_col = "distance")
 
-benchmark_mnist <- 0.1
+#benchmark_mnist <- 0.1
 
 sc_ltr_pos_mnist <- c(0.96, 0.96)
 
@@ -5348,12 +5348,12 @@ error_df <- error_df |>
 ## ggplot(data = error_df, aes(x=row_wise_abs_error)) + geom_density() ## right skewed
 
 error_df <- error_df |>
-  mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
+  mutate(sqrt_row_wise_tot_error = sqrt(row_wise_total_error))
   
 highd_error_2d_mnist <- error_df |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
-             colour = sqrt_row_wise_abs_error)) +
+             colour = sqrt_row_wise_tot_error)) +
   geom_point(alpha=0.2) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   geom_rect(aes(xmin = 0.8, xmax = 0.9, ymin = 0.45, ymax = 0.6),
@@ -5496,7 +5496,7 @@ mnist_proj_tsne_model1 <- projected_df |>
     color = "#000000") +
   geom_point(
     #size = 0.2,
-    alpha = 0.3) +
+    alpha = 0.1) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
     data=axes,
