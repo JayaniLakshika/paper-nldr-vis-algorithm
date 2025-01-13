@@ -128,6 +128,66 @@ write_rds(error_mnist_tsne, "data/mnist/error_mnist_tsne.rds")
 ## To initialize number of bins along the x-axis
 bin1_vec_mnist <- 5:63 #sqrt(NROW(training_data_mnist)/2)
 
+## For tsne
+tsne_mnist <- read_rds("data/mnist/mnist_tsne89.rds")
+mnist_scaled_obj_tsne <- gen_scaled_data(
+  data = tsne_mnist)
+tsne_mnist_scaled <- mnist_scaled_obj_tsne$scaled_nldr
+
+lim1 <- mnist_scaled_obj_tsne$lim1
+lim2 <- mnist_scaled_obj_tsne$lim2
+r2_tsne <- diff(lim2)/diff(lim1)
+
+error_mnist_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
+
+for (xbins in bin1_vec_mnist) {
+
+  hb_obj <- calc_bins_y(bin1 = xbins, r2 = r2_tsne, q = 0.1)
+
+  bin2 <- hb_obj$bin2
+  a1 <- hb_obj$a1
+
+  mnist_model <- fit_highd_model(
+    training_data = training_data_mnist,
+    emb_df = tsne_mnist_scaled,
+    bin1 = xbins,
+    r2 = r2_tsne,
+    q = 0.1,
+    is_bin_centroid = TRUE,
+    is_rm_lwd_hex = FALSE,
+    col_start_highd = "PC"
+  )
+
+  df_bin_centroids_mnist <- mnist_model$df_bin_centroids
+  df_bin_mnist <- mnist_model$df_bin
+
+  ## Compute error
+  error_df <- glance(
+    df_bin_centroids = df_bin_centroids_mnist,
+    df_bin = df_bin_mnist,
+    training_data = training_data_mnist,
+    newdata = NULL,
+    type_NLDR = "tSNE",
+    col_start = "PC") |>
+    mutate(bin1 = xbins,
+           bin2 = bin2,
+           b = bin1 * bin2,
+           b_non_empty = NROW(df_bin_centroids_mnist),
+           method = "tSNE2",
+           a1 = a1)
+
+  error_mnist_tsne <- bind_rows(error_mnist_tsne, error_df)
+
+}
+
+write_rds(error_mnist_tsne, "data/mnist/error_mnist_tsne2.rds")
+
+
+###########
+
+## To initialize number of bins along the x-axis
+bin1_vec_mnist <- 5:63 #sqrt(NROW(training_data_mnist)/2)
+
 ## For phate
 phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
 mnist_scaled_obj_phate <- gen_scaled_data(

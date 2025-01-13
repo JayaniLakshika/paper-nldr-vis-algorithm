@@ -66,6 +66,20 @@ plot_tSNE_2D(tSNE_data_gau)
 #write_rds(tSNE_data_gau, file = paste0("data/five_gau_clusters/tsne_data_five_gau_30.rds"))
 write_rds(tSNE_data_gau, file = paste0("data/mnist/mnist_tsne30.rds"))
 
+### tSNE2
+tSNE_data_gau <- Fit_tSNE(mnist_10_pcs_of_digit_1, opt_perplexity = 89, with_seed = 20240110)
+
+tSNE_fit <- mnist_10_pcs_of_digit_1 |>
+  Rtsne::Rtsne(perplexity = 89)
+
+tSNE_data_gau <- tSNE_data_gau |>
+  mutate(ID = 1:NROW(tSNE_data_gau))
+
+plot_tSNE_2D(tSNE_data_gau)
+
+write_rds(tSNE_data_gau, file = paste0("data/mnist/mnist_tsne89.rds"))
+
+
 
 ### UMAP
 
