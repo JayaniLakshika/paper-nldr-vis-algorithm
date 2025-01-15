@@ -2200,18 +2200,18 @@ error_two_non_linear_diff_shaped_close_clusters_umap <- error_two_non_linear_dif
 mse_two_curvy_b <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap, 
                      aes(x = a1, 
                          y = MSE)) +
-  geom_vline(xintercept = 0.08,
+  geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.05,
+  geom_vline(xintercept = 0.06,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.02, linetype=2,
+  geom_vline(xintercept = 0.03, linetype=2,
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -2225,19 +2225,19 @@ mse_two_curvy_b <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
 prop_dens_a1 <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
                      aes(x = a1,
                          y = prop_comp)) +
-  geom_vline(xintercept = 0.08,
+  geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.05,
+  geom_vline(xintercept = 0.06,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.02, linetype=2,
+  geom_vline(xintercept = 0.03, linetype=2,
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -2253,19 +2253,19 @@ error_two_non_linear_diff_shaped_close_clusters_umap <- error_two_non_linear_dif
 a1_m_two_curvy <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
                      aes(x = a1,
                          y = prop_bins)) +
-  geom_vline(xintercept = 0.08,
+  geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.05,
+  geom_vline(xintercept = 0.06,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.02, linetype=2,
+  geom_vline(xintercept = 0.03, linetype=2,
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(1, 4, 8, 10, 11, 12, 13, 14)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_non_linear_diff_shaped_close_clusters_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
