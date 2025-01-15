@@ -9,14 +9,14 @@ training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
-tsne_minst <- read_rds("data/mnist/mnist_tsne30.rds")
+tsne_minst <- read_rds("data/mnist/mnist_tsne89.rds")
 
 mnist_scaled_obj <- gen_scaled_data(
   data = tsne_minst)
 tsne_minst_scaled <- mnist_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_mnist <- 19
+num_bins_x_mnist <- 30
 lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1)
@@ -27,7 +27,7 @@ mnist_model <- fit_highd_model(
   bin1 = num_bins_x_mnist,
   r2 = r2_mnist,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
+  is_rm_lwd_hex = TRUE,
   col_start_highd = "PC"
 )
 
@@ -54,7 +54,7 @@ benchmark_mnist <- find_lg_benchmark(
   distance_edges = distance_mnist,
   distance_col = "distance")
 
-benchmark_mnist <- 0.1
+#benchmark_mnist <- 0.1
 
 ## Hexagonal binning to have regular hexagons
 hb_obj_mnist <- hex_binning(

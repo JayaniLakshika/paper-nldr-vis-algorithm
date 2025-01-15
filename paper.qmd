@@ -5701,14 +5701,14 @@ mnist_proj_tsne_model3 <- projected_df |>
 ```{r}
 #| label: fig-mnist-tri-proj
 #| fig-pos: H
-#| fig-height: 10
+#| fig-height: 30
 #| fig-width: 10
-#| out-width: 60%
+#| out-width: 100%
 #| fig-cap: "Model in \\gD{}, on the layout a and three views of the fit in projections from $10\\text{-}D$, for the MNIST digit 1 data ($n =  7877$ and $p = 10$). There is a big non-linear cluster and a small clusterlocated very close to one corner of the big cluster. There is a twisted pattern that is hardly visible in the static plot. Video of the langevitour animation are available at <need to add the link>."
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
-  mnist_proj_tsne_model2 + mnist_proj_tsne_model3 +
-  plot_layout(ncol = 2)
+  mnist_proj_tsne_model2 + #mnist_proj_tsne_model3 +
+  plot_layout(ncol = 3)
 
 ```
 
