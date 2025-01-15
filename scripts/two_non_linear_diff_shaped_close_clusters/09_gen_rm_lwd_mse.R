@@ -71,7 +71,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model2 <- fit_highd_model(
   training_data = training_data_two_curvy,
   emb_df = tsne_two_curvy_scaled,
-  bin1 = 23,
+  bin1 = 22,
   r2 = r2,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,

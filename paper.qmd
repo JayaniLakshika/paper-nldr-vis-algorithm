@@ -563,7 +563,7 @@ nldr_two_curvy_original2 <- tsne_two_curvy_scaled |>
 ```{r}
 #| label: hexbin-two-curvy
 ## Compute hexbin parameters
-num_bins_x_two_curvy <- 23
+num_bins_x_two_curvy <- 22
 
 ## hexagon binning to have regular hexagons
 hb_obj_two_curvy <- hex_binning(
@@ -1272,8 +1272,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(  
   proj = projection * 5,
   limits = 0.15,
-  axis_pos_x = -0.067,
-  axis_pos_y = -0.067,
+  axis_pos_x = -0.09,
+  axis_pos_y = -0.09,
   axis_labels = names(scaled_two_curvy_data),
   threshold = 0.007)
 
@@ -1311,8 +1311,8 @@ two_curvy_proj_umap_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
+  xlim(c(-0.12, 0.12)) + 
+  ylim(c(-0.12, 0.12)) +
   interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
@@ -1384,8 +1384,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(  
   proj = projection * 6,
   limits = 0.1,
-  axis_pos_x = -0.05,
-  axis_pos_y = -0.05,
+  axis_pos_x = -0.07,
+  axis_pos_y = -0.07,
   axis_labels = names(scaled_two_curvy_data),
   threshold = 0.007)
 
@@ -1423,8 +1423,8 @@ two_curvy_proj_umap_model2 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.07, 0.07)) + 
-  ylim(c(-0.07, 0.07)) +
+  xlim(c(-0.09, 0.09)) + 
+  ylim(c(-0.09, 0.09)) +
   interior_annotation("b", c(0.08, 0.93), cex = 2) +
   theme(
     legend.position = "none"
@@ -2426,7 +2426,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the non-linear cluster data, using three different bin inputs: (a) $b = 255/98 \\text{ } (15, \\text{ }17)$, (b) $b = 598/188 \\text{ } (23, \\text{ }26)$, and (c) $b = 2544/549 \\text{ } (48, \\text{ }53)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the non-linear cluster data, using three different bin inputs: (a) $b = 240/98 \\text{ } (15, \\text{ }16)$, (b) $b = 528/173 \\text{ } (22, \\text{ }24)$, and (c) $b = 2496/549 \\text{ } (48, \\text{ }52)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
