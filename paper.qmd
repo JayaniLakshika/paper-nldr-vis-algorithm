@@ -5819,6 +5819,27 @@ imge_error_sample_outside <- pixels_gathered_outside |>
         strip.text.x = element_blank(),
         legend.position = "none") 
 
+
+##### inside
+img_error_inside <- c(7228, 7363, 7650)
+
+pixels_gathered_inside <-  mnist_data |>
+  mutate(instance = row_number()) |>
+  gather(pixel, value, -Label, -instance) |>
+  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  filter(instance %in% img_error_inside)
+
+imge_error_sample_inside <- pixels_gathered_inside |>
+  ggplot(aes(x, y, fill = value)) +
+  geom_tile() +
+  facet_wrap(~ instance, ncol = 4) +
+  coord_fixed() +
+  scale_fill_continuous_sequential(palette = "Grays") +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position = "none") 
+
 ```
 
 ```{r}
@@ -5829,7 +5850,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 #| fig-height: 5
 #| out-width: 80%
 
-highd_error_2d_mnist + (imge_error_sample_outside / right_top_img / middle_img / right_bottom_img)
+highd_error_2d_mnist + (imge_error_sample_outside/ imge_error_sample_inside / right_top_img / middle_img / right_bottom_img)
 ```
 
 <!-- These anomalies can be classified into two types: those that are anomalies within the non-linear cluster and those that lie in the small cluster. The images associated with large model error points within the non-linear cluster display different patterns of the digit 1.  -->
