@@ -2149,7 +2149,7 @@ plot_predict_tsne_two_curvy <- ggplot(
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-umap1
-#| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two C-shaped clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of UMAP, which compresses the data when transforming the data into \\gD{}. Video of the langevitour animations is available at <>."
+#| fig-cap: "Model in \\gD{} ($a_1 = 0.12$), on the layout and two views of the fit in projections from $7\\text{-}D$, for the two non-linear clusters data ($n =  2000$ and $p = 7$). One view shows the fitted model, and the other shows the fitted and true models alongside the data. The fitted model accurately represents the shape of the clusters but does not capture the edges of the structure. This illustrates a characteristic of tSNE, which compresses the data when transforming the data into \\gD{}. Video of the langevitour animations is available at <>."
 #| fig-width: 10
 #| fig-height: 10
 
@@ -2308,14 +2308,15 @@ error_plot_two_curvy_hist <-
   ggplot(error_df_two_curvy_abs) +
   geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
   geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
-  xlab(expression(group("|", e[hj], "|"))) +
+  #xlab(expression(group("|", e[hj], "|"))) +
+  xlab(expression(e[hj])) +
   ylab("") +
   theme_bw() 
 ```
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark colour indicating high error and light indicates low error. Most large errors are distributed near the edges of the clusters."
+#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark colour indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
 #| out-width: 60%
 #| fig-pos: H
 
