@@ -5299,7 +5299,7 @@ trimesh_removed_mnist <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist) +
+  interior_annotation("a1", sc_ltr_pos_mnist) +
   theme(legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
@@ -5357,7 +5357,7 @@ highd_error_2d_mnist <- error_df |>
              colour = sqrt_row_wise_tot_error)) +
   geom_point(alpha=0.2) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
-  geom_rect(aes(xmin = 0.8, xmax = 0.9, ymin = 0.45, ymax = 0.6),
+  geom_rect(aes(xmin = 0.82, xmax = 0.92, ymin = 0.38, ymax = 0.58),
                fill = "transparent", color = "#000000", linewidth = 0.7) +
   geom_rect(aes(xmin = 0.75, xmax = 0.85, ymin = 0.8, ymax = 0.95),
                fill = "transparent", color = "#e41a1c", linewidth = 0.7)  +
@@ -5437,8 +5437,8 @@ scaled_mnist_data_model <- scaled_mnist |>
 #     c(0.00587,0.71879,0.03485,0.08284,-0.07534,-0.05420,0.04315,-0.00547,-0.02995,0.01810)) 
 
 projection <- cbind(
-    c(-0.09936,0.36550,0.07658,0.29975,0.09085,-0.14009,-0.13417,0.48357,-0.00699,-0.13587),
-    c(0.23061,0.19332,-0.11264,0.14797,0.30351,0.14980,0.02785,-0.30209,-0.13540,-0.43284))
+  c(-0.04295,0.42361,-0.36702,0.13103,-0.19678,-0.29621,0.00471,0.09323,0.18822,-0.18484),
+  c(-0.36644,0.05058,0.18200,0.21860,0.13583,-0.03511,0.35339,0.15821,-0.26945,-0.27926))
 
 projection_scaled <- projection * 2.5
 
@@ -5473,8 +5473,8 @@ names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(p
 axes_obj <- gen_axes(  
   proj = projection,
   limits = 1,
-  axis_pos_x = -0.83,
-  axis_pos_y = -0.83,
+  axis_pos_x = -0.9,
+  axis_pos_y = -0.9,
   axis_labels = names(scaled_mnist_data),
   threshold = 0.06)
 
@@ -5494,10 +5494,12 @@ mnist_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#000000") +
+    color = "#000000",
+    linewidth = 0.5,
+    alpha = 0.5) +
   geom_point(
-    #size = 0.2,
-    alpha = 0.1) +
+    size = 0.5,
+    alpha = 0.5) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
     data=axes,
@@ -5513,9 +5515,9 @@ mnist_proj_tsne_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   #coord_fixed() +
-  xlim(c(-1, 0.6)) +
-  ylim(c(-1, 0.6)) +
-  interior_annotation("b") +
+  xlim(c(-1.1, 0.9)) +
+  ylim(c(-1.1, 0.9)) +
+  interior_annotation("a2") +
   theme(
     legend.position = "none"
   )
@@ -5581,9 +5583,10 @@ mnist_proj_tsne_model2 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#000000") +
+    color = "#000000",
+    linewidth = 0.5) +
   geom_point(
-    #size = 0.2,
+    size = 0.5,
     alpha = 0.3) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
   geom_segment(
@@ -5602,7 +5605,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c") +
+  interior_annotation("a3") +
   theme(
     legend.position = "none"
   )
@@ -5700,13 +5703,14 @@ mnist_proj_tsne_model3 <- projected_df |>
 ```{r}
 #| label: fig-mnist-tri-proj
 #| fig-pos: H
-#| fig-height: 30
-#| fig-width: 10
-#| out-width: 100%
-#| fig-cap: "Model in \\gD{}, on the layout a and three views of the fit in projections from $10\\text{-}D$, for the MNIST digit 1 data ($n =  7877$ and $p = 10$). There is a big non-linear cluster and a small clusterlocated very close to one corner of the big cluster. There is a twisted pattern that is hardly visible in the static plot. Video of the langevitour animation are available at <need to add the link>."
+#| fig-height: 4
+#| fig-width: 12
+#| out-height: 100%
+#| fig-cap: "\\gD{} wireframe layout shows that there is a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster. The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projection from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>."
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
-  mnist_proj_tsne_model2 + #mnist_proj_tsne_model3 +
+  #mnist_proj_tsne_model2 + mnist_proj_tsne_model3 +
+  mnist_proj_tsne_model2 +
   plot_layout(ncol = 3)
 
 ```

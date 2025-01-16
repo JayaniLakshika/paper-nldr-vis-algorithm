@@ -35,7 +35,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_umap,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
@@ -95,7 +95,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_tsne,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
@@ -154,7 +154,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_tsne,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
@@ -214,7 +214,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_phate,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
@@ -274,7 +274,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_trimap,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
@@ -333,7 +333,7 @@ for (xbins in bin1_vec_mnist) {
     r2 = r2_pacmap,
     q = 0.1,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
+    is_rm_lwd_hex = TRUE,
     col_start_highd = "PC"
   )
 
