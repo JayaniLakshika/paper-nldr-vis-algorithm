@@ -126,7 +126,7 @@ write_rds(error_mnist_tsne, "data/mnist/error_mnist_tsne.rds")
 ###########
 
 ## To initialize number of bins along the x-axis
-bin1_vec_mnist <- 5:63 #sqrt(NROW(training_data_mnist)/2)
+bin1_vec_mnist <- 5:66 #sqrt(NROW(training_data_mnist)/2)
 
 ## For tsne
 tsne_mnist <- read_rds("data/mnist/mnist_tsne89.rds")
