@@ -95,8 +95,14 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
 #### With scaled data
 
 data_mnist <- training_data_mnist |>
-  select(-ID) |>
-  mutate(type = "data")
+  bind_cols(tsne_minst_scaled |> select(-ID)) |>
+  select(-ID)
+
+data_mnist <- data_mnist |>
+  mutate(type = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
+
+data_mnist <- data_mnist |>
+  select(-tSNE1, -tSNE2)
 
 # Apply the scaling
 df_model_data <- bind_rows(data_mnist, df_b)
@@ -104,12 +110,12 @@ scaled_mnist <- scale_data_manual(df_model_data, "type") |>
   as_tibble()
 
 scaled_mnist_data <- scaled_mnist |>
-  filter(type == "data") |>
-  select(-type)
+  filter(type %in% c("small_clust", "big_clust")) #|>
+  #select(-type)
 
 scaled_mnist_data_model <- scaled_mnist |>
-  filter(type == "model") |>
-  select(-type)
+  filter(type == "model") #|>
+  #select(-type)
 
 
 df_b_mnist <- df_bin_mnist |>
@@ -122,8 +128,8 @@ df_b_mnist <- df_b_mnist[match(df_bin_centroids_mnist$hexID, df_b_mnist$hb_id),]
   select(-type)
 
 # Combine with the true model for visualization
-df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
-                       scaled_mnist_data |> mutate(type = "data"))
+df <- dplyr::bind_rows(scaled_mnist_data_model,
+                       scaled_mnist_data)
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges_mnist <- distance_mnist |>
@@ -135,7 +141,7 @@ langevitour(df |> dplyr::select(-type),
             lineTo = distance_df_small_edges_mnist$to,
             group = df$type,
             pointSize = append(rep(1.5, NROW(scaled_mnist_data_model)), rep(1, NROW(scaled_mnist_data))),
-            levelColors = c("#000000", "#33a02c"),
-            lineColors = rep("#33a02c", nrow(distance_df_small_edges_mnist)))
+            levelColors = c("#999999","#000000", '#ff7f00'),
+            lineColors = rep("#000000", nrow(distance_df_small_edges_mnist)))
 
 
