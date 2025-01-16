@@ -5753,11 +5753,14 @@ right_top_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
+  ggtitle("(c)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Reds 2") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0.31))
 
 #img_middle <- c(1069, 4604, 3579)
 img_middle <- c(130, 2091, 7795)
@@ -5773,11 +5776,14 @@ middle_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
+  ggtitle("(d)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Greens 3") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0.31))
 
 #img_right_bottom <- c(1695, 5338, 2805)
 img_right_bottom <- c(2035, 7708, 7710)
@@ -5793,11 +5799,14 @@ right_bottom_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
+  ggtitle("(e)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Purples 2") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0.31))
 
 #img_error_outside <- c(3554, 501, 4422, 6860, 3869, 1529, 4916, 6144)
 #img_error_outside <- c(501, 1529, 6144)
@@ -5814,11 +5823,14 @@ imge_error_sample_outside <- pixels_gathered_outside |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
+  ggtitle("(a)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
-        legend.position = "none") 
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0.31)) 
 
 
 ##### inside
@@ -5835,23 +5847,26 @@ imge_error_sample_inside <- pixels_gathered_inside |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
+  ggtitle("(b)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
         strip.text.x = element_blank(),
-        legend.position = "none") 
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = 0.31)) 
 
 ```
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "The $10\\text{-}D$ model error in layout a of the MNIST digit 1 dataset show a pattern. Most low model errors are distributed along the big non-linear clutser, while most large model errors are distributed along the small cluster. Along the non-linear cluster, the angle of digit 1 changes. Some images have large errors due to their deviation from the non-linear cluster, which makes them anomalies. The images associated with large model errors shows different patterns of digit 1."
+#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big non-linear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (b) the non-linear structure and others outside (a). Along the non-linear cluster, the angle of digit 1 changes (c-e)."
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
 #| out-width: 80%
 
-highd_error_2d_mnist + (imge_error_sample_outside/ imge_error_sample_inside / right_top_img / middle_img / right_bottom_img)
+highd_error_2d_mnist + (imge_error_sample_outside / imge_error_sample_inside / right_top_img / middle_img / right_bottom_img) 
 ```
 
 <!-- These anomalies can be classified into two types: those that are anomalies within the non-linear cluster and those that lie in the small cluster. The images associated with large model error points within the non-linear cluster display different patterns of the digit 1.  -->
