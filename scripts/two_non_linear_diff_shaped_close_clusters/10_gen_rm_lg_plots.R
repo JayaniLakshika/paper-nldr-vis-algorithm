@@ -494,12 +494,12 @@ two_curvy_proj_model_benchmark2_umap <- projected_df |>
 
 gen_tuning_lg_plots <- function() {
 
-  free(distance_points_umap) /
+  #wrap_elements(
+  free(distance_points_umap) + # + ggtitle("(a)") + theme(plot.title.position = "plot", plot.title = element_text(hjust = -0.3))) /
     wrap_plots(trimesh_two_curvy_umap, trimesh_two_curvy_removed2_umap,
                trimesh_two_curvy_removed1_umap, two_curvy_proj_model_delaunay_umap,
                two_curvy_proj_model_benchmark2_umap, two_curvy_proj_first_model1_umap,
                ncol = 3) +
-    plot_layout(heights = c(0.8, 1)) +
-    plot_annotation(tag_levels = list(c("(a)", "(b)")))
+    plot_layout(heights = c(0.8, 1))
 
 }
