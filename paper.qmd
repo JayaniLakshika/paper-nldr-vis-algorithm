@@ -5361,7 +5361,7 @@ highd_error_2d_mnist <- error_df |>
                fill = "transparent", color = "#000000", linewidth = 0.7) +
   geom_rect(aes(xmin = 0.9, xmax = 1, ymin = 1.25, ymax = 1.45),
                fill = "transparent", color = "#e41a1c", linewidth = 0.7)  +
-  geom_rect(aes(xmin = 0.45, xmax = 0.55, ymin = 0.45, ymax = 0.6),
+  geom_rect(aes(xmin = 0.35, xmax = 0.45, ymin = 0.55, ymax = 0.7),
                fill = "transparent", color = "#4daf4a", linewidth = 0.7)  +
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
                fill = "transparent", color = "#984ea3", linewidth = 0.7) 
@@ -5759,7 +5759,8 @@ right_top_img <- pixels_gathered_within |>
         strip.text.x = element_blank(),
         legend.position = "none")
 
-img_middle <- c(1069, 4604, 3579)
+#img_middle <- c(1069, 4604, 3579)
+img_middle <- c(130, 2091, 7795)
 
 pixels_gathered_within <-  mnist_data |>
   mutate(instance = row_number()) |>
@@ -5779,7 +5780,7 @@ middle_img <- pixels_gathered_within |>
         legend.position = "none")
 
 #img_right_bottom <- c(1695, 5338, 2805)
-img_right_bottom <- c(2035, 7710, 2517)
+img_right_bottom <- c(2035, 7708, 7710)
 
 pixels_gathered_within <-  mnist_data |>
   mutate(instance = row_number()) |>
