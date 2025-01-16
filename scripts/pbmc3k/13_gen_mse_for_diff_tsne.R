@@ -22,7 +22,7 @@ lim2 <- pbmc_scaled_obj_tsne$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:75 #sqrt(NROW(training_data_pbmc)/r2_tsne)
+bin1_vec_pbmc <- 2:78 #sqrt(NROW(training_data_pbmc)/r2_tsne)
 
 error_pbmc_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
 

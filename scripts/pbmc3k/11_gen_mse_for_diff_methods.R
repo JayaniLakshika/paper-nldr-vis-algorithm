@@ -6,9 +6,6 @@ training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For umap
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
 pbmc_scaled_obj_umap <- gen_scaled_data(
@@ -18,6 +15,9 @@ umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
 lim1 <- pbmc_scaled_obj_umap$lim1
 lim2 <- pbmc_scaled_obj_umap$lim2
 r2_umap <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:57 #sqrt(NROW(training_data_pbmc)/r2_umap)
 
 error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -65,9 +65,6 @@ write_rds(error_pbmc_umap, "data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For umap
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
 pbmc_scaled_obj_umap <- gen_scaled_data(
@@ -77,6 +74,9 @@ umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
 lim1 <- pbmc_scaled_obj_umap$lim1
 lim2 <- pbmc_scaled_obj_umap$lim2
 r2_umap <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:57 #sqrt(NROW(training_data_pbmc)/r2_umap)
 
 error_pbmc_umap2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -126,8 +126,6 @@ write_rds(error_pbmc_umap2, "data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 
 ## For umap
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
 pbmc_scaled_obj_umap <- gen_scaled_data(
   data = umap_pbmc)
@@ -136,6 +134,9 @@ umap_pbmc_scaled <- pbmc_scaled_obj_umap$scaled_nldr
 lim1 <- pbmc_scaled_obj_umap$lim1
 lim2 <- pbmc_scaled_obj_umap$lim2
 r2_umap <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:45 #sqrt(NROW(training_data_pbmc)/r2_umap)
 
 error_pbmc_umap3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -183,9 +184,6 @@ write_rds(error_pbmc_umap3, "data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
 pbmc_scaled_obj_tsne <- gen_scaled_data(
@@ -195,6 +193,9 @@ tsne_pbmc_scaled <- pbmc_scaled_obj_tsne$scaled_nldr
 lim1 <- pbmc_scaled_obj_tsne$lim1
 lim2 <- pbmc_scaled_obj_tsne$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:53 #sqrt(NROW(training_data_pbmc)/r2_tsne)
 
 error_pbmc_tsne <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -242,9 +243,6 @@ write_rds(error_pbmc_tsne, "data/pbmc3k/error_pbmc_tsne_5.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 pbmc_scaled_obj_tsne <- gen_scaled_data(
@@ -254,6 +252,9 @@ tsne_pbmc_scaled <- pbmc_scaled_obj_tsne$scaled_nldr
 lim1 <- pbmc_scaled_obj_tsne$lim1
 lim2 <- pbmc_scaled_obj_tsne$lim2
 r2_tsne <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:48 #sqrt(NROW(training_data_pbmc)/r2_tsne)
 
 error_pbmc_tsne2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -301,9 +302,6 @@ write_rds(error_pbmc_tsne2, "data/pbmc3k/error_pbmc_tsne_30.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For phate
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
 pbmc_scaled_obj_phate <- gen_scaled_data(
@@ -313,6 +311,9 @@ phate_pbmc_scaled <- pbmc_scaled_obj_phate$scaled_nldr
 lim1 <- pbmc_scaled_obj_phate$lim1
 lim2 <- pbmc_scaled_obj_phate$lim2
 r2_phate <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:75 #sqrt(NROW(training_data_pbmc)/r2_phate)
 
 error_pbmc_phate <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -360,9 +361,6 @@ write_rds(error_pbmc_phate, "data/pbmc3k/error_pbmc_phate_5.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For trimap
 trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
 pbmc_scaled_obj_trimap <- gen_scaled_data(
@@ -372,6 +370,9 @@ trimap_pbmc_scaled <- pbmc_scaled_obj_trimap$scaled_nldr
 lim1 <- pbmc_scaled_obj_trimap$lim1
 lim2 <- pbmc_scaled_obj_trimap$lim2
 r2_trimap <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:61 #sqrt(NROW(training_data_pbmc)/r2_trimap)
 
 error_pbmc_trimap <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -420,9 +421,6 @@ write_rds(error_pbmc_trimap, "data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
 
 ###########
 
-## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
-
 ## For pacmap
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
 pbmc_scaled_obj_pacmap <- gen_scaled_data(
@@ -432,6 +430,9 @@ pacmap_pbmc_scaled <- pbmc_scaled_obj_pacmap$scaled_nldr
 lim1 <- pbmc_scaled_obj_pacmap$lim1
 lim2 <- pbmc_scaled_obj_pacmap$lim2
 r2_pacmap <- diff(lim2)/diff(lim1)
+
+## To initialize number of bins along the x-axis
+bin1_vec_pbmc <- 2:58 #sqrt(NROW(training_data_pbmc)/r2_pacmap)
 
 error_pbmc_pacmap <- data.frame(matrix(nrow = 0, ncol = 0))
 
@@ -491,7 +492,7 @@ r2_umap <- diff(lim2)/diff(lim1)
 
 error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 
-bin1_vec_pbmc <- 2:36 #sqrt(NROW(training_data_pbmc)/2)
+bin1_vec_pbmc <- 2:50 #sqrt(NROW(training_data_pbmc)/r2_umap)
 
 for (xbins in bin1_vec_pbmc) {
 

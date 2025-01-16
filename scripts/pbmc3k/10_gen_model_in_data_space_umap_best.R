@@ -18,7 +18,7 @@ pbmc_scaled_obj <- gen_scaled_data(
 umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 13
+num_bins_x_pbmc <- 30
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1)

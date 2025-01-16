@@ -22,7 +22,7 @@ lim2 <- pbmc_scaled_obj_umap$lim2
 r2_umap <- diff(lim2)/diff(lim1)
 
 ## To initialize number of bins along the x-axis
-bin1_vec_pbmc <- 2:56 #sqrt(NROW(training_data_pbmc)/r2_umap)
+bin1_vec_pbmc <- 2:84 #sqrt(NROW(training_data_pbmc)/r2_umap)
 
 error_pbmc_umap <- data.frame(matrix(nrow = 0, ncol = 0))
 

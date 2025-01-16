@@ -4171,7 +4171,7 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ```{r}
 #| label: hexbin-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 26
+num_bins_x_pbmc <- 60
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1) 
@@ -4640,7 +4640,7 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 ```{r}
 #| label: num-bins-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 13
+num_bins_x_pbmc <- 30
 lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1) 
@@ -4692,8 +4692,8 @@ tr_df <- distinct(tibble::tibble(
   y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc) |>
-  filter(!(row_number() %in% c(6, 12, 14, 16, 17, 19, 23, 29, 30, 143, 144, 146, 147, 157)))
+  filter(distance < benchmark_pbmc) #|>
+  #filter(!(row_number() %in% c(6, 12, 14, 16, 17, 19, 23, 29, 30, 143, 144, 146, 147, 157)))
 
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
