@@ -455,9 +455,11 @@ middle_points <- pairs |>
   select(hex_poly_id, x, y) |>
   filter(row_number() %in% c(1, 5, 6, 10, 13, 15))
 
+points_df <- bind_rows(hex_data, middle_points)
+
 assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
-  geom_point(data = middle_points, aes(x = x, y = y), color = "black", size = 0.7) +
+  geom_point(data = points_df, aes(x = x, y = y), color = "black", size = 0.7) +
   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
   geom_segment(x = 0.161, y = 0.7395, xend = -0.06, yend = 0.740, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
