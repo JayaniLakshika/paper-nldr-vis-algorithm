@@ -4606,7 +4606,7 @@ error_plot_pbmc <- ggplot(error_pbmc,
 #| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
-#| out-width: 80%
+#| out-width: 100%
 
 free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
            nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
@@ -4994,7 +4994,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
 
 ```{r}
 #| echo: false
-#| fig-cap: "Comapre the author suggested layout and the layout selected by our approach. Model in \\gD{}, on the layout a and b, and two views of the fit in projections from $9\\text{-}D$, for the PBMC3k data ($n =  2622$ and $p = 9$). Layout a shows three-well separated clusters with big separation, while layout b shows close clusters. In $9\\text{-}D$, the data shows three clusters with two of them being close and one separated from the others. This is why b1, b2, and b3 shows a connected edge between the close clusters, as proven by @fig-pbmc-mse as a reasonable layout. Viewing the fitted model in $9\\text{-}D$, helps to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the author suggested \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.02$, $b = 3480/349 (60, 58)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.04$, $b = 1020/347 (30, 34)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -5152,7 +5152,7 @@ error_plot_mnist <- ggplot(error_mnist,
 #| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
-#| out-width: 80%
+#| out-width: 92%
 
 free(error_plot_mnist) + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
