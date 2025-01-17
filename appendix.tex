@@ -472,12 +472,12 @@ results from scDEED.
 
 Following the process in \citet{xia2023} again using the Human
 Peripheral Blood Mononuclear Cells (PBMC) data. Note that
-\citet{xia2023} uses a different subset from \textbf{?@sec-pbmc}, which
-contains \(31,021\) cells including cell type labels, and the gene
-expression levels were in the unit of log-transformed UMI count per
-\(10,000\). They focused on three sequencing methods (inDrops, DropSeq,
-and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell,
-CD14+ Monocyte, and B cell.
+\citet{xia2023} uses a different subset from the PBMC dataset used by
+\citet{chen2023}, which contains \(31,021\) cells including cell type
+labels, and the gene expression levels were in the unit of
+log-transformed UMI count per \(10,000\). They focused on three
+sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell
+types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell.
 
 For illustration purposes, we only selected cells generated with inDrops
 (\(n=5858\) cells) and UMAP cell embeddings. Also, \citet{xia2023} used
@@ -496,17 +496,18 @@ cluster structure in the data.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.5\textheight]{appendix_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
+\includegraphics[width=1\textwidth,height=0.53\textheight]{appendix_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
 
 }
 
 \caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 UMAP layouts
-with different hyperparameter settings (n\_neighbors: \(30\), min\_dist:
-\(0.3\) (red), n\_neighbors: \(80\), min\_dist: \(0.5\) (blue)) on the
-PBMC data is the better representation using MSE for varying binwidth
-(\(a_1\)). Colour used for the lines and points in the left plot and in
-the scatterplots represents UMAP layout (a, b). Of the two, layout b is
-optimal across all binwidths making it the best choice.}
+with different hyper-parameter settings (n\_neighbors: \(30\),
+min\_dist: \(0.3\) (red); n\_neighbors: \(80\), min\_dist: \(0.5\)
+(blue)) on the PBMC data is the better representation using MSE for
+varying binwidth (\(a_1\)). Colour used for the lines and points in the
+top plot and in the scatterplots represents UMAP layout (a, b). Of the
+two, layout b is optimal across all binwidths making it the best
+choice.}
 
 \end{figure}%
 
