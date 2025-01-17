@@ -104,6 +104,7 @@ library(readr)
 library(ggforce)
 library(patchwork)
 library(kableExtra)
+library(tidyr)
 
 theme_set(theme_linedraw() +
    theme(
@@ -435,22 +436,28 @@ assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) +
   geom_segment(x = 0.54, y = 1.08, xend = 0.7, yend = 1.2, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#969696")
 
-emb_df2 <- tibble(emb1 = 0.161, emb2 = 0.7395) |>
-  add_row(emb1 = 0.683, emb2 = 0.7395) |>
-  add_row(emb1 = 0.2915, emb2 = 0.965) |>
-  add_row(emb1 = 0.5525, emb2 = 0.965) |>
-  add_row(emb1 = 0.2915, emb2 = 0.5135) |>
-  add_row(emb1 = 0.5525, emb2 = 0.5135) |>
-  add_row(emb1 = 0.422, emb2 = 1.04) |>
-  add_row(emb1 = 0.161, emb2 = 0.890) |>
-  add_row(emb1 = 0.161, emb2 = 0.589) |>
-  add_row(emb1 = 0.422, emb2 = 0.438) |>
-  add_row(emb1 = 0.683, emb2 = 0.589) |>
-  add_row(emb1 = 0.683, emb2 = 0.890)
+hex_data <- hex_grid |> 
+  dplyr::filter(hex_poly_id == 8)
+
+# Create all pairs of rows
+pairs <- expand_grid(row1 = 1:nrow(hex_data), row2 = 1:nrow(hex_data)) |>
+  filter(row1 < row2)
+
+# Compute middle points for each pair of rows
+middle_points <- pairs |>
+  rowwise() |>
+  mutate(
+    hex_poly_id = hex_data$hex_poly_id[row1],
+    x = (hex_data$x[row1] + hex_data$x[row2]) / 2,
+    y = (hex_data$y[row1] + hex_data$y[row2]) / 2
+  ) |>
+  ungroup() |>
+  select(hex_poly_id, x, y) |>
+  filter(row_number() %in% c(1, 5, 6, 10, 13, 15))
 
 assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
-  geom_point(data = emb_df2, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
+  geom_point(data = middle_points, aes(x = x, y = y), color = "black", size = 0.7) +
   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
   geom_segment(x = 0.161, y = 0.7395, xend = -0.06, yend = 0.740, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") +
