@@ -417,22 +417,22 @@ hex_grid <- hb_obj_scurve$hex_poly
 
 ## Data to generate circle
 circles <- data.frame(
-  x = c(0.422, 0.683),
-  y = c(0.740, 1.19),
-  r = rep(0.301316, 2)
+  x = c(0.726, 0.451),
+  y = c(1.27, 0.790),
+  r = rep(0.32, 2)
 )
 
-emb_df1 <- tibble(emb1 = 0.58, emb2 = 0.93) |>
-  add_row(emb1 = 0.5, emb2 = 1.01)
+emb_df1 <- tibble(emb1 = 0.61, emb2 = 0.99) |>
+  add_row(emb1 = 0.54, emb2 = 1.08)
 
 assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
   geom_point(data = emb_df1, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
   geom_circle(data = circles, aes(x0 = x, y0 = y, r = r), fill = NA) +
-  geom_segment(x = 0.58, y = 0.93, xend = 0.44, yend = 0.76, 
+  geom_segment(x = 0.61, y = 0.99, xend = 0.46, yend = 0.83, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#969696") +
-  geom_segment(x = 0.5, y = 1.01, xend = 0.68, yend = 1.16, 
+  geom_segment(x = 0.54, y = 1.08, xend = 0.7, yend = 1.2, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#969696")
 
 emb_df2 <- tibble(emb1 = 0.161, emb2 = 0.7395) |>
