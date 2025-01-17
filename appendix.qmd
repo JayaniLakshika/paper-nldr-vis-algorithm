@@ -715,7 +715,7 @@ Following the process in @xia2023 again using the Human Peripheral Blood Mononuc
 
 For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells) and UMAP cell embeddings. Also, @xia2023 used first $50$ principal components to generate the UMAP. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout.
 
-@fig-model-pbmc-author-proj-scdeed shows layout from the original published article along with that suggested by scDEED to be more accurate. The log MSE vs binwidth plot illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the data.
+@fig-pbmc-mse-umap shows layout from the original published article along with that suggested by scDEED to be more accurate. The log MSE vs binwidth plot illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the data.
 
 ```{r}
 result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
