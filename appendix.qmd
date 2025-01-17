@@ -61,6 +61,7 @@ author:
     email: ttalagala@sjp.ac.lk 
     url: https://thiyanga.netlify.app/
 tbl-cap-location: bottom
+bibliography: bibliography.bib 
 header-includes: | 
   \usepackage{amsmath}
   \usepackage{float}
@@ -822,7 +823,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 ```{r}
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
-#| out-width: 100%
+#| out-height: 50%
 #| fig-cap: "Assessing which of the 2 UMAP layouts with different hyperparameter settings (n_neighbors: $30$, min_dist: $0.3$ (red), n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
@@ -1133,13 +1134,12 @@ pbmc_proj_umap_model2 <- projected_df |>
 
 ```{r}
 #| echo: false
-#| eval: false
 #| fig-cap: "Model in \\gD{}, on the layout a, and two views of the fit in projections from $50\\text{-}D$, for the PBMC data ($n =  5858$ and $p = 50$). Layout shows close clusters. In $50\\text{-}D$, the data shows "
 #| label: fig-model-pbmc-author-proj-scdeed
 #| fig-pos: H
 #| fig-width: 15
 #| fig-height: 5
-#| out-width: 80%
+#| out-width: 30%
 
 free(trimesh_removed_pbmc) +
   pbmc_proj_umap_model1 +
