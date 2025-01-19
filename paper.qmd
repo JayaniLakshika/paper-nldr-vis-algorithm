@@ -1217,11 +1217,7 @@ two_curvy_proj_umap_model_benchmark2 <- projected_df |>
 ```
 
 
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "non-linear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(-3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, and $X_3 = -(X_1^3 + X_2) + \gamma$.
-
-
-
-The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the geometric structure (true model) that we hope to capture.
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "non-linear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(-3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, and $X_3 = -(X_1^3 + X_2) + \gamma$. The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance. We would consider $T=(X_1, X_2, X_3)$ to be the geometric structure (true model) that we hope to capture.
 
 ```{r}
 #| label: two-curvy-true-proj
@@ -2547,7 +2543,7 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 
 ```{r}
 #| label: fig-rm-lg
-#| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear cluster data. The two benchmarks for long edge removal: (b) benchmark = 6.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter."
+#| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear clusters data. The two benchmarks for long edge removal: (b) benchmark = 6.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter."
 #| fig-height: 15
 #| fig-width: 15
 
