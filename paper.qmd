@@ -5160,7 +5160,7 @@ free(error_plot_mnist) + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
 
 <!-- PaCMAP preserves non-linear structure in $784\text{-}D$. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure. -->
 
-The MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with default (hyper-)parameter setting (@fig-mnist-mse) were calculated. It is found that tSNE (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap. 
+The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with default (hyper-)parameter setting and tSNE with default (hyper-)parameter setting and perplexity $89$ (@fig-mnist-mse) were calculated. It is found that tSNE with perplexity $89$ (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap. 
 
 In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-model-error-mnist), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters.
 
@@ -5896,8 +5896,7 @@ highd_error_2d_mnist + (imge_error_sample_outside / imge_error_sample_inside / r
 <!-- - Diagnostic app to explore differences in distances (need to add) -->
 <!-- - What might be useful enhancements -->
 
-
-This study makes several important contributions to the field of NLDR. We have developed an algorithm to evaluate the most reasonable NLDR method and (hyper-)parameter choices for creating an accurate \gD{} layout of high-dimensional data. Our objective is to fit a model for the \gD{} layout as a \gD{} wireframe and lifts it into \pD{}, which can be overlaid on the data and visualized using a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.
+We have developed an algorithm to assess the NLDR method and (hyper-)parameter choice(s) and choose the most accurate representation of the structure(s) present in the \pD{} data. Starting from \gD{} layout, the fitted model, as represented by the positions of points in \kD{}, and turn it into a \pD{} wireframe to overlay on the data, viewing it with a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.     
 
 With the model fit, how the NLDR methods organize points in \gD{} layout is examined using the simulated $4\text{-}D$ data having five Gaussian clusters. tSNE, UMAP, and PaCMAP preserved the global structure having well-separated clusters, while tSNE, and UMAP effectively maintains the local structure, showing the fitted model as *crumpled \gD{} sheet* that stretches in all four dimensions. The interesting result is that the model fit of PaCMAP show *pancake* shape.  
 
@@ -5909,7 +5908,7 @@ The **digit: 1** example further illustrates the model's ability to accurately c
 
 Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
 
-To extend layouts beyond $k$-D, when 2D is clearly inadequate, can use k-means instead of bin centroids.
+To extend layouts beyond \kD{}, when \gD{} is clearly inadequate, can use k-means instead of bin centroids.
 
 In conclusion, while our method effectively captures and represents high-dimensional data structures, further enhancements could involve introducing approaches to diagnose the fitted model. These improvements would help in creating a more accurate representation of the data when \gD{} layout is inadequate.
 
