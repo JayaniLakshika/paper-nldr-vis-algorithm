@@ -35,6 +35,23 @@ df_bin_centroids_mnist <- extract_hexbin_centroids(centroids_df = all_centroids_
                                              counts_df = counts_df) |>
   filter(drop_empty == FALSE)
 
+## first quartile used as the default
+benchmark_to_rm_lwd_hex <- quantile(df_bin_centroids_mnist$std_counts,
+                                    probs = c(0,0.25,0.5,0.75,1))[2]
+
+## To identify low density hexagons
+df_bin_centroids_low <- df_bin_centroids_mnist |>
+  filter(std_counts <= benchmark_to_rm_lwd_hex)
+
+## To identify low-density hexagons needed to remove by investigating neighbouring mean density
+identify_rm_bins <- find_low_dens_hex(df_bin_centroids_all = df_bin_centroids_mnist,
+                                      bin1 = num_bins_x_mnist,
+                                      df_bin_centroids_low = df_bin_centroids_low)
+
+## To remove low-density hexagons
+df_bin_centroids_mnist <- df_bin_centroids_mnist |>
+  filter(!(hexID %in% identify_rm_bins))
+
 df_all_mnist <- dplyr::bind_cols(training_data_mnist |> dplyr::select(-ID),
                                  tsne_data_with_hb_id)
 
