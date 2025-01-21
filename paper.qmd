@@ -5904,7 +5904,7 @@ With the model fit, several observations can be made. The simulated $4\text{-}D$
 
 Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated $7\text{-}D$ C-shaped data with different densities are used. The high \pD{} model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
 
-Human behavior often shows a desire for more certainty and a tendency to prefer well-separated views. This emphasizes the importance of clear and distinct clusters. For example, in the UMAP layout of the **PBMC3k** dataset suggested by @chen2023, three distant, well-separated clusters are shown. However, our model reveals that these clusters are actually close to each other in \pD{}. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the UMAP layout, demonstrating the ability of our model in uncovering hidden data characteristics.
+Human behavior often shows a desire for more certainty and a tendency to prefer well-separated views. This emphasizes the importance of clear and distinct clusters. For example, in the UMAP layout of the **PBMC3k** dataset suggested by @chen2023, three distant, well-separated clusters are shown. However, our model reveals that these clusters are actually close to each other in \pD{}. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the UMAP layout, demonstrating the ability of our model in uncovering hidden data characteristics. (added about scDEED in Appendix as well)
 
 Evaluating the error or unexplained variance is important for assessing how well the model fits the data. By examining the error for different numbers of bins, we found that tSNE with a perplexity of $30$ provides a reasonable representation for the **pbmc** dataset. Connecting the closest clusters with line segments in the fitted model further supports the preservation of neighborhood relationships.
 
@@ -5928,7 +5928,25 @@ Appendix: The appendix includes more details about the hexagonal binning algorit
 
 R package `quollr`: The R package `quollr` containing codes to fit, and visualize the model. (need to add quollr .zip file, GNU zipped tar file)
 
-Direct links to videos for viewing online are available in .
+Direct links to videos for viewing online are available in @tbl-links.
+
+```{r}
+#| label: tbl-links
+#| tbl-cap: "Example videos."
+
+links_df <- tibble(
+  data = c("PBMC3k"),
+  URL = c("link1")
+)
+
+
+links_df |>
+  kableExtra::kable(format = "latex", 
+                    booktabs = TRUE, 
+                    label = "tbllinks") |>
+  kableExtra::kable_styling(latex_options = "scale_down")
+
+```
 
 ## Acknowledgments
 
