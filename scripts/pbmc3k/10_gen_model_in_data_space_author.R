@@ -22,18 +22,24 @@ lim1 <- pbmc_scaled_obj$lim1
 lim2 <- pbmc_scaled_obj$lim2
 r2_pbmc <- diff(lim2)/diff(lim1)
 
-pbmc_model <- fit_highd_model(
-  training_data = training_data_pbmc,
-  emb_df = umap_pbmc_scaled,
+## Hexagonal binning to have regular hexagons
+hb_obj_pbmc <- hex_binning(
+  data = umap_pbmc_scaled,
   bin1 = num_bins_x_pbmc,
-  r2 = r2_pbmc,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "pc"
-)
+  r2 = r2_pbmc)
 
-df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
-df_bin_pbmc <- pbmc_model$df_bin
+all_centroids_df <- hb_obj_pbmc$centroids
+counts_df <- hb_obj_pbmc$std_cts
+umap_data_with_hb_id <- hb_obj_pbmc$data_hb_id
+
+df_bin_centroids_pbmc <- extract_hexbin_centroids(centroids_df = all_centroids_df,
+                                                   counts_df = counts_df) |>
+  filter(drop_empty == FALSE)
+
+df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
+                                umap_data_with_hb_id)
+
+df_bin_pbmc <- avg_highd_data(data = df_all_pbmc, col_start = "pc")
 
 ## Triangulate bin centroids
 tr1_object_pbmc <- tri_bin_centroids(
@@ -54,17 +60,6 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
-
-## Hexagonal binning to have regular hexagons
-hb_obj_pbmc <- hex_binning(
-  data = umap_pbmc_scaled,
-  bin1 = num_bins_x_pbmc,
-  r2 = r2_pbmc)
-
-umap_data_with_hb_id <- hb_obj_pbmc$data_hb_id
-
-df_all_pbmc <- dplyr::bind_cols(training_data_pbmc |> dplyr::select(-ID),
-                                 umap_data_with_hb_id)
 
 ### Define type column
 df <- df_all_pbmc |>

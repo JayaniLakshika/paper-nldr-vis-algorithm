@@ -21,18 +21,24 @@ lim1 <- mnist_scaled_obj$lim1
 lim2 <- mnist_scaled_obj$lim2
 r2_mnist <- diff(lim2)/diff(lim1)
 
-mnist_model <- fit_highd_model(
-  training_data = training_data_mnist,
-  emb_df = tsne_minst_scaled,
+## Hexagonal binning to have regular hexagons
+hb_obj_mnist <- hex_binning(
+  data = tsne_minst_scaled,
   bin1 = num_bins_x_mnist,
-  r2 = r2_mnist,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = TRUE,
-  col_start_highd = "PC"
-)
+  r2 = r2_mnist)
 
-df_bin_centroids_mnist <- mnist_model$df_bin_centroids
-df_bin_mnist <- mnist_model$df_bin
+all_centroids_df <- hb_obj_mnist$centroids
+counts_df <- hb_obj_mnist$std_cts
+tsne_data_with_hb_id <- hb_obj_mnist$data_hb_id
+
+df_bin_centroids_mnist <- extract_hexbin_centroids(centroids_df = all_centroids_df,
+                                             counts_df = counts_df) |>
+  filter(drop_empty == FALSE)
+
+df_all_mnist <- dplyr::bind_cols(training_data_mnist |> dplyr::select(-ID),
+                                 tsne_data_with_hb_id)
+
+df_bin_mnist <- avg_highd_data(data = df_all_mnist, col_start = "PC")
 
 ## Triangulate bin centroids
 tr1_object_mnist <- tri_bin_centroids(
@@ -54,17 +60,6 @@ benchmark_mnist <- find_lg_benchmark(
   distance_edges = distance_mnist,
   distance_col = "distance")
 
-#benchmark_mnist <- 0.1
-
-## Hexagonal binning to have regular hexagons
-hb_obj_mnist <- hex_binning(
-  data = tsne_minst_scaled,
-  bin1 = num_bins_x_mnist,
-  r2 = r2_mnist)
-
-tsne_data_with_hb_id <- hb_obj_mnist$data_hb_id
-df_all_mnist <- dplyr::bind_cols(training_data_mnist |> dplyr::select(-ID),
-                           tsne_data_with_hb_id)
 
 ### Define type column
 df <- df_all_mnist |>
