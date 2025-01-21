@@ -1,6 +1,9 @@
 ### This script is to generate the model withn tSNE for five Gaussian clusters data
-library(readr)
+## Import necessary libraries
+library(quollr)
 library(dplyr)
+library(readr)
+library(langevitour)
 
 training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
@@ -24,19 +27,24 @@ lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
-gau1_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = tsne_gau_scaled,
+## Hexagonal binning to have regular hexagons
+hb_obj_gau1 <- hex_binning(
+  data = tsne_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x",
-  q = 0.1
-)
+  q = 0.1)
 
-df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
-df_bin_gau1 <- gau1_model$df_bin
+all_centroids_df <- hb_obj_gau1$centroids
+counts_df <- hb_obj_gau1$std_cts
+tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
+
+df_bin_centroids_gau1 <- extract_hexbin_centroids(centroids_df = all_centroids_df,
+                                                  counts_df = counts_df) |>
+  filter(drop_empty == FALSE)
+
+df_all_gau1 <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID),
+                                tsne_data_with_hb_id)
+df_bin_gau1 <- avg_highd_data(data = df_all_gau1, col_start = "x")
 
 ## Compute error
 
@@ -137,17 +145,7 @@ trimesh_removed_gau_tsne <- ggplot() +
   )
 
 
-## Hexagonal binning to have regular hexagons
-hb_obj_gau1 <- hex_binning(
-  data = tsne_gau_scaled,
-  bin1 = num_bins_x_gau1,
-  r2 = r2_gau1,
-  q = 0.1)
 
-tsne_data_with_hb_id <- hb_obj_gau1$data_hb_id
-
-df_all_gau1 <- dplyr::bind_cols(training_data_gau |> dplyr::select(-ID),
-                                tsne_data_with_hb_id)
 
 ### Define type column
 df <- df_all_gau1 |>
