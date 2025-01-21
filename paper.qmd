@@ -5888,6 +5888,10 @@ highd_error_2d_mnist + (imge_error_sample_outside / imge_error_sample_inside / r
 
 It’s important to access the \gD{} layout and the generated model overlaid on data in \pD{} together to understand whether it fits the points everywhere, fits better in some places, or simply mismatches the pattern. Interactivity also helps in understanding the quirks. 
 
+The embedding and tour views are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the tour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view.  By default, brushing on the embedding view will produce a one-to-one linking with the tour view. For interpreting specific combinations of clusters, the multiple guides on the legend can be selected in order to see their relative orientations.
+
+The interface is constructed as a **shinygadget** specifically designed for interactive data analysis. 
+
 ## Discussion {#sec-discussion}
 
 <!-- - Summarise contributions -->
