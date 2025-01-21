@@ -5908,10 +5908,7 @@ Human behavior often shows a desire for more certainty and a tendency to prefer 
 
 Evaluating the error or unexplained variance is important for assessing how well the model fits the data. By examining the error for different numbers of bins, we found that tSNE with a perplexity of $30$ provides a reasonable representation for the **pbmc** dataset. Connecting the closest clusters with line segments in the fitted model further supports the preservation of neighborhood relationships.
 
-The digit 1 of **Hand-written digits** data shows how the model accurately capture the non-linear structure. Also, twisted pattern of the model evident that 
-
-
-example further illustrates the model's ability to accurately capture non-linear structures and provide additional information. Key findings include a twisted pattern that compresses the structure in some projections and long line segments that detect anomalies.
+The digit 1 of **Hand-written digits** data shows how the model accurately capture the non-linear structure. Not only that, the \pD{} model error help to find the anomalies of digit 1 images. Also, twisted pattern of the model evident that how tSNE tries to maintain the local structure by positioning the similar patterns of digit 1 close to each other. 
 
 Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
 
@@ -5933,6 +5930,7 @@ Direct links to videos for viewing online are available in @tbl-links.
 ```{r}
 #| label: tbl-links
 #| tbl-cap: "Example videos."
+#| tbl-pos: H
 
 links_df <- tibble(
   data = c("PBMC3k"),
