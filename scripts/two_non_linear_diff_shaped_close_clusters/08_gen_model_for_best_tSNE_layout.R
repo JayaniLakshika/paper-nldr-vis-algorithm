@@ -31,25 +31,6 @@ lim1 <- two_nonlinear_clusters_scaled_obj$lim1
 lim2 <- two_nonlinear_clusters_scaled_obj$lim2
 r2_two_nonlinear_clusters <- diff(lim2)/diff(lim1)
 
-two_nonlinear_clusters_model <- fit_highd_model(
-  training_data = training_data_two_nonlinear_clusters,
-  emb_df = tSNE_two_nonlinear_clusters_scaled,
-  bin1 = num_bins_x_two_nonlinear_clusters,
-  r2 = r2_two_nonlinear_clusters,
-  is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
-)
-
-df_bin_centroids_two_nonlinear_clusters <- two_nonlinear_clusters_model$df_bin_centroids
-df_bin_two_nonlinear_clusters <- two_nonlinear_clusters_model$df_bin
-
-## Triangulate bin centroids
-tr1_object_two_nonlinear_clusters <- tri_bin_centroids(
-  df_bin_centroids_two_nonlinear_clusters, x = "c_x", y = "c_y")
-tr_from_to_df_two_nonlinear_clusters <- gen_edges(
-  tri_object = tr1_object_two_nonlinear_clusters)
-
 ## Hexagonal binning to have regular hexagons
 hb_obj_two_nonlinear_clusters <- hex_binning(
   data = tSNE_two_nonlinear_clusters_scaled,
@@ -57,6 +38,25 @@ hb_obj_two_nonlinear_clusters <- hex_binning(
   r2 = r2_two_nonlinear_clusters)
 
 bin_width <- hb_obj_two_nonlinear_clusters$a1
+
+all_centroids_df <- hb_obj_two_nonlinear_clusters$centroids
+counts_df <- hb_obj_two_nonlinear_clusters$std_cts
+tSNE_data_with_hb_id <- hb_obj_two_nonlinear_clusters$data_hb_id
+
+df_bin_centroids_two_nonlinear_clusters <- extract_hexbin_centroids(centroids_df = all_centroids_df,
+                                                  counts_df = counts_df) |>
+  filter(drop_empty == FALSE)
+
+df_all_two_nonlinear_clusters <- dplyr::bind_cols(training_data_two_nonlinear_clusters |> dplyr::select(-ID),
+                                                  tSNE_data_with_hb_id)
+
+df_bin_two_nonlinear_clusters <- avg_highd_data(data = df_all_two_nonlinear_clusters, col_start = "x")
+
+## Triangulate bin centroids
+tr1_object_two_nonlinear_clusters <- tri_bin_centroids(
+  df_bin_centroids_two_nonlinear_clusters, x = "c_x", y = "c_y")
+tr_from_to_df_two_nonlinear_clusters <- gen_edges(
+  tri_object = tr1_object_two_nonlinear_clusters)
 
 ## Compute 2D distances
 distance_two_nonlinear_clusters <- cal_2d_dist(
@@ -101,13 +101,6 @@ trimesh_removed_two_nonlinear_clusters <- ggplot() +
   theme(aspect.ratio = 1)
 
 trimesh_removed_two_nonlinear_clusters
-
-
-
-
-tSNE_data_with_hb_id <- hb_obj_two_nonlinear_clusters$data_hb_id
-df_all_two_nonlinear_clusters <- dplyr::bind_cols(training_data_two_nonlinear_clusters |> dplyr::select(-ID),
-                                 tSNE_data_with_hb_id)
 
 ### Define type column
 df <- df_all_two_nonlinear_clusters |>
