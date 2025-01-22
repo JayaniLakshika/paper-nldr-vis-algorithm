@@ -202,18 +202,18 @@ langevitour_output <- langevitour(df |> dplyr::select(starts_with("PC")),
                                   link_filter=FALSE)
 
 # Create a table widget
-datatableWidget <- datatable(
-  shared_df_mnist,
-  rownames=FALSE, width="100%",
-  class='compact cell-border hover', extensions='Buttons',
-  options=list(dom='Bfrtip',buttons=c('copy','csv','excel')))
+# datatableWidget <- datatable(
+#   shared_df_mnist,
+#   rownames=FALSE, width="100%",
+#   class='compact cell-border hover', extensions='Buttons',
+#   options=list(dom='Bfrtip',buttons=c('copy','csv','excel')))
 
 
 linked_plt <- bscols(
   nldr_scurve_plt,
   langevitour_output,
-  datatableWidget,
-  widths = c(4, 4, 4),
+  #datatableWidget,
+  widths = c(6, 6),
   device = "sm"
 )
 
