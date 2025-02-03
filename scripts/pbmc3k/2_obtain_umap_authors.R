@@ -7,6 +7,9 @@ set.seed(20240110)
 pbmc_pca <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 pbmc_pca <- pbmc_pca[, 1:9] ## By looking at PCA scree plot in https://satijalab.org/seurat/articles/pbmc3k_tutorial.html
 
+# pbmc_pca <- pbmc_pca |>
+#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+
 ## Obtain UMAP
 umap_pbmc <- umap(pbmc_pca, n_neighbors = 30, n_components =  2,
                  metric = "cosine", min_dist = 0.3, init = "spca")
