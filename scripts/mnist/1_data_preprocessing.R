@@ -21,7 +21,7 @@ dim(data_x_df)
 #Spectral decomposition which examines the covariances / correlations between variables
 #princomp(data, cor = FALSE)
 calculate_pca <- function(feature_dataset, num_pcs){
-  pcaY_cal <- prcomp(feature_dataset, center = TRUE, scale = FALSE)
+  pcaY_cal <- prcomp(feature_dataset, center = TRUE, scale. = FALSE)
   PCAresults <- data.frame(pcaY_cal$x[, 1:num_pcs])
   summary_pca <- summary(pcaY_cal)
   var_explained_df <- data.frame(PC= paste0("PC",1:50),
@@ -34,7 +34,7 @@ pca_ref_calc$summary
 var_explained_df <- pca_ref_calc$var_explained_pca
 data_pca <- pca_ref_calc$pca_components
 
-var_explained_df %>%
+var_explained_df |>
   ggplot(aes(x = PC,y = var_explained, group = 1))+
   geom_point(size=1)+
   geom_line()+

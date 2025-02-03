@@ -6,6 +6,7 @@ set.seed(20240110)
 ## Select PCs
 pbmc_pca <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 pbmc_pca <- pbmc_pca[, 1:9] ## By looking at PCA scree plot in https://satijalab.org/seurat/articles/pbmc3k_tutorial.html
+## Already scaled
 
 # pbmc_pca <- pbmc_pca |>
 #   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))

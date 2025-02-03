@@ -3,172 +3,154 @@ library(rsample)
 library(scales)
 library(dplyr)
 library(readr)
+library(tidyr)
 
 set.seed(20230531)
 
-# Number of points along the S-curve
-n_samples <- 25
+## C-shaped curve
+# Define the number of grid points per dimension
+n_a <- 20  # Number of grid points for 'a'
+n_x2 <- 5  # Number of grid points for 'x2'
 
-# Generate uniform parameter t
-t <- seq(-0.5, 0, length.out = n_samples)
+# Create structured sequences for a and x2
+a_seq <- seq(3 * pi * -0.5, 3 * pi * 0, length.out = n_a)
+x2_seq <- seq(0, 2.0, length.out = n_x2)
 
-# Parametric equations for the S-curve in 3D
-x <- sin(3 * pi * t)
-z <- sign(t) * (cos(3 * pi * t) - 1)
+# Generate a grid using expand.grid
+grid_data1 <- expand.grid(a = a_seq, x2 = x2_seq)
 
-# Set band thickness for the S-curve in the third dimension (y)
-band_thickness <- 2.0
-num_y_points <- 10  # Number of points along the y direction for each (x, z) pair
+# Compute the corresponding non-linear transformations
+grid_data1$x1 <- sin(grid_data1$a)
+grid_data1$x3 <- sign(grid_data1$a) * (cos(grid_data1$a) - 1)
+grid_data1$x4 <- cos(grid_data1$a)
 
-# Create a data frame for storing points
-true_model1 <- data.frame()
+# View a subset of the grid
+head(grid_data1)
+langevitour::langevitour(grid_data1 |> dplyr::select(-a))
 
-# Loop through each point on the S-curve and generate thickness without jitter
-for (i in 1:n_samples) {
-  # Current (x, z) values
-  current_x <- x[i]
-  current_z <- z[i]
+### Connections
+# Add row index as an ID
+grid_data1 <- grid_data1 |>
+  mutate(id = row_number())
 
-  # Generate y values with a thickness band
-  y_values <- seq(0, band_thickness, length.out = num_y_points)
+# Create connections between neighboring grid points
+edges1 <- data.frame(from = integer(), to = integer())
 
-  # Create points for the current (x, z) with different y values
-  new_points <- data.frame(x = rep(current_x, num_y_points),
-                           y = y_values,
-                           z = rep(current_z, num_y_points),
-                           ID = seq((i-1)*num_y_points + 1, i*num_y_points))
+# Define grid dimensions
+n_a <- length(a_seq)
+n_x2 <- length(x2_seq)
 
-  # Combine with existing points
-  true_model1 <- rbind(true_model1, new_points)
-}
+# Create connections
+for (i in 1:(n_a * n_x2)) {
+  row <- (i - 1) %% n_a + 1  # Row index
+  col <- (i - 1) %/% n_a + 1  # Column index
 
-# Create the connections (from-to pairs)
-connections <- data.frame(
-  from = integer(0),
-  to = integer(0)
-)
+  # Right neighbor
+  if (row < n_a) {
+    edges1 <- rbind(edges1, data.frame(from = i, to = i + 1))
+  }
 
-# Connect points along the length of the S-curve
-for (i in 1:(n_samples - 1)) {
-  for (j in 1:num_y_points) {
-    from_id <- (i - 1) * num_y_points + j
-    to_id <- i * num_y_points + j
-    connections <- rbind(connections, data.frame(from = from_id, to = to_id))
+  # Top neighbor
+  if (col < n_x2) {
+    edges1 <- rbind(edges1, data.frame(from = i, to = i + n_a))
   }
 }
 
-# Connect points along the width (y-direction)
-for (i in 1:n_samples) {
-  for (j in 1:(num_y_points - 1)) {
-    from_id <- (i - 1) * num_y_points + j
-    to_id <- from_id + 1
-    connections <- rbind(connections, data.frame(from = from_id, to = to_id))
+# View some edges1
+head(edges1)
+langevitour::langevitour(grid_data1 |> dplyr::select(-a, -id),
+                         lineFrom = edges1$from,
+                         lineTo = edges1$to)
+
+## Non-linear curve
+# Define grid resolution (number of points per dimension)
+n_x1 <- 10  # Number of grid points for x1
+n_x2 <- 10  # Number of grid points for x2
+n_x4 <- 5   # Number of grid points for x4
+
+# Generate evenly spaced sequences for x1, x2, x4
+x1_seq <- seq(0, 2, length.out = n_x1)
+x2_seq <- seq(0, 3, length.out = n_x2)
+x4_seq <- seq(-0.5, 0.5, length.out = n_x4)
+
+# Create a grid of (x1, x2, x4)
+grid_data2 <- expand.grid(x1 = x1_seq, x2 = x2_seq, x4 = x4_seq)
+
+# Compute x3 based on x1 and x2 (without random noise)
+grid_data2$x3 <- -(grid_data2$x1^3 + grid_data2$x2)
+
+# View a sample of the grid
+head(grid_data2)
+
+langevitour::langevitour(grid_data2)
+
+### Connections
+
+# Add a unique row index (ID) to each grid point
+grid_data2 <- grid_data2 |>
+  mutate(id = row_number())
+
+# Define grid dimensions
+n_x1 <- length(x1_seq)
+n_x2 <- length(x2_seq)
+n_x4 <- length(x4_seq)
+
+# Initialize empty data frame for edges2
+edges2 <- data.frame(from = integer(), to = integer())
+
+# Iterate through each point in the grid
+for (i in 1:(n_x1 * n_x2 * n_x4)) {
+  row <- (i - 1) %% n_x1 + 1     # x1 index
+  col <- ((i - 1) %/% n_x1) %% n_x2 + 1  # x2 index
+  depth <- (i - 1) %/% (n_x1 * n_x2) + 1  # x4 index
+
+  # Right neighbor (x1 direction)
+  if (row < n_x1) {
+    edges2 <- rbind(edges2, data.frame(from = i, to = i + 1))
+  }
+
+  # Top neighbor (x2 direction)
+  if (col < n_x2) {
+    edges2 <- rbind(edges2, data.frame(from = i, to = i + n_x1))
+  }
+
+  # Front neighbor (x4 direction)
+  if (depth < n_x4) {
+    edges2 <- rbind(edges2, data.frame(from = i, to = i + (n_x1 * n_x2)))
   }
 }
 
-names(true_model1) <- c("x1", "x2", "x3", "ID")
+# View some edges2
+head(edges2)
 
-# Visualize with langevitour
-langevitour(true_model1 |> select(-ID),
-            lineFrom = connections$from,
-            lineTo = connections$to)
+langevitour::langevitour(grid_data2 |> dplyr::select(-id),
+                         lineFrom = edges2$from,
+                         lineTo = edges2$to)
 
-# Function to generate a curvilinear grid pattern in 2D
-generate_curvilinear_grid_2d <- function(n_grid_x, n_grid_y) {
-  x <- seq(0, 2, length.out = n_grid_x)
-  y <- seq(0, 3, length.out = n_grid_y)
-
-  # Use expand.grid to create a grid of (x, y) pairs
-  curvilinear_grid <- expand.grid(x1 = x, x2 = y)
-
-  # Adjust y values according to a curvilinear pattern based on x
-  curvilinear_grid$x3 <- -(curvilinear_grid$x1^3 + curvilinear_grid$x2)
-
-  return(curvilinear_grid)
-}
-
-# Generate the grid data
-n_grid_x <- 20  # Number of grid points along x-axis
-n_grid_y <- 20  # Number of grid points along y-axis
-
-
-curvilinear_grid1 <- generate_curvilinear_grid_2d(n_grid_x, n_grid_y) |>
-  as_tibble()
+edges2 <- edges2 |>
+  mutate(from = 100 + edges2$from,
+         to = 100 + edges2$to)
 
 # Apply an offset to one of the clusters to create a distance between them
-offset <- c(1.5, 3.3, 2)  # Adjust these values to set the desired distance
-curvilinear_grid1 <- sweep(curvilinear_grid1, 2, offset, "+")
+offset <- c(1.5, 3.3, 2, 1.5)  # Adjust these values to set the desired distance
+grid_data2[, c(1, 2, 4, 3)] <- sweep(grid_data2[, c(1, 2, 4, 3)], 2, offset, "+")
 
-# Add small noise to the grid data to match dimensions with curvilinear data
-true_model2 <- curvilinear_grid1 |>
-  mutate(ID = row_number())
+model_data <- bind_rows(grid_data1 |> dplyr::select(x1, x2, x3, x4, id),
+                        grid_data2 |> dplyr::select(x1, x2, x3, x4, id))
 
-# Create a dataframe for "from" and "to" connections within rows and columns
-# Function to generate connections for a grid
-generate_grid_connections <- function(grid_data, n_grid_x, n_grid_y) {
-  # Generate connections between adjacent points
-  connections <- data.frame()
-
-  # Loop through rows
-  for (i in 1:(n_grid_x * n_grid_y)) {
-    # Calculate row and column indices
-    row_idx <- ceiling(i / n_grid_x)
-    col_idx <- i %% n_grid_x
-    if (col_idx == 0) col_idx <- n_grid_x
-
-    # Get the current point ID
-    current_id <- grid_data$ID[i]
-
-    # Connect to the right
-    if (col_idx < n_grid_x) {
-      right_id <- grid_data$ID[i + 1]
-      connections <- rbind(connections, data.frame(from = current_id, to = right_id))
-    }
-
-    # Connect to the next row
-    if (row_idx < n_grid_y) {
-      below_id <- grid_data$ID[i + n_grid_x]
-      connections <- rbind(connections, data.frame(from = current_id, to = below_id))
-    }
-  }
-
-  return(connections)
-}
-
-# Generate connections for each grid
-connections1 <- generate_grid_connections(true_model2, n_grid_x, n_grid_y) |>
-  as_tibble()
-
-connections1 <- connections1 |>
-  mutate(from = 250 + connections1$from,
-         to = 250 + connections1$to)
-
-model_data <- bind_rows(true_model1, true_model2)
-
-model_data <- model_data |>
-  dplyr::mutate(x4 = mean(runif(NROW(model_data), -0.05, 0.05)),
-                x5 = mean(runif(NROW(model_data), -0.02, 0.02)),
-                x6 = mean(runif(NROW(model_data), -0.1, 0.1)),
-                x7 = mean(runif(NROW(model_data), -0.01, 0.01)))
-
-connections_all <- bind_rows(connections, connections1)
-
-model_data <- model_data |>
-  select(x1, x2, x3, x4, x5, x6, x7, ID)
-
-# Visualize with langevitour
-langevitour(model_data |> select(-ID),
-            lineFrom = connections_all$from,
-            lineTo = connections_all$to)
+connections_all <- bind_rows(edges1, edges2)
 
 write_rds(model_data, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
 
-data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds"))
+data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 
-df <- bind_rows(model_data |> select(-ID) |> mutate(type = "model"),
+df <- bind_rows(model_data |> select(-id) |> mutate(type = "model"),
                 data |> mutate(type = "data"))
+
+df <- df |>
+  mutate(across(-type, ~ (. - mean(.)) / sd(.)))
 
 # Visualize with langevitour
 langevitour(df |> select(-type),
