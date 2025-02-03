@@ -3,6 +3,8 @@ library(purrr) ## map function
 library(rsample)
 library(ggplot2)
 library(readr)
+library(geozoo)
+library(mvtnorm)
 
 library(Rtsne)
 library(umap)
@@ -23,54 +25,26 @@ reticulate::source_python(here::here("scripts/function_scripts/Fit_TriMAP_code.p
 
 source(here::here("scripts/nldr_code.R"))
 
-sample_size <- 5000
-cluster_size <- sample_size/5
-df1 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05), y=rnorm(cluster_size, mean = 0, sd = 0.05), z=rnorm(cluster_size, mean = 0, sd = 0.05), w=rnorm(cluster_size, mean = 0, sd = 0.05))
-df2 <- tibble::tibble(x=rnorm(cluster_size, mean = 1, sd = 0.05), y=rnorm(cluster_size, mean = 0, sd = 0.05), z=rnorm(cluster_size, mean = 0, sd = 0.05), w=rnorm(cluster_size, mean = 0, sd = 0.05))
-df3 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05), y=rnorm(cluster_size, mean = 1, sd = 0.05), z=rnorm(cluster_size, mean = 0, sd = 0.05), w=rnorm(cluster_size, mean = 0, sd = 0.05))
-df4 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05), y=rnorm(cluster_size, mean = 0, sd = 0.05), z=rnorm(cluster_size, mean = 1, sd = 0.05), w=rnorm(cluster_size, mean = 0, sd = 0.05))
-df5 <- tibble::tibble(x=rnorm(cluster_size, mean = 0, sd = 0.05), y=rnorm(cluster_size, mean = 0, sd = 0.05), z=rnorm(cluster_size, mean = 0, sd = 0.05), w=rnorm(cluster_size, mean = 1, sd = 0.05))
+p2 <- 4
+vert2 <- simplex(p2)$points
 
-df_2 <- bind_rows(df1, df2, df3, df4, df5)
+df <- rmvnorm(5000, mean = rep(0, 4), sigma = diag(4) * 0.05)/6
+df[1:1000,] <- df[1:1000,] + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
+df[1001:2000,] <- df[1001:2000,] + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
+df[2001:3000,] <- df[2001:3000,] + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
+df[3001:4000,] <- df[3001:4000,] + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
+df[4001:5000,] <- df[4001:5000,] + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
+df_2 <- as_tibble(df)
+
 df_2 <- df_2 |>
-  rename(x1 = x, x2 = y, x3 = z, x4 = w)
+  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+
+names(df_2) <- paste0("x", 1:4)
 
 df_2 <- df_2 |>
   mutate(ID = row_number())
 
 write_rds(df_2, file = "data/five_gau_clusters/data_five_gau.rds")
-
-## With cluster labels
-
-df1 <- df1 |>
-  mutate(cluster = "cluster1")
-df2 <- df2 |>
-  mutate(cluster = "cluster2")
-df3 <- df3 |>
-  mutate(cluster = "cluster3")
-df4 <- df4 |>
-  mutate(cluster = "cluster4")
-df5 <- df5 |>
-  mutate(cluster = "cluster5")
-
-df_2n <- bind_rows(df1, df2, df3, df4, df5)
-df_2n <- df_2n |>
-  rename(x1 = x, x2 = y, x3 = z, x4 = w)
-
-df_2n <- df_2n |>
-  mutate(ID = row_number())
-
-write_rds(df_2n, file = "data/five_gau_clusters/data_five_gau_with_labels.rds")
-
-
-# data_split_sp <- initial_split(df_2)
-# training_data_5 <- training(data_split_sp) |>
-#   arrange(ID)
-# test_data_5 <- testing(data_split_sp) |>
-#   arrange(ID)
-#
-# write_rds(training_data_5, file = "data/five_gau_clusters/data_five_gau_training.rds")
-# write_rds(test_data_5, file = "data/five_gau_clusters/data_five_gau_test.rds")
 
 ### tSNE
 tSNE_data_gau <- Fit_tSNE(df_2 |> dplyr::select(-ID), opt_perplexity = calculate_effective_perplexity(df_2), with_seed = 20240110)
@@ -97,21 +71,6 @@ UMAP_data_gau <- UMAP_data_gau |>
   mutate(ID = df_2$ID)
 
 write_rds(UMAP_data_gau, file = "data/five_gau_clusters/umap_data_five_gau.rds")
-
-## predict umap embeddings
-
-predict_UMAP_df <- predict(UMAP_fit, test_data_5 |> dplyr::select(-ID)) |>
-  as.data.frame()
-
-names(predict_UMAP_df)[1:(ncol(predict_UMAP_df))] <- paste0(rep("UMAP",(ncol(predict_UMAP_df))), 1:(ncol(predict_UMAP_df)))
-
-predict_UMAP_df <- predict_UMAP_df |>
-  mutate(ID = test_data_5$ID)
-
-plot_UMAP_2D(UMAP_data_gau)
-
-write_rds(predict_UMAP_df, file = "data/five_gau_clusters/umap_data_five_gau_predict.rds")
-
 
 ### TriMAP
 
