@@ -2550,6 +2550,14 @@ There is an additional step that is needed. When the model is lifted into \pD{},
 gen_tuning_lg_plots()
 ```
 
+### Linked plots
+
+It’s important to access the \gD{} layout and the generated model overlaid on data in \pD{} together to understand whether it fits the points everywhere, fits better in some places, or simply mismatches the pattern. The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
+
+Brushing the high model error in the \gD{} layout, with dense C-shaped data explained in @sec-effect-dens, helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying the high model errors that occur due to the sparse end (add the video).
+
+Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video). 
+
 ## Best fit
 
 Deciding on the best fit relies on several elements: 
@@ -5883,14 +5891,6 @@ highd_error_2d_mnist + (imge_error_sample_outside / imge_error_sample_inside / r
 
 <!-- Some images of handwritten digit 1 which occur high model error (a) within the non-linear structure, and (b) outside the non-linear structure. The images shows different patterns of digit 1. -->
 <!-- ::: -->
-
-## Linked plots
-
-It’s important to access the \gD{} layout and the generated model overlaid on data in \pD{} together to understand whether it fits the points everywhere, fits better in some places, or simply mismatches the pattern. The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
-
-Brushing the high model error in the \gD{} layout, with dense C-shaped data explained in @sec-effect-dens, helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying the high model errors that occur due to the sparse end (add the video).
-
-Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video). 
 
 ## Discussion {#sec-discussion}
 

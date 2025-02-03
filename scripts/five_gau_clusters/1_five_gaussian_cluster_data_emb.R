@@ -36,8 +36,8 @@ df[3001:4000,] <- df[3001:4000,] + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
 df[4001:5000,] <- df[4001:5000,] + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
 df_2 <- as_tibble(df)
 
-df_2 <- df_2 |>
-  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+# df_2 <- df_2 |>
+#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
 names(df_2) <- paste0("x", 1:4)
 
