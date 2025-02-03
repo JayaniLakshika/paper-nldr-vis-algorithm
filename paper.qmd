@@ -503,12 +503,13 @@ training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clust
 
 true_model_df <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 wireframe_true_model <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
+training_data_two_curvy_not_std <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds")
 
-data_two_curvy <- training_data_two_curvy |>
+data_two_curvy <- training_data_two_curvy_not_std |>
   mutate(type = "data")
 
 true_model_two_curvy <- true_model_df |> 
-    select(-ID) |> 
+  select(-ID) |> 
   mutate(type = "true model")
 ```
 
@@ -927,8 +928,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-    c(0.11062,-0.02743,0.02786,-0.01930,0.02374,-0.03493,0.03159),
-    c(-0.01110,-0.06886,0.04730,0.09890,-0.00571,-0.00038,0.00169))
+    c(0.11062,-0.02743,0.02786,-0.01930),
+    c(-0.01110,-0.06886,0.04730,0.09890))
 
 projection_scaled <- projection * 1
 
@@ -1237,8 +1238,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-    c(0.11062,-0.02743,0.02786,-0.01930,0.02374,-0.03493,0.03159),
-    c(-0.01110,-0.06886,0.04730,0.09890,-0.00571,-0.00038,0.00169))
+    c(0.11062,-0.02743,0.02786,-0.01930),
+    c(-0.01110,-0.06886,0.04730,0.09890))
 
 projection_scaled <- projection * 1
 
@@ -1349,8 +1350,8 @@ proj_plot_two_curvy_true <- model_df |>
 
 ## Second projection
 projection <- cbind(
-    c(-0.03372,0.07726,0.03948,-0.00096,-0.02976,-0.07968,0.03194),
-    c(0.07080,0.00316,-0.00382,0.05069,-0.07334,-0.02506,-0.05749))
+    c(-0.03372,0.07726,0.03948,-0.00096),
+    c(0.07080,0.00316,-0.00382,0.05069))
 
 projection_scaled <- projection * 1
 
@@ -1838,8 +1839,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-    c(0.11062,-0.02743,0.02786,-0.01930,0.02374,-0.03493,0.03159),
-    c(-0.01110,-0.06886,0.04730,0.09890,-0.00571,-0.00038,0.00169))
+    c(0.11062,-0.02743,0.02786,-0.01930),
+    c(-0.01110,-0.06886,0.04730,0.09890))
 
 projection_scaled <- projection * 1
 
@@ -2835,8 +2836,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(-0.08707,-0.06493,0.07017,-0.07349,-0.02955,-0.05286,-0.02765),
-  c(0.03398,0.03735,0.09272,0.01871,-0.09224,0.00451,0.08079))
+  c(-0.08707,-0.06493,0.07017,-0.07349),
+  c(0.03398,0.03735,0.09272,0.01871))
 
 projection_scaled <- projection * 1
 
@@ -3122,8 +3123,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(-0.08707,-0.06493,0.07017,-0.07349,-0.02955,-0.05286,-0.02765),
-  c(0.03398,0.03735,0.09272,0.01871,-0.09224,0.00451,0.08079))
+  c(-0.08707,-0.06493,0.07017,-0.07349),
+  c(0.03398,0.03735,0.09272,0.01871))
 
 projection_scaled <- projection * 1
 

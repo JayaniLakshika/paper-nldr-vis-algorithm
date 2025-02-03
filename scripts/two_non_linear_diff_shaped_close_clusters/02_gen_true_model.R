@@ -31,7 +31,7 @@ langevitour::langevitour(grid_data1 |> dplyr::select(-a))
 ### Connections
 # Add row index as an ID
 grid_data1 <- grid_data1 |>
-  mutate(id = row_number())
+  mutate(ID = row_number())
 
 # Create connections between neighboring grid points
 edges1 <- data.frame(from = integer(), to = integer())
@@ -58,7 +58,7 @@ for (i in 1:(n_a * n_x2)) {
 
 # View some edges1
 head(edges1)
-langevitour::langevitour(grid_data1 |> dplyr::select(-a, -id),
+langevitour::langevitour(grid_data1 |> dplyr::select(-a, -ID),
                          lineFrom = edges1$from,
                          lineTo = edges1$to)
 
@@ -88,7 +88,7 @@ langevitour::langevitour(grid_data2)
 
 # Add a unique row index (ID) to each grid point
 grid_data2 <- grid_data2 |>
-  mutate(id = row_number())
+  mutate(ID = row_number())
 
 # Define grid dimensions
 n_x1 <- length(x1_seq)
@@ -123,7 +123,7 @@ for (i in 1:(n_x1 * n_x2 * n_x4)) {
 # View some edges2
 head(edges2)
 
-langevitour::langevitour(grid_data2 |> dplyr::select(-id),
+langevitour::langevitour(grid_data2 |> dplyr::select(-ID),
                          lineFrom = edges2$from,
                          lineTo = edges2$to)
 
@@ -135,8 +135,8 @@ edges2 <- edges2 |>
 offset <- c(1.5, 3.3, 2, 1.5)  # Adjust these values to set the desired distance
 grid_data2[, c(1, 2, 4, 3)] <- sweep(grid_data2[, c(1, 2, 4, 3)], 2, offset, "+")
 
-model_data <- bind_rows(grid_data1 |> dplyr::select(x1, x2, x3, x4, id),
-                        grid_data2 |> dplyr::select(x1, x2, x3, x4, id))
+model_data <- bind_rows(grid_data1 |> dplyr::select(x1, x2, x3, x4, ID),
+                        grid_data2 |> dplyr::select(x1, x2, x3, x4, ID))
 
 connections_all <- bind_rows(edges1, edges2)
 
@@ -146,7 +146,7 @@ write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_n
 
 data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 
-df <- bind_rows(model_data |> select(-id) |> mutate(type = "model"),
+df <- bind_rows(model_data |> select(-ID) |> mutate(type = "model"),
                 data |> mutate(type = "data"))
 
 df <- df |>

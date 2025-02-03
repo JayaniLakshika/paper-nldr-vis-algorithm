@@ -43,21 +43,27 @@ gen_curv2_3d <- function(n) {
   x1 <- sin(a)
   x2 <- 2.0 * stats::runif(n = n)
   x3 <- sign(a) * (cos(a) - 1)
+  x4 <- cos(a)
 
   df <- tibble(
     x1 = x1,
     x2 = x2,
-    x3 = x3
+    x3 = x3,
+    x4 = x4
   )
 }
 
 sample_size <- 1000
 curve2 <- gen_curv2_3d(n = sample_size)
 
-curve2$x4 <- runif(NROW(curve2), -0.05, 0.05)
-curve2$x5 <- runif(NROW(curve2), -0.02, 0.02)
-curve2$x6 <- runif(NROW(curve2), -0.01, 0.01)
-curve2$x7 <- runif(NROW(curve2), -0.01, 0.01)
+curve2 <- curve2 |>
+  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+
+
+# curve2$x4 <- runif(NROW(curve2), -0.05, 0.05)
+# curve2$x5 <- runif(NROW(curve2), -0.02, 0.02)
+# curve2$x6 <- runif(NROW(curve2), -0.01, 0.01)
+# curve2$x7 <- runif(NROW(curve2), -0.01, 0.01)
 
 langevitour(curve2)
 
