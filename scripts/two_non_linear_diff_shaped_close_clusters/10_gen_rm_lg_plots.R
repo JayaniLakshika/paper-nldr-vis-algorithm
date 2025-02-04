@@ -309,10 +309,10 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ## First projection
 projection <- cbind(
-  c(-0.02291,-0.00834,0.06450,-0.09921),
-  c(-0.11183,-0.02761,-0.04394,-0.01066))
+  c(0.37847,-0.06517,0.04231,0.01655),
+  c(-0.06466,-0.27052,0.22131,-0.15235))
 
-projection_scaled <- projection * 5
+projection_scaled <- projection * 1
 
 projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
 
@@ -366,12 +366,12 @@ model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID")
 names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  proj = projection * 5,
-  limits = 0.5,
-  axis_pos_x = -0.4,
-  axis_pos_y = -0.4,
+  proj = projection * 2,
+  limits = 0.6,
+  axis_pos_x = -0.5,
+  axis_pos_y = -0.5,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.03)
+  threshold = 0.04)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -407,8 +407,8 @@ two_curvy_proj_first_model1_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.5, 0.5)) +
-  ylim(c(-0.5, 0.5)) +
+  xlim(c(-0.6, 0.6)) +
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -447,8 +447,8 @@ two_curvy_proj_model_delaunay_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.5, 0.5)) +
-  ylim(c(-0.5, 0.5)) +
+  xlim(c(-0.6, 0.6)) +
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("a2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -485,8 +485,8 @@ two_curvy_proj_model_benchmark2_umap <- projected_df |>
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.5, 0.5)) +
-  ylim(c(-0.5, 0.5)) +
+  xlim(c(-0.6, 0.6)) +
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("b2", sc_ltr_pos) +
   theme(
     legend.position = "none"

@@ -502,6 +502,7 @@ training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clust
 #| label: two-curvy-true-proj-data
 
 true_model_df <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
+true_model_df_std <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_std.rds")
 wireframe_true_model <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 training_data_two_curvy_not_std <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds")
 
@@ -510,6 +511,10 @@ data_two_curvy <- training_data_two_curvy |>
 
 data_two_curvy_not_std <- training_data_two_curvy_not_std |>
   mutate(type = "data")
+
+true_model_two_curvy_std <- true_model_df_std |> 
+  select(-ID) |> 
+  mutate(type = "true model")
 
 true_model_two_curvy <- true_model_df |> 
   select(-ID) |> 
@@ -920,7 +925,7 @@ scaled_two_curvy_data <- scaled_two_curvy |>
   filter(type == "data") |>
   select(-type)
 
-scaled_two_curvy_data_true_model <- scaled_two_curvy |>
+scaled_two_curvy_data_true_model <- df_model_data_two_curvy |>
   filter(type == "true model") |>
   select(-type)
 

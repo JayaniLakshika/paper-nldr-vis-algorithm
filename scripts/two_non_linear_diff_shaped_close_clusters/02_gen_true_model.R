@@ -146,6 +146,10 @@ connections_all <- bind_rows(edges1, edges2)
 write_rds(model_data, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
+model_data_std <- model_data |>
+  mutate(across(-ID, ~ (. - mean(.)) / sd(.)))
+write_rds(model_data_std, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_std.rds")
+
 
 # data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 #
