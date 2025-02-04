@@ -539,7 +539,7 @@ sc_ltr_pos <- c(0.08, 0.9)
 # sc_xlims <- c(-0.5, 1.47)
 # sc_ylims <- c(-0.32, 2.1)
 sc_xlims <- c(-0.3, 1.2)
-sc_ylims <- c(-0.17, 1.2)
+sc_ylims <- c(-0.17, 1.25)
 
 nldr_two_curvy <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
@@ -1778,7 +1778,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
-  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) +
+  xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("a", sc_ltr_pos)
 
 ## Triangulate bin centroids
@@ -2082,7 +2082,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
            alpha = 0.3,
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
-  xlim(c(-0.3, 1.2)) + ylim(c(-0.17, 1.1)) +
+  xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c", sc_ltr_pos)
 ```
 
