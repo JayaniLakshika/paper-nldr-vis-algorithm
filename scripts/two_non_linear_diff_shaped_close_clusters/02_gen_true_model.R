@@ -140,21 +140,24 @@ model_data <- bind_rows(grid_data1 |> dplyr::select(x1, x2, x3, x4, ID),
 
 connections_all <- bind_rows(edges1, edges2)
 
+# model_data <- model_data |>
+#   mutate(across(-ID, ~ (. - mean(.)) / sd(.)))
+
 write_rds(model_data, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
 
-data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
-
-df <- bind_rows(model_data |> select(-ID) |> mutate(type = "model"),
-                data |> mutate(type = "data"))
-
-df <- df |>
-  mutate(across(-type, ~ (. - mean(.)) / sd(.)))
-
-# Visualize with langevitour
-langevitour(df |> select(-type),
-            lineFrom = connections_all$from,
-            lineTo = connections_all$to,
-            group = df$type,
-            levelColors = c("#6a3d9a", "#33a02c"))
+# data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
+#
+# df <- bind_rows(model_data |> select(-ID) |> mutate(type = "model"),
+#                 data |> mutate(type = "data"))
+#
+# df <- df |>
+#   mutate(across(-type, ~ (. - mean(.)) / sd(.)))
+#
+# # Visualize with langevitour
+# langevitour(df |> select(-type),
+#             lineFrom = connections_all$from,
+#             lineTo = connections_all$to,
+#             group = df$type,
+#             levelColors = c("#6a3d9a", "#33a02c"))
