@@ -925,7 +925,7 @@ scaled_two_curvy_data <- scaled_two_curvy |>
   filter(type == "data") |>
   select(-type)
 
-scaled_two_curvy_data_true_model <- df_model_data_two_curvy |>
+scaled_two_curvy_data_true_model <- scaled_two_curvy |>
   filter(type == "true model") |>
   select(-type)
 
@@ -1829,7 +1829,10 @@ benchmark_two_curvy <- find_lg_benchmark(
 #| label: best-fit-two-curvy-proj
 
 # Apply the scaling
-df_model_data_two_curvy <- bind_rows(data_two_curvy, true_model_two_curvy, df_b_two_curvy2)
+df_model_data_two_curvy <- bind_rows(
+  data_two_curvy, 
+  true_model_two_curvy, 
+  df_b_two_curvy2)
 
 scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
   as_tibble()
