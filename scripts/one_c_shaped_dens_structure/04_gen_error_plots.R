@@ -221,8 +221,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(-0.02893,-0.29715,0.03575,0.21857,0.25865,-0.47632,0.22524),
-  c(0.12055,-0.06246,-0.29669,-0.19943,0.54627,0.16620,-0.10214))
+  c(-0.02893,-0.29715,0.03575,0.21857),
+  c(0.12055,-0.06246,-0.29669,-0.19943))
 
 projection_scaled <- projection * 1
 
@@ -254,12 +254,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  proj = projection,
+  proj = projection * 2,
   limits = 0.35,
   axis_pos_x = -0.28,
   axis_pos_y = -0.28,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.025)
+  threshold = 0.017)
 
 axes2 <- axes_obj$axes
 circle <- axes_obj$circle
@@ -515,8 +515,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 ## First projection
 
 projection <- cbind(
-  c(-0.25559,0.10281,-0.00471,-0.20475),
-  c(0.06178,-0.06294,0.22117,0.24064))
+  c(-0.03377,-0.05077,-0.05452,0.25842),
+  c(-0.17491,0.02462,-0.19678,-0.05954))
 
 projection_scaled <- projection * 1
 
@@ -548,12 +548,12 @@ model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
 names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 axes_obj <- gen_axes(
-  proj = projection,
+  proj = projection * 3,
   limits = 0.4,
   axis_pos_x = -0.26,
   axis_pos_y = -0.26,
   axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.02)
+  threshold = 0.04)
 
 axes1 <- axes_obj$axes
 circle1 <- axes_obj$circle
