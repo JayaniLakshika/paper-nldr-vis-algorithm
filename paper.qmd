@@ -505,7 +505,10 @@ true_model_df <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_no
 wireframe_true_model <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 training_data_two_curvy_not_std <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds")
 
-data_two_curvy <- training_data_two_curvy_not_std |>
+data_two_curvy <- training_data_two_curvy |>
+  mutate(type = "data")
+
+data_two_curvy_not_std <- training_data_two_curvy_not_std |>
   mutate(type = "data")
 
 true_model_two_curvy <- true_model_df |> 
@@ -1047,8 +1050,8 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.12, 0.12)) + 
-  ylim(c(-0.12, 0.12)) +
+  xlim(c(-0.25, 0.25)) + 
+  ylim(c(-0.25, 0.25)) +
   interior_annotation("c", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -1085,8 +1088,8 @@ two_curvy_proj_umap_first_model1_temp <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
+  xlim(c(-0.25, 0.25)) + 
+  ylim(c(-0.25, 0.25)) +
   interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -1223,7 +1226,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 ```{r}
 #| label: two-curvy-true-proj
 # Apply the scaling
-df_model_data_two_curvy <- bind_rows(data_two_curvy, true_model_two_curvy)
+df_model_data_two_curvy <- bind_rows(data_two_curvy_not_std, true_model_two_curvy)
 
 scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
   as_tibble()
