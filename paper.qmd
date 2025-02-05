@@ -5855,7 +5855,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
 
 
 ##### inside
-img_error_inside <- c(7228, 7363, 7650)
+img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636) #7228, 7363, 7650
 
 pixels_gathered_inside <-  mnist_data |>
   mutate(instance = row_number()) |>
@@ -5867,7 +5867,7 @@ pixels_gathered_inside <-  mnist_data |>
 imge_error_sample_inside <- pixels_gathered_inside |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
-  facet_wrap(~ instance, ncol = 4) +
+  facet_wrap(~ instance, ncol = 9) +
   ggtitle("(e)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Grays") +
@@ -5884,7 +5884,7 @@ imge_error_sample_inside <- pixels_gathered_inside |>
 #| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big non-linear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (e) the non-linear structure and others outside (d). Along the non-linear cluster, the angle of digit 1 changes (a-c)."
 #| fig-pos: H
 #| fig-width: 10
-#| fig-height: 10
+#| fig-height: 7
 #| out-width: 90%
 
 # Define your current layout
@@ -5892,7 +5892,7 @@ top_layout <- right_top_img / middle_img / right_bottom_img / imge_error_sample_
 full_layout <- highd_error_2d_mnist + top_layout
 
 # Add the new full-width bottom row
-final_layout <- full_layout / imge_error_sample_inside
+final_layout <- full_layout / imge_error_sample_inside + plot_layout(heights = c(1, 0.2))
 
 # Display the final combined plot
 final_layout
