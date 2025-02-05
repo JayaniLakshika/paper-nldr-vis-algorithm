@@ -30,17 +30,6 @@ one_c_shaped_data <- one_c_shaped_data |>
 
 tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
 
-plot_tsne_dens <- tsne_one_c_shaped |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2)) +
-  geom_point(alpha=0.7) +
-  theme(
-    aspect.ratio = 1
-  ) +
-  interior_annotation("b",
-                      position = c(0.08, 0.9),
-                      cex = 1.5)
-
 tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
   data = tsne_one_c_shaped)
 
@@ -118,6 +107,10 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
                 sqrt_row_wise_total_error <= quant_val[8], "eighth",
                 "nineth")))))))))
 
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(error_cat_n = if_else(
+    sqrt_row_wise_total_error > quant_val[8], "high", "low"))
+
 error_plot_tsne <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
@@ -134,6 +127,21 @@ error_plot_tsne <- error_df_one_curvy_abs |>
   interior_annotation("a",
                       position = c(0.08, 0.9),
                       cex = 1.5)
+
+plot_tsne_dens <- error_df_one_curvy_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             colour = factor(error_cat_n,
+                             levels = c("high", "low")))) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#800026', '#f0f0f0')) +
+  theme(
+    aspect.ratio = 1
+  ) +
+  interior_annotation("b",
+                      position = c(0.08, 0.9),
+                      cex = 1.5)
+
 
 
 ## Triangulate bin centroids
@@ -188,7 +196,7 @@ trimesh_removed_c_shaped_structure <- ggplot() +
 ### Define type column
 df <- df_all_one_curvy2 |>
   dplyr::select(tidyselect::starts_with("x")) |>
-  dplyr::mutate(type = error_df_one_curvy_abs$error_cat) ## original dataset
+  dplyr::mutate(type = error_df_one_curvy_abs$error_cat_n) ## original dataset
 
 df_b <- df_bin_one_curvy2 |>
   dplyr::filter(hb_id %in% df_bin_centroids2$hexID) |>
@@ -204,12 +212,8 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineFrom = distance_df_small_edges_c_shaped_structure$from,
                          lineTo = distance_df_small_edges_c_shaped_structure$to,
                          group = factor(df_exe$type,
-                                        c("first", "second", "third",
-                                          "fourth", "fifth", "sixth",
-                                          "seventh", "eighth", "nineth","model")), pointSize = append(rep(1, NROW(df_b)), rep(2, NROW(df))),
-                         levelColors = c('#ffffcc','#ffeda0','#fed976','#feb24c',
-                                         '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
-                                         "#000000"))
+                                        c("low", "high","model")), pointSize = append(rep(1, NROW(df_b)), rep(2, NROW(df))),
+                         levelColors = c('#f0f0f0', '#800026', "#000000"))
 
 
 # Apply the scaling
@@ -232,8 +236,8 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 
 ## First projection
 projection <- cbind(
-  c(-0.02893,-0.29715,0.03575,0.21857),
-  c(0.12055,-0.06246,-0.29669,-0.19943))
+  c(0.05096,0.15399,0.19736,0.05110),
+  c(0.14608,-0.16929,0.11291,-0.07160))
 
 projection_scaled <- projection * 1
 
@@ -277,7 +281,7 @@ circle <- axes_obj$circle
 
 ## To add error category
 projected_df <- projected_df |>
-  mutate(error_cat = error_df_one_curvy_abs$error_cat)
+  mutate(error_cat_n = error_df_one_curvy_abs$error_cat_n)
 
 five_c_shaped_proj_tsne_model1 <- projected_df |>
   ggplot(
@@ -297,10 +301,8 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_point(
     #size = 0.5,
     aes(
-      color = factor(error_cat,
-                     levels = c("first", "second", "third",
-                                "fourth", "fifth", "sixth",
-                                "seventh", "eighth", "nineth"))
+      color = factor(error_cat_n,
+                     levels = c("low", "high"))
     ),
     alpha = 0.5) +
   geom_segment(
@@ -315,9 +317,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#ffffcc','#ffeda0','#fed976','#feb24c',
-                              '#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026',
-                              "#000000")) +
+  scale_color_manual(values=c('#f0f0f0', '#800026')) +
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
   ylim(c(-0.35, 0.35)) +
