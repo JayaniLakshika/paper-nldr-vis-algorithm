@@ -5774,7 +5774,7 @@ right_top_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(c)") +
+  ggtitle("(a)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Reds 2") +
   theme(strip.background = element_blank(),
@@ -5797,7 +5797,7 @@ middle_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(d)") +
+  ggtitle("(b)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Greens 3") +
   theme(strip.background = element_blank(),
@@ -5820,7 +5820,7 @@ right_bottom_img <- pixels_gathered_within |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(e)") +
+  ggtitle("(c)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Purples 2") +
   theme(strip.background = element_blank(),
@@ -5844,7 +5844,7 @@ imge_error_sample_outside <- pixels_gathered_outside |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(a)") +
+  ggtitle("(d)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
@@ -5868,7 +5868,7 @@ imge_error_sample_inside <- pixels_gathered_inside |>
   ggplot(aes(x, y, fill = value)) +
   geom_tile() +
   facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(b)") +
+  ggtitle("(e)") +
   coord_fixed() +
   scale_fill_continuous_sequential(palette = "Grays") +
   theme(strip.background = element_blank(),
@@ -5881,13 +5881,13 @@ imge_error_sample_inside <- pixels_gathered_inside |>
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big non-linear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (b) the non-linear structure and others outside (a). Along the non-linear cluster, the angle of digit 1 changes (c-e)."
+#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big non-linear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (e) the non-linear structure and others outside (d). Along the non-linear cluster, the angle of digit 1 changes (a-c)."
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
 #| out-width: 80%
 
-highd_error_2d_mnist + (imge_error_sample_outside / imge_error_sample_inside / right_top_img / middle_img / right_bottom_img) 
+highd_error_2d_mnist + (right_top_img / middle_img / right_bottom_img / imge_error_sample_outside) / imge_error_sample_inside
 ```
 
 <!-- These anomalies can be classified into two types: those that are anomalies within the non-linear cluster and those that lie in the small cluster. The images associated with large model error points within the non-linear cluster display different patterns of the digit 1.  -->
