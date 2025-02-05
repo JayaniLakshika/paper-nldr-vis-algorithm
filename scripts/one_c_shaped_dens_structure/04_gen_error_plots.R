@@ -30,6 +30,17 @@ one_c_shaped_data <- one_c_shaped_data |>
 
 tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
 
+plot_tsne_dens <- tsne_one_c_shaped |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2)) +
+  geom_point(alpha=0.7) +
+  theme(
+    aspect.ratio = 1
+  ) +
+  interior_annotation("b",
+                      position = c(0.08, 0.9),
+                      cex = 1.5)
+
 tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
   data = tsne_one_c_shaped)
 
@@ -120,8 +131,8 @@ error_plot_tsne <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("b1",
-                      position = c(0.08, 0.95),
+  interior_annotation("a",
+                      position = c(0.08, 0.9),
                       cex = 1.5)
 
 
@@ -310,7 +321,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
   ylim(c(-0.35, 0.35)) +
-  interior_annotation("b2",
+  interior_annotation("c",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -328,6 +339,7 @@ tsne_one_c_shaped_scaled_obj <- gen_scaled_data(
 
 tsne_one_c_shaped_scaled <- tsne_one_c_shaped_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
+
 lim1 <- tsne_one_c_shaped_scaled_obj$lim1
 lim2 <- tsne_one_c_shaped_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
@@ -614,9 +626,13 @@ five_c_shaped_proj_tsne_model2 <- projected_df |>
 
 generate_error_plots_one_c_shaped <- function(){
 
-  error_plot_tsne_uni + error_plot_tsne +
-    five_c_shaped_proj_tsne_model2 + five_c_shaped_proj_tsne_model1 +
-    plot_layout(guides = "collect", ncol = 2) &
+  # error_plot_tsne_uni + error_plot_tsne +
+  #   five_c_shaped_proj_tsne_model2 + five_c_shaped_proj_tsne_model1 +
+  #   plot_layout(guides = "collect", ncol = 2) &
+  #   theme(legend.position='none')
+
+  error_plot_tsne + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
+    plot_layout(guides = "collect", ncol = 3) &
     theme(legend.position='none')
 
 }
