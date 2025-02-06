@@ -2570,7 +2570,7 @@ Diagnosing the model while locating points in the \gD{} layout and displaying th
 
 The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
 
-To understand how well the model fits the points—whether it fits consistently, works better in certain areas, or fails to match the overall pattern—it is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
+To understand how well the model fits the points—whether it fits well, works better in some positions, or fails to match the overall pattern—it is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
 
 <!-- Brushing the high model error in the \gD{} layout, with dense C-shaped data explained in @sec-effect-dens, helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying the high model errors that occur due to the sparse end (add the video). -->
 
@@ -6046,7 +6046,7 @@ Our algorithm can also be useful in practice to decide on a reasonable NLDR layo
 
 The digit 1 of **Hand-written digits** data shows how the model accurately capture the non-linear structure. Not only that, the $10\text{-}D$ model error help to find the anomalies of digit 1 images. Also, twisted pattern of the model evident that how tSNE tries to maintain the local structure by positioning the similar patterns of digit 1 close to each other. 
 
-Diagnose the fitted model is important. Interactivity helps to    
+Diagnose is important to find where the \gD{} points located in \pD{}. One approach is to use interactivity. By linking the \gD{} layout with the fitted model in \pD{} and employing brushing techniques, we can identify which points fit well and which do not. Additionally, linking the \gD{} error plot with the fitted model in \pD{} can help pinpoint where mismatches occur.
 
 Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
 
