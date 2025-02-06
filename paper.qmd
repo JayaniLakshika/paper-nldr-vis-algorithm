@@ -1005,11 +1005,11 @@ names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df
 
 axes_obj <- gen_axes(  
   proj = projection * 2,
-  limits = 0.3,
-  axis_pos_x = -0.2,
-  axis_pos_y = -0.2,
+  limits = 0.5,
+  axis_pos_x = -0.5,
+  axis_pos_y = -0.5,
   axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.02)
+  threshold = 0.03)
 
 axes <- axes_obj$axes
 circle <- axes_obj$circle
@@ -1045,8 +1045,8 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.25, 0.25)) + 
-  ylim(c(-0.25, 0.25)) +
+  xlim(c(-0.6, 0.6)) + 
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("c", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -1083,8 +1083,8 @@ two_curvy_proj_umap_first_model1_temp <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.25, 0.25)) + 
-  ylim(c(-0.25, 0.25)) +
+  xlim(c(-0.6, 0.6)) + 
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
@@ -1129,8 +1129,8 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
   coord_fixed() +
-  xlim(c(-0.25, 0.25)) + 
-  ylim(c(-0.25, 0.25)) +
+  xlim(c(-0.6, 0.6)) + 
+  ylim(c(-0.6, 0.6)) +
   interior_annotation("d", sc_ltr_pos) +
   theme(
     legend.position = "none"
