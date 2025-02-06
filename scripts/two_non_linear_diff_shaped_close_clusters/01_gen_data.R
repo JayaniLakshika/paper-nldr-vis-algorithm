@@ -61,6 +61,12 @@ df <- bind_rows(
 
 write_rds(df, here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 
+# Compute and store column means and standard deviations
+stats <- df |>
+  summarise(across(everything(), list(mean = mean, sd = sd), .names = "{.col}_{.fn}"))
+
+write_rds(stats, here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_stats.rds"))
+
 
 df <- df |>
   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
