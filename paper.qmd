@@ -5374,7 +5374,8 @@ error_df <- error_df |>
 ## ggplot(data = error_df, aes(x=row_wise_abs_error)) + geom_density() ## right skewed
 
 error_df <- error_df |>
-  mutate(sqrt_row_wise_tot_error = sqrt(row_wise_total_error))
+  mutate(sqrt_row_wise_tot_error = sqrt(row_wise_total_error)) |>
+  mutate(sqrt_row_wise_tot_error = standardize(sqrt_row_wise_tot_error))
   
 highd_error_2d_mnist <- error_df |>
   ggplot(aes(x = tSNE1,
