@@ -134,7 +134,7 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
              colour = factor(error_cat_n,
                              levels = c("high", "low")))) +
   geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#800026', '#f0f0f0')) +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
   theme(
     aspect.ratio = 1
   ) +
@@ -213,7 +213,7 @@ langevitour::langevitour(df_exe[1:(length(df_exe)-1)],
                          lineTo = distance_df_small_edges_c_shaped_structure$to,
                          group = factor(df_exe$type,
                                         c("low", "high","model")), pointSize = append(rep(1, NROW(df_b)), rep(2, NROW(df))),
-                         levelColors = c('#f0f0f0', '#800026', "#000000"))
+                         levelColors = c('#d9d9d9', '#800026', "#000000"))
 
 
 # Apply the scaling
@@ -317,7 +317,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_color_manual(values=c('#f0f0f0', '#800026')) +
+  scale_color_manual(values=c('#d9d9d9', '#800026')) +
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
   ylim(c(-0.35, 0.35)) +

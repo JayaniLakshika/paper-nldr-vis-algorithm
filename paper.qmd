@@ -5327,6 +5327,18 @@ trimesh_removed_mnist <- ggplot() +
   interior_annotation("a1", sc_ltr_pos_mnist) +
   theme(legend.position = "none") 
 
+tsne_plot_mnist_clust <- ggplot() + 
+  geom_point(data = tsne_minst_scaled_temp,
+             aes(
+               x = tSNE1,
+               y = tSNE2,
+               colour = cluster
+             ),
+             alpha=0.2)+
+  scale_color_manual(values=c('#f0f0f0', '#ff7f00')) +
+  interior_annotation("a1", sc_ltr_pos_mnist) +
+  theme(legend.position = "none") 
+
 # trimesh_removed_mnist <- vis_rmlg_mesh(
 #   distance_edges = distance_mnist, 
 #   benchmark_value = benchmark_mnist, 
@@ -5548,6 +5560,48 @@ mnist_proj_tsne_model1 <- projected_df |>
     legend.position = "none"
   )
 
+mnist_proj_tsne_model1_link <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2,
+      colour = cluster)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000",
+    linewidth = 0.5,
+    alpha = 0.5) +
+  geom_point(
+    size = 1.2,
+    alpha = 0.5) +
+  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  #coord_fixed() +
+  xlim(c(-1.1, 0.9)) +
+  ylim(c(-1.1, 0.9)) +
+  interior_annotation("a2") +
+  theme(
+    legend.position = "none"
+  )
+
+
 
 ## Second projection
 projection <- cbind(
@@ -5635,6 +5689,47 @@ mnist_proj_tsne_model2 <- projected_df |>
   theme(
     legend.position = "none"
   )
+
+mnist_proj_tsne_model2_link <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2,
+      colour = cluster)) +
+  geom_segment(
+    data = model_df, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#000000",
+    linewidth = 0.5) +
+  geom_point(
+    size = 1.2,
+    alpha = 0.3) +
+  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+  geom_segment(
+    data=axes, 
+    aes(x=x1, y=y1, xend=x2, yend=y2), 
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-1, 1)) +
+  ylim(c(-1, 1)) +
+  interior_annotation("a3") +
+  theme(
+    legend.position = "none"
+  )
+
 
 
 ## Third projection
@@ -5739,6 +5834,17 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
   mnist_proj_tsne_model2 +
   plot_layout(ncol = 3)
 
+```
+
+```{r}
+#| label: fig-clust-mnist
+#| fig-pos: H
+#| fig-height: 5
+#| fig-width: 15
+#| out-height: 100%
+
+tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
+  plot_layout(ncol = 3)
 ```
 
 <!-- ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"} -->
