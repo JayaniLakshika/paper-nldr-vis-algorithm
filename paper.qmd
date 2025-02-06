@@ -1444,7 +1444,7 @@ two_curvy_proj_umap_model2 <- projected_df |>
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two \\gD{} projections from $7\\text{-}D$, for the two non-linear clusters data (grey points) and true model (blue lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
+#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (grey points) and true model (blue lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
@@ -2163,7 +2163,7 @@ plot_predict_tsne_two_curvy <- ggplot(
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-umap1
-#| fig-cap: "We start with a tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 7$), from which the \\gD{} wireframe is constructed (b) and then lifted to $7\\text{-}D$. A \\gD{} projection of the model fit from a tour through the $7\\text{-}D$ space is presented in c. Additionally, a \\gD{} projection of the fitted and true models (d) from the same tour demonstrates that the model accurately captures the non-linear structure of the data, although it does not fully represent the width of that structure. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-parameter) choice. The default is used. Video of the langevitour animation is available at <>."
+#| fig-cap: "We start with a tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (b) and then lifted to $4\\text{-}D$. A \\gD{} projection of the model fit from a tour through the $4\\text{-}D$ space is presented in c. Additionally, a \\gD{} projection of the fitted and true models (d) from the same tour demonstrates that the model accurately captures the non-linear structure of the data, although it does not fully represent the width of that structure. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-parameter) choice. The default is used. Video of the langevitour animation is available at <>."
 #| fig-width: 10
 #| fig-height: 10
 
@@ -2330,7 +2330,7 @@ error_plot_two_curvy_hist <-
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $7\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark colour indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
+#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates square root of total error, dark colour indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
 #| out-width: 60%
 #| fig-pos: H
 
@@ -2547,7 +2547,7 @@ mse_two_curvy_b + a1_m_two_curvy +
 
 #### Removing long edges
 
-Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-two-curvy-true-proj shows a wire frame of the true model that was used to generate the two C-shaped clusters example data. The ideal is that the representation of the fitted model, at least for this example where we know the true model, should look similar to this. 
+Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-two-curvy-true-proj shows a wire frame of the true model that was used to generate the non-linear clusters example data. The ideal is that the representation of the fitted model, at least for this example where we know the true model, should look similar to this. 
 
 The Delaunay triangulation will ensure that all centroids are connected into a triangular mesh. For some structures, like clustered data, or highly non-linear shapes, breaks in the mesh are meaningful. When separated clusters are present the mesh should be broken across the gaps. For non-linear structures like the C-shaped curvilinear, the mesh should run unbroken along the C, but there should be no edges connecting the top of the C directly to the bottom of the C. For these reasons it is necessary to remove edges from the mesh in some applications.
 
@@ -5932,7 +5932,7 @@ We have developed an algorithm to assess the NLDR method and (hyper-)parameter c
 
 With the model fit, several observations can be made. The simulated $4\text{-}D$ data, which contains five Gaussian clusters, was analyzed. Both tSNE and UMAP demonstrated the fitted model as a *crumpled \gD{} sheet* that stretches across all four dimensions, highlighting its ability to preserve local structure. In contrast, the flat representation generated by PaCMAP indicates its failure to capture the variation within the clusters. This highlights how different NLDR methods organize the data points differently.
 
-Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated $7\text{-}D$ C-shaped data with different densities are used. The high \pD{} model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
+Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated $4\text{-}D$ C-shaped data with different densities are used. The high \pD{} model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
 
 Our algorithm can also be useful in practice to decide on a reasonable NLDR layout that accurately represents the data, as described with a single-cell gene expression data, **PBMC3k**. The published results of UMAP with default (hyper-)parameter setting by @chen2023 were evaluated. The data showed three clusters, two of which were close. But the published layout showed three well-separated clusters. Therefore, by changing the (hyper-)parameter, we found a better layout with UMAP, which is more representative the data. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the UMAP layout, demonstrating the ability of our model in uncovering hidden data characteristics. Also, as explained in Appendix, with recently introduced approach, scDEED also proved the layout suggested by our layout is better than the published one.  
 
