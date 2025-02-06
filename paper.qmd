@@ -2574,7 +2574,7 @@ To understand how well the model fits the points—whether it fits consistently,
 
 <!-- Brushing the high model error in the \gD{} layout, with dense C-shaped data explained in @sec-effect-dens, helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying the high model errors that occur due to the sparse end (add the video). -->
 
-Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video). 
+<!-- Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video).  -->
 
 ## Best fit
 
@@ -5324,7 +5324,7 @@ trimesh_removed_mnist <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a1", sc_ltr_pos_mnist) +
+  interior_annotation("a", sc_ltr_pos_mnist) +
   theme(legend.position = "none") 
 
 tsne_plot_mnist_clust <- ggplot() + 
@@ -5336,7 +5336,7 @@ tsne_plot_mnist_clust <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c('#f0f0f0', '#ff7f00')) +
-  interior_annotation("a1", sc_ltr_pos_mnist) +
+  interior_annotation("a", sc_ltr_pos_mnist) +
   theme(legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
@@ -5555,7 +5555,7 @@ mnist_proj_tsne_model1 <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("a2") +
+  interior_annotation("b") +
   theme(
     legend.position = "none"
   )
@@ -5596,7 +5596,7 @@ mnist_proj_tsne_model1_link <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("a2") +
+  interior_annotation("b") +
   theme(
     legend.position = "none"
   )
@@ -5685,7 +5685,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("a3") +
+  interior_annotation("c") +
   theme(
     legend.position = "none"
   )
@@ -5725,7 +5725,7 @@ mnist_proj_tsne_model2_link <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("a3") +
+  interior_annotation("c") +
   theme(
     legend.position = "none"
   )
@@ -5842,6 +5842,7 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
 #| fig-height: 5
 #| fig-width: 15
 #| out-height: 100%
+#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
 
 tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
   plot_layout(ncol = 3)
