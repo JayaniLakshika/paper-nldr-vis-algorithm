@@ -5496,13 +5496,15 @@ tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_lin
 ## Data with pixel values
 mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 
-img_right_top <- c(868, 1465, 1787)
-
-pixels_gathered_within <-  mnist_data |>
+mnist_data <- mnist_data |>
   mutate(instance = row_number()) |>
   gather(pixel, value, -Label, -instance) |>
   extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
+  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28)
+
+img_right_top <- c(868, 1465, 1787)
+
+pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
 
 right_top_img <- pixels_gathered_within |>
@@ -5523,10 +5525,6 @@ right_top_img <- pixels_gathered_within |>
 img_middle <- c(130, 2091, 7795)
 
 pixels_gathered_within <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
   filter(instance %in% img_middle)
 
 middle_img <- pixels_gathered_within |>
@@ -5547,10 +5545,6 @@ middle_img <- pixels_gathered_within |>
 img_right_bottom <- c(2035, 7708, 7710)
 
 pixels_gathered_within <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
   filter(instance %in% img_right_bottom)
 
 right_bottom_img <- pixels_gathered_within |>
@@ -5572,10 +5566,6 @@ right_bottom_img <- pixels_gathered_within |>
 img_error_outside <- c(999, 3650, 4916)
 
 pixels_gathered_outside <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
   filter(instance %in% img_error_outside)
 
 imge_error_sample_outside <- pixels_gathered_outside |>
@@ -5592,15 +5582,10 @@ imge_error_sample_outside <- pixels_gathered_outside |>
         plot.title = element_text(hjust = 0.31,
                                   size = 12)) 
 
-
 ##### inside
-img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636) #7228, 7363, 7650
+img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636)
 
 pixels_gathered_inside <-  mnist_data |>
-  mutate(instance = row_number()) |>
-  gather(pixel, value, -Label, -instance) |>
-  extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
-  mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28) |>
   filter(instance %in% img_error_inside)
 
 imge_error_sample_inside <- pixels_gathered_inside |>
