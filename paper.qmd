@@ -103,33 +103,20 @@ knitr::opts_chunk$set(
 #| label: load-libraries
 #| warning: false
 #| echo: false
-# remotes::install_github("JayaniLakshika/quollr")
 library(quollr)
 library(tibble)
 library(dplyr)
-# remotes::install_github("jlmelville/snedata")
-# library(snedata)
-# library(ggflowchart)
-#library(purrr) ## map function
-#library(gridExtra) ## for grid.arrange
-# library(rsample)
-# library(DT)
-#library(ggbeeswarm)
 library(ggplot2)
 library(readr)
 library(tidyr)
-
-# library(Rtsne)
-# library(uwot)
-# library(phateR)
 library(patchwork)
 library(png)
-#library(langevitour)
 library(colorspace)
 library(kableExtra)
-#library(grid)
 library(conflicted)
+
 conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
 ```
 
 ```{r}
@@ -157,6 +144,7 @@ theme_set(theme_linedraw() +
      legend.key.width = unit(0.25, 'cm')
    )
 )
+
 interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="grey70") {
   annotation_custom(grid::textGrob(label = label,
       x = unit(position[1], "npc"), y = unit(position[2], "npc"),
@@ -524,34 +512,25 @@ lim2 <- two_curvy_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
 
 sc_ltr_pos <- c(0.08, 0.9)
-# sc_xlims <- c(-0.5, 1.47)
-# sc_ylims <- c(-0.32, 2.1)
 sc_xlims <- c(-0.3, 1.2)
 sc_ylims <- c(-0.17, 1.25)
 
-nldr_two_curvy <- tsne_two_curvy_scaled |> 
-  ggplot(aes(x = tSNE1, y = tSNE2)) + 
-  geom_point(alpha=0.5, colour="#636363", size = 0.5) +
-  xlim(sc_xlims) + ylim(sc_ylims) +
+nldr_two_curvy_original <- ggplot(tsne_two_curvy_scaled, aes(x = tSNE1, y = tSNE2)) +
+  geom_point(alpha = 0.5, color = "#636363", size = 0.5) 
+
+# First plot with xlim and ylim
+nldr_two_curvy <- nldr_two_curvy_original+
+  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+  xlim(sc_xlims) +
+  ylim(sc_ylims)
+
+# Second plot (identical to base except for xlim/ylim)
+nldr_two_curvy2 <- nldr_two_curvy_original +
   interior_annotation("a", sc_ltr_pos, cex = 1.5)
 
-nldr_two_curvy2 <- tsne_two_curvy_scaled |> 
-  ggplot(aes(x = tSNE1, y = tSNE2)) + 
-  geom_point(alpha=0.5, colour="#636363", size = 0.5) +
-  interior_annotation("a", sc_ltr_pos, cex = 1.5)
-
-nldr_two_curvy_original <- tsne_two_curvy_scaled |> 
-  ggplot(aes(x = UMAP1, y = UMAP2)) + 
-  geom_point(alpha=0.5, color = "#636363", size = 0.5) +
+# Third plot with aspect ratio and different annotation
+nldr_two_curvy_original2 <- nldr_two_curvy_original +
   theme(aspect.ratio = 1) +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("a", sc_ltr_pos)
-
-nldr_two_curvy_original2 <- tsne_two_curvy_scaled |> 
-  ggplot(aes(x = tSNE1, y = tSNE2)) + 
-  geom_point(alpha=0.5, color = "#636363", size = 0.5) +
-  theme(aspect.ratio = 1) +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
   interior_annotation("a1", sc_ltr_pos)
 ```
 
