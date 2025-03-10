@@ -533,7 +533,7 @@ nldr_two_curvy <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos)
+  interior_annotation("a", sc_ltr_pos, cex = 2)
 
 nldr_two_curvy2 <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
@@ -607,7 +607,7 @@ hex_grid_two_curvy <- ggplot(
              aes(x = tSNE1, y = tSNE2), 
              alpha = 0.5, size = 0.5, color = "#636363") +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("b", sc_ltr_pos)
+  interior_annotation("b", sc_ltr_pos, cex = 2)
 
 hex_grid_coloured_two_curvy1 <- ggplot() + 
   geom_polygon(
@@ -645,7 +645,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
              color = "#000000",
              size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c", sc_ltr_pos) 
+  interior_annotation("c", sc_ltr_pos, cex = 2) 
 ```
 
 <!--2D model-->
@@ -804,7 +804,7 @@ trimesh_removed_two_curvy <- ggplot() +
                colour = "#000000") +
   coord_equal() +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("d", sc_ltr_pos)
+  interior_annotation("d", sc_ltr_pos, cex = 2)
 
 trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy,
@@ -5314,7 +5314,7 @@ trimesh_removed_mnist <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist) +
+  interior_annotation("a", sc_ltr_pos_mnist, cex = 2) +
   theme(legend.position = "none") 
 
 tsne_plot_mnist_clust <- ggplot() + 
@@ -5326,7 +5326,7 @@ tsne_plot_mnist_clust <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c('#d9d9d9', '#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist) +
+  interior_annotation("a", sc_ltr_pos_mnist, cex = 2) +
   theme(legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
@@ -5545,7 +5545,7 @@ mnist_proj_tsne_model1 <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("b") +
+  interior_annotation("b", cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -5586,7 +5586,7 @@ mnist_proj_tsne_model1_link <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("b") +
+  interior_annotation("b", cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -5675,7 +5675,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c") +
+  interior_annotation("c", cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -5715,7 +5715,7 @@ mnist_proj_tsne_model2_link <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c") +
+  interior_annotation("c", cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -5803,7 +5803,7 @@ mnist_proj_tsne_model3 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 0.6)) +
   ylim(c(-1, 0.6)) +
-  interior_annotation("d") +
+  interior_annotation("d", cex = 2) +
   theme(
     legend.position = "none"
   )
