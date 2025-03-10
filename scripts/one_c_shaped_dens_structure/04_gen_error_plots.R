@@ -88,6 +88,15 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) |>
   mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
+error_plot_one_curvy_hist <-
+  ggplot(error_df_one_curvy_abs) +
+  geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
+  #xlab(expression(group("|", e[hj], "|"))) +
+  xlab(expression(e[hj])) +
+  ylab("") +
+  theme_bw()
+
 quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
                       probs = seq(0, 1, 0.12))
 
@@ -631,7 +640,8 @@ generate_error_plots_one_c_shaped <- function(){
   #   plot_layout(guides = "collect", ncol = 2) &
   #   theme(legend.position='none')
 
-  error_plot_tsne + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
+  error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
+    error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
     plot_layout(guides = "collect", ncol = 3) &
     theme(legend.position='none')
 
