@@ -533,12 +533,12 @@ nldr_two_curvy <- tsne_two_curvy_scaled |>
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos, cex = 2)
+  interior_annotation("a", sc_ltr_pos, cex = 1.5)
 
 nldr_two_curvy2 <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = tSNE1, y = tSNE2)) + 
   geom_point(alpha=0.5, colour="#636363", size = 0.5) +
-  interior_annotation("a", sc_ltr_pos, cex = 2)
+  interior_annotation("a", sc_ltr_pos, cex = 1.5)
 
 nldr_two_curvy_original <- tsne_two_curvy_scaled |> 
   ggplot(aes(x = UMAP1, y = UMAP2)) + 
@@ -607,7 +607,7 @@ hex_grid_two_curvy <- ggplot(
              aes(x = tSNE1, y = tSNE2), 
              alpha = 0.5, size = 0.5, color = "#636363") +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("b", sc_ltr_pos, cex = 2)
+  interior_annotation("b", sc_ltr_pos, cex = 1.5)
 
 hex_grid_coloured_two_curvy1 <- ggplot() + 
   geom_polygon(
@@ -621,7 +621,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
              size = 0.5) +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "E") +
-  interior_annotation("b", sc_ltr_pos) + 
+  interior_annotation("b", sc_ltr_pos, cex = 1.5) + 
   xlim(sc_xlims) + ylim(sc_ylims) 
 
 
@@ -645,7 +645,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
              color = "#000000",
              size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c", sc_ltr_pos, cex = 2) 
+  interior_annotation("c", sc_ltr_pos, cex = 1.5) 
 ```
 
 <!--2D model-->
@@ -804,7 +804,7 @@ trimesh_removed_two_curvy <- ggplot() +
                colour = "#000000") +
   coord_equal() +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("d", sc_ltr_pos, cex = 2)
+  interior_annotation("d", sc_ltr_pos, cex = 1.5)
 
 trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy,
@@ -826,7 +826,7 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
   # theme(
   #   aspect.ratio = 1
   #   ) +
-  interior_annotation("b", sc_ltr_pos, cex = 2)
+  interior_annotation("b", sc_ltr_pos, cex = 1.5)
 ```
 
 ```{r}
@@ -1045,7 +1045,7 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("c", sc_ltr_pos, cex = 2) +
+  interior_annotation("c", sc_ltr_pos, cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -1129,7 +1129,7 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("d", sc_ltr_pos, cex = 2) +
+  interior_annotation("d", sc_ltr_pos, cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -1312,7 +1312,7 @@ two_curvy_proj_umap_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("a", c(0.08, 0.93), cex = 2) +
+  interior_annotation("a", c(0.08, 0.93), cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -1341,7 +1341,7 @@ proj_plot_two_curvy_true <- model_df |>
   coord_fixed() +
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
-  interior_annotation("a", c(0.08, 0.93), cex = 2) +
+  interior_annotation("a", c(0.08, 0.93), cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -1424,7 +1424,7 @@ two_curvy_proj_umap_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.42, 0.42)) + 
   ylim(c(-0.42, 0.42)) +
-  interior_annotation("b", cex = 2) +
+  interior_annotation("b", cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -1769,7 +1769,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
   scale_fill_viridis_c(direction = -1, 
     na.value = "#ffffff", option = "C") +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("a", sc_ltr_pos)
+  interior_annotation("a", sc_ltr_pos, cex = 1.5)
 
 ## Triangulate bin centroids
 tr1_object_two_curvy2 <- tri_bin_centroids(
@@ -2076,7 +2076,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
            size = 0.5) +
   scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c", sc_ltr_pos)
+  interior_annotation("c", sc_ltr_pos, cex = 1.5)
 ```
 
 
@@ -2142,7 +2142,7 @@ plot_predict_tsne_two_curvy <- ggplot(
   aes(x = pred_UMAP_1,
       y = pred_UMAP_2)) +
   geom_point(alpha = 0.5) +
-  interior_annotation("c", c(0.08, 0.93), cex = 2)
+  interior_annotation("c", c(0.08, 0.93), cex = 1.5)
 ```
 
 <!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
@@ -2220,7 +2220,7 @@ mse_two_curvy_b <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
@@ -2246,7 +2246,7 @@ prop_dens_a1 <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
@@ -2274,7 +2274,7 @@ a1_m_two_curvy <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line())
 
@@ -2348,7 +2348,7 @@ plot_predict_umap_fun_two_curvy <- ggplot(
   aes(x = UMAP1, 
       y = UMAP2)) +
   geom_point(alpha = 0.5) +
-  interior_annotation("b", c(0.08, 0.93), cex = 2)
+  interior_annotation("b", c(0.08, 0.93), cex = 1.5)
 ```
 
 ```{r}
@@ -2374,7 +2374,7 @@ plot_predict_umap_connect_two_curvy <- ggplot(
       group = ID)) +
   geom_point(alpha = 0.5) +
   geom_line(alpha = 0.3) +
-  interior_annotation("d", c(0.08, 0.93), cex = 2)
+  interior_annotation("d", c(0.08, 0.93), cex = 1.5)
 ```
 
 
@@ -2448,7 +2448,7 @@ hex_grid_coloured_two_curvy2 +
   hex_grid_coloured_two_curvy3 +
   #boxplot1 + boxplot2 + boxplot3 +
   plot_layout(guides='collect', ncol = 3) &
-  theme(legend.position='none', plot.tag = element_text(size = 8))
+  theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
 
 
@@ -3388,7 +3388,7 @@ error_df_gau_tsne <- error_df_gau_abs |>
   scale_fill_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   interior_annotation("a3", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
@@ -3454,7 +3454,7 @@ trimesh_removed_gau_tsne <- ggplot() +
   #     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
-                      cex = 2) +
+                      cex = 1.5) +
   theme(
     aspect.ratio = 1
   )
@@ -3592,7 +3592,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 ```
 
 ```{r}
@@ -3653,7 +3653,7 @@ error_df_gau_umap <- error_df_gau_abs |>
   scale_fill_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   interior_annotation("b3", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 ## Triangulate bin centroids
 tr1_object_gau1 <- tri_bin_centroids(
@@ -3706,7 +3706,7 @@ trimesh_removed_gau_umap <- ggplot() +
   #   linewidth = 0.5)  +
   interior_annotation("b1", 
                       position = c(0.06, 0.95),
-                      cex = 2) +
+                      cex = 1.5) +
   theme(
     aspect.ratio = 1
   )
@@ -3838,7 +3838,7 @@ five_gau_proj_umap_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("b2", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 ```
 
 ```{r}
@@ -3901,7 +3901,7 @@ error_df_gau_pacmap <- error_df_gau_abs |>
   scale_fill_continuous_sequential(palette = "YlOrRd", breaks = 20) +
   interior_annotation("c3", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 
 ## Triangulate bin centroids
@@ -3961,7 +3961,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
   #   linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
-                      cex = 2) +
+                      cex = 1.5) +
   theme(
     aspect.ratio = 1
   )
@@ -4087,7 +4087,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("c2",
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 1.5)
 
 ```
 
@@ -4270,7 +4270,7 @@ trimesh_removed_pbmc <- ggplot() +
     alpha = 0.2,
     color = '#a65628'
   )  +
-  interior_annotation("a1", cex = 2) +
+  interior_annotation("a1", cex = 1.5) +
   theme(
     aspect.ratio = 1
   )
@@ -4430,7 +4430,7 @@ pbmc_proj_umap_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.65, 0.65)) +
   ylim(c(-0.65, 0.65)) +
-  interior_annotation("a2", cex = 2)
+  interior_annotation("a2", cex = 1.5)
 
 ## Second projection
 projection <- cbind(
@@ -4510,7 +4510,7 @@ pbmc_proj_umap_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 0.75)) +
   ylim(c(-1, 0.75)) +
-  interior_annotation("a3", cex = 2)
+  interior_annotation("a3", cex = 1.5)
 
 # pbmc_proj_umap_model2 <- ggplot() +
 #   geom_segment(
@@ -4537,7 +4537,7 @@ pbmc_proj_umap_model2 <- projected_df |>
 #   coord_fixed() +
 #   xlim(c(-0.65, 0.65)) +
 #   ylim(c(-0.65, 0.65)) +
-#   interior_annotation("a3", cex = 2)
+#   interior_annotation("a3", cex = 1.5)
 
 ```
 
@@ -4735,7 +4735,7 @@ trimesh_removed_pbmc_best <- ggplot() +
     alpha = 0.3,
     color = "#999999"
   )  +
-  interior_annotation("b1", cex = 2) +
+  interior_annotation("b1", cex = 1.5) +
   theme(
     aspect.ratio = 1
   )
@@ -4907,7 +4907,7 @@ pbmc_proj_umap_model1_best <- projected_df |>
   coord_fixed() +
   xlim(c(-0.65, 0.65)) +
   ylim(c(-0.65, 0.65)) +
-  interior_annotation("b2", cex = 2)
+  interior_annotation("b2", cex = 1.5)
 
 ## Second projection
 projection <- cbind(
@@ -4987,7 +4987,7 @@ pbmc_proj_umap_model2_best <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 0.75)) +
   ylim(c(-1, 0.75)) +
-  interior_annotation("b3", cex = 2)
+  interior_annotation("b3", cex = 1.5)
 
 
 ```
@@ -5315,7 +5315,7 @@ trimesh_removed_mnist <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist, cex = 2) +
+  interior_annotation("a", sc_ltr_pos_mnist, cex = 1.5) +
   theme(legend.position = "none") 
 
 tsne_plot_mnist_clust <- ggplot() + 
@@ -5327,7 +5327,7 @@ tsne_plot_mnist_clust <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c('#d9d9d9', '#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist, cex = 2) +
+  interior_annotation("a", sc_ltr_pos_mnist, cex = 1.5) +
   theme(legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
@@ -5546,7 +5546,7 @@ mnist_proj_tsne_model1 <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("b", cex = 2) +
+  interior_annotation("b", cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -5587,7 +5587,7 @@ mnist_proj_tsne_model1_link <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("b", cex = 2) +
+  interior_annotation("b", cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -5676,7 +5676,7 @@ mnist_proj_tsne_model2 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c", cex = 2) +
+  interior_annotation("c", cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -5716,7 +5716,7 @@ mnist_proj_tsne_model2_link <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c", cex = 2) +
+  interior_annotation("c", cex = 1.5) +
   theme(
     legend.position = "none"
   )
@@ -5804,7 +5804,7 @@ mnist_proj_tsne_model3 <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 0.6)) +
   ylim(c(-1, 0.6)) +
-  interior_annotation("d", cex = 2) +
+  interior_annotation("d", cex = 1.5) +
   theme(
     legend.position = "none"
   )
