@@ -3291,13 +3291,6 @@ tr1_object_gau1 <- tri_bin_centroids(
 tr_from_to_df_gau1 <- gen_edges(
   tri_object = tr1_object_gau1)
 
-# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-#   filter(row_number() != 76) |>
-#   filter(row_number() != 34)
-
-# tr_from_to_df_gau1 <- tr_from_to_df_gau1 |>
-#   filter(row_number() != 149)
-
 ## Compute 2D distances
 distance_gau1 <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_gau1,
@@ -3311,14 +3304,6 @@ distance_gau1 <- cal_2d_dist(
 benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
-
-# benchmark_gau1 <- 0.1
-
-# trimesh_removed_gau1 <- vis_rmlg_mesh(
-#   distance_edges = distance_gau1,
-#   benchmark_value = benchmark_gau1,
-#   tr_coord_df = tr_from_to_df_gau1,
-#   distance_col = "distance")
 
 tr_df <- distinct(tibble(
   x = c(tr_from_to_df_gau1[["x_from"]], tr_from_to_df_gau1[["x_to"]]), 
@@ -3339,14 +3324,6 @@ trimesh_removed_gau_tsne <- ggplot() +
       y = tSNE2
     ),
     alpha = 0.2) + 
-  # geom_rect(
-  #     aes(xmin = 0.3, 
-  #         xmax = 0.65, 
-  #         ymin = -0.05, 
-  #         ymax = 0.35),
-  #         fill = "transparent", 
-  #     color = "grey50", 
-  #     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -3397,15 +3374,6 @@ scaled_gau_data_model <- scaled_gau |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
 
-# library(langevitour)
-
-# distance_df_small_edges <- distance_df_small_edges |>
-#   filter(row_number() != 108)
-
-## First projection
-# projection <- cbind(
-#     c(0.46477,-0.02024,0.56378,0.39736),
-#     c(0.15607,-0.54876,-0.44090,0.41505))
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
@@ -3591,14 +3559,6 @@ trimesh_removed_gau_umap <- ggplot() +
       y = UMAP2
     ),
     alpha = 0.05) + 
-  # geom_rect(
-  #   aes(xmin = 0.45, 
-  #       xmax = 0.57, 
-  #       ymin = 0, 
-  #       ymax = 0.1),
-  #   fill = "transparent", 
-  #   color = "grey50", 
-  #   linewidth = 0.5)  +
   interior_annotation("b1", 
                       position = c(0.95, 0.95),
                       cex = 2) +
@@ -3647,14 +3607,6 @@ scaled_gau_data_model <- scaled_gau |>
   filter(type == "model") |>
   select(-type)
 
-## First projection
-# projection <- cbind(
-#   c(0.02743,0.21427,0.62893,-0.49816),
-#   c(-0.70709,0.42156,-0.02593,0.10965))
-# projection <- cbind(
-#   c(-0.00215,-0.68905,-0.04778,-0.54223),
-#   c(0.42558,-0.23854,-0.63659,0.35753))
-
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558, -0.23854, -0.63659, 0.35753))
@@ -3665,7 +3617,6 @@ projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
 projected_model <- as.matrix(scaled_gau_data_model) %*% projection
@@ -3703,7 +3654,6 @@ five_gau_proj_umap_model1 <- projected_df |>
       x = proj1, 
       y = proj2)) +
   geom_point(
-    #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
@@ -3819,12 +3769,6 @@ benchmark_gau1 <- find_lg_benchmark(
   distance_edges = distance_gau1,
   distance_col = "distance")
 
-# trimesh_removed_gau1 <- vis_rmlg_mesh(
-#   distance_edges = distance_gau1,
-#   benchmark_value = benchmark_gau1,
-#   tr_coord_df = tr_from_to_df_gau1,
-#   distance_col = "distance")
-
 tr_df <- distinct(tibble(
   x = c(tr_from_to_df_gau1[["x_from"]], tr_from_to_df_gau1[["x_to"]]), 
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
@@ -3846,14 +3790,6 @@ trimesh_removed_gau_pacmap <- ggplot() +
       y = PaCMAP2
     ),
     alpha = 0.3) +
-  # geom_rect(
-  #   aes(xmin = -0.04, 
-  #       xmax = 0.22, 
-  #       ymin = 0.08, 
-  #       ymax = 0.34),
-  #   fill = "transparent", 
-  #   color = "grey50", 
-  #   linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -3914,7 +3850,6 @@ projected_df <- projected |>
   tibble::as_tibble(.name_repair = "unique") |>
   dplyr::rename(c("proj1" = "...1",
                   "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
   dplyr::mutate(ID = dplyr::row_number())
 
 projected_model <- as.matrix(scaled_gau_data_model) %*% projection
@@ -3952,7 +3887,6 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       x = proj1,
       y = proj2)) +
   geom_point(
-    #size = 0.5,
     alpha = 0.3,
     color = "#999999") +
   geom_segment(
@@ -3994,7 +3928,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
 #| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) tSNE, (b) UMAP, (c) PaCMAP. The data has five Gaussian cluster in $4\\text{-}D$. The bottom row of plots shows a \\gD{} projection from a tour on $4\\text{-}D$ revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully $4\\text{-}D$. With (c2), the curiousity is that the model is a \\gD{} pancake shape in $4\\text{-}D$, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes.  Videos of the langevitour animations are available at <https://youtu.be/oQxEb4wRdHI>, <https://youtu.be/JW49csPpDx4>, and XXX respectively."
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
-five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + #error_df_gau_tsne + error_df_gau_umap + error_df_gau_pacmap +
+five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + 
   plot_layout(guides = "collect", nrow = 2) &
   theme(legend.position='none')
 ```
