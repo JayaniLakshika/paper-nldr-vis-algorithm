@@ -602,8 +602,6 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
     na.value = "#ffffff", option = "E") +
   interior_annotation("b", sc_ltr_pos, cex = 1.5) + 
   xlim(sc_xlims) + ylim(sc_ylims) 
-
-
 ```
 
 <!--Non-empty bins with bin centroids-->
@@ -672,14 +670,6 @@ benchmark_two_curvy <- find_lg_benchmark(
 
 distance_df_small_edges_two_curvy <- distance_two_curvy |>
     filter(distance < benchmark_two_curvy)
-
-# trimesh_removed_two_curvy <- vis_rmlg_mesh(
-#   distance_edges = distance_two_curvy, 
-#   benchmark_value = benchmark_two_curvy, 
-#   tr_coord_df = tr_from_to_df_two_curvy, 
-#   distance_col = "distance") +
-#   xlim(sc_xlims) + ylim(sc_ylims) +
-#   interior_annotation("d", sc_ltr_pos) 
 
 bin_width <- hb_obj_two_curvy$a1
 
@@ -1433,22 +1423,6 @@ nldr_two_curvy + hex_grid_two_curvy +
   trimesh_removed_two_curvy +
   plot_layout(ncol = 4)
 ```
-
-
-
-<!--langevitour with true model for S-curve--> 
-<!-- ::: {#fig-two_curvy-true-sc layout-ncol="3" fig-pos="H"} -->
-
-<!-- ![](figures/two_curvy/sc_true_1.png){width="150" fig-align="center"} -->
-
-<!-- ![](figures/two_curvy/sc_true_2.png){width="150" fig-align="center"} -->
-
-<!-- ![](figures/two_curvy/sc_true_3.png){width="150" fig-align="center"} -->
-
-<!-- Three views of the true model (grey points and lines) in $2\text{-}D$ projections from $7\text{-}D$, for the S-curve data (purple points). The data is spread along the S shape, and does not vary much from this curve. (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/I5GL23vLiw0>).  -->
-<!-- ::: -->
-
-<!-- XXX The points on the "theoretical model" should be equidistant along the S. They are still to bunched in some spots and too far apart in others. -->
 
 ### Algorithm to represent the model in \gD{}  
 
@@ -4132,11 +4106,6 @@ umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc)
 umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
-
-# umap_pbmc <- umap_pbmc_scaled |>
-#   ggplot(aes(x = UMAP1,
-#              y = UMAP2)) +
-#   geom_point(alpha=0.3, color = "#000000") 
 ```
 
 The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj (a2), there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset.
@@ -4213,22 +4182,6 @@ tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
   by = c("from", "to"))
 
-# trimesh_removed_pbmc <- vis_rmlg_mesh(
-#   distance_edges = distance_pbmc,
-#   benchmark_value = benchmark_pbmc,
-#   tr_coord_df = tr_from_to_df_pbmc,
-#   distance_col = "distance") +
-#   geom_point(
-#     data = umap_pbmc_scaled,
-#     aes(
-#       x = UMAP1,
-#       y = UMAP2
-#     ),
-#     alpha = 0.3,
-#     size = 0.1,
-#     color = "#000000"
-#   ) 
-
 trimesh_removed_pbmc <- ggplot() + 
   geom_segment(data = tr_from_to_df_pbmc, 
                aes(
@@ -4251,43 +4204,6 @@ trimesh_removed_pbmc <- ggplot() +
   theme(
     aspect.ratio = 1
   )
-
-# ## Compute error
-# error_df <- augment(
-#   df_bin_centroids = df_bin_centroids_pbmc,
-#   df_bin = df_bin_pbmc,
-#   training_data = training_data_pbmc,
-#   newdata = NULL,
-#   type_NLDR = "UMAP",
-#   col_start = "PC_")
-
-# ## Categorize error
-# 
-# error_df <- error_df |>
-#   mutate(type = case_when(
-#     row_wise_abs_error <= 5 ~ "error 0-5",
-#     row_wise_abs_error <= 10 ~ "error 5-10",
-#     row_wise_abs_error <= 15 ~ "error 10-15",
-#     row_wise_abs_error <= 20 ~ "error 15-20",
-#     .default = "error greter than 20"
-#   )) |>
-#   mutate(type = factor(type, levels = c(
-#     "error 0-5", "error 5-10", "error 10-15", "error 15-20", "error greter than 20")))
-# 
-# ## To join embedding
-# error_df <- error_df |>
-#   bind_cols(umap_pbmc_scaled |>
-#               select(-ID))
-# 
-# error_plot_pbmc <- error_df |>
-#   ggplot(aes(x = UMAP1,
-#              y = UMAP2,
-#              color = type,
-#              group = ID)) +
-#   geom_point(alpha=0.5,
-#              size = 0.1) +
-#   interior_annotation("b", sc_ltr_pos)
-
 ```
 
 ```{r}
@@ -4328,13 +4244,6 @@ projection <- cbind(
     c(0.4576,-0.3157,0.4708,0.1410,-0.4479,-0.1685,0.3668,-0.2692,0.1332))
 
 projection_scaled <- projection * 1.23
-
-# projection_filtered <- projection
-# projection_filtered[apply(projection_filtered, 1, function(row) all(row < 0)), ] <- 0.75
-
-#rows_to_keep <- c(1, 2, 4, 5, 6)
-
-#projection_filtered <- projection[rows_to_keep, ]
 
 projected <- as.matrix(scaled_pbmc_data) %*% projection_scaled
 
@@ -4489,33 +4398,6 @@ pbmc_proj_umap_model2 <- projected_df |>
   ylim(c(-1, 0.75)) +
   interior_annotation("a3", cex = 2)
 
-# pbmc_proj_umap_model2 <- ggplot() +
-#   geom_segment(
-#     data = model_df, 
-#     aes(
-#       x = proj1_from, 
-#       y = proj2_from, 
-#       xend = proj1_to, 
-#       yend = proj2_to), 
-#     color = "#000000") +
-#   geom_segment(
-#     data=axes, 
-#     aes(x=x1, y=y1, xend=x2, yend=y2), 
-#     colour="grey70") +
-#   geom_text(
-#     data=axes,
-#     aes(x=x2, y=y2), 
-#     label=rownames(axes),
-#     colour="grey50",
-#     size = 3) +
-#   geom_path(
-#     data=circle, 
-#     aes(x=c1, y=c2), colour="grey70") +
-#   coord_fixed() +
-#   xlim(c(-0.65, 0.65)) +
-#   ylim(c(-0.65, 0.65)) +
-#   interior_annotation("a3", cex = 1.5)
-
 ```
 
 <!-- ::: {#fig-pbmc1-sc layout-ncol="4" fig-pos="H"} -->
@@ -4563,9 +4445,6 @@ error_pbmc <- error_pbmc |>
 
 ```{r}
 #| label: error-comp-pbmc
-# read the png file from device 
-
-#pbmc_layouts <- readPNG("figures/pbmc3k/pbmc_nldr_layouts.png", native = TRUE) 
 
 error_plot_pbmc <- ggplot(error_pbmc, 
                           aes(x = a1, 
@@ -4573,8 +4452,6 @@ error_plot_pbmc <- ggplot(error_pbmc,
                               colour = method)) + 
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) + 
-  # geom_vline(xintercept = 15, linetype="solid", 
-  #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
                               '#984ea3','#999999','#a65628','#f781bf')) +
@@ -4684,15 +4561,11 @@ tr_df <- distinct(tibble::tibble(
   y = c(tr_from_to_df_pbmc[["y_from"]], tr_from_to_df_pbmc[["y_to"]])))
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc) #|>
-  #filter(!(row_number() %in% c(6, 12, 14, 16, 17, 19, 23, 29, 30, 143, 144, 146, 147, 157)))
+  filter(distance < benchmark_pbmc) 
 
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
   by = c("from", "to"))
-
-# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-#   filter(!(row_number() %in% c(155)))
 
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_segment(data = tr_from_to_df_pbmc, 
@@ -4716,23 +4589,6 @@ trimesh_removed_pbmc_best <- ggplot() +
   theme(
     aspect.ratio = 1
   )
-
-# trimesh_removed_pbmc <- vis_rmlg_mesh(
-#   distance_edges = distance_pbmc,
-#   benchmark_value = benchmark_pbmc,
-#   tr_coord_df = tr_from_to_df_pbmc,
-#   distance_col = "distance") +
-#   geom_point(
-#     data = tsne_pbmc_scaled,
-#     aes(
-#       x = tSNE1,
-#       y = tSNE2
-#     ),
-#     alpha = 0.2,
-#     color = "#000000"
-#   ) 
-#   #xlim(sc_xlims) + ylim(sc_ylims) +
-#   #interior_annotation("a", sc_ltr_pos)
 
 ## Compute error
 error_df <- augment(
@@ -4801,10 +4657,6 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 # Combine with the true model for visualization
 df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
                        scaled_pbmc_data |> mutate(type = "data"))
-
-## Removed long edge in high-d
-# distance_df_small_edges_pbmc <- distance_df_small_edges_pbmc |>
-#   filter(!(row_number() %in% c(155)))
 
 ## First projection
 projection <- cbind(
