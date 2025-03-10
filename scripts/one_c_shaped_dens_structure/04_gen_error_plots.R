@@ -130,7 +130,7 @@ error_plot_one_curvy_hist <-
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat_n = if_else(
     (sqrt_row_wise_total_error >= 0.3) & (sqrt_row_wise_total_error <= 0.8), "high", "low")) |> ## high_error points
-  mutate(error_cat_n2 = if_else(tSNE2 >= 1.3, "high", "low")) ## corner points
+  mutate(error_cat_n2 = if_else(tSNE2 >= 1, "high", "low")) ## corner points
 
 
 error_plot_tsne <- error_df_one_curvy_abs |>
@@ -710,9 +710,15 @@ generate_error_plots_one_c_shaped <- function(){
   #   plot_layout(guides = "collect", ncol = 2) &
   #   theme(legend.position='none')
 
+  # error_plot_one_curvy_hist_selected + error_plot_one_curvy_hist +
+  #   plot_tsne_dens_selected + plot_tsne_dens +
+  #   five_c_shaped_proj_tsne_model1_selected + five_c_shaped_proj_tsne_model1 +
+  #   plot_layout(guides = "collect", nrow = 3) &
+  #   theme(legend.position='none')
+
   error_plot_one_curvy_hist_selected + plot_tsne_dens_selected + five_c_shaped_proj_tsne_model1_selected +
     error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
-    plot_layout(guides = "collect", ncol = 3) &
+    plot_layout(guides = "collect", ncol = 3, widths = c(1, 1.5, 1.5)) &
     theme(legend.position='none')
 
 }
