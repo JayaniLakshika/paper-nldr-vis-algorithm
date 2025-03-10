@@ -246,6 +246,27 @@ quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
 ```
 
 ```{r}
+#| label: plot-digit
+
+plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
+  
+  ggplot(data = digit_df, aes(x, y, fill = value)) +
+  geom_tile() +
+  facet_wrap(~ instance, ncol = ncol) +
+  ggtitle(title_text) +
+  coord_fixed() +
+  scale_fill_continuous_sequential(palette = palette) +
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position = "none",
+        plot.title.position = "plot",
+        plot.title = element_text(hjust = hjust,
+                                  size = 12))
+  
+}
+```
+
+```{r}
 #| label: import-scripts
 source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
 source("scripts/five_gau_clusters/5_gen_model_with_tsne.R")
@@ -5507,80 +5528,28 @@ img_right_top <- c(868, 1465, 1787)
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
 
-right_top_img <- pixels_gathered_within |>
-  ggplot(aes(x, y, fill = value)) +
-  geom_tile() +
-  facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(a)") +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Reds 2") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31,
-                                  size = 12))
+right_top_img <- plot_digit_img(pixels_gathered_within, palette = "Reds 2", title_text = "(a)", hjust = 0.31) 
 
-#img_middle <- c(1069, 4604, 3579)
 img_middle <- c(130, 2091, 7795)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_middle)
 
-middle_img <- pixels_gathered_within |>
-  ggplot(aes(x, y, fill = value)) +
-  geom_tile() +
-  facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(b)") +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Greens 3") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31,
-                                  size = 12))
+middle_img <- plot_digit_img(pixels_gathered_within, palette = "Greens 3", title_text = "(b)", hjust = 0.31) 
 
-#img_right_bottom <- c(1695, 5338, 2805)
 img_right_bottom <- c(2035, 7708, 7710)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_bottom)
 
-right_bottom_img <- pixels_gathered_within |>
-  ggplot(aes(x, y, fill = value)) +
-  geom_tile() +
-  facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(c)") +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Purples 2") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31,
-                                  size = 12))
+right_bottom_img <- plot_digit_img(pixels_gathered_within, palette = "Purples 2", title_text = "(c)", hjust = 0.31) 
 
-#img_error_outside <- c(3554, 501, 4422, 6860, 3869, 1529, 4916, 6144)
-#img_error_outside <- c(501, 1529, 6144)
 img_error_outside <- c(999, 3650, 4916)
 
 pixels_gathered_outside <-  mnist_data |>
   filter(instance %in% img_error_outside)
 
-imge_error_sample_outside <- pixels_gathered_outside |>
-  ggplot(aes(x, y, fill = value)) +
-  geom_tile() +
-  facet_wrap(~ instance, ncol = 4) +
-  ggtitle("(d)") +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31,
-                                  size = 12)) 
+imge_error_sample_outside <- plot_digit_img(pixels_gathered_within, palette = "Grays", title_text = "(d)", hjust = 0.31) 
 
 ##### inside
 img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636)
@@ -5588,19 +5557,7 @@ img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636)
 pixels_gathered_inside <-  mnist_data |>
   filter(instance %in% img_error_inside)
 
-imge_error_sample_inside <- pixels_gathered_inside |>
-  ggplot(aes(x, y, fill = value)) +
-  geom_tile() +
-  facet_wrap(~ instance, ncol = 9) +
-  ggtitle("(e)") +
-  coord_fixed() +
-  scale_fill_continuous_sequential(palette = "Grays") +
-  theme(strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        legend.position = "none",
-        plot.title.position = "plot",
-        plot.title = element_text(hjust = 0,
-                                  size = 12)) 
+imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Grays", title_text = "(e)", hjust = 0, ncol = 9)
 
 ```
 
