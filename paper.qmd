@@ -5315,7 +5315,7 @@ trimesh_removed_mnist <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist, cex = 1.5) +
+  interior_annotation("a", c(0.08, 0.93), cex = 1.5) +
   theme(legend.position = "none") 
 
 tsne_plot_mnist_clust <- ggplot() + 
@@ -5327,7 +5327,7 @@ tsne_plot_mnist_clust <- ggplot() +
              ),
              alpha=0.2)+
   scale_color_manual(values=c('#d9d9d9', '#ff7f00')) +
-  interior_annotation("a", sc_ltr_pos_mnist, cex = 1.5) +
+  interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(legend.position = "none") 
 
 # trimesh_removed_mnist <- vis_rmlg_mesh(
@@ -5588,7 +5588,7 @@ mnist_proj_tsne_model1_link <- projected_df |>
   #coord_fixed() +
   xlim(c(-1.1, 0.9)) +
   ylim(c(-1.1, 0.9)) +
-  interior_annotation("b", cex = 1.5) +
+  interior_annotation("b", cex = 2) +
   theme(
     legend.position = "none"
   )
@@ -5717,7 +5717,7 @@ mnist_proj_tsne_model2_link <- projected_df |>
   coord_fixed() +
   xlim(c(-1, 1)) +
   ylim(c(-1, 1)) +
-  interior_annotation("c", cex = 1.5) +
+  interior_annotation("c", cex = 2) +
   theme(
     legend.position = "none"
   )
