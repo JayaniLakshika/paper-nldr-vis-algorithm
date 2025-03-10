@@ -5250,8 +5250,7 @@ tr_df <- distinct(tibble::tibble(
   y = c(tr_from_to_df_mnist[["y_from"]], tr_from_to_df_mnist[["y_to"]])))
 
 distance_df_small_edges_mnist <- distance_mnist |>
-  filter(distance < benchmark_mnist) #|>
-  #filter(!(row_number() %in% c(155, 554, 140)))
+  filter(distance < benchmark_mnist) 
 
 tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
@@ -5292,20 +5291,6 @@ tsne_plot_mnist_clust <- ggplot() +
   interior_annotation("a", c(0.08, 0.93), cex = 2) +
   theme(legend.position = "none") 
 
-# trimesh_removed_mnist <- vis_rmlg_mesh(
-#   distance_edges = distance_mnist, 
-#   benchmark_value = benchmark_mnist, 
-#   tr_coord_df = tr_from_to_df_mnist, 
-#   distance_col = "distance") +
-#   geom_point(data = pacmap_minst_scaled,
-#              aes(
-#                x = PaCMAP1,
-#                y = PaCMAP2
-#              ),
-#              alpha=0.5, 
-#              size = 0.1) +
-#   interior_annotation("a", sc_ltr_pos_mnist)
-
 ## Compute error
 error_df <- augment(
   df_bin_centroids = df_bin_centroids_mnist, 
@@ -5314,21 +5299,6 @@ error_df <- augment(
   newdata = NULL, 
   type_NLDR = "tSNE", 
   col_start = "PC") 
-
-## Categorize error
-
-# error_df <- error_df |>
-#   mutate(type = case_when(
-#     row_wise_abs_error <= 2 ~ "error 0-2",
-#     row_wise_abs_error <= 4 ~ "error 2-4",
-#     row_wise_abs_error <= 6 ~ "error 4-6",
-#     row_wise_abs_error <= 8 ~ "error 6-8",
-#     row_wise_abs_error <= 10 ~ "error 8-10",
-#     .default = "error greter than 10"
-#   )) |>
-#   mutate(type = factor(type, levels = c(
-#     "error 0-2", "error 2-4", "error 4-6", "error 6-8", "error 8-10", 
-#     "error greter than 10")))
 
 ## To join embedding
 error_df <- error_df |>
@@ -5357,20 +5327,6 @@ highd_error_2d_mnist <- error_df |>
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
                fill = "transparent", color = "#984ea3", linewidth = 0.7) +
   theme(legend.position = "none")
-  # scale_colour_brewer(
-  #   type = "seq",
-  #   palette = 1
-  # ) #+ 
-  # theme(
-  #     legend.position = "bottom",
-  #     legend.text = element_text(size = 10),          # Increase legend text size
-  #     legend.key.size = unit(1, "lines")              # Increase size of legend keys
-  # ) +
-  # guides(
-  #     color = guide_legend(
-  #         override.aes = list(size = 2.5, alpha = 1)      # Increase point size and opacity in legend
-  #     )
-  # ) 
 ```
 
 <!-- As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). It also shows some quirks like twisted patterns and long edges (@fig-mnist-tri-proj). Furthermore, the results help to identify anomalies (with large model errors) within and the outside the non-linear structure, displaying different patterns of the digit 1 (@fig-model-error-mnist).  -->
@@ -5396,37 +5352,11 @@ scaled_mnist <- scale_data_manual(df_model_data_mnist, "type") |>
 
 scaled_mnist_data <- scaled_mnist |>
   filter(type == "data") |>
-  # bind_cols(tsne_minst_scaled_temp) |>
-  # select(-type, -tSNE1, -tSNE2, -ID) |>
   select(-type)
-
-# scaled_mnist_data <- bind_cols(scaled_mnist_data,
-#                                tsne_minst_scaled |> select(-ID))
 
 scaled_mnist_data_model <- scaled_mnist |>
   filter(type == "model") |>
   select(-type)
-
-# model_2d <- df_bin_centroids_mnist |>
-#   select(c_x, c_y) |>
-#   rename(c("tSNE1" = "c_x",
-#            "tSNE2" = "c_y"))
-# 
-# scaled_mnist_data_model <- bind_cols(scaled_mnist_data_model, model_2d)
-
-
-# Combine with the true model for visualization
-# df <- dplyr::bind_rows(scaled_mnist_data_model |> mutate(type = "model"),
-#                        scaled_mnist_data)
-
-
-# scaled_mnist_data <- scaled_mnist_data |>
-#   select(-type)
-
-## First projection
-# projection <- cbind(
-#     c(0.71503,0.00502,-0.04370,-0.01811,-0.01103,0.09877,0.06199,0.05396,0.07771,-0.01713),
-#     c(0.00587,0.71879,0.03485,0.08284,-0.07534,-0.05420,0.04315,-0.00547,-0.02995,0.01810)) 
 
 projection <- cbind(
   c(-0.04295,0.42361,-0.36702,0.13103,-0.19678,-0.29621,0.00471,0.09323,0.18822,-0.18484),
@@ -5555,8 +5485,6 @@ mnist_proj_tsne_model1_link <- projected_df |>
     legend.position = "none"
   )
 
-
-
 ## Second projection
 projection <- cbind(
     c(-0.33305,0.20223,0.06303,0.11124,0.13299,-0.30093,0.34082,0.15581,-0.08864,0.33573),
@@ -5683,95 +5611,6 @@ mnist_proj_tsne_model2_link <- projected_df |>
   theme(
     legend.position = "none"
   )
-
-
-
-## Third projection
-projection <- cbind(
-    c(-0.12783,-0.50063,-0.02631,-0.00484,0.17733,0.37157,0.11310,0.09424,0.19844,0.19792),
-    c(-0.42542,0.29570,0.31106,-0.30307,0.00614,0.16714,0.21779,-0.00025,0.07020,-0.00689))
-
-projection_scaled <- projection * 1.5
-
-projected <- as.matrix(scaled_mnist_data) %*% projection_scaled
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number()) |>
-  mutate(cluster = tsne_minst_scaled_temp$cluster)
-
-
-projected_model <- as.matrix(scaled_mnist_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_mnist |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 1,
-  axis_pos_x = -0.83,
-  axis_pos_y = -0.83,
-  axis_labels = names(scaled_mnist_data),
-  threshold = 0.06)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
-
-mnist_proj_tsne_model3 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2,
-      colour = cluster)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") +
-  geom_point(
-    #size = 0.2,
-    alpha = 0.3) +
-  scale_color_manual(values = c("#999999",'#ff7f00')) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 2) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 0.6)) +
-  ylim(c(-1, 0.6)) +
-  interior_annotation("d", cex = 1.5) +
-  theme(
-    legend.position = "none"
-  )
-
 ```
 
 <!--add langevitour screenshots and youtube animation link-->
@@ -5784,7 +5623,6 @@ mnist_proj_tsne_model3 <- projected_df |>
 #| fig-cap: "\\gD{} wireframe layout shows that there is a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster. The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>."
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
-  #mnist_proj_tsne_model2 + mnist_proj_tsne_model3 +
   mnist_proj_tsne_model2 +
   plot_layout(ncol = 3)
 
