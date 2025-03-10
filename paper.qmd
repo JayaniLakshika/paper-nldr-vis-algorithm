@@ -204,7 +204,6 @@ scale_data_manual <- function(data, type_col) {
 
 ```{r}
 #| label: gen-axes
-
 gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axis_labels, threshold) {
   
   axis_scale <- limits/6
@@ -268,7 +267,6 @@ source("scripts/two_non_linear_diff_shaped_close_clusters/10_gen_rm_lg_plots.R")
 ```{r}
 #| label: code-setup
 set.seed(20240110)
-#source("nldr_code.R", local = TRUE)
 ```
 
 <!-- 
@@ -5885,7 +5883,8 @@ right_top_img <- pixels_gathered_within |>
         strip.text.x = element_blank(),
         legend.position = "none",
         plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31))
+        plot.title = element_text(hjust = 0.31,
+                                  size = 12))
 
 #img_middle <- c(1069, 4604, 3579)
 img_middle <- c(130, 2091, 7795)
@@ -5908,7 +5907,8 @@ middle_img <- pixels_gathered_within |>
         strip.text.x = element_blank(),
         legend.position = "none",
         plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31))
+        plot.title = element_text(hjust = 0.31,
+                                  size = 12))
 
 #img_right_bottom <- c(1695, 5338, 2805)
 img_right_bottom <- c(2035, 7708, 7710)
@@ -5931,7 +5931,8 @@ right_bottom_img <- pixels_gathered_within |>
         strip.text.x = element_blank(),
         legend.position = "none",
         plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31))
+        plot.title = element_text(hjust = 0.31,
+                                  size = 12))
 
 #img_error_outside <- c(3554, 501, 4422, 6860, 3869, 1529, 4916, 6144)
 #img_error_outside <- c(501, 1529, 6144)
@@ -5955,7 +5956,8 @@ imge_error_sample_outside <- pixels_gathered_outside |>
         strip.text.x = element_blank(),
         legend.position = "none",
         plot.title.position = "plot",
-        plot.title = element_text(hjust = 0.31)) 
+        plot.title = element_text(hjust = 0.31,
+                                  size = 12)) 
 
 
 ##### inside
@@ -5979,7 +5981,8 @@ imge_error_sample_inside <- pixels_gathered_inside |>
         strip.text.x = element_blank(),
         legend.position = "none",
         plot.title.position = "plot",
-        plot.title = element_text(hjust = 0)) 
+        plot.title = element_text(hjust = 0,
+                                  size = 12)) 
 
 ```
 
