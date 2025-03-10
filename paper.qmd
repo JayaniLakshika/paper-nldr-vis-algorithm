@@ -349,9 +349,6 @@ nldr3c <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour='#f781bf') +
   interior_annotation("c")
 
-
-#umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
-
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
 
 nldr4 <- tsne_pbmc |>
@@ -528,6 +525,7 @@ two_curvy_scaled_obj <- gen_scaled_data(
 
 tsne_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
   mutate(ID = row_number())
+
 lim1 <- two_curvy_scaled_obj$lim1
 lim2 <- two_curvy_scaled_obj$lim2
 r2 <- diff(lim2)/diff(lim1)
@@ -583,10 +581,6 @@ df_bin_centroids_two_curvy <- extract_hexbin_centroids(
   centroids_df = all_centroids_df, 
   counts_df = counts_df) |>
   filter(drop_empty == FALSE)
-
-boxplot2 <- ggplot(df_bin_centroids_two_curvy, 
-       aes(x=bin_counts)) + 
-  geom_histogram()
 
 umap_data_two_curvy_with_hb_id <- hb_obj_two_curvy$data_hb_id
 df_all_two_curvy <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy_with_hb_id)
@@ -812,10 +806,6 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
              color = "#636363",
              alpha = 0.5,
              size = 0.5) +
-  #coord_equal() +
-  # theme(
-  #   aspect.ratio = 1
-  #   ) +
   interior_annotation("b", sc_ltr_pos, cex = 1.5)
 ```
 
@@ -823,67 +813,6 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
 #| label: dist-plot
 
 df_bin_two_curvy_temp <- df_bin_two_curvy
-
-### Compute highD distance
-dist_vec <- proxy::dist(x = df_bin_two_curvy_temp[, -1], method = "Euclidean") |> as.vector()
-
-from_vec <- c()
-to_vec <- c()
-num_obs <- 1:(NROW(df_bin_two_curvy_temp) - 1)
-
-for (obs in num_obs) {
-
-  from_val <- rep(obs, (NROW(df_bin_two_curvy_temp) - obs))
-  if ((obs + 1) <= NROW(df_bin_two_curvy_temp)) {
-    to_val <- (obs + 1):NROW(df_bin_two_curvy_temp)
-  }
-  from_vec <- append(from_vec, from_val)
-  to_vec <- append(to_vec, to_val)
-
-}
-
-dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec)
-
-
-## To plot the distribution of distances
-
-# Define bin width and starting point
-start_point <- bin_width/2
-
-# Create bins and calculate the mean value for each bin range
-bins <- seq(start_point, max(distance_two_curvy$distance) + bin_width, 
-            by = bin_width)
-bin_labels <- bins[-length(bins)] + bin_width / 2  # mean of each bin range
-
-distance_two_curvy_dist <- distance_two_curvy |> 
-  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) 
-
-distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
-
-distance_points <- ggplot(
-  distance_two_curvy_dist, 
-  aes(x = distance,
-      y = dist_highd)) +
-  geom_point(alpha = 0.5) +
-  geom_vline(xintercept = 2.5 * bin_width,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  geom_vline(xintercept = 2 * bin_width,
-             linetype="solid",
-             color = "#bdbdbd",
-             linewidth=1) +
-  ylab(expression(d^{(7)})) +
-  xlab(expression(d^{(2)})) +
-  theme_minimal() +
-  theme(aspect.ratio = 0.75,
-        panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        panel.grid.major.x = element_blank(),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
-
-
 ```
 
 ```{r}
@@ -2410,17 +2339,9 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| fig-width: 9
 #| fig-height: 3
 
-# hex_grid_coloured_two_curvy1 + 
-#   hex_grid_coloured_two_curvy2 + 
-#   hex_grid_coloured_two_curvy3 +
-#   plot_layout(guides='collect', ncol = 3,
-#               heights = c(2,1)) &
-#   theme(legend.position='none', plot.tag = element_text(size = 8))
-
 hex_grid_coloured_two_curvy2 +
   hex_grid_coloured_two_curvy1 +
   hex_grid_coloured_two_curvy3 +
-  #boxplot1 + boxplot2 + boxplot3 +
   plot_layout(guides='collect', ncol = 3) &
   theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
