@@ -4373,10 +4373,6 @@ pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc2)
 umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 
-# tsne_pbmc <- tsne_pbmc_scaled |>
-#   ggplot(aes(x = tSNE1,
-#              y = tSNE2)) +
-#   geom_point(alpha=0.3, color = "#000000")
 ```
 
 <!-- We then fit the model for tSNE, and visualize the resultant model in the $9\text{-}D$ data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data. -->
@@ -4410,9 +4406,6 @@ tr1_object_pbmc <- tri_bin_centroids(
 tr_from_to_df_pbmc <- gen_edges(
   tri_object = tr1_object_pbmc)
 
-# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-#   filter(!(row_number() %in% c(65, 112, 130)))
-
 ## Compute 2D distances
 distance_pbmc <- cal_2d_dist(
   tr_coord_df = tr_from_to_df_pbmc,
@@ -4426,11 +4419,6 @@ distance_pbmc <- cal_2d_dist(
 benchmark_pbmc <- find_lg_benchmark(
   distance_edges = distance_pbmc,
   distance_col = "distance")
-
-#benchmark_pbmc <- 0.2
-
-## Remove an edge that exist as long edge in p-D
-# tr_from_to_df_pbmc |> mutate(ID = row_number()) |> filter(from == 37) |> filter(to == 43) 
 
 tr_df <- distinct(tibble::tibble(
   x = c(tr_from_to_df_pbmc[["x_from"]], tr_from_to_df_pbmc[["x_to"]]),
