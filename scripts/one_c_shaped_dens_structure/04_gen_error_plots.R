@@ -88,22 +88,36 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error)) #|>
   #mutate(sqrt_row_wise_total_error = standardize(sqrt_row_wise_total_error))
 
-error_plot_one_curvy_hist_selected <-
-  ggplot(error_df_one_curvy_abs) +
-  #geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="#000000") +
-  # geom_rect(aes(xmin = 0.3, xmax = 0.8, ymin = -0.1, ymax = 8.1),
-  #           fill = "transparent", color = "red", size = 0.5) +
-  #xlab(expression(group("|", e[hj], "|"))) +
+# Compute density
+density_data <- density(error_df_one_curvy_abs$sqrt_row_wise_total_error)
+density_df <- data.frame(x = density_data$x, y = density_data$y)
+
+# Add density values to the original dataset
+error_df_one_curvy_abs <- error_df_one_curvy_abs %>%
+  mutate(density = approx(density_df$x, density_df$y, xout = sqrt_row_wise_total_error)$y)
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
+  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
+
+
+
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqrt_row_wise_total_error, y = density,
+                                                                         colour = factor(error_cat_n,
+                                                                                         levels = c("high", "low")))) +
+  geom_point() +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
   xlab(expression(e[hj])) +
   ylab("") +
   theme_bw()
 
-error_plot_one_curvy_hist <-
-  ggplot(error_df_one_curvy_abs) +
-  #geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="#000000") +
-  #xlab(expression(group("|", e[hj], "|"))) +
+
+error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
+                                    aes(x = sqrt_row_wise_total_error, y = density,
+                                        colour = factor(error_cat_n2,
+                                                        levels = c("high", "low")))) +
+  geom_point() +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
   xlab(expression(e[hj])) +
   ylab("") +
   theme_bw()
@@ -127,9 +141,6 @@ error_plot_one_curvy_hist <-
 #                 sqrt_row_wise_total_error <= quant_val[8], "eighth",
 #                 "nineth")))))))))
 
-error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
-  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
 
 
 error_plot_tsne <- error_df_one_curvy_abs |>
