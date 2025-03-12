@@ -129,7 +129,7 @@ error_plot_one_curvy_hist <-
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
-  mutate(error_cat_n2 = if_else(tSNE2 >= 1, "high", "low")) ## corner points
+  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
 
 
 error_plot_tsne <- error_df_one_curvy_abs |>
