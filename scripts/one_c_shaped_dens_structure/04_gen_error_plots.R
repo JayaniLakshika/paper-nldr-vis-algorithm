@@ -109,6 +109,9 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqr
   scale_color_manual(values=c('#800026', '#d9d9d9')) +
   xlab(expression(e[hj])) +
   ylab("") +
+  interior_annotation("b1",
+                      position = c(0.95, 0.9),
+                      cex = 1.5) +
   theme_bw()
 
 
@@ -120,6 +123,9 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
   scale_color_manual(values=c('#800026', '#d9d9d9')) +
   xlab(expression(e[hj])) +
   ylab("") +
+  interior_annotation("a1",
+                      position = c(0.95, 0.9),
+                      cex = 1.5) +
   theme_bw()
 
 # quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
@@ -170,7 +176,7 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("b",
+  interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -184,7 +190,7 @@ plot_tsne_dens_selected <- error_df_one_curvy_abs |>
   theme(
     aspect.ratio = 1
   ) +
-  interior_annotation("b",
+  interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -368,7 +374,7 @@ five_c_shaped_proj_tsne_model1 <- projected_df |>
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
   ylim(c(-0.35, 0.35)) +
-  interior_annotation("c",
+  interior_annotation("a3",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
@@ -410,7 +416,7 @@ five_c_shaped_proj_tsne_model1_selected <- projected_df |>
   coord_fixed() +
   xlim(c(-0.35, 0.35)) +
   ylim(c(-0.35, 0.35)) +
-  interior_annotation("c",
+  interior_annotation("b3",
                       position = c(0.08, 0.9),
                       cex = 1.5)
 
