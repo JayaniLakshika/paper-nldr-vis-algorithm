@@ -728,7 +728,8 @@ generate_error_plots_one_c_shaped <- function(){
 
   error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
   error_plot_one_curvy_hist_selected + plot_tsne_dens_selected + five_c_shaped_proj_tsne_model1_selected +
-    plot_layout(guides = "collect", ncol = 3, widths = c(1, 1.5, 1.5)) &
+    #plot_layout(guides = "collect", ncol = 3, widths = c(1, 1, 1)) &
+    plot_layout(guides = "collect", nrow = 2) &
     theme(legend.position='none')
 
 }
