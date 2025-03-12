@@ -92,8 +92,8 @@ error_plot_one_curvy_hist_selected <-
   ggplot(error_df_one_curvy_abs) +
   #geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
   geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="#000000") +
-  geom_rect(aes(xmin = 0.3, xmax = 0.8, ymin = -0.1, ymax = 8.1),
-            fill = "transparent", color = "red", size = 0.5) +
+  # geom_rect(aes(xmin = 0.3, xmax = 0.8, ymin = -0.1, ymax = 8.1),
+  #           fill = "transparent", color = "red", size = 0.5) +
   #xlab(expression(group("|", e[hj], "|"))) +
   xlab(expression(e[hj])) +
   ylab("") +
@@ -128,8 +128,7 @@ error_plot_one_curvy_hist <-
 #                 "nineth")))))))))
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(error_cat_n = if_else(
-    (sqrt_row_wise_total_error >= 0.3) & (sqrt_row_wise_total_error <= 0.8), "high", "low")) |> ## high_error points
+  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
   mutate(error_cat_n2 = if_else(tSNE2 >= 1, "high", "low")) ## corner points
 
 
