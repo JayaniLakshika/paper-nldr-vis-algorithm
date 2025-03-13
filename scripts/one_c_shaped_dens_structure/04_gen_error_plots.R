@@ -114,8 +114,8 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqr
                       cex = 1.5) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 15),
-    axis.text = element_text(size = 12)
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 15)
   )
 
 
@@ -132,8 +132,8 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
                       cex = 1.5) +
   theme_bw() +
   theme(
-    axis.title = element_text(size = 15),
-    axis.text = element_text(size = 12)
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 15)
   )
 
 # quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
