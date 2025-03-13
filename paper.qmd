@@ -2151,9 +2151,11 @@ prop_dens_a1 <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 15),
+axis.text = element_text(size = 12))
 
 error_two_non_linear_diff_shaped_close_clusters_umap <- error_two_non_linear_diff_shaped_close_clusters_umap |>
   mutate(prop_bins = b_non_empty/b)
@@ -2179,9 +2181,11 @@ a1_m_two_curvy <- ggplot(error_two_non_linear_diff_shaped_close_clusters_umap,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 15),
+axis.text = element_text(size = 12))
 
 training_data_two_curvy <- training_data_two_curvy |>
   mutate(ID = row_number())
@@ -2412,10 +2416,12 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        legend.position = "none")
+        legend.position = "none",
+        axis.title = element_text(size = 15),
+axis.text = element_text(size = 12))
 ```
 
 
