@@ -282,10 +282,12 @@ distance_points_umap <- ggplot(
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         panel.grid.major.x = element_blank(),
         axis.ticks.x = element_line(),
-        axis.ticks.y = element_line())
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12))
 
 
 df_bin_two_curvy <- df_bin_two_curvy |>
