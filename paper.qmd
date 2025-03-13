@@ -261,7 +261,7 @@ plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
         legend.position = "none",
         plot.title.position = "plot",
         plot.title = element_text(hjust = hjust,
-                                  size = 12))
+                                  size = 15))
   
 }
 ```
@@ -2585,14 +2585,12 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
   xlab(expression(paste("binwidth (", a[1], ")"))) +
   theme_minimal() +
   theme(panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
         legend.position = "none",
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7)) 
+        axis.text = element_text(size = 7),
+        axis.title = element_text(size = 12)) 
 
 ```
 
@@ -2600,7 +2598,7 @@ error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_lin
 #| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-two_non_linear_diff_shaped_close_clusters-mse
 #| fig-pos: H
-#| out-width: 60%
+#| out-width: 100%
 
 free(error_plot_two_non_linear_diff_shaped_close_clusters) + wrap_plots(nldr_two_non_linear_diff_shaped_close_clusters1, nldr_two_non_linear_diff_shaped_close_clusters2, nldr_two_non_linear_diff_shaped_close_clusters3, 
                                     nldr_two_non_linear_diff_shaped_close_clusters4, nldr_two_non_linear_diff_shaped_close_clusters5,

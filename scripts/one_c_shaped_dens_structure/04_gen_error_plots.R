@@ -112,7 +112,11 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqr
   interior_annotation("b1",
                       position = c(0.95, 0.9),
                       cex = 1.5) +
-  theme_bw()
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 15),
+    axis.text = element_text(size = 12)
+  )
 
 
 error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
@@ -126,7 +130,11 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
   interior_annotation("a1",
                       position = c(0.95, 0.9),
                       cex = 1.5) +
-  theme_bw()
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 15),
+    axis.text = element_text(size = 12)
+  )
 
 # quant_val <- quantile(error_df_one_curvy_abs$sqrt_row_wise_total_error,
 #                       probs = seq(0, 1, 0.12))
