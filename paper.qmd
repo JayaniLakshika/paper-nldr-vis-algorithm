@@ -410,7 +410,8 @@ get_projection <- function(projection, proj_scale, scaled_data,
 #| label: plot-projection
 
 plot_proj <- function(projected_df, model_df, axes, circle, 
-                      point_param = c(1, 0.5, "#000000"), # size, alpha, color
+                      point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
+                      line_param = c(0.5, 0.5), #linewidth, alpha
                       plot_limits, title, cex = 2, 
                       axis_text_size = 3,
                       is_category = FALSE) {
@@ -442,10 +443,12 @@ plot_proj <- function(projected_df, model_df, axes, circle,
         y = proj2_from, 
         xend = proj1_to, 
         yend = proj2_to), 
-      color = "#000000") +
+      color = "#000000",
+      linewidth = line_param[1],
+      alpha = line_param[2]) +
     geom_point(
-      size = point_param[1],
-      alpha = point_param[2],
+      size = as.numeric(point_param[1]),
+      alpha = as.numeric(point_param[2]),
       color = point_param[3]) +
     geom_segment(
       data=axes, 
@@ -460,7 +463,6 @@ plot_proj <- function(projected_df, model_df, axes, circle,
     geom_path(
       data=circle, 
       aes(x=c1, y=c2), colour="grey70") +
-    coord_fixed() +
     xlim(plot_limits) +
     ylim(plot_limits) +
     interior_annotation(title, cex = cex)
@@ -4188,40 +4190,16 @@ model_df <- proj_obj1$model_df
 axes <- proj_obj1$axes
 circle <- proj_obj1$circle
 
-pbmc_proj_umap_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = '#a65628') +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.65, 0.65)) +
-  ylim(c(-0.65, 0.65)) +
-  interior_annotation("a2", cex = 2)
+pbmc_proj_umap_model1 <- plot_proj(
+  projected_df = projected_df, 
+  model_df = model_df, 
+  axes = axes, 
+  circle = circle, 
+  point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+  plot_limits = c(-0.65, 0.65), 
+  title = "a2", 
+  cex = 2, 
+  is_category = FALSE)
 
 ## Second projection
 projection <- cbind(
@@ -4244,40 +4222,16 @@ model_df <- proj_obj2$model_df
 axes <- proj_obj2$axes
 circle <- proj_obj2$circle
 
-pbmc_proj_umap_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1,
-      y = proj2)) +
-  geom_segment(
-    data = model_df,
-    aes(
-      x = proj1_from,
-      y = proj2_from,
-      xend = proj1_to,
-      yend = proj2_to),
-    color = "#000000") +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = '#a65628') +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle,
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 0.75)) +
-  ylim(c(-1, 0.75)) +
-  interior_annotation("a3", cex = 2)
+pbmc_proj_umap_model2 <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+    plot_limits = c(-1, 0.75), 
+    title = "a3", 
+    cex = 2, 
+    is_category = FALSE)
 
 ```
 
@@ -4763,6 +4717,10 @@ sc_ltr_pos_mnist <- c(0.96, 0.96)
 distance_df_small_edges_mnist <- distance_mnist |>
   filter(distance < benchmark_mnist) 
 
+tr_from_to_df_mnist <- inner_join(
+  tr_from_to_df_mnist, distance_df_small_edges_mnist, 
+  by = c("from", "to"))
+
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
 
@@ -4886,43 +4844,19 @@ model_df <- proj_obj1$model_df
 axes <- proj_obj1$axes
 circle <- proj_obj1$circle
 
-mnist_proj_tsne_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2,
-      colour = cluster)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 0.5,
-    alpha = 0.5) +
-  geom_point(
-    size = 0.5,
-    alpha = 0.5) +
-  scale_color_manual(values = c("#999999",'#ff7f00')) +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 2) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  #coord_fixed() +
-  xlim(c(-1.1, 0.9)) +
-  ylim(c(-1.1, 0.9)) +
-  interior_annotation("b", cex = 1.5) +
+mnist_proj_tsne_model1 <- plot_proj(
+  projected_df = projected_df, 
+  model_df = model_df, 
+  axes = axes, 
+  circle = circle, 
+  point_param = c(0.5, 0.5, "#000000"), # size, alpha, color
+  line_param = c(0.5, 0.5), # linewidth, alpha
+  plot_limits = c(-1.1, 0.9), 
+  title = "b", 
+  cex = 2, 
+  axis_text_size = 3, 
+  is_category = TRUE) +
+  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
   theme(
     legend.position = "none"
   )
