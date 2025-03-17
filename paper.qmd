@@ -177,7 +177,7 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins, col_start 
   ## Data set with all centroids
   all_centroids_df <- hb_obj$centroids
   
-  a1_1 <- hb_obj$a1
+  a1 <- hb_obj$a1
   
   ## Generate all coordinates of hexagons
   hex_grid <- hb_obj$hex_poly
@@ -222,6 +222,7 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins, col_start 
     distance_col = "distance")
   
   return(list(nldr_scaled = nldr_scaled,
+              a1 = a1,
               hex_grid_with_counts = hex_grid_with_counts,
               hex_grid_nonempty = hex_grid_nonempty,
               df_bin_centroids = df_bin_centroids,
@@ -751,20 +752,38 @@ true_model_two_curvy <- true_model_df |>
 ```{r}
 #| label: tsne-two-curvy
 tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") 
+```
 
-two_curvy_scaled_obj <- gen_scaled_data(
-  data = tsne_two_curvy)
+```{r}
+#| label: fit_model-two-curvy
 
-tsne_two_curvy_scaled <- two_curvy_scaled_obj$scaled_nldr |>
-  mutate(ID = row_number())
+num_bins_x_two_curvy <- 22
 
-lim1 <- two_curvy_scaled_obj$lim1
-lim2 <- two_curvy_scaled_obj$lim2
-r2 <- diff(lim2)/diff(lim1)
+algo_obj_two_curvy <- gen_nldr_vis_algo_obj(
+  high_d_data = training_data_two_curvy, 
+  nldr_data = tsne_two_curvy, 
+  num_x_bins = num_bins_x_two_curvy,
+  col_start = "x")
+
+tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_scaled
+distance_two_curvy <- algo_obj_two_curvy$distance_df
+tr_from_to_df_two_curvy <- algo_obj_two_curvy$tr_from_to_df
+benchmark_two_curvy <- algo_obj_two_curvy$benchmark
+df_bin_centroids_two_curvy <- algo_obj_two_curvy$df_bin_centroids
+df_bin_two_curvy <- algo_obj_two_curvy$df_bin
+hex_grid_with_counts <- algo_obj_two_curvy$hex_grid_with_counts
+hex_grid_nonempty <- algo_obj_two_curvy$hex_grid_nonempty
+bin_width <- algo_obj_two_curvy$a1
 
 sc_ltr_pos <- c(0.08, 0.9)
 sc_xlims <- c(-0.3, 1.2)
 sc_ylims <- c(-0.17, 1.25)
+```
+
+<!--Full hexagon grid with UMAP data-->
+
+```{r}
+#| label: hexbin-two-curvy
 
 nldr_two_curvy_original <- ggplot(tsne_two_curvy_scaled, aes(x = tSNE1, y = tSNE2)) +
   geom_point(alpha = 0.5, color = "#636363", size = 0.5) 
@@ -783,45 +802,6 @@ nldr_two_curvy2 <- nldr_two_curvy_original +
 nldr_two_curvy_original2 <- nldr_two_curvy_original +
   theme(aspect.ratio = 1) +
   interior_annotation("a1", sc_ltr_pos)
-```
-
-<!--Full hexagon grid with UMAP data-->
-
-```{r}
-#| label: hexbin-two-curvy
-## Compute hexbin parameters
-num_bins_x_two_curvy <- 22
-
-## hexagon binning to have regular hexagons
-hb_obj_two_curvy <- hex_binning(
-  data = tsne_two_curvy_scaled, 
-  bin1 = num_bins_x_two_curvy, 
-  r2 = r2,
-  q = 0.1)
-
-## Data set with all centroids
-all_centroids_df <- hb_obj_two_curvy$centroids
-
-a1_1 <- hb_obj_two_curvy$a1
-
-## Generate all coordinates of hexagons
-hex_grid <- hb_obj_two_curvy$hex_poly
-
-## To obtain the standardise counts within hexbins
-counts_df <- hb_obj_two_curvy$std_cts
-df_bin_centroids_two_curvy <- extract_hexbin_centroids(
-  centroids_df = all_centroids_df, 
-  counts_df = counts_df) |>
-  filter(drop_empty == FALSE)
-
-umap_data_two_curvy_with_hb_id <- hb_obj_two_curvy$data_hb_id
-df_all_two_curvy <- dplyr::bind_cols(training_data_two_curvy, umap_data_two_curvy_with_hb_id)
-df_bin_two_curvy <- avg_highd_data(data = df_all_two_curvy, col_start = "x")
-
-hex_grid_with_counts <- 
-  left_join(hex_grid,
-            counts_df, 
-            by = c("hex_poly_id" = "hb_id"))
 
 hex_grid_two_curvy <- ggplot(
   data = hex_grid_with_counts, 
@@ -855,8 +835,6 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
 
 ```{r}
 #| label: empty-bin-two-curvy
-hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids_two_curvy$hexID)
 
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
@@ -875,11 +853,6 @@ hex_grid_nonempty_two_curvy <- ggplot(
 <!--2D model-->
 ```{r}
 #| label: triangulate-two-curvy
-## Triangulate bin centroids
-tr1_object_two_curvy <- tri_bin_centroids(
-  df_bin_centroids_two_curvy, x = "c_x", y = "c_y")
-tr_from_to_df_two_curvy <- gen_edges(
-  tri_object = tr1_object_two_curvy)
 
 trimesh_two_curvy <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy,
@@ -901,109 +874,8 @@ trimesh_two_curvy <- ggplot() +
   coord_equal() +
   interior_annotation("a1", sc_ltr_pos)
 
-## Compute 2D distances
-distance_two_curvy <- cal_2d_dist(
-  tr_coord_df = tr_from_to_df_two_curvy, 
-  start_x = "x_from", 
-  start_y = "y_from", 
-  end_x = "x_to", 
-  end_y = "y_to", 
-  select_vars = c("from", "to", "distance"))
-
-## To find the benchmark value
-benchmark_two_curvy <- find_lg_benchmark(
-  distance_edges = distance_two_curvy, 
-  distance_col = "distance")
-
 distance_df_small_edges_two_curvy <- distance_two_curvy |>
     filter(distance < benchmark_two_curvy)
-
-bin_width <- hb_obj_two_curvy$a1
-
-####With diff benchmark values
-
-## Benchmark 2
-
-benchmark_two_curvy <- 2.8 * bin_width
-
-distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy)
-
-tr_from_to_df_two_curvy4 <- inner_join(
-  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy3,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed2 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy4,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-             alpha = 0.5,
-             size = 0.5
-  ) +
-  coord_equal() +
-  interior_annotation("b1", sc_ltr_pos)
-
-## Benchmark 1
-
-benchmark_two_curvy <- 2 * bin_width
-
-distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy) ## 0.231
-
-tr_from_to_df_two_curvy3 <- inner_join(
-  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy2,
-  by = c("from", "to"))
-
-trimesh_two_curvy_removed1 <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000")+
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-             alpha = 0.5,
-             size = 0.5
-  ) +
-  coord_equal() +
-  interior_annotation("c1", sc_ltr_pos)
-
-trimesh_two_curvy_removed1_with_data <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy3,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000") +
-  geom_point(data = tsne_two_curvy_scaled,
-             aes(
-               x = tSNE1,
-               y = tSNE2
-             ),
-             color = "#636363",
-             alpha = 0.5,
-             size = 0.5
-  ) +
-  coord_equal() +
-  #xlim(c(-0.01, 1.1)) + ylim(c(-0.08, 0.57)) +
-  interior_annotation("a2", sc_ltr_pos)
 
 ## Computed benchmark value
 tr_from_to_df_two_curvy <- inner_join(
@@ -1841,10 +1713,6 @@ df_bin_centroids2 <- extract_hexbin_centroids(
   counts_df = counts_df2) |>
   filter(drop_empty == FALSE) |>
   mutate(b1 = "b1 = 11")
-
-boxplot1 <- ggplot(df_bin_centroids2, 
-                   aes(x=bin_counts)) + 
-    geom_histogram()
 
 hex_grid_with_counts_two_curvy2 <- full_join(
   hex_grid2, 
