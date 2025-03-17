@@ -905,34 +905,22 @@ projection <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
   c(-0.06466,-0.27052,0.22131,-0.15235))
 
-projection_scaled <- projection * 1
+proj_obj1 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_two_curvy_data, 
+               scaled_data_model = scaled_two_curvy_data_model, 
+               distance_df_small_edges = distance_df_small_edges_two_curvy, 
+               axis_param = list(limits = 0.5, 
+                                 axis_scaled = 2,
+                                 axis_pos_x = -0.5, 
+                                 axis_pos_y = -0.5, 
+                                 threshold = 0.03))
 
-projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number()) 
-
-## For fitted model
-projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_two_curvy |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 ## Projection with Delauany triangulation
 
@@ -1217,45 +1205,61 @@ projection <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
   c(-0.06466,-0.27052,0.22131,-0.15235))
 
-projection_scaled <- projection * 1
+proj_obj1 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_two_curvy_data, 
+               scaled_data_model = scaled_two_curvy_data_model, 
+               distance_df_small_edges = distance_df_small_edges_two_curvy, 
+               axis_param = list(limits = 0.6, 
+                                 axis_scaled = 2,
+                                 axis_pos_x = -0.4, 
+                                 axis_pos_y = -0.4, 
+                                 threshold = 0.04))
 
-projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number()) 
-
-projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  wireframe_true_model, 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection * 2,
-  limits = 0.6,
-  axis_pos_x = -0.4,
-  axis_pos_y = -0.4,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.04)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+# projection_scaled <- projection * 1
+# 
+# projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+# 
+# projected_df <- projected |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   #dplyr::mutate(type = df_exe$type) |>
+#   dplyr::mutate(ID = dplyr::row_number()) 
+# 
+# projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
+# 
+# projected_model_df <- projected_model |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   dplyr::mutate(ID = dplyr::row_number())
+# 
+# model_df <- dplyr::left_join(
+#   wireframe_true_model, 
+#   projected_model_df, 
+#   by = c("from" = "ID"))
+# 
+# names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+# 
+# model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+# names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+# 
+# axes_obj <- gen_axes(  
+#   proj = projection * 2,
+#   limits = 0.6,
+#   axis_pos_x = -0.4,
+#   axis_pos_y = -0.4,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.04)
+# 
+# axes <- axes_obj$axes
+# circle <- axes_obj$circle
 
 two_curvy_proj_umap_model1 <- projected_df |>
   ggplot(
@@ -1329,45 +1333,21 @@ projection <- cbind(
   c(-0.38281,-0.04870,0.00619,-0.02451),
   c(-0.01303,0.00634,-0.37421,0.09648))
 
-projection_scaled <- projection * 1
+proj_obj2 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_two_curvy_data, 
+               scaled_data_model = scaled_two_curvy_data_model, 
+               distance_df_small_edges = distance_df_small_edges_two_curvy, 
+               axis_param = list(limits = 0.5, 
+                                 axis_scaled = 6,
+                                 axis_pos_x = -0.3, 
+                                 axis_pos_y = -0.3, 
+                                 threshold = 0))
 
-projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number()) 
-
-projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  wireframe_true_model, 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection * 6,
-  limits = 0.5,
-  axis_pos_x = -0.3,
-  axis_pos_y = -0.3,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+projected_df <- proj_obj2$projected_df
+model_df <- proj_obj2$model_df
+axes <- proj_obj2$axes
+circle <- proj_obj2$circle
 
 two_curvy_proj_umap_model2 <- projected_df |>
   ggplot(
@@ -1805,34 +1785,50 @@ projection <- cbind(
     c(0.11062,-0.02743,0.02786,-0.01930),
     c(-0.01110,-0.06886,0.04730,0.09890))
 
-projection_scaled <- projection * 1
+proj_obj1 <- get_projection(projection = projection, 
+                            proj_scale = 1, 
+                            scaled_data = scaled_gau_data, 
+                            scaled_data_model = scaled_gau_data_model, 
+                            distance_df_small_edges = distance_df_small_edges, 
+                            axis_param = list(limits = 0.15, 
+                                              axis_scaled = 5,
+                                              axis_pos_x = -0.067, 
+                                              axis_pos_y = -0.067, 
+                                              threshold = 0.007))
 
-projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number()) 
-
-## For fitted model
-projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_two_curvy2 |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+# projection_scaled <- projection * 1
+# 
+# projected <- as.matrix(scaled_two_curvy_data) %*% projection_scaled
+# 
+# projected_df <- projected |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   dplyr::mutate(ID = dplyr::row_number()) 
+# 
+# ## For fitted model
+# projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
+# 
+# projected_model_df <- projected_model |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   dplyr::mutate(ID = dplyr::row_number())
+# 
+# model_df <- dplyr::left_join(
+#   distance_df_small_edges_two_curvy2 |> select(-distance), 
+#   projected_model_df, 
+#   by = c("from" = "ID"))
+# 
+# names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+# 
+# model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+# names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 ## For true model
 
@@ -1855,16 +1851,16 @@ true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
 
-axes_obj <- gen_axes(  
-  proj = projection * 5,
-  limits = 0.15,
-  axis_pos_x = -0.067,
-  axis_pos_y = -0.067,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.007)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+# axes_obj <- gen_axes(  
+#   proj = projection * 5,
+#   limits = 0.15,
+#   axis_pos_x = -0.067,
+#   axis_pos_y = -0.067,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.007)
+# 
+# axes <- axes_obj$axes
+# circle <- axes_obj$circle
 
 two_curvy_proj_umap_model <- projected_df |>
   ggplot(
