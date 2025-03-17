@@ -348,7 +348,7 @@ plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
 ```
 
 ```{r}
-#| label: plot-projection
+#| label: get-projection
 
 get_projection <- function(projection, proj_scale, scaled_data, 
                            scaled_data_model, distance_df_small_edges,
@@ -402,6 +402,68 @@ get_projection <- function(projection, proj_scale, scaled_data,
               model_df = model_df, 
               axes = axes, 
               circle = circle))
+  
+}
+```
+
+```{r}
+#| label: plot-projection
+
+plot_proj <- function(projected_df, model_df, axes, circle, 
+                      point_param = c(1, 0.5, "#000000"), # size, alpha, color
+                      plot_limits, title, cex = 2, 
+                      axis_text_size = 3,
+                      is_category = FALSE) {
+  
+  if(is_category == FALSE) {
+    
+    initial_plot <- projected_df |>
+      ggplot(
+        aes(
+          x = proj1, 
+          y = proj2))
+    
+  } else {
+    
+    initial_plot <- projected_df |>
+      ggplot(
+        aes(
+          x = proj1, 
+          y = proj2,
+          colour = cluster))
+    
+  }
+  
+  initial_plot + 
+    geom_segment(
+      data = model_df, 
+      aes(
+        x = proj1_from, 
+        y = proj2_from, 
+        xend = proj1_to, 
+        yend = proj2_to), 
+      color = "#000000") +
+    geom_point(
+      size = point_param[1],
+      alpha = point_param[2],
+      color = point_param[3]) +
+    geom_segment(
+      data=axes, 
+      aes(x=x1, y=y1, xend=x2, yend=y2), 
+      colour="grey70") +
+    geom_text(
+      data=axes,
+      aes(x=x2, y=y2), 
+      label=rownames(axes),
+      colour="grey50",
+      size = axis_text_size) +
+    geom_path(
+      data=circle, 
+      aes(x=c1, y=c2), colour="grey70") +
+    coord_fixed() +
+    xlim(plot_limits) +
+    ylim(plot_limits) +
+    interior_annotation(title, cex = cex)
   
 }
 ```
