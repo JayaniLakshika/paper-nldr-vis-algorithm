@@ -4414,40 +4414,16 @@ model_df <- proj_obj1$model_df
 axes <- proj_obj1$axes
 circle <- proj_obj1$circle
 
-pbmc_proj_umap_model1_best <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = "#999999") +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.65, 0.65)) +
-  ylim(c(-0.65, 0.65)) +
-  interior_annotation("b2", cex = 2)
+pbmc_proj_umap_model1_best <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    plot_limits = c(-0.65, 0.65), 
+    title = "b2", 
+    cex = 2, 
+    is_category = FALSE)
 
 ## Second projection
 projection <- cbind(
@@ -4470,42 +4446,16 @@ model_df <- proj_obj2$model_df
 axes <- proj_obj2$axes
 circle <- proj_obj2$circle
 
-pbmc_proj_umap_model2_best <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1,
-      y = proj2)) +
-  geom_segment(
-    data = model_df,
-    aes(
-      x = proj1_from,
-      y = proj2_from,
-      xend = proj1_to,
-      yend = proj2_to),
-    color = "#000000") +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.2,
-    color = '#999999') +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
-    colour="grey50",
-    size = 3) +
-  geom_path(
-    data=circle,
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 0.75)) +
-  ylim(c(-1, 0.75)) +
-  interior_annotation("b3", cex = 2)
-
-
+pbmc_proj_umap_model2_best <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    plot_limits = c(-1, 0.75), 
+    title = "b3", 
+    cex = 2, 
+    is_category = FALSE)
 ```
 
 <!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
