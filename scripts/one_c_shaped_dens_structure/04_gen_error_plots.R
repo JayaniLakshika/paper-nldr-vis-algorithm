@@ -299,45 +299,61 @@ projection <- cbind(
   c(0.05096,0.15399,0.19736,0.05110),
   c(0.14608,-0.16929,0.11291,-0.07160))
 
-projection_scaled <- projection * 1
+proj_obj1 <- get_projection(projection = projection,
+                            proj_scale = 1,
+                            scaled_data = scaled_c_shaped_data,
+                            scaled_data_model = scaled_c_shaped_data_model,
+                            distance_df_small_edges = distance_df_small_edges_c_shaped_structure,
+                            axis_param = list(limits = 0.35,
+                                              axis_scaled = 2,
+                                              axis_pos_x = -0.28,
+                                              axis_pos_y = -0.28,
+                                              threshold = 0.017))
 
-projected <- as.matrix(scaled_c_shaped_data) %*% projection_scaled
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes2 <- proj_obj1$axes
+circle <- proj_obj1$circle
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_c_shaped_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges_c_shaped_structure |> select(-distance),
-  projected_model_df,
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(
-  proj = projection * 2,
-  limits = 0.35,
-  axis_pos_x = -0.28,
-  axis_pos_y = -0.28,
-  axis_labels = names(scaled_c_shaped_data),
-  threshold = 0.017)
-
-axes2 <- axes_obj$axes
-circle <- axes_obj$circle
+# projection_scaled <- projection * 1
+#
+# projected <- as.matrix(scaled_c_shaped_data) %*% projection_scaled
+#
+# projected_df <- projected |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   #dplyr::mutate(type = df_exe$type) |>
+#   dplyr::mutate(ID = dplyr::row_number())
+#
+# projected_model <- as.matrix(scaled_c_shaped_data_model) %*% projection_scaled
+#
+# projected_model_df <- projected_model |>
+#   tibble::as_tibble(.name_repair = "unique") |>
+#   dplyr::rename(c("proj1" = "...1",
+#                   "proj2" = "...2")) |>
+#   dplyr::mutate(ID = dplyr::row_number())
+#
+# model_df <- dplyr::left_join(
+#   distance_df_small_edges_c_shaped_structure |> select(-distance),
+#   projected_model_df,
+#   by = c("from" = "ID"))
+#
+# names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+#
+# model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
+# names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+#
+# axes_obj <- gen_axes(
+#   proj = projection * 2,
+#   limits = 0.35,
+#   axis_pos_x = -0.28,
+#   axis_pos_y = -0.28,
+#   axis_labels = names(scaled_c_shaped_data),
+#   threshold = 0.017)
+#
+# axes2 <- axes_obj$axes
+# circle <- axes_obj$circle
 
 ## To add error category
 projected_df <- projected_df |>

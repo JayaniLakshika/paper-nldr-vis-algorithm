@@ -301,12 +301,13 @@ get_projection <- function(projection, proj_scale, scaled_data,
   names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
   
   limits <- axis_param$limits
+  axis_scaled <- axis_param$axis_scaled
   axis_pos_x <- axis_param$axis_pos_x
   axis_pos_y <- axis_param$axis_pos_y
   threshold <- axis_param$threshold
   
   axes_obj <- gen_axes(  
-    proj = projection,
+    proj = projection * axis_scaled,
     limits = limits,
     axis_pos_x = axis_pos_x,
     axis_pos_y = axis_pos_y,
@@ -3442,45 +3443,21 @@ projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
 
-projection_scaled <- projection * 1
+proj_obj1 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_gau_data, 
+               scaled_data_model = scaled_gau_data_model, 
+               distance_df_small_edges = distance_df_small_edges, 
+               axis_param = list(limits = 1,
+                                 axis_scaled = 1,
+                                 axis_pos_x = -0.72, 
+                                 axis_pos_y = -0.72, 
+                                 threshold = 0))
 
-projected <- as.matrix(scaled_gau_data) %*% projection_scaled
-
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  #dplyr::mutate(type = df_exe$type) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection_scaled
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 1,
-  axis_pos_x = -0.72,
-  axis_pos_y = -0.72,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
 five_gau_proj_tsne_model1 <- projected_df |>
   ggplot(
@@ -3675,42 +3652,21 @@ projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558, -0.23854, -0.63659, 0.35753))
 
-projected <- as.matrix(scaled_gau_data) %*% projection
+proj_obj1 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_gau_data, 
+               scaled_data_model = scaled_gau_data_model, 
+               distance_df_small_edges = distance_df_small_edges, 
+               axis_param = list(limits = 1, 
+                                 axis_scaled = 1,
+                                 axis_pos_x = -0.72, 
+                                 axis_pos_y = -0.72, 
+                                 threshold = 0))
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 1,
-  axis_pos_x = -0.72,
-  axis_pos_y = -0.72,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-  
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
 five_gau_proj_umap_model1 <- projected_df |>
   ggplot(
@@ -3908,42 +3864,21 @@ projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
 
-projected <- as.matrix(scaled_gau_data) %*% projection
+proj_obj1 <- get_projection(projection = projection, 
+               proj_scale = 1, 
+               scaled_data = scaled_gau_data, 
+               scaled_data_model = scaled_gau_data_model, 
+               distance_df_small_edges = distance_df_small_edges, 
+               axis_param = list(limits = 1,
+                                 axis_scaled = 1,
+                                 axis_pos_x = -0.72, 
+                                 axis_pos_y = -0.72, 
+                                 threshold = 0))
 
-projected_df <- projected |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-projected_model <- as.matrix(scaled_gau_data_model) %*% projection
-
-projected_model_df <- projected_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-model_df <- dplyr::left_join(
-  distance_df_small_edges |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-axes_obj <- gen_axes(  
-  proj = projection,
-  limits = 1,
-  axis_pos_x = -0.72,
-  axis_pos_y = -0.72,
-  axis_labels = names(scaled_gau_data),
-  threshold = 0)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
 five_gau_proj_pacmap_model1 <- projected_df |>
   ggplot(
@@ -4190,7 +4125,8 @@ proj_obj1 <- get_projection(projection = projection,
                scaled_data = scaled_pbmc_data, 
                scaled_data_model = scaled_pbmc_data_model, 
                distance_df_small_edges = distance_df_small_edges_pbmc, 
-               axis_param = list(limits = 1, 
+               axis_param = list(limits = 1,
+                                 axis_scaled = 1, 
                                  axis_pos_x = -0.48, 
                                  axis_pos_y = -0.48, 
                                  threshold = 0.082))
@@ -4246,6 +4182,7 @@ proj_obj2 <- get_projection(projection = projection,
                scaled_data_model = scaled_pbmc_data_model, 
                distance_df_small_edges = distance_df_small_edges_pbmc, 
                axis_param = list(limits = 1.35, 
+                                 axis_scaled = 1, 
                                  axis_pos_x = -0.75, 
                                  axis_pos_y = -0.75, 
                                  threshold = 0.12))
@@ -5075,6 +5012,7 @@ proj_obj1 <- get_projection(projection = projection,
                scaled_data_model = scaled_mnist_data_model, 
                distance_df_small_edges = distance_df_small_edges_mnist, 
                axis_param = list(limits = 1, 
+                                 axis_scaled = 1, 
                                  axis_pos_x = -0.9, 
                                  axis_pos_y = -0.9, 
                                  threshold = 0.06))
@@ -5179,6 +5117,7 @@ proj_obj2 <- get_projection(projection = projection,
                scaled_data_model = scaled_mnist_data_model, 
                distance_df_small_edges = distance_df_small_edges_mnist, 
                axis_param = list(limits = 1, 
+                                 axis_scaled = 1, 
                                  axis_pos_x = -0.83, 
                                  axis_pos_y = -0.83, 
                                  threshold = 0.06))
