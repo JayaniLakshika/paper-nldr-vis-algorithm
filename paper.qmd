@@ -989,16 +989,16 @@ true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
 
-axes_obj <- gen_axes(  
-  proj = projection * 2,
-  limits = 0.5,
-  axis_pos_x = -0.5,
-  axis_pos_y = -0.5,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.03)
-
-axes <- axes_obj$axes
-circle <- axes_obj$circle
+# axes_obj <- gen_axes(  
+#   proj = projection * 2,
+#   limits = 0.5,
+#   axis_pos_x = -0.5,
+#   axis_pos_y = -0.5,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.03)
+# 
+# axes <- axes_obj$axes
+# circle <- axes_obj$circle
 
 two_curvy_proj_umap_first_model1 <- projected_df |>
   ggplot(
