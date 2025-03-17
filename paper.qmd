@@ -326,6 +326,34 @@ get_projection <- function(projection, proj_scale, scaled_data,
 ```
 
 ```{r}
+#| label: plot-mse
+
+plot_mse <- function(error_df) {
+  
+  ggplot(error_df, 
+       aes(x = a1, 
+           y = MSE, 
+           colour = method)) + 
+  geom_point(size = 0.8) +
+  geom_line(linewidth = 0.3) + 
+  scale_y_log10() +
+  ylab("log(MSE)") +
+  xlab(expression(paste("binwidth (", a[1], ")"))) +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7)) 
+  
+}
+```
+
+```{r}
 #| label: import-scripts
 source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
 source("scripts/five_gau_clusters/5_gen_model_with_tsne.R")
@@ -2625,27 +2653,11 @@ error_two_non_linear_diff_shaped_close_clusters <- error_two_non_linear_diff_sha
 ```{r}
 #| label: error-comp-two_non_linear_diff_shaped_close_clusters
 
-error_plot_two_non_linear_diff_shaped_close_clusters <- ggplot(error_two_non_linear_diff_shaped_close_clusters, 
-                           aes(x = a1, 
-                               y = MSE, 
-                               colour = method)) + 
-  geom_point(size = 0.8) +
-  geom_line(linewidth = 0.3) + 
-  # geom_vline(xintercept = 15, linetype="solid", 
-  #            color = "black", linewidth=0.8, alpha = 0.5) +
+error_plot_two_non_linear_diff_shaped_close_clusters <-
+  plot_mse(error_two_non_linear_diff_shaped_close_clusters) +
   scale_x_continuous(breaks = sort(unique(error_two_non_linear_diff_shaped_close_clusters$a1))[seq(1, length(unique(error_two_non_linear_diff_shaped_close_clusters$a1)), by = 5)]) +
   scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363', '#984ea3')) +
-  scale_y_log10() +
-  ylab("log(MSE)") +
-  xlab(expression(paste("binwidth (", a[1], ")"))) +
-  theme_minimal() +
-  theme(panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 15, hjust = 0.5, vjust = -0.5),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line(),
-        legend.position = "none",
-        axis.text = element_text(size = 7),
-        axis.title = element_text(size = 12)) 
+  scale_y_log10()
 
 ```
 
@@ -4271,28 +4283,10 @@ error_pbmc <- error_pbmc |>
 ```{r}
 #| label: error-comp-pbmc
 
-error_plot_pbmc <- ggplot(error_pbmc, 
-                          aes(x = a1, 
-                              y = MSE, 
-                              colour = method)) + 
-  geom_point(size = 0.8) +
-  geom_line(linewidth = 0.3) + 
+error_plot_pbmc <- plot_mse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
-                              '#984ea3','#999999','#a65628','#f781bf')) +
-  scale_y_log10() +
-  ylab("log(MSE)") +
-  xlab(expression(paste("binwidth (", a[1], ")"))) +
-  theme_minimal() +
-  theme(panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line(),
-        legend.position = "none",
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7)) 
+                              '#984ea3','#999999','#a65628','#f781bf')) 
 
 ```
 
@@ -4778,27 +4772,9 @@ error_mnist <- error_mnist |>
 ```{r}
 #| label: error-comp-mnist
 
-error_plot_mnist <- ggplot(error_mnist, 
-                          aes(x = a1, 
-                              y = MSE, 
-                              colour = method)) + 
-  geom_point(size = 0.8) +
-  geom_line(linewidth = 0.3) + 
+error_plot_mnist <- plot_mse(error_mnist) +
   scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#984ea3', '#999999', '#a65628')) +
-  scale_y_log10() +
-  ylab("log(MSE)") +
-  xlab(expression(paste("binwidth (", a[1], ")"))) +
-  theme_minimal() +
-  theme(panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line(),
-        legend.position = "none",
-        axis.text.x = element_text(size = 7),
-        axis.text.y = element_text(size = 7),
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7)) 
+  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#984ea3', '#999999', '#a65628')) 
 
 ```
 
