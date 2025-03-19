@@ -424,7 +424,21 @@ plot_proj <- function(projected_df, model_df, axes, circle,
       ggplot(
         aes(
           x = proj1, 
-          y = proj2))
+          y = proj2)) + 
+      geom_segment(
+        data = model_df, 
+        aes(
+          x = proj1_from, 
+          y = proj2_from, 
+          xend = proj1_to, 
+          yend = proj2_to), 
+        color = line_param[3],
+        linewidth = as.numeric(line_param[1]),
+        alpha = as.numeric(line_param[2])) +
+      geom_point(
+      size = as.numeric(point_param[1]),
+      alpha = as.numeric(point_param[2]),
+      color = point_param[3]) 
     
   } else {
     
@@ -433,25 +447,24 @@ plot_proj <- function(projected_df, model_df, axes, circle,
         aes(
           x = proj1, 
           y = proj2,
-          colour = cluster))
+          colour = cluster)) + 
+      geom_segment(
+        data = model_df, 
+        aes(
+          x = proj1_from, 
+          y = proj2_from, 
+          xend = proj1_to, 
+          yend = proj2_to), 
+        color = line_param[3],
+        linewidth = as.numeric(line_param[1]),
+        alpha = as.numeric(line_param[2])) +
+      geom_point(
+      size = as.numeric(point_param[1]),
+      alpha = as.numeric(point_param[2]))
     
   }
   
   initial_plot <- initial_plot + 
-    geom_segment(
-      data = model_df, 
-      aes(
-        x = proj1_from, 
-        y = proj2_from, 
-        xend = proj1_to, 
-        yend = proj2_to), 
-      color = line_param[3],
-      linewidth = as.numeric(line_param[1]),
-      alpha = as.numeric(line_param[2])) +
-    geom_point(
-      size = as.numeric(point_param[1]),
-      alpha = as.numeric(point_param[2]),
-      color = point_param[3]) +
     geom_segment(
       data=axes, 
       aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -4071,58 +4084,34 @@ mnist_proj_tsne_model1 <- plot_proj(
   model_df = model_df, 
   axes = axes, 
   circle = circle, 
-  point_param = c(0.5, 0.5, "#000000"), # size, alpha, color
-  line_param = c(0.5, 0.5), # linewidth, alpha
+  point_param = c(0.5, 0.5), # size, alpha, color
+  line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
   plot_limits = c(-1.1, 0.9), 
   title = "b", 
-  cex = 2, 
+  cex = 1.5, 
   axis_text_size = 3, 
   is_category = TRUE) +
-  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+  scale_color_manual(values = c("#999999",'#ff7f00')) +
   theme(
     legend.position = "none"
   )
 
-mnist_proj_tsne_model1_link <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2,
-      colour = cluster)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 0.5,
-    alpha = 0.5) +
-  geom_point(
-    size = 1.2,
-    alpha = 0.5) +
-  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 2) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  #coord_fixed() +
-  xlim(c(-1.1, 0.9)) +
-  ylim(c(-1.1, 0.9)) +
-  interior_annotation("b", cex = 2) +
-  theme(
-    legend.position = "none"
-  )
+mnist_proj_tsne_model1_link <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(1.2, 0.5), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-1.1, 0.9), 
+    title = "b", 
+    cex = 2, 
+    axis_text_size = 3, 
+    is_category = TRUE) +
+    scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+    theme(
+        legend.position = "none"
+    )
 
 ## Second projection
 projection <- cbind(
@@ -4147,85 +4136,40 @@ model_df <- proj_obj2$model_df
 axes <- proj_obj2$axes
 circle <- proj_obj2$circle
 
-mnist_proj_tsne_model2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2,
-      colour = cluster)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 0.5) +
-  geom_point(
-    size = 0.5,
-    alpha = 0.3) +
-  scale_color_manual(values = c("#999999",'#ff7f00')) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 2) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
-  interior_annotation("c", cex = 1.5) +
-  theme(
-    legend.position = "none"
-  )
+mnist_proj_tsne_model2 <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.3), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-1, 1), 
+    title = "c", 
+    cex = 1.5, 
+    axis_text_size = 3, 
+    is_category = TRUE) +
+    scale_color_manual(values = c("#999999",'#ff7f00')) +
+    theme(
+        legend.position = "none"
+    )
 
-mnist_proj_tsne_model2_link <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2,
-      colour = cluster)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000",
-    linewidth = 0.5) +
-  geom_point(
-    size = 1.2,
-    alpha = 0.3) +
-  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 2) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-1, 1)) +
-  ylim(c(-1, 1)) +
-  interior_annotation("c", cex = 2) +
-  theme(
-    legend.position = "none"
-  )
+mnist_proj_tsne_model2_link <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(1.2, 0.5), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-1, 1), 
+    title = "c", 
+    cex = 2, 
+    axis_text_size = 3, 
+    is_category = TRUE) +
+    scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+    theme(
+        legend.position = "none"
+    )
+
 ```
 
 <!--add langevitour screenshots and youtube animation link-->
