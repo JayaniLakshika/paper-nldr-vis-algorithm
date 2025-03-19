@@ -432,7 +432,7 @@ five_c_shaped_proj_tsne_model1_selected <- projected_df |>
     data=axes2,
     aes(x=x2, y=y2, label=rownames(axes2)),
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
