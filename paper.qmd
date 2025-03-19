@@ -1372,7 +1372,6 @@ algo_obj_two_curvy2 <- gen_nldr_vis_algo_obj(
   num_x_bins = num_bins_x_two_curvy,
   col_start = "x")
 
-tsne_two_curvy_scaled <- algo_obj_two_curvy2$nldr_scaled
 distance_two_curvy2 <- algo_obj_two_curvy2$distance_df
 tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$tr_from_to_df
 benchmark_two_curvy2 <- algo_obj_two_curvy2$benchmark
@@ -1428,42 +1427,33 @@ trimesh_two_curvy2 <- ggplot() +
 
 ```{r}
 #| label: hexbin-regular-two-curvy3
-## hexagon binning to have regular hexagons
-hb_obj_two_curvy3 <- hex_binning(
-  data = tsne_two_curvy_scaled, 
-  bin1 = 48, 
-  r2 = r2)
 
-a1_3 <- calc_bins_y(
-  bin1 = 48, 
-  r2 = r2
-)$a1
+num_bins_x_two_curvy <- 48
 
-## Data set with all centroids
-all_centroids_df3 <- hb_obj_two_curvy3$centroids
+algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj(
+  high_d_data = training_data_two_curvy, 
+  nldr_data = tsne_two_curvy, 
+  num_x_bins = num_bins_x_two_curvy,
+  col_start = "x")
 
-## Generate all coordinates of hexagons
-hex_grid3 <- hb_obj_two_curvy3$hex_poly
+distance_two_curvy3 <- algo_obj_two_curvy3$distance_df
+tr_from_to_df_two_curvy3 <- algo_obj_two_curvy3$tr_from_to_df
+benchmark_two_curvy3 <- algo_obj_two_curvy3$benchmark
+df_bin_centroids_two_curvy3 <- algo_obj_two_curvy3$df_bin_centroids
+df_bin_two_curvy3 <- algo_obj_two_curvy3$df_bin
+hex_grid_with_counts_two_curvy3 <- algo_obj_two_curvy3$hex_grid_with_counts
 
-## To obtain the standardise counts within hexbins
-counts_df3 <- hb_obj_two_curvy3$std_cts
-df_bin_centroids3 <- extract_hexbin_centroids(
-  centroids_df = all_centroids_df3, 
-  counts_df = counts_df3) |>
-  filter(drop_empty == FALSE) |>
-  mutate(b1 = "b1 = 14")
+distance_df_small_edges_two_curvy3 <- distance_two_curvy3 |>
+  filter(distance < benchmark_two_curvy3) 
 
-boxplot3 <- ggplot(df_bin_centroids3, 
-                   aes(x=bin_counts)) + 
-    geom_histogram()
+tr_from_to_df_two_curvy3 <- inner_join(
+  tr_from_to_df_two_curvy3, distance_df_small_edges_two_curvy3, 
+  by = c("from", "to"))
 
-hex_grid_with_counts_s_curve3 <- full_join(hex_grid3, 
-                                          df_bin_centroids3 |> select(hexID, std_counts), 
-                                          by = c("hex_poly_id" = "hexID")) 
 
 hex_grid_coloured_two_curvy3 <-  ggplot() + 
   geom_polygon(
-    data = hex_grid_with_counts_s_curve3, 
+    data = hex_grid_with_counts_two_curvy3, 
     aes(x = x, y = y, 
         group = hex_poly_id, 
         fill = std_counts), 
