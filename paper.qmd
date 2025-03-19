@@ -916,6 +916,50 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
   interior_annotation("b", sc_ltr_pos, cex = 1.5)
 ```
 
+
+```{r}
+#| label: compute-error-tsne
+
+training_data_two_curvy <- training_data_two_curvy |>
+  mutate(ID = row_number())
+
+## Compute error
+error_df_two_curvy_abs <- augment(
+  df_bin_centroids = df_bin_centroids_two_curvy,
+  df_bin = df_bin_two_curvy,
+  training_data = training_data_two_curvy,
+  newdata = NULL,
+  type_NLDR = "tSNE",
+  col_start = "x")
+
+error_df_two_curvy_abs <- error_df_two_curvy_abs |>
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
+
+error_df_two_curvy_abs <- error_df_two_curvy_abs |>
+  bind_cols(tsne_two_curvy_scaled |>
+              select(-ID))
+
+error_plot_two_curvy <- error_df_two_curvy_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             colour = sqrt_row_wise_total_error)) +
+  geom_point(alpha=0.5) +
+  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  theme(
+    aspect.ratio = 1,
+    legend.position = "none"
+  )
+
+error_plot_two_curvy_hist <- 
+  ggplot(error_df_two_curvy_abs) +
+  geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
+  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
+  #xlab(expression(group("|", e[hj], "|"))) +
+  xlab(expression(e[hj])) +
+  ylab("") +
+  theme_bw() 
+```
+
 ```{r}
 #| label: best-fit-two-curvy-proj-tsne
 
@@ -1606,45 +1650,6 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
         axis.ticks.y = element_line(),
         axis.title = element_text(size = 15),
 axis.text = element_text(size = 12))
-
-training_data_two_curvy <- training_data_two_curvy |>
-  mutate(ID = row_number())
-
-## Compute error
-error_df_two_curvy_abs <- augment(
-  df_bin_centroids = df_bin_centroids2,
-  df_bin = df_bin_two_curvy2,
-  training_data = training_data_two_curvy,
-  newdata = NULL,
-  type_NLDR = "tSNE",
-  col_start = "x")
-
-error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
-
-error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  bind_cols(tsne_two_curvy_scaled |>
-              select(-ID))
-
-error_plot_two_curvy <- error_df_two_curvy_abs |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             colour = sqrt_row_wise_total_error)) +
-  geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
-  theme(
-    aspect.ratio = 1,
-    legend.position = "none"
-  )
-
-error_plot_two_curvy_hist <- 
-  ggplot(error_df_two_curvy_abs) +
-  geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
-  geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
-  #xlab(expression(group("|", e[hj], "|"))) +
-  xlab(expression(e[hj])) +
-  ylab("") +
-  theme_bw() 
 ```
 
 ```{r}
