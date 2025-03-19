@@ -412,7 +412,7 @@ get_projection <- function(projection, proj_scale, scaled_data,
 
 plot_proj <- function(projected_df, model_df, axes, circle, 
                       point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
-                      line_param = c(0.5, 0.5), #linewidth, alpha
+                      line_param = c(0.5, 0.5, "#000000"), #linewidth, alpha
                       plot_limits, title, cex = 2, 
                       axis_text_size = 3,
                       is_category = FALSE) {
@@ -444,9 +444,9 @@ plot_proj <- function(projected_df, model_df, axes, circle,
         y = proj2_from, 
         xend = proj1_to, 
         yend = proj2_to), 
-      color = "#000000",
-      linewidth = line_param[1],
-      alpha = line_param[2]) +
+      color = line_param[3],
+      linewidth = as.numeric(line_param[1]),
+      alpha = as.numeric(line_param[2])) +
     geom_point(
       size = as.numeric(point_param[1]),
       alpha = as.numeric(point_param[2]),
@@ -1019,40 +1019,18 @@ two_curvy_proj_tsne_first_model1 <- projected_df |>
     legend.position = "none"
   )
 
-two_curvy_proj_true <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = true_model_df_proj, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#2b8cbe") +
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.6, 0.6)) + 
-  ylim(c(-0.6, 0.6)) +
-  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+two_curvy_proj_true <- plot_proj(
+  projected_df = projected_df, 
+  model_df = true_model_df_proj, 
+  axes = axes, 
+  circle = circle, 
+  point_param = c(0.5, 0.5, "#636363"), # size, alpha, color
+  line_param = c(0.5, 0.5, "#2b8cbe"), # linewidth, alpha
+  plot_limits = c(-0.6, 0.6), 
+  title = "a", 
+  cex = 1.5, 
+  axis_text_size = 4, 
+  is_category = FALSE) +
   theme(
     legend.position = "none"
   )
@@ -1142,43 +1120,21 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
-two_curvy_proj_true2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1,
-      y = proj2)) +
-  geom_segment(
-    data = true_model_df_proj,
-    aes(
-      x = proj1_from,
-      y = proj2_from,
-      xend = proj1_to,
-      yend = proj2_to),
-    color = "#2b8cbe") +
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2),
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle,
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.42, 0.42)) +
-  ylim(c(-0.42, 0.42)) +
-  interior_annotation("b", sc_ltr_pos, cex = 1.5) +
-  theme(
-    legend.position = "none"
-  )
+two_curvy_proj_true2 <- plot_proj(
+    projected_df = projected_df, 
+    model_df = true_model_df_proj, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.5, "#636363"), # size, alpha, color
+    line_param = c(0.5, 0.5, "#2b8cbe"), # linewidth, alpha
+    plot_limits = c(-0.42, 0.42), 
+    title = "b", 
+    cex = 1.5, 
+    axis_text_size = 4, 
+    is_category = FALSE) +
+    theme(
+        legend.position = "none"
+    )
 
 ```
 
