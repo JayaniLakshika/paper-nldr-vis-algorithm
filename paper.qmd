@@ -894,7 +894,7 @@ trimesh_removed_two_curvy <- ggplot() +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("d", sc_ltr_pos, cex = 1.5)
 
-trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
+trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy,
                aes(
                  x = x_from,
@@ -914,7 +914,7 @@ trimesh_two_curvy_removed1_umap_with_data <- ggplot() +
 ```
 
 ```{r}
-#| label: best-fit-two-curvy-proj-umap1
+#| label: best-fit-two-curvy-proj-tsne
 
 df_bin_two_curvy <- df_bin_two_curvy |>
   select(-hb_id) |>
@@ -960,31 +960,6 @@ model_df <- proj_obj1$model_df
 axes <- proj_obj1$axes
 circle <- proj_obj1$circle
 
-
-## Projection with Delauany triangulation
-
-model_df1 <- dplyr::left_join(
-  distance_two_curvy |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df1)[3:NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df1 <- dplyr::left_join(model_df1, projected_model_df, by = c("to" = "ID"))
-names(model_df1)[(2 + NCOL(projected_model_df)):NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
-## With benchmark option 2
-
-model_df2 <- dplyr::left_join(
-  distance_df_small_edges_two_curvy3 |> select(-distance), 
-  projected_model_df, 
-  by = c("from" = "ID"))
-
-names(model_df2)[3:NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
-
-model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID"))
-names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
-
 ## For true model
 
 projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
@@ -1006,18 +981,7 @@ true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
 
-# axes_obj <- gen_axes(  
-#   proj = projection * 2,
-#   limits = 0.5,
-#   axis_pos_x = -0.5,
-#   axis_pos_y = -0.5,
-#   axis_labels = names(scaled_two_curvy_data),
-#   threshold = 0.03)
-# 
-# axes <- axes_obj$axes
-# circle <- axes_obj$circle
-
-two_curvy_proj_umap_first_model1 <- projected_df |>
+two_curvy_proj_tsne_first_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -1051,44 +1015,6 @@ two_curvy_proj_umap_first_model1 <- projected_df |>
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
   interior_annotation("c", sc_ltr_pos, cex = 1.5) +
-  theme(
-    legend.position = "none"
-  )
-
-two_curvy_proj_umap_first_model1_temp <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") + #31a354
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.6, 0.6)) + 
-  ylim(c(-0.6, 0.6)) +
-  interior_annotation("c2", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -1131,7 +1057,7 @@ two_curvy_proj_true <- projected_df |>
     legend.position = "none"
   )
 
-two_curvy_proj_umap_all_model1 <- projected_df |>
+two_curvy_proj_tsne_all_model1 <- projected_df |>
   ggplot(
     aes(
       x = proj1, 
@@ -1173,84 +1099,6 @@ two_curvy_proj_umap_all_model1 <- projected_df |>
   xlim(c(-0.6, 0.6)) + 
   ylim(c(-0.6, 0.6)) +
   interior_annotation("d", sc_ltr_pos, cex = 1.5) +
-  theme(
-    legend.position = "none"
-  )
-
-## Projection with Delauany triangulation
-
-two_curvy_proj_umap_model_delaunay <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df1, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") + #31a354
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
-  interior_annotation("a2", sc_ltr_pos) +
-  theme(
-    legend.position = "none"
-  )
-
-two_curvy_proj_umap_model_benchmark2 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_segment(
-    data = model_df2, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    color = "#000000") + #31a354
-  geom_point(
-    size = 0.5,
-    alpha = 0.2,
-    color = "#636363") +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2), 
-    label=rownames(axes),
-    colour="grey50",
-    size = 4) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.1, 0.1)) + 
-  ylim(c(-0.1, 0.1)) +
-  interior_annotation("b2", sc_ltr_pos) +
   theme(
     legend.position = "none"
   )
@@ -1991,15 +1839,15 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
-#| label: best-fit-umap1
+#| label: best-fit-tsne
 #| fig-cap: "We start with a tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (b) and then lifted to $4\\text{-}D$. A \\gD{} projection of the model fit from a tour through the $4\\text{-}D$ space is presented in c. Additionally, a \\gD{} projection of the fitted and true models (d) from the same tour demonstrates that the model accurately captures the non-linear structure of the data, although it does not fully represent the width of that structure. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. The default is used. Video of the langevitour animation is available at <>."
 #| fig-width: 10
 #| fig-height: 10
 
 nldr_two_curvy2 + 
-  trimesh_two_curvy_removed1_umap_with_data +
-  two_curvy_proj_umap_first_model1 +
-  two_curvy_proj_umap_all_model1 +
+  trimesh_two_curvy_removed1_tsne_with_data +
+  two_curvy_proj_tsne_first_model1 +
+  two_curvy_proj_tsne_all_model1 +
   plot_layout(ncol = 2)
 ```
 
