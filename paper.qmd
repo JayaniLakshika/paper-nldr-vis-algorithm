@@ -1093,6 +1093,44 @@ two_curvy_proj_umap_first_model1_temp <- projected_df |>
     legend.position = "none"
   )
 
+two_curvy_proj_true <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = true_model_df_proj, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#2b8cbe") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2,
+    color = "#636363") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.6, 0.6)) + 
+  ylim(c(-0.6, 0.6)) +
+  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+  theme(
+    legend.position = "none"
+  )
+
 two_curvy_proj_umap_all_model1 <- projected_df |>
   ggplot(
     aes(
@@ -1216,6 +1254,84 @@ two_curvy_proj_umap_model_benchmark2 <- projected_df |>
   theme(
     legend.position = "none"
   )
+
+## Second projection
+projection <- cbind(
+  c(-0.38281,-0.04870,0.00619,-0.02451),
+  c(-0.01303,0.00634,-0.37421,0.09648))
+
+proj_obj2 <- get_projection(projection = projection, 
+                            proj_scale = 1, 
+                            scaled_data = scaled_two_curvy_data, 
+                            scaled_data_model = scaled_two_curvy_data_model, 
+                            distance_df_small_edges = distance_df_small_edges_two_curvy, 
+                            axis_param = list(limits = 0.5, 
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.3, 
+                                              axis_pos_y = -0.3, 
+                                              threshold = 0))
+
+projected_df <- proj_obj2$projected_df
+model_df <- proj_obj2$model_df
+axes <- proj_obj2$axes
+circle <- proj_obj2$circle
+
+projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
+
+projected_true_model_df <- projected_true_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+true_model_df_proj <- dplyr::left_join(
+  wireframe_true_model, 
+  projected_true_model_df, 
+  by = c("from" = "ID"))
+
+names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
+
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
+
+two_curvy_proj_true2 <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1, 
+      y = proj2)) +
+  geom_segment(
+    data = true_model_df_proj, 
+    aes(
+      x = proj1_from, 
+      y = proj2_from, 
+      xend = proj1_to, 
+      yend = proj2_to), 
+    color = "#2b8cbe") +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2,
+    color = "#636363") +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2), 
+    label=rownames(axes),
+    colour="grey50",
+    size = 4) +
+  geom_path(
+    data=circle, 
+    aes(x=c1, y=c2), colour="grey70") +
+  coord_fixed() +
+  xlim(c(-0.6, 0.6)) + 
+  ylim(c(-0.6, 0.6)) +
+  interior_annotation("b", sc_ltr_pos, cex = 1.5) +
+  theme(
+    legend.position = "none"
+  )
+
 ```
 
 
@@ -1434,7 +1550,8 @@ two_curvy_proj_umap_model2 <- projected_df |>
 #| fig-width: 10
 #| fig-height: 5
 
-two_curvy_proj_umap_model1 + two_curvy_proj_umap_model2 + 
+two_curvy_proj_true + two_curvy_proj_true2 +
+#two_curvy_proj_umap_model1 + two_curvy_proj_umap_model2 + 
   plot_layout(ncol = 2)
 ```
 
