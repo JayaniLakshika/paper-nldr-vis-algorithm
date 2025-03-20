@@ -1549,7 +1549,7 @@ trimesh_two_curvy_umap <- ggplot() +
                  yend = y_to),
                colour = "#000000",
                alpha = 0.5,
-               size = 0.5) +
+               linewidth = 0.5) +
   geom_point(data = umap_two_curvy_scaled,
              aes(
                x = UMAP1,
@@ -1568,14 +1568,15 @@ trimesh_two_curvy_umap <- ggplot() +
 
 ```{r}
 
-distance_df_small_edges_two_curvy <- distance_two_curvy |>
-  filter(distance < benchmark_two_curvy)
+# With the computed benchmark value
+# distance_df_small_edges_two_curvy <- distance_two_curvy |>
+#   filter(distance < benchmark_two_curvy)
 
 ####With diff benchmark values
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 7 * a1
+benchmark_two_curvy <- 8 * a1
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -1610,7 +1611,7 @@ trimesh_two_curvy_removed2_umap <- ggplot() +
 
 ## Benchmark 1
 
-benchmark_two_curvy <- 4 * bin_width
+benchmark_two_curvy <- 2.5 * bin_width
 
 distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy) ## 0.231
@@ -1684,7 +1685,7 @@ distance_two_curvy_dist <- distance_two_curvy |>
 distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
 
 text_df <- tibble::tibble(
-  x = c(0.035, 0.15),
+  x = c(0.12, 0.43),
   y = c(10, 10),
   text = c("c", "b")
 )
@@ -1700,11 +1701,11 @@ distance_points_umap <- ggplot(
         label=text),
     colour="#bdbdbd",
     size = 10) +
-  geom_vline(xintercept = 6.5 * bin_width,
+  geom_vline(xintercept = 8 * bin_width,
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
-  geom_vline(xintercept = 2 * bin_width,
+  geom_vline(xintercept = 2.5 * bin_width,
              linetype="solid",
              color = "#bdbdbd",
              linewidth=1) +
@@ -1752,7 +1753,7 @@ proj_obj1 <- get_projection(projection = projection,
                             proj_scale = 1, 
                             scaled_data = scaled_two_curvy_data, 
                             scaled_data_model = scaled_two_curvy_data_model, 
-                            distance_df_small_edges = distance_df_small_edges_two_curvy, 
+                            distance_df_small_edges = distance_df_small_edges_two_curvy2, 
                             axis_param = list(limits = 0.6, 
                                               axis_scaled = 2,
                                               axis_pos_x = -0.5, 
@@ -1853,7 +1854,7 @@ two_curvy_proj_model_benchmark2_umap <- plot_proj(
 
 ```{r}
 #| label: fig-rm-lg
-#| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear clusters data. The two benchmarks for long edge removal: (b) benchmark = 6.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter."
+#| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear clusters data. The two benchmarks for long edge removal: (b) benchmark = 8$a_1$ and (c) benchmark = 2.5$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter."
 #| fig-height: 15
 #| fig-width: 15
 
