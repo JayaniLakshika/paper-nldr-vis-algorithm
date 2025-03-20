@@ -516,8 +516,17 @@ plot_mse <- function(error_df) {
 ```
 
 ```{r}
+#| label: std-error
+
+# creating Standardization function
+standardize = function(x){
+  z <- (x - mean(x)) / sd(x)
+  return( z)
+}
+```
+
+```{r}
 #| label: import-scripts
-source("scripts/one_c_shaped_dens_structure/04_gen_error_plots.R")
 source("scripts/two_non_linear_diff_shaped_close_clusters/10_gen_rm_lg_plots.R")
 ```
 
