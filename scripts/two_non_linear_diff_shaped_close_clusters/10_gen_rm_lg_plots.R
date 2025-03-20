@@ -123,7 +123,7 @@ bin_width <- hb_obj_two_curvy$a1
 
 ## Benchmark 2
 
-benchmark_two_curvy <- 6.5 * bin_width
+benchmark_two_curvy <- 7 * bin_width #6.5
 
 distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy)
@@ -156,7 +156,7 @@ trimesh_two_curvy_removed2_umap <- ggplot() +
 
 ## Benchmark 1
 
-benchmark_two_curvy <- 2 * bin_width
+benchmark_two_curvy <- 4 * bin_width
 
 distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
   filter(distance < benchmark_two_curvy) ## 0.231

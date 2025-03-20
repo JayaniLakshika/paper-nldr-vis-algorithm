@@ -1896,12 +1896,342 @@ The decision on edge length removal is made based on the distribution of edge le
 There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins.
 
 ```{r}
+#| label: model-two-curvy-umap
+
+umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+
+num_bins_x_two_curvy <- 42
+
+algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj(
+  high_d_data = training_data_two_curvy, 
+  nldr_data = umap_two_curvy, 
+  num_x_bins = num_bins_x_two_curvy,
+  col_start = "x")
+
+umap_two_curvy_scaled <- algo_obj_two_curvy3$nldr_scaled
+distance_two_curvy <- algo_obj_two_curvy3$distance_df
+tr_from_to_df_two_curvy <- algo_obj_two_curvy3$tr_from_to_df
+benchmark_two_curvy <- algo_obj_two_curvy3$benchmark
+df_bin_centroids_two_curvy <- algo_obj_two_curvy3$df_bin_centroids
+df_bin_two_curvy <- algo_obj_two_curvy3$df_bin
+hex_grid_with_counts <- algo_obj_two_curvy3$hex_grid_with_counts
+a1 <- algo_obj_two_curvy3$a1
+
+trimesh_two_curvy_umap <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000",
+               alpha = 0.5,
+               size = 0.5) +
+  geom_point(data = umap_two_curvy_scaled,
+             aes(
+               x = UMAP1,
+               y = UMAP2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
+  interior_annotation("a1", sc_ltr_pos, cex = 2)
+
+```
+
+```{r}
+
+distance_df_small_edges_two_curvy <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy)
+
+####With diff benchmark values
+
+## Benchmark 2
+
+benchmark_two_curvy <- 7 * a1
+
+distance_df_small_edges_two_curvy3 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy)
+
+tr_from_to_df_two_curvy4 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy3,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed2_umap <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy4,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000",
+               alpha = 0.5,
+               size = 0.5)+
+  geom_point(data = umap_two_curvy_scaled,
+             aes(
+               x = UMAP1,
+               y = UMAP2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
+  interior_annotation("b1", sc_ltr_pos, cex = 2)
+
+## Benchmark 1
+
+benchmark_two_curvy <- 4 * bin_width
+
+distance_df_small_edges_two_curvy2 <- distance_two_curvy |>
+  filter(distance < benchmark_two_curvy) ## 0.231
+
+tr_from_to_df_two_curvy3 <- inner_join(
+  tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy2,
+  by = c("from", "to"))
+
+trimesh_two_curvy_removed1_umap <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy3,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000",
+               alpha = 0.5,
+               size = 0.5)+
+  geom_point(data = umap_two_curvy_scaled,
+             aes(
+               x = UMAP1,
+               y = UMAP2
+             ),
+             color = "#636363",
+             alpha = 0.5,
+             size = 0.5
+  ) +
+  coord_equal() +
+  xlim(c(0, 1)) +
+  ylim(c(0, 1)) +
+  interior_annotation("c1", sc_ltr_pos, cex = 2)
+```
+
+```{r}
+#| label: compare-2d-and-4d-dist
+
+### Compute highD distance
+dist_vec <- proxy::dist(x = df_bin_two_curvy[, -1], method = "Euclidean") |> as.vector()
+
+from_vec <- c()
+to_vec <- c()
+num_obs <- 1:(NROW(df_bin_two_curvy) - 1)
+
+for (obs in num_obs) {
+
+  from_val <- rep(obs, (NROW(df_bin_two_curvy) - obs))
+  if ((obs + 1) <= NROW(df_bin_two_curvy)) {
+    to_val <- (obs + 1):NROW(df_bin_two_curvy)
+  }
+  from_vec <- append(from_vec, from_val)
+  to_vec <- append(to_vec, to_val)
+
+}
+
+dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec)
+
+
+## To plot the distribution of distances
+
+# Define bin width and starting point
+start_point <- a1/2
+
+# Create bins and calculate the mean value for each bin range
+bins <- seq(start_point, max(distance_two_curvy$distance) + a1,
+            by = a1)
+bin_labels <- bins[-length(bins)] + a1 / 2  # mean of each bin range
+
+distance_two_curvy_dist <- distance_two_curvy |>
+  mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels))
+
+distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to"))
+
+text_df <- tibble::tibble(
+  x = c(0.035, 0.15),
+  y = c(10, 10),
+  text = c("c", "b")
+)
+
+distance_points_umap <- ggplot(
+  distance_two_curvy_dist,
+  aes(x = distance,
+      y = dist_highd)) +
+  geom_point(alpha = 0.5) +
+  geom_text(
+    data=text_df,
+    aes(x=x, y=y,
+        label=text),
+    colour="#bdbdbd",
+    size = 10) +
+  geom_vline(xintercept = 6.5 * bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  geom_vline(xintercept = 2 * bin_width,
+             linetype="solid",
+             color = "#bdbdbd",
+             linewidth=1) +
+  ylab(expression(d^{(4)})) +
+  xlab(expression(d^{(2)})) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        panel.grid.major.x = element_blank(),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 15),
+        axis.text = element_text(size = 12))
+```
+
+```{r}
+#| label: proj-tsne-model
+
+df_bin_two_curvy <- df_bin_two_curvy |>
+  select(-hb_id) |>
+  mutate(type = "model")
+
+# Apply the scaling
+df_model_data_two_curvy <- bind_rows(data_two_curvy, df_bin_two_curvy)
+
+scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
+  as_tibble()
+
+scaled_two_curvy_data <- scaled_two_curvy |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_two_curvy_data_model <- scaled_two_curvy |>
+  filter(type == "model") |>
+  select(-type)
+
+
+## First projection
+projection <- cbind(
+  c(0.37847,-0.06517,0.04231,0.01655),
+  c(-0.06466,-0.27052,0.22131,-0.15235))
+
+proj_obj1 <- get_projection(projection = projection, 
+                            proj_scale = 1, 
+                            scaled_data = scaled_two_curvy_data, 
+                            scaled_data_model = scaled_two_curvy_data_model, 
+                            distance_df_small_edges = distance_df_small_edges_two_curvy, 
+                            axis_param = list(limits = 0.6, 
+                                              axis_scaled = 2,
+                                              axis_pos_x = -0.5, 
+                                              axis_pos_y = -0.5, 
+                                              threshold = 0.04))
+
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
+
+## Projection with Delauany triangulation
+
+model_df1 <- dplyr::left_join(
+  distance_two_curvy |> select(-distance),
+  projected_model_df,
+  by = c("from" = "ID"))
+
+names(model_df1)[3:NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df1 <- dplyr::left_join(model_df1, projected_model_df, by = c("to" = "ID"))
+names(model_df1)[(2 + NCOL(projected_model_df)):NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+## With benchmark option 2
+
+model_df2 <- dplyr::left_join(
+  distance_df_small_edges_two_curvy3 |> select(-distance),
+  projected_model_df,
+  by = c("from" = "ID"))
+
+names(model_df2)[3:NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+
+model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID"))
+names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+
+two_curvy_proj_first_model1_umap <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.6, 0.6), 
+    title = "c2", 
+    cex = 2, 
+    position = sc_ltr_pos,
+    axis_text_size = 4, 
+    is_category = FALSE) +
+    theme(
+        legend.position = "none"
+    )
+
+## Projection with Delauany triangulation
+
+two_curvy_proj_model_delaunay_umap <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df1, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.6, 0.6), 
+    title = "a2", 
+    cex = 2, 
+    position = sc_ltr_pos,
+    axis_text_size = 4, 
+    is_category = FALSE) +
+    theme(
+        legend.position = "none"
+    )
+
+two_curvy_proj_model_benchmark2_umap <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df2, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.6, 0.6), 
+    title = "b2", 
+    cex = 2, 
+    position = sc_ltr_pos,
+    axis_text_size = 4, 
+    is_category = FALSE) +
+    theme(
+        legend.position = "none"
+    )
+
+```
+
+```{r}
 #| label: fig-rm-lg
 #| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear clusters data. The two benchmarks for long edge removal: (b) benchmark = 6.5$a_1$ and (c) benchmark = 2$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter."
 #| fig-height: 15
 #| fig-width: 15
 
-gen_tuning_lg_plots()
+free(distance_points_umap) + 
+    wrap_plots(trimesh_two_curvy_umap, trimesh_two_curvy_removed2_umap,
+               trimesh_two_curvy_removed1_umap, two_curvy_proj_model_delaunay_umap,
+               two_curvy_proj_model_benchmark2_umap, two_curvy_proj_first_model1_umap,
+               ncol = 3) +
+    plot_layout(heights = c(0.8, 1))
 ```
 
 ### Linked plots
