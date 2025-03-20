@@ -1,5 +1,7 @@
 # Looking at Non-Linear Dimension Reductions as Models in the Data Space
 
+This repo contains the materials to fully reproduce the paper titled "Looking at Non-Linear Dimension Reductions as Models in the Data Space".
+
 ## Description
 
 - [`data`](data): Source files for the manuscript.
