@@ -3301,6 +3301,228 @@ To illustrate how tSNE organize different number of points within the structure 
 The model is fitted to this layout. @fig-one-dens_clust-error c shows the $2\text{-}D$ projection of the fitted model. In this projection, the distribution of $4\text{-}D$ model errors can be observed. The dense C-shaped structure shows high model errors at the sparse end. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.
 
 ```{r}
+#| label: model-one-dens-clust
+
+one_c_shaped_data <- read_rds(here::here("data/one_c_shaped_dens_structure/one_c_shaped_dens_data.rds"))
+one_c_shaped_data <- one_c_shaped_data |>
+  mutate(ID = row_number())
+
+tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_52.rds")
+
+num_bins_x_one_c_shaped <- 20
+
+algo_obj_dens_clust <- gen_nldr_vis_algo_obj(
+  high_d_data = one_c_shaped_data, 
+  nldr_data = tsne_one_c_shaped, 
+  num_x_bins = num_bins_x_one_c_shaped,
+  col_start = "x")
+
+tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_scaled
+distance_dens_clust <- algo_obj_dens_clust$distance_df
+tr_from_to_df_dens_clust <- algo_obj_dens_clust$tr_from_to_df
+benchmark_dens_clust <- algo_obj_dens_clust$benchmark
+df_bin_centroids_dens_clust <- algo_obj_dens_clust$df_bin_centroids
+df_bin_dens_clust <- algo_obj_dens_clust$df_bin
+hex_grid_with_counts_dens_clust <- algo_obj_dens_clust$hex_grid_with_counts
+```
+
+```{r}
+#| label: error-model-one-dens-clust
+## Compute error
+error_df_one_curvy_abs <- augment(
+  df_bin_centroids = df_bin_centroids_dens_clust,
+  df_bin = df_bin_dens_clust,
+  training_data = one_c_shaped_data,
+  newdata = NULL,
+  type_NLDR = "tSNE",
+  col_start = "x")
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  bind_cols(tsne_one_c_shaped_scaled |>
+              select(-ID))
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
+
+# Compute density
+density_data <- density(error_df_one_curvy_abs$sqrt_row_wise_total_error)
+density_df <- data.frame(x = density_data$x, y = density_data$y)
+
+# Add density values to the original dataset
+error_df_one_curvy_abs <- error_df_one_curvy_abs %>%
+  mutate(density = approx(density_df$x, density_df$y, xout = sqrt_row_wise_total_error)$y)
+
+error_df_one_curvy_abs <- error_df_one_curvy_abs |>
+  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
+  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
+
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqrt_row_wise_total_error, y = density,
+                                                                         colour = factor(error_cat_n,
+                                                                                         levels = c("high", "low")))) +
+  geom_point() +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  xlab(expression(e[hj])) +
+  ylab("") +
+  interior_annotation("b1",
+                      position = c(0.95, 0.9),
+                      cex = 1.5) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 15)
+  )
+
+
+error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
+                                    aes(x = sqrt_row_wise_total_error, y = density,
+                                        colour = factor(error_cat_n2,
+                                                        levels = c("high", "low")))) +
+  geom_point() +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  xlab(expression(e[hj])) +
+  ylab("") +
+  interior_annotation("a1",
+                      position = c(0.95, 0.9),
+                      cex = 1.5) +
+  theme_bw() +
+  theme(
+    axis.title = element_text(size = 18),
+    axis.text = element_text(size = 15)
+  )
+```
+
+```{r}
+#| label: link-model-one-dens-clust
+plot_tsne_dens <- error_df_one_curvy_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             colour = factor(error_cat_n2,
+                             levels = c("high", "low")))) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  theme(
+    aspect.ratio = 1
+  ) +
+  interior_annotation("a2",
+                      position = c(0.08, 0.9),
+                      cex = 1.5)
+
+plot_tsne_dens_selected <- error_df_one_curvy_abs |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2,
+             colour = factor(error_cat_n,
+                             levels = c("high", "low")))) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  theme(
+    aspect.ratio = 1
+  ) +
+  interior_annotation("b2",
+                      position = c(0.08, 0.9),
+                      cex = 1.5)
+
+distance_df_small_edges_c_shaped_structure <- distance_dens_clust |>
+  filter(distance < benchmark_dens_clust)
+
+tr_from_to_df_dens_clust <- inner_join(
+  tr_from_to_df_dens_clust, distance_df_small_edges_c_shaped_structure,
+  by = c("from", "to"))
+
+```
+
+```{r}
+#| label: proj-one-dens-clust
+
+# Apply the scaling
+
+data_c_shaped <- one_c_shaped_data |>
+  select(-ID) |>
+  mutate(type = "data")
+
+df_bin_dens_clust <- df_bin_dens_clust |>
+  select(-hb_id) |>
+  mutate(type = "model")
+
+df_model_data <- bind_rows(data_c_shaped, df_bin_dens_clust)
+scaled_c_shaped <- scale_data_manual(df_model_data, "type") |>
+  as_tibble()
+
+scaled_c_shaped_data <- scaled_c_shaped |>
+  filter(type == "data") |>
+  select(-type)
+
+scaled_c_shaped_data_model <- scaled_c_shaped |>
+  filter(type == "model") |>
+  select(-type)
+
+## First projection
+projection <- cbind(
+  c(0.05096,0.15399,0.19736,0.05110),
+  c(0.14608,-0.16929,0.11291,-0.07160))
+
+proj_obj1 <- get_projection(projection = projection,
+                            proj_scale = 1,
+                            scaled_data = scaled_c_shaped_data,
+                            scaled_data_model = scaled_c_shaped_data_model,
+                            distance_df_small_edges = distance_df_small_edges_c_shaped_structure,
+                            axis_param = list(limits = 0.35,
+                                              axis_scaled = 2,
+                                              axis_pos_x = -0.28,
+                                              axis_pos_y = -0.28,
+                                              threshold = 0.017))
+
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes2 <- proj_obj1$axes
+circle <- proj_obj1$circle
+
+## To add error category
+projected_df <- projected_df |>
+  mutate(cluster = error_df_one_curvy_abs$error_cat_n2)
+
+five_c_shaped_proj_tsne_model1 <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes2, 
+    circle = circle, 
+    point_param = c(1.5, 0.5), # size, alpha, color
+    line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.35, 0.35), 
+    title = "a3", 
+    cex = 1.5,
+    position = c(0.08, 0.9),
+    axis_text_size = 4, 
+    is_category = TRUE) +
+    scale_color_manual(values = c('#800026', '#d9d9d9')) +
+    theme(
+        legend.position = "none"
+    )
+
+projected_df <- projected_df |>
+  select(-cluster) |>
+  mutate(cluster = error_df_one_curvy_abs$error_cat_n)
+
+
+five_c_shaped_proj_tsne_model1_selected <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes2, 
+    circle = circle, 
+    point_param = c(1.5, 0.5), # size, alpha, color
+    line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.35, 0.35), 
+    title = "a3", 
+    cex = 1.5,
+    position = c(0.08, 0.9),
+    axis_text_size = 4, 
+    is_category = TRUE) +
+    scale_color_manual(values = c('#800026', '#d9d9d9')) +
+    theme(
+        legend.position = "none"
+    )
+```
+
+```{r}
 #| label: fig-one-dens_clust-error
 #| fig-width: 15
 #| fig-height: 10
@@ -3308,7 +3530,10 @@ The model is fitted to this layout. @fig-one-dens_clust-error c shows the $2\tex
 #| out-height: 100%
 #| fig-cap: "The sparse end of the structure shows a high model error, while the dense end shows a low model error. The tSNE layout of the C-shaped structure, with dense points (a1-a3) are colored according to their $4\\text{-}D$ model error. Darker colors represent a high error, while lighter colors indicate a low error. a2, a3 and b2, b3 present the results from linked plots that brushed the high $4\\text{-}D$ error points in \\gD{} and $4\\text{-}D$. It helps in identifying the high $4\\text{-}D$ model errors that occur due to the sparse end. Videos of the linked plots are available at <>."
 
-generate_error_plots_one_c_shaped()
+error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
+  error_plot_one_curvy_hist_selected + plot_tsne_dens_selected + five_c_shaped_proj_tsne_model1_selected +
+    plot_layout(guides = "collect", nrow = 2) &
+    theme(legend.position='none')
 ```
 
 ## Applications {#sec-applications}
