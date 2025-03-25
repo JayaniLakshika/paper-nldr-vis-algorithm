@@ -3338,10 +3338,9 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqr
                       position = c(0.95, 0.9),
                       cex = 1.5) +
   theme_bw() +
-  theme(
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 15)
-  )
+  theme(aspect.ratio = 1,
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
 
 
 error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
@@ -3356,10 +3355,9 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
                       position = c(0.95, 0.9),
                       cex = 1.5) +
   theme_bw() +
-  theme(
-    axis.title = element_text(size = 18),
-    axis.text = element_text(size = 15)
-  )
+  theme(aspect.ratio = 1,
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
 ```
 
 ```{r}
@@ -3371,9 +3369,7 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
                              levels = c("high", "low")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#800026', '#d9d9d9')) +
-  theme(
-    aspect.ratio = 1
-  ) +
+  theme(aspect.ratio = 1) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
@@ -3385,9 +3381,7 @@ plot_tsne_dens_selected <- error_df_one_curvy_abs |>
                              levels = c("high", "low")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#800026', '#d9d9d9')) +
-  theme(
-    aspect.ratio = 1
-  ) +
+  theme(aspect.ratio = 1) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
                       cex = 1.5)
@@ -3465,9 +3459,8 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     axis_text_size = 4, 
     is_category = TRUE) +
     scale_color_manual(values = c('#800026', '#d9d9d9')) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1,
+          legend.position = "none")
 
 projected_df <- projected_df |>
   select(-cluster) |>
@@ -3488,9 +3481,8 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
     axis_text_size = 4, 
     is_category = TRUE) +
     scale_color_manual(values = c('#800026', '#d9d9d9')) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1,
+          legend.position = "none")
 ```
 
 ```{r}
@@ -3498,11 +3490,13 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
 #| fig-width: 15
 #| fig-height: 10
 #| fig-pos: H
-#| out-height: 100%
+#| out-width: 100%
 #| fig-cap: "The sparse end of the structure shows a high model error, while the dense end shows a low model error. The tSNE layout of the C-shaped structure, with dense points (a1-a3) are colored according to their $4\\text{-}D$ model error. Darker colors represent a high error, while lighter colors indicate a low error. a2, a3 and b2, b3 present the results from linked plots that brushed the high $4\\text{-}D$ error points in \\gD{} and $4\\text{-}D$. It helps in identifying the high $4\\text{-}D$ model errors that occur due to the sparse end. Videos of the linked plots are available at <>."
 
-error_plot_one_curvy_hist + plot_tsne_dens + five_c_shaped_proj_tsne_model1 +
-  error_plot_one_curvy_hist_selected + plot_tsne_dens_selected + five_c_shaped_proj_tsne_model1_selected +
+error_plot_one_curvy_hist + plot_tsne_dens + 
+  five_c_shaped_proj_tsne_model1 +
+  error_plot_one_curvy_hist_selected + plot_tsne_dens_selected +
+  five_c_shaped_proj_tsne_model1_selected +
     plot_layout(guides = "collect", nrow = 2) &
     theme(legend.position='none')
 ```
@@ -4373,7 +4367,7 @@ mnist_proj_tsne_model2_link <- plot_proj(
 #| fig-pos: H
 #| fig-height: 4
 #| fig-width: 12
-#| out-height: 100%
+#| out-width: 100%
 #| fig-cap: "\\gD{} wireframe layout shows that there is a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster. The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>."
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
@@ -4387,7 +4381,7 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
 #| fig-pos: H
 #| fig-height: 5
 #| fig-width: 15
-#| out-height: 100%
+#| out-width: 100%
 #| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
 
 tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
