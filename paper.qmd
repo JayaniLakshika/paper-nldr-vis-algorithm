@@ -685,9 +685,8 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     position = sc_ltr_pos,
     axis_text_size = 4, 
     is_category = FALSE) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1,
+          legend.position = "none")
 
 two_curvy_proj_true <- plot_proj(
   projected_df = projected_df, 
@@ -701,9 +700,8 @@ two_curvy_proj_true <- plot_proj(
   cex = 1.5, 
   axis_text_size = 4, 
   is_category = FALSE) +
-  theme(
-    legend.position = "none"
-  )
+  theme(aspect.ratio=1, 
+        legend.position = "none")
 
 two_curvy_proj_tsne_all_model1 <- plot_proj(
   projected_df = projected_df, 
@@ -778,9 +776,8 @@ two_curvy_proj_true2 <- plot_proj(
     cex = 1.5, 
     axis_text_size = 4, 
     is_category = FALSE) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1, 
+          legend.position = "none")
 
 ```
 
@@ -1594,7 +1591,7 @@ trimesh_two_curvy_removed2_umap <- ggplot() +
                  yend = y_to),
                colour = "#000000",
                alpha = 0.5,
-               size = 0.5)+
+               linewidth = 0.5)+
   geom_point(data = umap_two_curvy_scaled,
              aes(
                x = UMAP1,
@@ -1629,7 +1626,7 @@ trimesh_two_curvy_removed1_umap <- ggplot() +
                  yend = y_to),
                colour = "#000000",
                alpha = 0.5,
-               size = 0.5)+
+               linewidth = 0.5)+
   geom_point(data = umap_two_curvy_scaled,
              aes(
                x = UMAP1,
@@ -1829,9 +1826,8 @@ two_curvy_proj_model_delaunay_umap <- plot_proj(
     position = sc_ltr_pos,
     axis_text_size = 4, 
     is_category = FALSE) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1, 
+          legend.position = "none")
 
 two_curvy_proj_model_benchmark2_umap <- plot_proj(
     projected_df = projected_df, 
@@ -1846,9 +1842,8 @@ two_curvy_proj_model_benchmark2_umap <- plot_proj(
     position = sc_ltr_pos,
     axis_text_size = 4, 
     is_category = FALSE) +
-    theme(
-        legend.position = "none"
-    )
+    theme(aspect.ratio = 1, 
+          legend.position = "none")
 
 ```
 
@@ -3327,11 +3322,12 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
   mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
 
-error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqrt_row_wise_total_error, y = density,
-                                                                         colour = factor(error_cat_n,
-                                                                                         levels = c("high", "low")))) +
-  geom_point() +
-  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density,
+          colour = factor(error_cat_n, levels = c("low", "high")))) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#d9d9d9', '#800026')) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("b1",
@@ -3344,11 +3340,11 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, aes(x = sqr
 
 
 error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
-                                    aes(x = sqrt_row_wise_total_error, y = density,
-                                        colour = factor(error_cat_n2,
-                                                        levels = c("high", "low")))) +
-  geom_point() +
-  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+        aes(x = sqrt_row_wise_total_error, 
+            y = density,
+            colour = factor(error_cat_n2, levels = c("low", "high")))) +
+  geom_point(alpha=0.7) +
+  scale_color_manual(values=c('#d9d9d9', '#800026')) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("a1",
@@ -3366,9 +3362,9 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
              colour = factor(error_cat_n2,
-                             levels = c("high", "low")))) +
+                             levels = c("low", "high")))) +
   geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  scale_color_manual(values=c('#d9d9d9', '#800026')) +
   theme(aspect.ratio = 1) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
@@ -3378,9 +3374,9 @@ plot_tsne_dens_selected <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
              colour = factor(error_cat_n,
-                             levels = c("high", "low")))) +
+                             levels = c("low", "high")))) +
   geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#800026', '#d9d9d9')) +
+  scale_color_manual(values=c('#d9d9d9', '#800026')) +
   theme(aspect.ratio = 1) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
@@ -3443,7 +3439,8 @@ circle <- proj_obj1$circle
 
 ## To add error category
 projected_df <- projected_df |>
-  mutate(cluster = error_df_one_curvy_abs$error_cat_n2)
+  mutate(cluster = factor(error_df_one_curvy_abs$error_cat_n2,
+                          levels=c("low", "high")))
 
 five_c_shaped_proj_tsne_model1 <- plot_proj(
     projected_df = projected_df, 
@@ -3458,7 +3455,7 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     position = c(0.08, 0.9),
     axis_text_size = 4, 
     is_category = TRUE) +
-    scale_color_manual(values = c('#800026', '#d9d9d9')) +
+    scale_color_manual(values = c('#d9d9d9', '#800026')) +
     theme(aspect.ratio = 1,
           legend.position = "none")
 
