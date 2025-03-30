@@ -567,12 +567,9 @@ training_data_two_curvy <- training_data_two_curvy |>
 
 ## Compute error
 error_df_two_curvy_abs <- augment(
-  df_bin_centroids = df_bin_centroids_two_curvy,
-  df_bin = df_bin_two_curvy,
-  training_data = training_data_two_curvy,
-  newdata = NULL,
-  type_NLDR = "tSNE",
-  col_start = "x")
+  highd_data = training_data_two_curvy,
+  model_2d = df_bin_centroids_two_curvy,
+  model_highd = df_bin_two_curvy)
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
@@ -2648,7 +2645,6 @@ gau1_model <- fit_highd_model(
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "x",
   q = 0.1
 )
 
@@ -2658,12 +2654,9 @@ df_bin_gau1 <- gau1_model$df_bin
 ## Compute error
 
 error_df_gau_abs <- augment(
-  df_bin_centroids = df_bin_centroids_gau1,
-  df_bin = df_bin_gau1,
-  training_data = training_data_gau,
-  newdata = NULL,
-  type_NLDR = "tSNE",
-  col_start = "x")
+  highd_data = training_data_gau,
+  model_2d = df_bin_centroids_gau1,
+  model_highd = df_bin_gau1)
 
 error_df_gau_abs <- error_df_gau_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
@@ -2857,8 +2850,7 @@ gau1_model <- fit_highd_model(
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
-  col_start_highd = "x"
+  is_rm_lwd_hex = FALSE
 )
 
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
@@ -2867,12 +2859,9 @@ df_bin_gau1 <- gau1_model$df_bin
 ## Compute error
 
 error_df_gau_abs <- augment(
-  df_bin_centroids = df_bin_centroids_gau1,
-  df_bin = df_bin_gau1,
-  training_data = training_data_gau,
-  newdata = NULL,
-  type_NLDR = "UMAP",
-  col_start = "x")
+  highd_data = training_data_gau,
+  model_2d = df_bin_centroids_gau1,
+  model_highd = df_bin_gau1)
 
 error_df_gau_abs <- error_df_gau_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
@@ -3066,7 +3055,6 @@ gau1_model <- fit_highd_model(
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
   is_rm_lwd_hex = FALSE,
-  col_start_highd = "x",
   q = 0.1
 )
 
@@ -3076,12 +3064,9 @@ df_bin_gau1 <- gau1_model$df_bin
 ## Compute error
 
 error_df_gau_abs <- augment(
-  df_bin_centroids = df_bin_centroids_gau1,
-  df_bin = df_bin_gau1,
-  training_data = training_data_gau,
-  newdata = NULL,
-  type_NLDR = "PaCMAP",
-  col_start = "x")
+  highd_data = training_data_gau,
+  model_2d = df_bin_centroids_gau1,
+  model_highd = df_bin_gau1)
 
 error_df_gau_abs <- error_df_gau_abs |>
   mutate(sqrt_row_wise_abs_error = sqrt(row_wise_abs_error))
@@ -3301,12 +3286,9 @@ hex_grid_with_counts_dens_clust <- algo_obj_dens_clust$hex_grid_with_counts
 #| label: error-model-one-dens-clust
 ## Compute error
 error_df_one_curvy_abs <- augment(
-  df_bin_centroids = df_bin_centroids_dens_clust,
-  df_bin = df_bin_dens_clust,
-  training_data = one_c_shaped_data,
-  newdata = NULL,
-  type_NLDR = "tSNE",
-  col_start = "x")
+  highd_data = one_c_shaped_data,
+  model_2d = df_bin_centroids_dens_clust,
+  model_highd = df_bin_dens_clust)
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   bind_cols(tsne_one_c_shaped_scaled |>
@@ -3526,7 +3508,7 @@ Clustering of single-cell data is used to identify groups of cells with similar 
 #| label: published-pbmc
 ## Import data
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
-names(training_data_pbmc) <- paste0("pc", 1:50)
+names(training_data_pbmc) <- paste0("x", 1:50)
 
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
@@ -3567,7 +3549,7 @@ algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
   nldr_data = umap_pbmc, 
   num_x_bins = num_bins_x_pbmc,
-  col_start = "pc")
+  col_start = "x")
 
 umap_pbmc_scaled <- algo_obj_pbmc$nldr_scaled
 distance_pbmc <- algo_obj_pbmc$distance_df
@@ -4107,6 +4089,8 @@ By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the
 #| label: read-mnist
 ## Import data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
+names(training_data_mnist) <- paste0("x", 1:NCOL(training_data_mnist))
+
 training_data_mnist <- training_data_mnist |>
   mutate(ID = 1:NROW(training_data_mnist))
 
@@ -4127,7 +4111,7 @@ algo_obj_mnist <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_mnist, 
   nldr_data = tsne_mnist2, 
   num_x_bins = num_bins_x_mnist,
-  col_start = "PC")
+  col_start = "x")
 
 tsne_minst_scaled <- algo_obj_mnist$nldr_scaled
 distance_mnist <- algo_obj_mnist$distance_df
@@ -4181,12 +4165,9 @@ tsne_plot_mnist_clust <- ggplot() +
 
 ## Compute error
 error_df <- augment(
-  df_bin_centroids = df_bin_centroids_mnist, 
-  df_bin = df_bin_mnist, 
-  training_data = training_data_mnist, 
-  newdata = NULL, 
-  type_NLDR = "tSNE", 
-  col_start = "PC") 
+  highd_data = training_data_mnist,
+  model_2d = df_bin_centroids_mnist,
+  model_highd = df_bin_mnist) 
 
 ## To join embedding
 error_df <- error_df |>
