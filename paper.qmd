@@ -407,8 +407,7 @@ num_bins_x_two_curvy <- 22
 algo_obj_two_curvy <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_two_curvy, 
   nldr_data = tsne_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy,
-  col_start = "x")
+  num_x_bins = num_bins_x_two_curvy)
 
 tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_scaled
 distance_two_curvy <- algo_obj_two_curvy$distance_df
@@ -1054,8 +1053,7 @@ num_bins_x_two_curvy <- 15
 algo_obj_two_curvy2 <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_two_curvy, 
   nldr_data = tsne_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy,
-  col_start = "x")
+  num_x_bins = num_bins_x_two_curvy)
 
 distance_two_curvy2 <- algo_obj_two_curvy2$distance_df
 tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$tr_from_to_df
@@ -1118,8 +1116,7 @@ num_bins_x_two_curvy <- 48
 algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_two_curvy, 
   nldr_data = tsne_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy,
-  col_start = "x")
+  num_x_bins = num_bins_x_two_curvy)
 
 distance_two_curvy3 <- algo_obj_two_curvy3$distance_df
 tr_from_to_df_two_curvy3 <- algo_obj_two_curvy3$tr_from_to_df
@@ -1525,8 +1522,7 @@ num_bins_x_two_curvy <- 42
 algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_two_curvy, 
   nldr_data = umap_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy,
-  col_start = "x")
+  num_x_bins = num_bins_x_two_curvy)
 
 umap_two_curvy_scaled <- algo_obj_two_curvy3$nldr_scaled
 distance_two_curvy <- algo_obj_two_curvy3$distance_df
@@ -2045,7 +2041,7 @@ hex_grid_with_counts_two_curvy4 <- full_join(
 
 tsne_data_two_curvy2_with_hb_id <- hb_obj_tsne_two_curvy2$data_hb_id
 df_all_two_curvy4 <- dplyr::bind_cols(training_data_two_curvy, tsne_data_two_curvy2_with_hb_id)
-df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4, col_start = "x")
+df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4)
 
 df_b_two_curvy4 <- df_bin_two_curvy4 |>
   dplyr::filter(hb_id %in% df_bin_centroids4$hexID) |>
@@ -2334,7 +2330,7 @@ hex_grid_with_counts_two_curvy4 <- full_join(
 
 pacmap_data_two_curvy2_with_hb_id <- hb_obj_pacmap_two_curvy2$data_hb_id
 df_all_two_curvy4 <- dplyr::bind_cols(training_data_two_curvy, pacmap_data_two_curvy2_with_hb_id)
-df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4, col_start = "x")
+df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4)
 
 df_b_two_curvy4 <- df_bin_two_curvy4 |>
   dplyr::filter(hb_id %in% df_bin_centroids4$hexID) |>
@@ -2639,12 +2635,11 @@ lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
 gau1_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = tsne_gau_scaled,
+  highd_data = training_data_gau,
+  nldr_data = tsne_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
   q = 0.1
 )
 
@@ -2845,12 +2840,12 @@ lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
 gau1_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = umap_gau_scaled,
+  highd_data = training_data_gau,
+  nldr_data = umap_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE
+  q = 0.1
 )
 
 df_bin_centroids_gau1 <- gau1_model$df_bin_centroids
@@ -3049,12 +3044,11 @@ lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
 
 gau1_model <- fit_highd_model(
-  training_data = training_data_gau,
-  emb_df = pacmap_gau_scaled,
+  highd_data = training_data_gau,
+  nldr_data = pacmap_gau_scaled,
   bin1 = num_bins_x_gau1,
   r2 = r2_gau1,
   is_bin_centroid = TRUE,
-  is_rm_lwd_hex = FALSE,
   q = 0.1
 )
 
@@ -3270,8 +3264,7 @@ num_bins_x_one_c_shaped <- 20
 algo_obj_dens_clust <- gen_nldr_vis_algo_obj(
   high_d_data = one_c_shaped_data, 
   nldr_data = tsne_one_c_shaped, 
-  num_x_bins = num_bins_x_one_c_shaped,
-  col_start = "x")
+  num_x_bins = num_bins_x_one_c_shaped)
 
 tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_scaled
 distance_dens_clust <- algo_obj_dens_clust$distance_df
@@ -3548,8 +3541,7 @@ num_bins_x_pbmc <- 60
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
   nldr_data = umap_pbmc, 
-  num_x_bins = num_bins_x_pbmc,
-  col_start = "x")
+  num_x_bins = num_bins_x_pbmc)
 
 umap_pbmc_scaled <- algo_obj_pbmc$nldr_scaled
 distance_pbmc <- algo_obj_pbmc$distance_df
@@ -3782,8 +3774,7 @@ num_bins_x_pbmc <- 30
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
   nldr_data = umap_pbmc2, 
-  num_x_bins = num_bins_x_pbmc,
-  col_start = "pc")
+  num_x_bins = num_bins_x_pbmc)
 
 umap_pbmc_scaled_best <- algo_obj_pbmc$nldr_scaled
 distance_pbmc <- algo_obj_pbmc$distance_df
@@ -4110,8 +4101,7 @@ num_bins_x_mnist <- 30
 algo_obj_mnist <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_mnist, 
   nldr_data = tsne_mnist2, 
-  num_x_bins = num_bins_x_mnist,
-  col_start = "x")
+  num_x_bins = num_bins_x_mnist)
 
 tsne_minst_scaled <- algo_obj_mnist$nldr_scaled
 distance_mnist <- algo_obj_mnist$distance_df

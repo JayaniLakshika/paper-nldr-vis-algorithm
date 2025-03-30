@@ -8,7 +8,7 @@ interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="g
 
 # Generate the high-d-vis obj
 
-gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins, col_start = "x") {
+gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins) {
 
   nldr_scaled_obj <- gen_scaled_data(
     data = nldr_data)
@@ -45,7 +45,7 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins, col_start 
   nldr_with_hb_id <- hb_obj$data_hb_id
   df_all <- dplyr::bind_cols(high_d_data,
                              nldr_with_hb_id)
-  df_bin <- avg_highd_data(data = df_all, col_start = col_start)
+  df_bin <- avg_highd_data(data = df_all)
 
   hex_grid_with_counts <-
     left_join(hex_grid,
