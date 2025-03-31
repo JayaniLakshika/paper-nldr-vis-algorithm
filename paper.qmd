@@ -1866,7 +1866,9 @@ To understand how well the model fits the points—whether it fits well, works b
 
 <!-- Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video).  -->
 
-## Best fit
+## Best fit, or at least avoiding an inaccurate representation
+
+@fig-toy-mse shows a summary of plots that can be used to help assess the strength of the fit, and compare the fits for different representations. What does it mean to be a best fit for this problem? There probably isn't a best fit, but there are wrong representations. The goal is to help users decide on a useful and appropriate low-dimensional representation of the high-dimensional data. 
 
 Deciding on the best fit relies on several elements: 
 
@@ -1968,21 +1970,30 @@ error_two_non_linear_diff_shaped_close_clusters <- error_two_non_linear_diff_sha
 
 error_plot_two_non_linear_diff_shaped_close_clusters <-
   plot_mse(error_two_non_linear_diff_shaped_close_clusters) +
-  scale_x_continuous(breaks = sort(unique(error_two_non_linear_diff_shaped_close_clusters$a1))[seq(1, length(unique(error_two_non_linear_diff_shaped_close_clusters$a1)), by = 5)]) +
-  scale_color_manual(values=c('#e41a1c','#ff7f00','#4daf4a', "#a65628",'#636363', '#984ea3')) +
-  scale_y_log10()
-
+  scale_x_continuous(breaks =
+    sort(unique(error_two_non_linear_diff_shaped_close_clusters$a1))[
+      seq(1, length(
+        unique(error_two_non_linear_diff_shaped_close_clusters$a1)), 
+        by = 5)]) +
+  scale_color_manual(
+    values=c('#e41a1c','#ff7f00','#4daf4a', 
+             "#a65628",'#636363', '#984ea3')) +
+  scale_y_log10() + 
+  theme(aspect.ratio = 1.5)
 ```
 
 ```{r}
 #| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
-#| label: fig-two_non_linear_diff_shaped_close_clusters-mse
+#| label: fig-toy-mse
 #| fig-pos: H
 #| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
 
-free(error_plot_two_non_linear_diff_shaped_close_clusters) + wrap_plots(nldr_two_non_linear_diff_shaped_close_clusters1, nldr_two_non_linear_diff_shaped_close_clusters2, nldr_two_non_linear_diff_shaped_close_clusters3, 
+error_plot_two_non_linear_diff_shaped_close_clusters + wrap_plots(nldr_two_non_linear_diff_shaped_close_clusters1, nldr_two_non_linear_diff_shaped_close_clusters2, nldr_two_non_linear_diff_shaped_close_clusters3, 
                                     nldr_two_non_linear_diff_shaped_close_clusters4, nldr_two_non_linear_diff_shaped_close_clusters5,
-                                    nldr_two_non_linear_diff_shaped_close_clusters6, ncol = 2)
+                                    nldr_two_non_linear_diff_shaped_close_clusters6, ncol = 2, 
+                                    widths = c(50, 50))
 ```
 
 ```{r}
