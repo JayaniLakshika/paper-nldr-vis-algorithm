@@ -601,7 +601,7 @@ error_plot_two_curvy_hist <-
 ```
 
 ```{r}
-#| label: best-fit-two-curvy-proj-tsne
+#| label: prep-data-for-proj-tsne-best
 
 df_bin_two_curvy <- df_bin_two_curvy |>
   select(-hb_id) |>
@@ -629,15 +629,18 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 ```{r}
 #| eval: false
-langevitour::langevitour(df_model_data_two_curvy[1:(length(df_model_data_two_curvy)-1)],
-                         lineFrom = distance_df_small_edges_two_curvy$from,
-                         lineTo = distance_df_small_edges_two_curvy$to,
-                         group = factor(df_model_data_two_curvy$type,
-                                        c("data", "true mdeol","model")),
-                         levelColors = c(clr_choice, '#000000', "#000000"))
+df_model_data_two_curvy_filtered <- bind_rows(true_model_two_curvy, data_two_curvy)
+
+langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
+                         lineFrom = wireframe_true_model$from,
+                         lineTo = wireframe_true_model$to,
+                         group = factor(df_model_data_two_curvy_filtered$type,
+                                        c("data", "true model")),
+                         levelColors = c(clr_choice, "#000000"))
 ```
 
 ```{r}
+#| label: best-fit-two-curvy-proj-tsne
 ## First projection
 model_prj1 <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
