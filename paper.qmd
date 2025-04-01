@@ -628,6 +628,7 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 ```
 
 ```{r}
+#| label: langevitour-true-two-curvy-proj
 #| eval: false
 df_model_data_two_curvy_filtered <- bind_rows(true_model_two_curvy, data_two_curvy)
 
@@ -638,6 +639,21 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
                                         c("data", "true model")),
                          levelColors = c(clr_choice, "#000000"))
 ```
+
+```{r}
+#| label: langevitour-best-fit-two-curvy-proj-tsne
+#| eval: false
+
+df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
+
+langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
+                         lineFrom = distance_df_small_edges_two_curvy$from,
+                         lineTo = distance_df_small_edges_two_curvy$to,
+                         group = factor(df_model_data_two_curvy_filtered$type,
+                                        c("data", "model")),
+                         levelColors = c(clr_choice, "#000000"))
+```
+
 
 ```{r}
 #| label: best-fit-two-curvy-proj-tsne
