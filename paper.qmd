@@ -669,23 +669,6 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
-
-two_curvy_proj_tsne_first_model1 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
-    point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
-    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
-    plot_limits = c(-0.6, 0.6), 
-    title = "c", 
-    cex = 1.5, 
-    position = sc_ltr_pos,
-    axis_text_size = 4, 
-    is_category = FALSE) +
-    theme(aspect.ratio = 1,
-          legend.position = "none")
-
 two_curvy_proj_true <- plot_proj(
   projected_df = projected_df, 
   model_df = true_model_df_proj, 
@@ -701,6 +684,33 @@ two_curvy_proj_true <- plot_proj(
   theme(aspect.ratio=1, 
         legend.position = "none")
 
+# Changed the axis parameters
+axis_obj <- gen_axes(
+    proj = model_prj1 * 2,
+    limits = 0.8,
+    axis_pos_x = -0.4,
+    axis_pos_y = -0.4,
+    axis_labels = names(scaled_two_curvy_data),
+    threshold = 0.05)
+
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
+two_curvy_proj_tsne_first_model1 <- plot_proj(
+    projected_df = projected_df, 
+    model_df = model_df, 
+    axes = axes, 
+    circle = circle, 
+    point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
+    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+    plot_limits = c(-0.6, 0.6), 
+    title = "c", 
+    cex = 1.5, 
+    position = sc_ltr_pos,
+    axis_text_size = 2, 
+    is_category = FALSE) +
+    theme(aspect.ratio = 1,
+          legend.position = "none")
 
 ## Second projection
 model_prj2 <- cbind(
@@ -756,6 +766,18 @@ two_curvy_proj_true2 <- plot_proj(
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
+# Changed the axis parameters
+axis_obj <- gen_axes(
+    proj = model_prj2 * 2,
+    limits = 0.8,
+    axis_pos_x = -0.3,
+    axis_pos_y = -0.3,
+    axis_labels = names(scaled_two_curvy_data),
+    threshold = 0)
+
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
 two_curvy_proj_tsne_all_model1 <- plot_proj(
   projected_df = projected_df, 
   model_df = model_df, 
@@ -763,9 +785,9 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   circle = circle, 
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.6, 0.6), 
+  plot_limits = c(-0.5, 0.5), 
   title = "d", 
-  cex = 1.5, 
+  cex = 1, 
   position = sc_ltr_pos,
   axis_text_size = 4, 
   is_category = FALSE) #+
@@ -1158,8 +1180,8 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 ```{r}
 #| label: best-fit-tsne
 #| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (b) and then lifted to $4\\text{-}D$ (c, d). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
-#| fig-width: 10
-#| fig-height: 10
+#| fig-width: 8
+#| fig-height: 2
 
 nldr_two_curvy2 + 
   trimesh_two_curvy_removed1_tsne_with_data +
