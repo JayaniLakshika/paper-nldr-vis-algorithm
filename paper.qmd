@@ -625,7 +625,19 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
   filter(type == "model") |>
   select(-type)
 
+```
 
+```{r}
+#| eval: false
+langevitour::langevitour(df_model_data_two_curvy[1:(length(df_model_data_two_curvy)-1)],
+                         lineFrom = distance_df_small_edges_two_curvy$from,
+                         lineTo = distance_df_small_edges_two_curvy$to,
+                         group = factor(df_model_data_two_curvy$type,
+                                        c("data", "true mdeol","model")),
+                         levelColors = c(clr_choice, '#000000', "#000000"))
+```
+
+```{r}
 ## First projection
 model_prj1 <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
