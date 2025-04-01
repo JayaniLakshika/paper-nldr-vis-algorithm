@@ -2715,7 +2715,18 @@ trimesh_removed_gau_tsne <- ggplot() +
       x = tSNE1,
       y = tSNE2
     ),
-    alpha = 0.2) + 
+    colour = "#0077A3",
+    alpha = 0.1) + 
+  geom_segment(
+    data = tr_from_to_df_gau1,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    color = "#000000",
+    alpha = 0.4,
+    linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -2793,8 +2804,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
       y = proj2)) +
   geom_point(
     #size = 0.5,
-    alpha = 0.3,
-    color = "#999999") +
+    alpha = 0.05,
+    color = "#0077A3") +
   geom_segment(
     data = model_df, 
     aes(
@@ -2922,7 +2933,18 @@ trimesh_removed_gau_umap <- ggplot() +
       x = UMAP1,
       y = UMAP2
     ),
+    colour = "#0077A3",
     alpha = 0.05) + 
+  geom_segment(
+    data = tr_from_to_df_gau1,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    color = "#000000",
+    alpha = 0.4,
+    linewidth = 0.5) +
   interior_annotation("b1", 
                       position = c(0.95, 0.95),
                       cex = 2) +
@@ -2997,8 +3019,8 @@ five_gau_proj_umap_model1 <- projected_df |>
       x = proj1, 
       y = proj2)) +
   geom_point(
-    alpha = 0.3,
-    color = "#999999") +
+    alpha = 0.05,
+    color = "#0077A3") +
   geom_segment(
     data = model_df, 
     aes(
@@ -3125,9 +3147,19 @@ trimesh_removed_gau_pacmap <- ggplot() +
     data = pacmap_gau_scaled,
     aes(
       x = PaCMAP1,
-      y = PaCMAP2
-    ),
-    alpha = 0.3) +
+      y = PaCMAP2),
+      colour = "#0077A3",
+    alpha = 0.1) +
+  geom_segment(
+    data = tr_from_to_df_gau1,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    color = "#000000",
+    alpha = 0.4,
+    linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -3204,8 +3236,8 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       x = proj1,
       y = proj2)) +
   geom_point(
-    alpha = 0.3,
-    color = "#999999") +
+    alpha = 0.05,
+    color = "#0077A3") +
   geom_segment(
     data = model_df,
     aes(
@@ -3930,17 +3962,17 @@ pbmc_proj_umap_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the author suggested \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.02$, $b = 3480/349 (60, 58)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.04$, $b = 1020/347 (30, 34)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.02$, $b = 3480/349 (60, 58)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.04$, $b = 1020/347 (30, 34)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 15
-#| out-width: 60%
+#| out-width: 90%
 
 free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
   pbmc_proj_umap_model2 + pbmc_proj_umap_model2_best +
-  plot_layout(nrow=3) &
+  plot_layout(nrow=2, byrow=FALSE) &
   theme(legend.position='none')
 ```
 
@@ -4058,8 +4090,13 @@ error_mnist <- error_mnist |>
 #| label: error-comp-mnist
 
 error_plot_mnist <- plot_mse(error_mnist) +
-  scale_x_continuous(breaks = sort(unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), by = 5), 24)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8',"#ff7f00", '#984ea3', '#999999', '#a65628')) 
+  scale_x_continuous(breaks = sort(
+    unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
+                                       by = 5), 24)]) +
+  scale_color_manual(
+    values=c('#e41a1c','#377eb8',"#ff7f00", 
+             '#984ea3', '#999999', '#a65628')) +
+  theme(aspect.ratio=1.5)
 
 ```
 
@@ -4070,7 +4107,7 @@ error_plot_mnist <- plot_mse(error_mnist) +
 #| fig-pos: H
 #| out-width: 92%
 
-free(error_plot_mnist) + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
 
