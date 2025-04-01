@@ -687,7 +687,7 @@ two_curvy_proj_true <- plot_proj(
 # Changed the axis parameters
 axis_obj <- gen_axes(
     proj = model_prj1 * 2,
-    limits = 0.8,
+    limits = 0.9,
     axis_pos_x = -0.4,
     axis_pos_y = -0.4,
     axis_labels = names(scaled_two_curvy_data),
@@ -723,10 +723,10 @@ proj_obj2 <- get_projection(projection = model_prj2,
                             scaled_data_model = scaled_two_curvy_data_model, 
                             distance_df_small_edges = distance_df_small_edges_two_curvy, 
                             axis_param = list(limits = 0.5, 
-                                              axis_scaled = 6,
+                                              axis_scaled = 2,
                                               axis_pos_x = -0.3, 
                                               axis_pos_y = -0.3, 
-                                              threshold = 0))
+                                              threshold = 0.01))
 
 projected_df <- proj_obj2$projected_df
 model_df <- proj_obj2$model_df
@@ -766,14 +766,14 @@ two_curvy_proj_true2 <- plot_proj(
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
-# Changed the axis parameters
+#Changed the axis parameters
 axis_obj <- gen_axes(
     proj = model_prj2 * 2,
-    limits = 0.8,
-    axis_pos_x = -0.3,
-    axis_pos_y = -0.3,
+    limits = 0.7,
+    axis_pos_x = -0.35,
+    axis_pos_y = -0.35,
     axis_labels = names(scaled_two_curvy_data),
-    threshold = 0)
+    threshold = 0.02)
 
 axes <- axis_obj$axes
 circle <- axis_obj$circle
@@ -789,7 +789,7 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   title = "d", 
   cex = 1, 
   position = sc_ltr_pos,
-  axis_text_size = 4, 
+  axis_text_size = 2, 
   is_category = FALSE) #+
   #geom_segment(
   #  data = model_df, 
