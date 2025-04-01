@@ -4295,8 +4295,9 @@ highd_error_2d_mnist <- error_df |>
 <!-- According to @fig-mnist-tri-proj (b), the non-linear structure observed in the \gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist-tri-proj (c)), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist-tri-proj (d), some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data.  -->
 
 <!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
+
 ```{r}
-#| label: mnist-model-proj
+#| label: data-prep-mnist-model-proj
 
 df_b_mnist <- df_bin_mnist |>
   dplyr::filter(hb_id %in% df_bin_centroids_mnist$hexID) |>
@@ -4318,6 +4319,28 @@ scaled_mnist_data <- scaled_mnist |>
 scaled_mnist_data_model <- scaled_mnist |>
   filter(type == "model") |>
   select(-type)
+```
+
+```{r}
+#| label: langevitour-best-fit-two-curvy-proj-tsne
+#| eval: false
+
+data_mnist_cluster <- data_mnist |>
+  select(-type) |>
+  mutate(type = tsne_minst_scaled$cluster)
+
+df_model_data_mnist_n <- bind_rows(data_mnist_cluster, df_b_mnist)
+
+langevitour::langevitour(df_model_data_mnist_n[1:(length(df_model_data_mnist_n)-1)],
+                         lineFrom = distance_df_small_edges_mnist$from,
+                         lineTo = distance_df_small_edges_mnist$to,
+                         group = factor(df_model_data_mnist_n$type,
+                                        c("big_clust", "small_clust", "model")),
+                         levelColors = c("#999999",'#ff7f00', "#000000"))
+```
+
+```{r}
+#| label: mnist-model-proj
 
 projection <- cbind(
   c(-0.04295,0.42361,-0.36702,0.13103,-0.19678,-0.29621,0.00471,0.09323,0.18822,-0.18484),
