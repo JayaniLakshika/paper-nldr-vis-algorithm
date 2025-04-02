@@ -2832,7 +2832,26 @@ scaled_gau_data_model <- scaled_gau |>
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
+```
 
+
+```{r}
+#| label: langevitour-five-gau-tsne-proj
+#| eval: false
+
+df_model_data_n <- bind_rows(data_gau, df_b)
+
+langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
+                         lineFrom = distance_df_small_edges$from,
+                         lineTo = distance_df_small_edges$to,
+                         group = factor(df_model_data_n$type,
+                                        c("data", "model")),
+                         levelColors = c(clr_choice, "#000000"))
+```
+
+
+```{r}
+#| label: five-gau-tsne-projs
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558,-0.23854,-0.63659,0.35753))
@@ -3048,7 +3067,25 @@ scaled_gau_data <- scaled_gau |>
 scaled_gau_data_model <- scaled_gau |>
   filter(type == "model") |>
   select(-type)
+```
 
+```{r}
+#| label: langevitour-five-gau-umap-proj
+#| eval: false
+
+df_model_data_n <- bind_rows(data_gau, df_b)
+
+langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
+                         lineFrom = distance_df_small_edges$from,
+                         lineTo = distance_df_small_edges$to,
+                         group = factor(df_model_data_n$type,
+                                        c("data", "model")),
+                         levelColors = c(clr_choice, "#000000"))
+```
+
+
+```{r}
+#| label: five-gau-umap-projs
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
   c(0.42558, -0.23854, -0.63659, 0.35753))
@@ -3264,7 +3301,25 @@ scaled_gau_data_model <- scaled_gau |>
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < benchmark_gau1)
+```
 
+```{r}
+#| label: langevitour-five-gau-pacmap-proj
+#| eval: false
+
+df_model_data_n <- bind_rows(data_gau, df_b)
+
+langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
+                         lineFrom = distance_df_small_edges$from,
+                         lineTo = distance_df_small_edges$to,
+                         group = factor(df_model_data_n$type,
+                                        c("data", "model")),
+                         levelColors = c(clr_choice, "#000000"))
+```
+
+
+```{r}
+#| label: five-gau-pacmap-projs
 ## First projection
 projection <- cbind(
   c(-0.00215,-0.68905,-0.04778,-0.54223),
@@ -3492,7 +3547,7 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 ```
 
 ```{r}
-#| label: langevitour-pbmc-umap-author-proj
+#| label: langevitour-c-shaped-tsne-proj
 #| eval: false
 
 data_c_shaped_n <- data_c_shaped |>
@@ -4378,7 +4433,7 @@ scaled_mnist_data_model <- scaled_mnist |>
 ```
 
 ```{r}
-#| label: langevitour-best-fit-two-curvy-proj-tsne
+#| label: langevitour-best-fit-mnist-proj-tsne
 #| eval: false
 
 data_mnist_cluster <- data_mnist |>
