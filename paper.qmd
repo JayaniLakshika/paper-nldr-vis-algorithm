@@ -3466,7 +3466,7 @@ tr_from_to_df_dens_clust <- inner_join(
 ```
 
 ```{r}
-#| label: proj-one-dens-clust
+#| label: prep-proj-one-dens-clust
 
 # Apply the scaling
 
@@ -3489,6 +3489,29 @@ scaled_c_shaped_data <- scaled_c_shaped |>
 scaled_c_shaped_data_model <- scaled_c_shaped |>
   filter(type == "model") |>
   select(-type)
+```
+
+```{r}
+#| label: langevitour-pbmc-umap-author-proj
+#| eval: false
+
+data_c_shaped_n <- data_c_shaped |>
+  select(-type) |>
+  mutate(type = factor(error_df_one_curvy_abs$error_cat_n2,
+                          levels=c("low", "high")))
+
+df_model_data_n <- bind_rows(df_bin_dens_clust, data_c_shaped_n)
+
+langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
+                         lineFrom = distance_df_small_edges_c_shaped_structure$from,
+                         lineTo = distance_df_small_edges_c_shaped_structure$to,
+                         group = factor(df_model_data_n$type,
+                                        c("low", "high", "model")),
+                         levelColors = c('#d9d9d9', '#800026', "#000000"))
+```
+
+```{r}
+#| label: proj-one-dens-clust
 
 ## First projection
 projection <- cbind(
