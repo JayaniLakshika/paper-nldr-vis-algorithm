@@ -28,7 +28,7 @@ source(here::here("scripts/nldr_code.R"))
 p2 <- 4
 vert2 <- simplex(p2)$points
 
-df <- rmvnorm(5000, mean = rep(0, 4), sigma = diag(4) * 0.05)/6
+df <- rmvnorm(5000, mean = rep(0, 4), sigma = diag(4) * c(0.05, 0.2, 1, 0.5))/6 #diag(4) * 0.05
 df[1:1000,] <- df[1:1000,] + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
 df[1001:2000,] <- df[1001:2000,] + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
 df[2001:3000,] <- df[2001:3000,] + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
