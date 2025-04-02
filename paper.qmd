@@ -3679,7 +3679,7 @@ trimesh_removed_pbmc <- ggplot() +
 ```
 
 ```{r}
-#| label: pbmc-umap-model-proj
+#| label: prep-pbmc-umap-model-proj
 
 data_pbmc <- training_data_pbmc |> 
   select(-ID) |>
@@ -3705,10 +3705,24 @@ scaled_pbmc_data <- scaled_pbmc |>
 scaled_pbmc_data_model <- scaled_pbmc |>
   filter(type == "model") |>
   select(-type)
+```
 
-# # Combine with the true model for visualization
-# df <- dplyr::bind_rows(scaled_pbmc_data_model |> mutate(type = "model"),
-#                        scaled_pbmc_data |> mutate(type = "data"))
+```{r}
+#| label: langevitour-pbmc-umap-author-proj
+#| eval: false
+
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+
+langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
+                         lineFrom = distance_df_small_edges_pbmc$from,
+                         lineTo = distance_df_small_edges_pbmc$to,
+                         group = factor(df_model_data_pbmc_n$type,
+                                        c("data", "model")),
+                         levelColors = c("#a65628", "#000000"))
+```
+
+```{r}
+#| label: pbmc-umap-model-proj
 
 ## First projection
 projection <- cbind(
@@ -3912,7 +3926,7 @@ trimesh_removed_pbmc_best <- ggplot() +
 ```
 
 ```{r}
-#| label: pbmc-umap-model-proj-best
+#| label: prep-pbmc-umap-model-proj-best
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
@@ -3934,6 +3948,25 @@ scaled_pbmc_data <- scaled_pbmc |>
 scaled_pbmc_data_model <- scaled_pbmc |>
   filter(type == "model") |>
   select(-type)
+```
+
+```{r}
+#| label: langevitour-pbmc-umap-best-proj
+#| eval: false
+
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+
+langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
+                         lineFrom = distance_df_small_edges_pbmc$from,
+                         lineTo = distance_df_small_edges_pbmc$to,
+                         group = factor(df_model_data_pbmc_n$type,
+                                        c("data", "model")),
+                         levelColors = c("#999999", "#000000"))
+```
+
+
+```{r}
+#| label: pbmc-umap-model-proj-best
 
 ## First projection
 projection <- cbind(
