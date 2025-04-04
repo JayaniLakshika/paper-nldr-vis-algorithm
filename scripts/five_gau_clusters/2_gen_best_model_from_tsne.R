@@ -66,6 +66,4 @@ error_gau |>
 ggplot(error_gau, aes(x = a1,
                       y = MSE)) +
   geom_point() +
-  geom_line() +
-  geom_vline(xintercept = 65, linetype="solid",
-             color = "black", linewidth=0.8, alpha = 0.5)
+  geom_line()

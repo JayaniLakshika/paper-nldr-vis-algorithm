@@ -3697,6 +3697,10 @@ df_bin_pbmc <- algo_obj_pbmc$df_bin
 distance_df_small_edges_pbmc <- distance_pbmc |>
   filter(distance < benchmark_pbmc)
 
+umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
+  mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
+  mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
+
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
   by = c("from", "to"))
@@ -3711,15 +3715,17 @@ trimesh_removed_pbmc <- ggplot() +
                colour = "#000000",
                linewidth = 1) +
   geom_point(
-    data = umap_pbmc_scaled,
+    data = umap_pbmc_scaled_with_cluster,
     aes(
       x = UMAP1,
-      y = UMAP2
+      y = UMAP2,
+      color = cluster
     ),
     alpha = 0.2,
-    size = 0.1,
-    color = '#a65628'
+    size = 0.1#,
+    #color = '#a65628'
   )  +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("a1", cex = 2) +
   theme(
     aspect.ratio = 1
@@ -3936,6 +3942,9 @@ tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
   by = c("from", "to"))
 
+umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
+  mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
+
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_segment(data = tr_from_to_df_pbmc, 
                aes(
@@ -3946,14 +3955,16 @@ trimesh_removed_pbmc_best <- ggplot() +
                colour = "#000000",
                linewidth = 1) +
   geom_point(
-    data = umap_pbmc_scaled_best,
+    data = umap_pbmc_scaled_best_with_cluster,
     aes(
       x = emb1,
-      y = emb2
+      y = emb2,
+      color = cluster
     ),
-    alpha = 0.3,
-    color = "#999999"
+    alpha = 0.3#,
+    #color = "#999999"
   )  +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("b1", cex = 2) +
   theme(
     aspect.ratio = 1
