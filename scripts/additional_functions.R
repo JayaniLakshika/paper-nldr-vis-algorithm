@@ -182,13 +182,18 @@ get_projection <- function(projection, proj_scale, scaled_data,
 
 # Plot projection
 
-plot_proj <- function(projected_df, model_df, axes, circle,
+plot_proj <- function(proj_obj,
                       point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
                       line_param = c(0.5, 0.5, "#000000"), #linewidth, alpha
                       plot_limits, title, cex = 2,
                       position = c(0.92, 0.92),
                       axis_text_size = 3,
                       is_color = FALSE) {
+
+  projected_df <- proj_obj$projected_df
+  model_df <- proj_obj$model_df
+  axes <- proj_obj$axes
+  circle <- proj_obj$circle
 
   if(is_color == FALSE) {
 
@@ -203,6 +208,9 @@ plot_proj <- function(projected_df, model_df, axes, circle,
         color = point_param[3])
 
   } else {
+
+    projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj$cluster)
 
     initial_plot <- ggplot() +
       geom_point(

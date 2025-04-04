@@ -673,11 +673,6 @@ proj_obj1 <- get_projection(projection = model_prj1,
                                  axis_pos_y = -0.5, 
                                  threshold = 0.03))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 ## For true model
 
 projection_scaled <- model_prj1 * 1
@@ -700,11 +695,11 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
+proj_obj1_true <- proj_obj1
+proj_obj1_true[["model_df"]] <- true_model_df_proj
+
 two_curvy_proj_true <- plot_proj(
-  projected_df = projected_df, 
-  model_df = true_model_df_proj, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj1_true, 
   point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.6, 0.6), 
@@ -727,11 +722,11 @@ axis_obj <- gen_axes(
 axes <- axis_obj$axes
 circle <- axis_obj$circle
 
+proj_obj1[["axes"]] <- axes
+proj_obj1[["circle"]] <- circle
+
 two_curvy_proj_tsne_first_model1 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -759,10 +754,6 @@ proj_obj2 <- get_projection(projection = model_prj2,
                                               axis_pos_y = -0.3, 
                                               threshold = 0.01))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
 
 projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% model_prj2
 
@@ -782,11 +773,11 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
+proj_obj2_true <- proj_obj2
+proj_obj2_true[["model_df"]] <- true_model_df_proj
+
 two_curvy_proj_true2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = true_model_df_proj, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj2_true, 
     point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "black"), # linewidth, alpha
     plot_limits = c(-0.42, 0.42), 
@@ -809,11 +800,11 @@ axis_obj <- gen_axes(
 axes <- axis_obj$axes
 circle <- axis_obj$circle
 
+proj_obj2[["axes"]] <- axes
+proj_obj2[["circle"]] <- circle
+
 two_curvy_proj_tsne_all_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj2, 
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.5, 0.5), 
@@ -1806,11 +1797,6 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.5, 
                                               threshold = 0.04))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 ## Projection with Delauany triangulation
 
 projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
@@ -1844,10 +1830,7 @@ model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID")
 names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 two_curvy_proj_first_model1_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -1862,11 +1845,12 @@ two_curvy_proj_first_model1_umap <- plot_proj(
 
 ## Projection with Delauany triangulation
 
+proj_obj1_temp1 <- proj_obj1
+proj_obj1_temp2 <- proj_obj1
+proj_obj1_temp1[["model_df"]] <- model_df1
+
 two_curvy_proj_model_delaunay_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df1, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1_temp1, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -1878,11 +1862,10 @@ two_curvy_proj_model_delaunay_umap <- plot_proj(
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
+proj_obj1_temp2[["model_df"]] <- model_df2
+
 two_curvy_proj_model_benchmark2_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df2, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1_temp2, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -3584,21 +3567,11 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.28,
                                               threshold = 0.017))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes2 <- proj_obj1$axes
-circle <- proj_obj1$circle
-
-## To add error category
-projected_df <- projected_df |>
-  mutate(cluster = factor(error_df_one_curvy_abs$error_cat_n2,
-                          levels=c("deselected", "selected")))
+proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n2,
+                          levels=c("deselected", "selected"))
 
 five_c_shaped_proj_tsne_model1 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes2, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
@@ -3611,17 +3584,12 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     theme(aspect.ratio = 1,
           legend.position = "none")
 
-projected_df <- projected_df |>
-  select(-cluster) |>
-  mutate(cluster = factor(error_df_one_curvy_abs$error_cat_n,
-                          levels=c("deselected", "selected")))
+proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n,
+                          levels=c("deselected", "selected"))
 
 
 five_c_shaped_proj_tsne_model1_selected <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes2, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
@@ -3819,16 +3787,8 @@ proj_obj1 <- get_projection(projection = projection,
                                  axis_pos_y = -0.48, 
                                  threshold = 0.082))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 pbmc_proj_umap_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
   title = "a2", 
@@ -3852,16 +3812,8 @@ proj_obj2 <- get_projection(projection = projection,
                                  axis_pos_y = -0.75, 
                                  threshold = 0.12))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
-
 pbmc_proj_umap_model2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj2, 
     point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "a3", 
@@ -4063,16 +4015,8 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.48, 
                                               threshold = 0.082))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 pbmc_proj_umap_model1_best <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
     plot_limits = c(-0.65, 0.65), 
     title = "b2", 
@@ -4096,16 +4040,8 @@ proj_obj2 <- get_projection(projection = projection,
                                               axis_pos_y = -0.75, 
                                               threshold = 0.12))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
-
 pbmc_proj_umap_model2_best <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj2,
     point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "b3", 
@@ -4469,18 +4405,10 @@ proj_obj1 <- get_projection(projection = projection,
                                  axis_pos_y = -0.9, 
                                  threshold = 0.06))
 
-projected_df <- proj_obj1$projected_df |>
-  mutate(cluster = tsne_minst_scaled$cluster)
-
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
+proj_obj1[["cluster"]] <- tsne_minst_scaled$cluster
 
 mnist_proj_tsne_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj1, 
   point_param = c(0.5, 0.5), # size, alpha, color
   line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
   plot_limits = c(-1.1, 0.9), 
@@ -4494,10 +4422,7 @@ mnist_proj_tsne_model1 <- plot_proj(
   )
 
 mnist_proj_tsne_model1_link <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1.1, 0.9), 
@@ -4526,18 +4451,10 @@ proj_obj2 <- get_projection(projection = projection,
                                  axis_pos_y = -0.83, 
                                  threshold = 0.06))
 
-projected_df <- proj_obj2$projected_df |>
-  mutate(cluster = tsne_minst_scaled$cluster)
-
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
+proj_obj2[["cluster"]] <- tsne_minst_scaled$cluster
 
 mnist_proj_tsne_model2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(0.5, 0.3), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
@@ -4551,10 +4468,7 @@ mnist_proj_tsne_model2 <- plot_proj(
     )
 
 mnist_proj_tsne_model2_link <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
