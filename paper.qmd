@@ -199,16 +199,17 @@ nldr1c <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a")
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+# umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_3_min_dist_0.6.rds")
 nldr2 <- umap_pbmc |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("b")
 
 nldr2c <- umap_pbmc |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("b")
 
@@ -224,7 +225,7 @@ nldr3 <- umap_pbmc |>
 nldr3c <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("c")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
@@ -238,7 +239,7 @@ nldr4 <- tsne_pbmc |>
 nldr4c <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
   interior_annotation("d")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
@@ -252,7 +253,7 @@ nldr5 <- tsne_pbmc |>
 nldr5c <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
   interior_annotation("e")
 
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
@@ -265,7 +266,7 @@ nldr6 <- phate_pbmc |>
 nldr6c <- phate_pbmc |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
-  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("f")
 
 trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
@@ -278,7 +279,7 @@ nldr7 <- trimap_pbmc |>
 nldr7c <- trimap_pbmc |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
   interior_annotation("g")
 
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
@@ -291,7 +292,7 @@ nldr8 <- pacmap_pbmc |>
 nldr8c <- pacmap_pbmc |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
   interior_annotation("h")
 ```
 
@@ -3841,8 +3842,8 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
-error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
+error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_3_min_dist_0.6.rds")
 error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
 error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
@@ -3864,6 +3865,10 @@ error_pbmc <- error_pbmc |>
   group_by(method, a1) |>
   filter(MSE == min(MSE)) |>
   ungroup()
+
+error_pbmc <- error_pbmc |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_3_min_dist_0.6", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 ```
 
 ```{r}
@@ -3871,8 +3876,7 @@ error_pbmc <- error_pbmc |>
 
 error_plot_pbmc <- plot_mse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
-                              '#984ea3','#999999','#a65628','#f781bf')) 
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) 
 
 ```
 
@@ -3897,7 +3901,7 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 
 ```{r}
 #| label: umap-pbmc-read-best
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_3_min_dist_0.6.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc2)
 umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
@@ -3911,7 +3915,7 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 #| label: num-bins-pbmc
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 30
+num_bins_x_pbmc <- 29
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3944,8 +3948,8 @@ trimesh_removed_pbmc_best <- ggplot() +
   geom_point(
     data = umap_pbmc_scaled_best,
     aes(
-      x = UMAP1,
-      y = UMAP2
+      x = emb1,
+      y = emb2
     ),
     alpha = 0.3,
     color = "#999999"

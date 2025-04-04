@@ -6,6 +6,8 @@ training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
 
+names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
+
 ## For umap
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
 pbmc_scaled_obj_umap <- gen_scaled_data(
