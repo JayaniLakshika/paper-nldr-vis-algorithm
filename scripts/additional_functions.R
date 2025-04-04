@@ -190,21 +190,9 @@ plot_proj <- function(projected_df, model_df, axes, circle,
                       axis_text_size = 3,
                       is_color = FALSE) {
 
-  initial_plot <- ggplot() +
-    geom_segment(
-      data = model_df,
-      aes(
-        x = proj1_from,
-        y = proj2_from,
-        xend = proj1_to,
-        yend = proj2_to),
-      color = line_param[3],
-      linewidth = as.numeric(line_param[1]),
-      alpha = as.numeric(line_param[2]))
-
   if(is_color == FALSE) {
 
-    initial_plot <- initial_plot +
+    initial_plot <- ggplot() +
       geom_point(
         data = projected_df,
         aes(
@@ -216,7 +204,7 @@ plot_proj <- function(projected_df, model_df, axes, circle,
 
   } else {
 
-    initial_plot <- initial_plot +
+    initial_plot <- ggplot() +
       geom_point(
         data = projected_df,
         aes(
@@ -229,6 +217,16 @@ plot_proj <- function(projected_df, model_df, axes, circle,
   }
 
   initial_plot <- initial_plot +
+    geom_segment(
+      data = model_df,
+      aes(
+        x = proj1_from,
+        y = proj2_from,
+        xend = proj1_to,
+        yend = proj2_to),
+      color = line_param[3],
+      linewidth = as.numeric(line_param[1]),
+      alpha = as.numeric(line_param[2])) +
     geom_segment(
       data=axes,
       aes(x=x1, y=y1, xend=x2, yend=y2),
