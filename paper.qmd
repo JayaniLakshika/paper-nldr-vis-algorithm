@@ -200,7 +200,7 @@ nldr1c <- umap_pbmc |>
   interior_annotation("a")
 
 # umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_3_min_dist_0.6.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
 nldr2 <- umap_pbmc |>
   ggplot(aes(x = emb1,
              y = emb2))+
@@ -3680,7 +3680,7 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ```{r}
 #| label: hexbin-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 60
+num_bins_x_pbmc <- 26
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3765,14 +3765,18 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 #| label: langevitour-pbmc-umap-author-proj
 #| eval: false
 
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+data_pbmc_n <- data_pbmc |>
+  select(-type) |>
+  mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
+
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = distance_df_small_edges_pbmc$from,
                          lineTo = distance_df_small_edges_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
-                                        c("data", "model")),
-                         levelColors = c("#a65628", "#000000"))
+                                        c("cluster1", "cluster2", "cluster3", "model")),
+                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
 ```
 
 ```{r}
@@ -3794,14 +3798,16 @@ proj_obj1 <- get_projection(projection = projection,
                                  axis_pos_y = -0.48, 
                                  threshold = 0.082))
 
+proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+
 pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
-  point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+  point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
   title = "a2", 
   cex = 2, 
   axis_text_size = 5,
-  is_color = FALSE)
+  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -3819,14 +3825,16 @@ proj_obj2 <- get_projection(projection = projection,
                                  axis_pos_y = -0.75, 
                                  threshold = 0.12))
 
+proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+
 pbmc_proj_umap_model2 <- plot_proj(
     proj_obj = proj_obj2, 
-    point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "a3", 
     cex = 2, 
     axis_text_size = 5,
-    is_color = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ```
 
@@ -3849,7 +3857,10 @@ pbmc_proj_umap_model2 <- plot_proj(
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 # error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
-error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_3_min_dist_0.6.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_3_min_dist_0.6.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_4_min_dist_0.6.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
+error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
 error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
 error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
@@ -3874,7 +3885,7 @@ error_pbmc <- error_pbmc |>
 
 error_pbmc <- error_pbmc |>
   mutate(method = factor(method,
-                         levels = c("UMAP_3_min_dist_0.6", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 ```
 
 ```{r}
@@ -3907,7 +3918,7 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 
 ```{r}
 #| label: umap-pbmc-read-best
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_3_min_dist_0.6.rds")
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc2)
 umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
@@ -3921,7 +3932,7 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 #| label: num-bins-pbmc
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 29
+num_bins_x_pbmc <- 18
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3936,9 +3947,9 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc) 
+  filter(distance < 0.07) #benchmark_pbmc
 
-tr_from_to_df_pbmc <- inner_join(
+tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
   by = c("from", "to"))
 
@@ -4000,14 +4011,14 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 #| label: langevitour-pbmc-umap-best-proj
 #| eval: false
 
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = distance_df_small_edges_pbmc$from,
                          lineTo = distance_df_small_edges_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
-                                        c("data", "model")),
-                         levelColors = c("#999999", "#000000"))
+                                        c("cluster1", "cluster2", "cluster3", "model")),
+                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
 ```
 
 
@@ -4030,14 +4041,16 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.48, 
                                               threshold = 0.082))
 
+proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+
 pbmc_proj_umap_model1_best <- plot_proj(
     proj_obj = proj_obj1,
-    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-0.65, 0.65), 
     title = "b2", 
     cex = 2, 
     axis_text_size = 5,
-    is_color = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -4055,14 +4068,16 @@ proj_obj2 <- get_projection(projection = projection,
                                               axis_pos_y = -0.75, 
                                               threshold = 0.12))
 
+proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+
 pbmc_proj_umap_model2_best <- plot_proj(
     proj_obj = proj_obj2,
-    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "b3", 
     cex = 2, 
     axis_text_size = 5,
-    is_color = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
 <!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
