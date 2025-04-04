@@ -190,11 +190,7 @@ plot_proj <- function(projected_df, model_df, axes, circle,
                       axis_text_size = 3,
                       is_color = FALSE) {
 
-  initial_plot <- projected_df |>
-    ggplot(
-      aes(
-        x = proj1,
-        y = proj2)) +
+  initial_plot <- ggplot() +
     geom_segment(
       data = model_df,
       aes(
@@ -210,6 +206,10 @@ plot_proj <- function(projected_df, model_df, axes, circle,
 
     initial_plot <- initial_plot +
       geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2),
         size = as.numeric(point_param[1]),
         alpha = as.numeric(point_param[2]),
         color = point_param[3])
@@ -218,6 +218,11 @@ plot_proj <- function(projected_df, model_df, axes, circle,
 
     initial_plot <- initial_plot +
       geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2,
+          color = cluster),
         size = as.numeric(point_param[1]),
         alpha = as.numeric(point_param[2]))
 
