@@ -3703,7 +3703,7 @@ umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
 
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
-  by = c("from", "to"))
+  by = c("from", "to")) 
 
 trimesh_removed_pbmc <- ggplot() + 
   geom_point(
@@ -3956,7 +3956,8 @@ tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
 
 tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
-  by = c("from", "to")) 
+  by = c("from", "to")) |>
+  select(-ID)
 
 umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
@@ -4304,17 +4305,14 @@ tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
   by = c("from", "to"))
 
+# tr_from_to_df_mnist <- tr_from_to_df_mnist |>
+#   mutate(ID = row_number()) |>
+#   filter(!(ID %in% c(1205, 1629, 1170)))
+
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
 
 trimesh_removed_mnist <- ggplot() + 
-  geom_segment(data = tr_from_to_df_mnist, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#000000") +
   geom_point(data = tsne_minst_scaled,
              aes(
                x = tSNE1,
@@ -4322,6 +4320,13 @@ trimesh_removed_mnist <- ggplot() +
                colour = cluster
              ),
              alpha=0.2)+
+    geom_segment(data = tr_from_to_df_mnist, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#000000") +
   scale_color_manual(values=c("#999999",'#ff7f00')) +
   interior_annotation("a", c(0.08, 0.93), cex = 1.5) +
   theme(legend.position = "none") 
