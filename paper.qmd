@@ -3680,7 +3680,7 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ```{r}
 #| label: hexbin-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 26
+num_bins_x_pbmc <- 22
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3932,7 +3932,7 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 #| label: num-bins-pbmc
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 18
+num_bins_x_pbmc <- 13
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3947,7 +3947,7 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < 0.07) #benchmark_pbmc
+  filter(distance < 0.1) #benchmark_pbmc
 
 tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
@@ -4097,7 +4097,7 @@ pbmc_proj_umap_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.02$, $b = 3480/349 (60, 58)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.04$, $b = 1020/347 (30, 34)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.1$, $b = 234/98 (13, 18)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
