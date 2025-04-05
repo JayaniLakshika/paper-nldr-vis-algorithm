@@ -3706,14 +3706,6 @@ tr_from_to_df_pbmc <- inner_join(
   by = c("from", "to"))
 
 trimesh_removed_pbmc <- ggplot() + 
-  geom_segment(data = tr_from_to_df_pbmc, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#000000",
-               linewidth = 1) +
   geom_point(
     data = umap_pbmc_scaled_with_cluster,
     aes(
@@ -3725,6 +3717,14 @@ trimesh_removed_pbmc <- ggplot() +
     size = 0.1#,
     #color = '#a65628'
   )  +
+  geom_segment(data = tr_from_to_df_pbmc, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#000000",
+               linewidth = 1) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("a1", cex = 2) +
   theme(
@@ -3962,14 +3962,6 @@ umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
 
 trimesh_removed_pbmc_best <- ggplot() + 
-  geom_segment(data = tr_from_to_df_pbmc, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#000000",
-               linewidth = 1) +
   geom_point(
     data = umap_pbmc_scaled_best_with_cluster,
     aes(
@@ -3979,7 +3971,15 @@ trimesh_removed_pbmc_best <- ggplot() +
     ),
     alpha = 0.3#,
     #color = "#999999"
-  )  +
+  ) +
+    geom_segment(data = tr_from_to_df_pbmc, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#000000",
+               linewidth = 1) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("b1", cex = 2) +
   theme(
