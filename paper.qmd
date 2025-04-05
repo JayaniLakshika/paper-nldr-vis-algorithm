@@ -3949,9 +3949,14 @@ df_bin_pbmc <- algo_obj_pbmc$df_bin
 distance_df_small_edges_pbmc <- distance_pbmc |>
   filter(distance < 0.1) #benchmark_pbmc
 
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  mutate(ID = row_number()) |>
+  filter(!(ID %in% c(19, 20, 23, 24, 29, 33, 48,
+                     183, 181, 178, 176))) #19
+
 tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
-  by = c("from", "to"))
+  by = c("from", "to")) 
 
 umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
