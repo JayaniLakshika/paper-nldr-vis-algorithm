@@ -3682,7 +3682,7 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ```{r}
 #| label: hexbin-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 27
+num_bins_x_pbmc <- 21
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3697,13 +3697,13 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < 0.05)#benchmark_pbmc
+  filter(distance < 0.06)#benchmark_pbmc
 
 umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
   mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
   mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
 
-tr_from_to_df_pbmc <- inner_join(
+tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
   by = c("from", "to")) 
 
@@ -3934,7 +3934,7 @@ tsne_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 #| label: tsne-num-bins-pbmc
 
 ## Compute hexbin parameters
-num_bins_x_tsne_pbmc <- 17
+num_bins_x_tsne_pbmc <- 22
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3949,7 +3949,7 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < 0.1) #benchmark_pbmc
+  filter(distance < benchmark_pbmc) #benchmark_pbmc
 
 # tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
 #   mutate(ID = row_number()) |>
