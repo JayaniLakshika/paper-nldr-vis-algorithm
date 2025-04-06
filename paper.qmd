@@ -4301,9 +4301,9 @@ df_bin_mnist <- algo_obj_mnist$df_bin
 sc_ltr_pos_mnist <- c(0.96, 0.96)
 
 distance_df_small_edges_mnist <- distance_mnist |>
-  filter(distance < benchmark_mnist) 
+  filter(distance < benchmark_mnist) #benchmark_mnist
 
-tr_from_to_df_mnist <- inner_join(
+tr_from_to_df_mnist <- right_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
   by = c("from", "to"))
 
@@ -4419,7 +4419,7 @@ data_mnist_cluster <- data_mnist |>
   select(-type) |>
   mutate(type = tsne_minst_scaled$cluster)
 
-df_model_data_mnist_n <- bind_rows(data_mnist_cluster, df_b_mnist)
+df_model_data_mnist_n <- bind_rows(df_b_mnist, data_mnist_cluster)
 
 langevitour::langevitour(df_model_data_mnist_n[1:(length(df_model_data_mnist_n)-1)],
                          lineFrom = distance_df_small_edges_mnist$from,
