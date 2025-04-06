@@ -3920,7 +3920,7 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 
 ```{r}
 #| label: umap-pbmc-read-best
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc2)
 umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
@@ -3968,8 +3968,8 @@ trimesh_removed_pbmc_best <- ggplot() +
   geom_point(
     data = umap_pbmc_scaled_best_with_cluster,
     aes(
-      x = emb1,
-      y = emb2,
+      x = tSNE1,
+      y = tSNE2,
       color = cluster
     ),
     alpha = 0.3#,
