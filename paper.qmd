@@ -2825,7 +2825,7 @@ distance_df_small_edges <- distance_gau1 |>
 #| label: langevitour-five-gau-tsne-proj
 #| eval: false
 
-df_model_data_n <- bind_rows(data_gau, df_b)
+df_model_data_n <- bind_rows(df_b, data_gau)
 
 langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
                          lineFrom = distance_df_small_edges$from,
@@ -3059,7 +3059,7 @@ scaled_gau_data_model <- scaled_gau |>
 #| label: langevitour-five-gau-umap-proj
 #| eval: false
 
-df_model_data_n <- bind_rows(data_gau, df_b)
+df_model_data_n <- bind_rows(df_b, data_gau)
 
 langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
                          lineFrom = distance_df_small_edges$from,
@@ -3145,7 +3145,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 25
+num_bins_x_gau1 <- 20
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3213,8 +3213,8 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) |>
-  mutate(ID = row_number()) #|>
+  filter(distance < benchmark_gau1) #|>
+  #mutate(ID = row_number()) #|>
   #filter(!(ID %in% c(97)))
 
 tr_from_to_df_gau1 <- inner_join(
@@ -3293,7 +3293,7 @@ distance_df_small_edges <- distance_gau1 |>
 #| label: langevitour-five-gau-pacmap-proj
 #| eval: false
 
-df_model_data_n <- bind_rows(data_gau, df_b)
+df_model_data_n <- bind_rows(df_b, data_gau)
 
 langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
                          lineFrom = distance_df_small_edges$from,
