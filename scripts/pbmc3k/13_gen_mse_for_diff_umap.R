@@ -3,13 +3,15 @@ library(quollr)
 library(dplyr)
 
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50_scdeed.rds")
-training_data_pbmc <- training_data_pbmc[, 1:50] |>
+training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
+
+names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
 
 ## For umap
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
 umap_pbmc <- as_tibble(umap_pbmc)
-names(umap_pbmc) <- c("UMAP1", "UMAP2")
+names(umap_pbmc) <- c("emb1", "emb2")
 umap_pbmc <- umap_pbmc |>
   mutate(ID = 1:NROW(umap_pbmc))
 

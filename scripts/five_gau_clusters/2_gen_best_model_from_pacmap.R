@@ -4,15 +4,17 @@ library(readr)
 library(ggplot2)
 
 ## Import data
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
 pacmap_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
+names(pacmap_gau) <- c("emb1", "emb2", "ID")
+
 gau_scaled_obj <- gen_scaled_data(
   data = pacmap_gau)
 pacmap_gau_scaled <- gau_scaled_obj$scaled_nldr
 
 ## To initialise number of bins along the x-axis
-bin1_vec <- 2:43
+bin1_vec <- 5:62 # sqrt(NROW(training_data_gau)/r2_gau)
 #buff_vec <- seq(0.05, 0.2, by = 0.01)
 
 lim1 <- gau_scaled_obj$lim1
@@ -29,13 +31,11 @@ for (xbins in bin1_vec) {
   a1 <- hb_obj$a1
 
   gau_model <- fit_highd_model(
-    training_data = training_data_gau,
-    emb_df = pacmap_gau_scaled,
+    highd_data = training_data_gau,
+    nldr_data = pacmap_gau_scaled,
     bin1 = xbins,
     r2 = r2_gau,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x",
     q = 0.1
   )
 
@@ -44,12 +44,9 @@ for (xbins in bin1_vec) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_gau,
-    df_bin = df_bin_gau,
-    training_data = training_data_gau,
-    newdata = NULL,
-    type_NLDR = "PaCMAP",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_gau,
+    model_highd = df_bin_gau,
+    highd_data = training_data_gau) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,

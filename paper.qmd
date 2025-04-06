@@ -199,16 +199,17 @@ nldr1c <- umap_pbmc |>
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("a")
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+# umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
 nldr2 <- umap_pbmc |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
   interior_annotation("b")
 
 nldr2c <- umap_pbmc |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("b")
 
@@ -224,7 +225,7 @@ nldr3 <- umap_pbmc |>
 nldr3c <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("c")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
@@ -238,7 +239,7 @@ nldr4 <- tsne_pbmc |>
 nldr4c <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
   interior_annotation("d")
 
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
@@ -252,7 +253,7 @@ nldr5 <- tsne_pbmc |>
 nldr5c <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
-  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
   interior_annotation("e")
 
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
@@ -265,7 +266,7 @@ nldr6 <- phate_pbmc |>
 nldr6c <- phate_pbmc |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
-  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("f")
 
 trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
@@ -278,7 +279,7 @@ nldr7 <- trimap_pbmc |>
 nldr7c <- trimap_pbmc |>
   ggplot(aes(x = TriMAP1,
              y = TriMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
   interior_annotation("g")
 
 pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
@@ -291,7 +292,7 @@ nldr8 <- pacmap_pbmc |>
 nldr8c <- pacmap_pbmc |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
-  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
   interior_annotation("h")
 ```
 
@@ -674,11 +675,6 @@ proj_obj1 <- get_projection(projection = model_prj1,
                                  axis_pos_y = -0.5, 
                                  threshold = 0.03))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 ## For true model
 
 projection_scaled <- model_prj1 * 1
@@ -701,18 +697,18 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
+proj_obj1_true <- proj_obj1
+proj_obj1_true[["model_df"]] <- true_model_df_proj
+
 two_curvy_proj_true <- plot_proj(
-  projected_df = projected_df, 
-  model_df = true_model_df_proj, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj1_true, 
   point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.6, 0.6), 
   title = "a", 
   cex = 1.5, 
   axis_text_size = 4, 
-  is_category = FALSE) +
+  is_color = FALSE) +
   theme(aspect.ratio=1, 
         legend.position = "none")
 
@@ -728,11 +724,11 @@ axis_obj <- gen_axes(
 axes <- axis_obj$axes
 circle <- axis_obj$circle
 
+proj_obj1[["axes"]] <- axes
+proj_obj1[["circle"]] <- circle
+
 two_curvy_proj_tsne_first_model1 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -740,7 +736,7 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     cex = 1, 
     position = sc_ltr_pos,
     axis_text_size = 2, 
-    is_category = FALSE) +
+    is_color = FALSE) +
     theme(aspect.ratio = 1,
           legend.position = "none")
 
@@ -760,10 +756,6 @@ proj_obj2 <- get_projection(projection = model_prj2,
                                               axis_pos_y = -0.3, 
                                               threshold = 0.01))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
 
 projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% model_prj2
 
@@ -783,18 +775,18 @@ names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_
 true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
+proj_obj2_true <- proj_obj2
+proj_obj2_true[["model_df"]] <- true_model_df_proj
+
 two_curvy_proj_true2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = true_model_df_proj, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj2_true, 
     point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "black"), # linewidth, alpha
     plot_limits = c(-0.42, 0.42), 
     title = "b", 
     cex = 1.5, 
     axis_text_size = 4, 
-    is_category = FALSE) +
+    is_color = FALSE) +
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
@@ -810,11 +802,11 @@ axis_obj <- gen_axes(
 axes <- axis_obj$axes
 circle <- axis_obj$circle
 
+proj_obj2[["axes"]] <- axes
+proj_obj2[["circle"]] <- circle
+
 two_curvy_proj_tsne_all_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj2, 
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.5, 0.5), 
@@ -822,9 +814,8 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   cex = 1, 
   position = sc_ltr_pos,
   axis_text_size = 2, 
-  is_category = FALSE) +
-  theme(aspect.ratio = 1)
-#+
+  is_color = FALSE) +
+  theme(aspect.ratio = 1) #+
   #geom_segment(
   #  data = model_df, 
   #  aes(
@@ -1809,11 +1800,6 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.5, 
                                               threshold = 0.04))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
 ## Projection with Delauany triangulation
 
 projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled
@@ -1847,10 +1833,7 @@ model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID")
 names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 two_curvy_proj_first_model1_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -1858,18 +1841,19 @@ two_curvy_proj_first_model1_umap <- plot_proj(
     cex = 2, 
     position = sc_ltr_pos,
     axis_text_size = 4, 
-    is_category = FALSE) +
+    is_color = FALSE) +
     theme(
         legend.position = "none"
     )
 
 ## Projection with Delauany triangulation
 
+proj_obj1_temp1 <- proj_obj1
+proj_obj1_temp2 <- proj_obj1
+proj_obj1_temp1[["model_df"]] <- model_df1
+
 two_curvy_proj_model_delaunay_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df1, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1_temp1, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -1877,15 +1861,14 @@ two_curvy_proj_model_delaunay_umap <- plot_proj(
     cex = 2, 
     position = sc_ltr_pos,
     axis_text_size = 4, 
-    is_category = FALSE) +
+    is_color = FALSE) +
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
+proj_obj1_temp2[["model_df"]] <- model_df2
+
 two_curvy_proj_model_benchmark2_umap <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df2, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1_temp2, 
     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
@@ -1893,7 +1876,7 @@ two_curvy_proj_model_benchmark2_umap <- plot_proj(
     cex = 2, 
     position = sc_ltr_pos,
     axis_text_size = 4, 
-    is_category = FALSE) +
+    is_color = FALSE) +
     theme(aspect.ratio = 1, 
           legend.position = "none")
 
@@ -2694,7 +2677,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "grey50", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 26
+num_bins_x_gau1 <- 22
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -2784,7 +2767,7 @@ trimesh_removed_gau_tsne <- ggplot() +
       xend = x_to,
       yend = y_to),
     color = "#000000",
-    alpha = 0.4,
+    #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
@@ -2892,8 +2875,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    alpha = 0.4,
-    linewidth = 0.1) +
+    #alpha = 0.4,
+    linewidth = 0.5) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -2929,7 +2912,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 90
+num_bins_x_gau1 <- 62
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3021,7 +3004,7 @@ trimesh_removed_gau_umap <- ggplot() +
       xend = x_to,
       yend = y_to),
     color = "#000000",
-    alpha = 0.4,
+    #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("b1", 
                       position = c(0.95, 0.95),
@@ -3125,8 +3108,8 @@ five_gau_proj_umap_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    alpha = 0.4,
-    linewidth = 0.1) +
+    #alpha = 0.4,
+    linewidth = 0.5) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -3162,7 +3145,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 40
+num_bins_x_gau1 <- 25
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3231,8 +3214,8 @@ tr_df <- distinct(tibble(
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
   filter(distance < benchmark_gau1) |>
-  mutate(ID = row_number()) |>
-  filter(!(ID %in% c(97)))
+  mutate(ID = row_number()) #|>
+  #filter(!(ID %in% c(97)))
 
 tr_from_to_df_gau1 <- inner_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
@@ -3254,7 +3237,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
       xend = x_to,
       yend = y_to),
     color = "#000000",
-    alpha = 0.4,
+    #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
@@ -3360,8 +3343,8 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       xend = proj1_to,
       yend = proj2_to),
     color = "#000000",
-    alpha = 0.4,
-    linewidth = 0.1) +
+    #alpha = 0.4,
+    linewidth = 0.5) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
@@ -3451,13 +3434,13 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs %>%
   mutate(density = approx(density_df$x, density_df$y, xout = sqrt_row_wise_total_error)$y)
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "high", "low")) |> ## high_error points
-  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "high", "low")) ## corner points
+  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "selected", "deselected")) |> ## high_error points
+  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "selected", "deselected")) ## corner points
 
 error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, 
       aes(x = sqrt_row_wise_total_error, 
           y = density,
-          colour = factor(error_cat_n, levels = c("low", "high")))) +
+          colour = factor(error_cat_n, levels = c("deselected", "selected")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#d9d9d9', '#800026')) +
   xlab(expression(e[hj])) +
@@ -3474,7 +3457,7 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs,
 error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
         aes(x = sqrt_row_wise_total_error, 
             y = density,
-            colour = factor(error_cat_n2, levels = c("low", "high")))) +
+            colour = factor(error_cat_n2, levels = c("deselected", "selected")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#d9d9d9', '#800026')) +
   xlab(expression(e[hj])) +
@@ -3494,7 +3477,7 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
              colour = factor(error_cat_n2,
-                             levels = c("low", "high")))) +
+                             levels = c("deselected", "selected")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#d9d9d9', '#800026')) +
   theme(aspect.ratio = 1) +
@@ -3506,7 +3489,7 @@ plot_tsne_dens_selected <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
              y = tSNE2,
              colour = factor(error_cat_n,
-                             levels = c("low", "high")))) +
+                             levels = c("deselected", "selected")))) +
   geom_point(alpha=0.7) +
   scale_color_manual(values=c('#d9d9d9', '#800026')) +
   theme(aspect.ratio = 1) +
@@ -3556,7 +3539,7 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 data_c_shaped_n <- data_c_shaped |>
   select(-type) |>
   mutate(type = factor(error_df_one_curvy_abs$error_cat_n2,
-                          levels=c("low", "high")))
+                          levels=c("deselected", "selected")))
 
 df_model_data_n <- bind_rows(df_bin_dens_clust, data_c_shaped_n)
 
@@ -3564,7 +3547,7 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
                          lineFrom = distance_df_small_edges_c_shaped_structure$from,
                          lineTo = distance_df_small_edges_c_shaped_structure$to,
                          group = factor(df_model_data_n$type,
-                                        c("low", "high", "model")),
+                                        c("deselected", "selected", "model")),
                          levelColors = c('#d9d9d9', '#800026', "#000000"))
 ```
 
@@ -3587,21 +3570,11 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.28,
                                               threshold = 0.017))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes2 <- proj_obj1$axes
-circle <- proj_obj1$circle
-
-## To add error category
-projected_df <- projected_df |>
-  mutate(cluster = factor(error_df_one_curvy_abs$error_cat_n2,
-                          levels=c("low", "high")))
+proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n2,
+                          levels=c("deselected", "selected"))
 
 five_c_shaped_proj_tsne_model1 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes2, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
@@ -3609,21 +3582,17 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     cex = 1.5,
     position = c(0.08, 0.9),
     axis_text_size = 4, 
-    is_category = TRUE) +
+    is_color = TRUE) +
     scale_color_manual(values = c('#d9d9d9', '#800026')) +
     theme(aspect.ratio = 1,
           legend.position = "none")
 
-projected_df <- projected_df |>
-  select(-cluster) |>
-  mutate(cluster = error_df_one_curvy_abs$error_cat_n)
+proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n,
+                          levels=c("deselected", "selected"))
 
 
 five_c_shaped_proj_tsne_model1_selected <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes2, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
@@ -3631,8 +3600,8 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
     cex = 1.5,
     position = c(0.08, 0.9),
     axis_text_size = 4, 
-    is_category = TRUE) +
-    scale_color_manual(values = c('#800026', '#d9d9d9')) +
+    is_color = TRUE) +
+    scale_color_manual(values = c('#d9d9d9', '#800026')) +
     theme(aspect.ratio = 1,
           legend.position = "none")
 ```
@@ -3713,7 +3682,7 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ```{r}
 #| label: hexbin-pbmc
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 60
+num_bins_x_pbmc <- 22
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3730,11 +3699,26 @@ df_bin_pbmc <- algo_obj_pbmc$df_bin
 distance_df_small_edges_pbmc <- distance_pbmc |>
   filter(distance < benchmark_pbmc)
 
+umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
+  mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
+  mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
+
 tr_from_to_df_pbmc <- inner_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
-  by = c("from", "to"))
+  by = c("from", "to")) 
 
 trimesh_removed_pbmc <- ggplot() + 
+  geom_point(
+    data = umap_pbmc_scaled_with_cluster,
+    aes(
+      x = UMAP1,
+      y = UMAP2,
+      color = cluster
+    ),
+    alpha = 0.2,
+    size = 0.1#,
+    #color = '#a65628'
+  )  +
   geom_segment(data = tr_from_to_df_pbmc, 
                aes(
                  x = x_from, 
@@ -3743,16 +3727,7 @@ trimesh_removed_pbmc <- ggplot() +
                  yend = y_to),
                colour = "#000000",
                linewidth = 1) +
-  geom_point(
-    data = umap_pbmc_scaled,
-    aes(
-      x = UMAP1,
-      y = UMAP2
-    ),
-    alpha = 0.2,
-    size = 0.1,
-    color = '#a65628'
-  )  +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("a1", cex = 2) +
   theme(
     aspect.ratio = 1
@@ -3792,14 +3767,18 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 #| label: langevitour-pbmc-umap-author-proj
 #| eval: false
 
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+data_pbmc_n <- data_pbmc |>
+  select(-type) |>
+  mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
+
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = distance_df_small_edges_pbmc$from,
                          lineTo = distance_df_small_edges_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
-                                        c("data", "model")),
-                         levelColors = c("#a65628", "#000000"))
+                                        c("cluster1", "cluster2", "cluster3", "model")),
+                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
 ```
 
 ```{r}
@@ -3821,22 +3800,16 @@ proj_obj1 <- get_projection(projection = projection,
                                  axis_pos_y = -0.48, 
                                  threshold = 0.082))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
+proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
 pbmc_proj_umap_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
-  point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+  proj_obj = proj_obj1, 
+  point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
   title = "a2", 
   cex = 2, 
   axis_text_size = 5,
-  is_category = FALSE)
+  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -3854,22 +3827,16 @@ proj_obj2 <- get_projection(projection = projection,
                                  axis_pos_y = -0.75, 
                                  threshold = 0.12))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
+proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
 pbmc_proj_umap_model2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
-    point_param = c(1.5, 0.2, "#a65628"), # size, alpha, color
+    proj_obj = proj_obj2, 
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "a3", 
     cex = 2, 
     axis_text_size = 5,
-    is_category = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ```
 
@@ -3891,8 +3858,11 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
-error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_3_min_dist_0.6.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_4_min_dist_0.6.rds")
+# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
+error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
 error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
 error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
@@ -3914,6 +3884,10 @@ error_pbmc <- error_pbmc |>
   group_by(method, a1) |>
   filter(MSE == min(MSE)) |>
   ungroup()
+
+error_pbmc <- error_pbmc |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 ```
 
 ```{r}
@@ -3921,8 +3895,7 @@ error_pbmc <- error_pbmc |>
 
 error_plot_pbmc <- plot_mse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
-  scale_color_manual(values=c('#e41a1c','#377eb8','#4daf4a','#ff7f00',
-                              '#984ea3','#999999','#a65628','#f781bf')) 
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) 
 
 ```
 
@@ -3947,7 +3920,7 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 
 ```{r}
 #| label: umap-pbmc-read-best
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
+umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
 pbmc_scaled_obj <- gen_scaled_data(
   data = umap_pbmc2)
 umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
@@ -3961,7 +3934,7 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 #| label: num-bins-pbmc
 
 ## Compute hexbin parameters
-num_bins_x_pbmc <- 30
+num_bins_x_pbmc <- 13
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
@@ -3976,14 +3949,33 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc) 
+  filter(distance < 0.1) #benchmark_pbmc
 
-tr_from_to_df_pbmc <- inner_join(
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
+  mutate(ID = row_number()) |>
+  filter(!(ID %in% c(19, 20, 23, 24, 29, 33, 48,
+                     183, 181, 178, 176))) #19
+
+tr_from_to_df_pbmc <- right_join(
   tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
-  by = c("from", "to"))
+  by = c("from", "to")) |>
+  select(-ID)
+
+umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
+  mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
 
 trimesh_removed_pbmc_best <- ggplot() + 
-  geom_segment(data = tr_from_to_df_pbmc, 
+  geom_point(
+    data = umap_pbmc_scaled_best_with_cluster,
+    aes(
+      x = emb1,
+      y = emb2,
+      color = cluster
+    ),
+    alpha = 0.3#,
+    #color = "#999999"
+  ) +
+    geom_segment(data = tr_from_to_df_pbmc, 
                aes(
                  x = x_from, 
                  y = y_from, 
@@ -3991,15 +3983,7 @@ trimesh_removed_pbmc_best <- ggplot() +
                  yend = y_to),
                colour = "#000000",
                linewidth = 1) +
-  geom_point(
-    data = umap_pbmc_scaled_best,
-    aes(
-      x = UMAP1,
-      y = UMAP2
-    ),
-    alpha = 0.3,
-    color = "#999999"
-  )  +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
   interior_annotation("b1", cex = 2) +
   theme(
     aspect.ratio = 1
@@ -4035,14 +4019,14 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 #| label: langevitour-pbmc-umap-best-proj
 #| eval: false
 
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc)
+df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = distance_df_small_edges_pbmc$from,
                          lineTo = distance_df_small_edges_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
-                                        c("data", "model")),
-                         levelColors = c("#999999", "#000000"))
+                                        c("cluster1", "cluster2", "cluster3", "model")),
+                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
 ```
 
 
@@ -4065,22 +4049,16 @@ proj_obj1 <- get_projection(projection = projection,
                                               axis_pos_y = -0.48, 
                                               threshold = 0.082))
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
+proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
 pbmc_proj_umap_model1_best <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
-    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    proj_obj = proj_obj1,
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-0.65, 0.65), 
     title = "b2", 
     cex = 2, 
     axis_text_size = 5,
-    is_category = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -4098,22 +4076,16 @@ proj_obj2 <- get_projection(projection = projection,
                                               axis_pos_y = -0.75, 
                                               threshold = 0.12))
 
-projected_df <- proj_obj2$projected_df
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
+proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
 pbmc_proj_umap_model2_best <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
-    point_param = c(1.5, 0.2, "#999999"), # size, alpha, color
+    proj_obj = proj_obj2,
+    point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
     title = "b3", 
     cex = 2, 
     axis_text_size = 5,
-    is_category = FALSE)
+    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
 <!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
@@ -4133,7 +4105,7 @@ pbmc_proj_umap_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.02$, $b = 3480/349 (60, 58)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.04$, $b = 1020/347 (30, 34)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse b) by MSE plot (@fig-pbmc-mse) from the same NLDR with different hyper-parameter choice. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse b ($a_1 = 0.1$, $b = 234/98 (13, 18)$) shows two close clusters, and one separated cluster. The edge connected the two clusters proves the closeness of the two clusters. Therefore, @fig-pbmc-mse b is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -4335,17 +4307,14 @@ tr_from_to_df_mnist <- inner_join(
   tr_from_to_df_mnist, distance_df_small_edges_mnist, 
   by = c("from", "to"))
 
+# tr_from_to_df_mnist <- tr_from_to_df_mnist |>
+#   mutate(ID = row_number()) |>
+#   filter(!(ID %in% c(1205, 1629, 1170)))
+
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
 
 trimesh_removed_mnist <- ggplot() + 
-  geom_segment(data = tr_from_to_df_mnist, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#000000") +
   geom_point(data = tsne_minst_scaled,
              aes(
                x = tSNE1,
@@ -4353,6 +4322,13 @@ trimesh_removed_mnist <- ggplot() +
                colour = cluster
              ),
              alpha=0.2)+
+    geom_segment(data = tr_from_to_df_mnist, 
+               aes(
+                 x = x_from, 
+                 y = y_from, 
+                 xend = x_to, 
+                 yend = y_to),
+               colour = "#000000") +
   scale_color_manual(values=c("#999999",'#ff7f00')) +
   interior_annotation("a", c(0.08, 0.93), cex = 1.5) +
   theme(legend.position = "none") 
@@ -4471,42 +4447,31 @@ proj_obj1 <- get_projection(projection = projection,
                                  axis_pos_y = -0.9, 
                                  threshold = 0.06))
 
-projected_df <- proj_obj1$projected_df |>
-  mutate(cluster = tsne_minst_scaled$cluster)
-
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
+proj_obj1[["cluster"]] <- tsne_minst_scaled$cluster
 
 mnist_proj_tsne_model1 <- plot_proj(
-  projected_df = projected_df, 
-  model_df = model_df, 
-  axes = axes, 
-  circle = circle, 
+  proj_obj = proj_obj1, 
   point_param = c(0.5, 0.5), # size, alpha, color
   line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
   plot_limits = c(-1.1, 0.9), 
   title = "b", 
   cex = 1.5, 
   axis_text_size = 3, 
-  is_category = TRUE) +
+  is_color = TRUE) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
   theme(
     legend.position = "none"
   )
 
 mnist_proj_tsne_model1_link <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1.1, 0.9), 
     title = "b", 
     cex = 2, 
     axis_text_size = 3, 
-    is_category = TRUE) +
+    is_color = TRUE) +
     scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
     theme(
         legend.position = "none"
@@ -4528,42 +4493,31 @@ proj_obj2 <- get_projection(projection = projection,
                                  axis_pos_y = -0.83, 
                                  threshold = 0.06))
 
-projected_df <- proj_obj2$projected_df |>
-  mutate(cluster = tsne_minst_scaled$cluster)
-
-model_df <- proj_obj2$model_df
-axes <- proj_obj2$axes
-circle <- proj_obj2$circle
+proj_obj2[["cluster"]] <- tsne_minst_scaled$cluster
 
 mnist_proj_tsne_model2 <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1,
     point_param = c(0.5, 0.3), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
     title = "c", 
     cex = 1.5, 
     axis_text_size = 3, 
-    is_category = TRUE) +
+    is_color = TRUE) +
     scale_color_manual(values = c("#999999",'#ff7f00')) +
     theme(
         legend.position = "none"
     )
 
 mnist_proj_tsne_model2_link <- plot_proj(
-    projected_df = projected_df, 
-    model_df = model_df, 
-    axes = axes, 
-    circle = circle, 
+    proj_obj = proj_obj1, 
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
     title = "c", 
     cex = 2, 
     axis_text_size = 3, 
-    is_category = TRUE) +
+    is_color = TRUE) +
     scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
     theme(
         legend.position = "none"

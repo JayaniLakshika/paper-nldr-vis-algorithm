@@ -5,13 +5,15 @@ library(ggplot2)
 library(quollr)
 set.seed(20240110)
 
-n_neighbors <- 10
-min_dist <- 0.99
+n_neighbors <- 6
+min_dist <- 0.85
 
 ## Select PCs
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
+
+names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
 
 ## Obtain UMAP
 umap_pbmc <- uwot::umap(training_data_pbmc |> select(-ID),
@@ -24,7 +26,7 @@ umap_pbmc <- uwot::umap(training_data_pbmc |> select(-ID),
 umap_pbmc <- umap_pbmc |>
   as.data.frame()
 
-names(umap_pbmc)[1:(ncol(umap_pbmc))] <- paste0(rep("UMAP",(ncol(umap_pbmc))), 1:(ncol(umap_pbmc)))
+names(umap_pbmc)[1:(ncol(umap_pbmc))] <- paste0(rep("emb",(ncol(umap_pbmc))), 1:(ncol(umap_pbmc)))
 
 umap_pbmc <- umap_pbmc |>
   mutate(ID = 1:NROW(umap_pbmc))

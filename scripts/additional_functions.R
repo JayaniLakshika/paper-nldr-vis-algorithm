@@ -181,61 +181,59 @@ get_projection <- function(projection, proj_scale, scaled_data,
 }
 
 # Plot projection
-plot_proj <- function(projected_df, model_df, axes, circle,
+plot_proj <- function(proj_obj,
                       point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
                       line_param = c(0.5, 0.5, "#000000"), #linewidth, alpha
                       plot_limits, title, cex = 2,
                       position = c(0.92, 0.92),
                       axis_text_size = 3,
-                      is_category = FALSE) {
+                      is_color = FALSE) {
 
-  if(is_category == FALSE) {
+  projected_df <- proj_obj$projected_df
+  model_df <- proj_obj$model_df
+  axes <- proj_obj$axes
+  circle <- proj_obj$circle
 
-    initial_plot <- projected_df |>
-      ggplot(
+  if(is_color == FALSE) {
+
+    initial_plot <- ggplot() +
+      geom_point(
+        data = projected_df,
         aes(
           x = proj1,
-          y = proj2)) +
-      geom_segment(
-        data = model_df,
-        aes(
-          x = proj1_from,
-          y = proj2_from,
-          xend = proj1_to,
-          yend = proj2_to),
-        color = line_param[3],
-        linewidth = as.numeric(line_param[1]),
-        alpha = as.numeric(line_param[2])) +
-      geom_point(
+          y = proj2),
         size = as.numeric(point_param[1]),
         alpha = as.numeric(point_param[2]),
         color = point_param[3])
 
   } else {
 
-    initial_plot <- projected_df |>
-      ggplot(
+    projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj$cluster)
+
+    initial_plot <- ggplot() +
+      geom_point(
+        data = projected_df,
         aes(
           x = proj1,
           y = proj2,
-          colour = cluster)) +
-      geom_segment(
-        data = model_df,
-        aes(
-          x = proj1_from,
-          y = proj2_from,
-          xend = proj1_to,
-          yend = proj2_to),
-        color = line_param[3],
-        linewidth = as.numeric(line_param[1]),
-        alpha = as.numeric(line_param[2])) +
-      geom_point(
+          color = cluster),
         size = as.numeric(point_param[1]),
         alpha = as.numeric(point_param[2]))
 
   }
 
   initial_plot <- initial_plot +
+    geom_segment(
+      data = model_df,
+      aes(
+        x = proj1_from,
+        y = proj2_from,
+        xend = proj1_to,
+        yend = proj2_to),
+      color = line_param[3],
+      linewidth = as.numeric(line_param[1]),
+      alpha = as.numeric(line_param[2])) +
     geom_segment(
       data=axes,
       aes(x=x1, y=y1, xend=x2, yend=y2),

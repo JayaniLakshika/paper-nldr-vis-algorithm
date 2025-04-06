@@ -4,15 +4,17 @@ library(readr)
 library(ggplot2)
 
 ## Import data
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau_training.rds")
+training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
 
 tsne_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_61.rds")
+names(pacmap_gau) <- c("emb1", "emb2", "ID")
+
 gau_scaled_obj <- gen_scaled_data(
   data = tsne_gau)
 tsne_gau_scaled <- gau_scaled_obj$scaled_nldr
 
 ## To initialise number of bins along the x-axis
-bin1_vec <- 2:43
+bin1_vec <- 2:71 # sqrt(NROW(training_data_gau)/r2_gau)
 #buff_vec <- seq(0.05, 0.2, by = 0.01)
 
 lim1 <- gau_scaled_obj$lim1
@@ -29,13 +31,11 @@ for (xbins in bin1_vec) {
   a1 <- hb_obj$a1
 
   gau_model <- fit_highd_model(
-    training_data = training_data_gau,
-    emb_df = tsne_gau_scaled,
+    highd_data = training_data_gau,
+    nldr_data = pacmap_gau_scaled,
     bin1 = xbins,
     r2 = r2_gau,
     is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x",
     q = 0.1
   )
 
@@ -44,12 +44,9 @@ for (xbins in bin1_vec) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_gau,
-    df_bin = df_bin_gau,
-    training_data = training_data_gau,
-    newdata = NULL,
-    type_NLDR = "tSNE",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_gau,
+    model_highd = df_bin_gau,
+    highd_data = training_data_gau) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -69,6 +66,4 @@ error_gau |>
 ggplot(error_gau, aes(x = a1,
                       y = MSE)) +
   geom_point() +
-  geom_line() +
-  geom_vline(xintercept = 65, linetype="solid",
-             color = "black", linewidth=0.8, alpha = 0.5)
+  geom_line()

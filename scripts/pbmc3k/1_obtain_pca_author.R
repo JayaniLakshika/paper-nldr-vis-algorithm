@@ -91,5 +91,11 @@ pbmc_pca <- pbmc@reductions$pca@cell.embeddings |>
 
 write_rds(pbmc_pca, "data/pbmc3k/pbmc_pca_50.rds")
 
+cluster_pbmc <- pbmc@meta.data$seurat_clusters |>
+  tibble::as_tibble()
+
+names(cluster_pbmc) <- "cluster"
+write_rds(cluster_pbmc, "data/pbmc3k/pbmc_seurat_clusters.rds")
+
 #save(gene.list,label.list,umap.list,plots.list,file = "./results/pbmc3k_clustering_UMAP.RData")
 
