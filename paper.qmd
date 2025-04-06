@@ -542,13 +542,6 @@ trimesh_removed_two_curvy <- ggplot() +
   interior_annotation("d", sc_ltr_pos, cex = 1.5)
 
 trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000") +
   geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
@@ -557,7 +550,15 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
              color = clr_choice,
              alpha = 0.5,
              size = 0.5) +
-  interior_annotation("b", sc_ltr_pos, cex = 1.5)
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+  theme(aspect.ratio = 1)
 ```
 
 
@@ -731,8 +732,8 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
-    title = "c", 
-    cex = 1.5, 
+    title = "b", 
+    cex = 1, 
     position = sc_ltr_pos,
     axis_text_size = 2, 
     is_color = FALSE) +
@@ -809,11 +810,12 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.5, 0.5), 
-  title = "d", 
+  title = "c", 
   cex = 1, 
   position = sc_ltr_pos,
   axis_text_size = 2, 
-  is_color = FALSE) #+
+  is_color = FALSE) +
+  theme(aspect.ratio = 1) #+
   #geom_segment(
   #  data = model_df, 
   #  aes(
@@ -832,7 +834,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (grey points) and true model (blue lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
+#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (blue points) and true model (black lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
@@ -1149,7 +1151,7 @@ trimesh_two_curvy2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("a1", sc_ltr_pos)
+  interior_annotation("a1", sc_ltr_pos) 
 
 ```
 
@@ -1202,15 +1204,15 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (b) and then lifted to $4\\text{-}D$ (c, d). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
+#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
 #| fig-width: 8
 #| fig-height: 2
 
-nldr_two_curvy2 + 
+#nldr_two_curvy2 + 
   trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_tsne_first_model1 +
   two_curvy_proj_tsne_all_model1 +
-  plot_layout(ncol = 4)
+  plot_layout(ncol = 3)
 ```
 
 
@@ -3917,11 +3919,11 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 <!--best choice-->
 
 ```{r}
-#| label: umap-pbmc-read-best
-umap_pbmc2 <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
+#| label: tsne-pbmc-read-best
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 pbmc_scaled_obj <- gen_scaled_data(
-  data = umap_pbmc2)
-umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
+  data = tsne_pbmc)
+tsne_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 
 ```
 
@@ -3929,17 +3931,17 @@ umap_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
 
 <!--Fit the best model and compute error-->
 ```{r}
-#| label: num-bins-pbmc
+#| label: tsne-num-bins-pbmc
 
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 13
 
 algo_obj_pbmc <- gen_nldr_vis_algo_obj(
   high_d_data = training_data_pbmc, 
-  nldr_data = umap_pbmc2, 
+  nldr_data = tsne_pbmc, 
   num_x_bins = num_bins_x_pbmc)
 
-umap_pbmc_scaled_best <- algo_obj_pbmc$nldr_scaled
+tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_scaled
 distance_pbmc <- algo_obj_pbmc$distance_df
 tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
 benchmark_pbmc <- algo_obj_pbmc$benchmark
@@ -3959,12 +3961,12 @@ tr_from_to_df_pbmc <- right_join(
   by = c("from", "to")) |>
   select(-ID)
 
-umap_pbmc_scaled_best_with_cluster <- umap_pbmc_scaled_best |>
+tsne_pbmc_scaled_best_with_cluster <- tsne_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
 
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_point(
-    data = umap_pbmc_scaled_best_with_cluster,
+    data = tsne_pbmc_scaled_best_with_cluster,
     aes(
       x = tSNE1,
       y = tSNE2,
@@ -3973,7 +3975,7 @@ trimesh_removed_pbmc_best <- ggplot() +
     alpha = 0.3#,
     #color = "#999999"
   ) +
-    geom_segment(data = tr_from_to_df_pbmc, 
+  geom_segment(data = tr_from_to_df_pbmc, 
                aes(
                  x = x_from, 
                  y = y_from, 
@@ -3989,7 +3991,7 @@ trimesh_removed_pbmc_best <- ggplot() +
 ```
 
 ```{r}
-#| label: prep-pbmc-umap-model-proj-best
+#| label: prep-pbmc-tsne-model-proj-best
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
@@ -4014,7 +4016,7 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 ```
 
 ```{r}
-#| label: langevitour-pbmc-umap-best-proj
+#| label: langevitour-pbmc-tsne-best-proj
 #| eval: false
 
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
@@ -4029,12 +4031,12 @@ langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)
 
 
 ```{r}
-#| label: pbmc-umap-model-proj-best
+#| label: pbmc-tsne-model-proj-best
 
 ## First projection
 projection <- cbind(
-    c(-0.4545,-0.5533,-0.1235,0.3984,-0.2065,-0.3586,-0.0088,0.3572,-0.1368),
-    c(0.4576,-0.3157,0.4708,0.1410,-0.4479,-0.1685,0.3668,-0.2692,0.1332))
+  c(-0.4545,-0.5533,-0.1235,0.3984,-0.2065,-0.3586,-0.0088,0.3572,-0.1368),
+  c(0.4576,-0.3157,0.4708,0.1410,-0.4479,-0.1685,0.3668,-0.2692,0.1332))
 
 proj_obj1 <- get_projection(projection = projection, 
                             proj_scale = 1.23, 
@@ -4049,19 +4051,19 @@ proj_obj1 <- get_projection(projection = projection,
 
 proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
-pbmc_proj_umap_model1_best <- plot_proj(
-    proj_obj = proj_obj1,
-    point_param = c(1.5, 0.2), # size, alpha, color
-    plot_limits = c(-0.65, 0.65), 
-    title = "b2", 
-    cex = 2, 
-    axis_text_size = 5,
-    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+pbmc_proj_tsne_model1_best <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.2), # size, alpha, color
+  plot_limits = c(-0.65, 0.65), 
+  title = "b2", 
+  cex = 2, 
+  axis_text_size = 5,
+  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
-    c(0.0734,0.6138,-0.4671,0.2589,0.1189,0.0778,-0.0819,0.0308,-0.5561),
-    c(0.6625,0.0034,0.2412,0.3360,0.2463,0.1070,-0.2903,-0.4705,0.1293))
+  c(0.0734,0.6138,-0.4671,0.2589,0.1189,0.0778,-0.0819,0.0308,-0.5561),
+  c(0.6625,0.0034,0.2412,0.3360,0.2463,0.1070,-0.2903,-0.4705,0.1293))
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 1.25, 
@@ -4076,14 +4078,14 @@ proj_obj2 <- get_projection(projection = projection,
 
 proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
-pbmc_proj_umap_model2_best <- plot_proj(
-    proj_obj = proj_obj2,
-    point_param = c(1.5, 0.2), # size, alpha, color
-    plot_limits = c(-1, 0.75), 
-    title = "b3", 
-    cex = 2, 
-    axis_text_size = 5,
-    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+pbmc_proj_tsne_model2_best <- plot_proj(
+  proj_obj = proj_obj2,
+  point_param = c(1.5, 0.2), # size, alpha, color
+  plot_limits = c(-1, 0.75), 
+  title = "b3", 
+  cex = 2, 
+  axis_text_size = 5,
+  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
 <!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
@@ -4111,8 +4113,8 @@ pbmc_proj_umap_model2_best <- plot_proj(
 #| out-width: 90%
 
 free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
-  pbmc_proj_umap_model1 + pbmc_proj_umap_model1_best +
-  pbmc_proj_umap_model2 + pbmc_proj_umap_model2_best +
+  pbmc_proj_umap_model1 + pbmc_proj_tsne_model1_best +
+  pbmc_proj_umap_model2 + pbmc_proj_tsne_model2_best +
   plot_layout(nrow=2, byrow=FALSE) &
   theme(legend.position='none')
 ```
