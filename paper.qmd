@@ -541,13 +541,6 @@ trimesh_removed_two_curvy <- ggplot() +
   interior_annotation("d", sc_ltr_pos, cex = 1.5)
 
 trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
-  geom_segment(data = tr_from_to_df_two_curvy,
-               aes(
-                 x = x_from,
-                 y = y_from,
-                 xend = x_to,
-                 yend = y_to),
-               colour = "#000000") +
   geom_point(data = tsne_two_curvy_scaled,
              aes(
                x = tSNE1,
@@ -556,7 +549,15 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
              color = clr_choice,
              alpha = 0.5,
              size = 0.5) +
-  interior_annotation("b", sc_ltr_pos, cex = 1.5)
+  geom_segment(data = tr_from_to_df_two_curvy,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+  theme(aspect.ratio = 1)
 ```
 
 
@@ -735,8 +736,8 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
-    title = "c", 
-    cex = 1.5, 
+    title = "b", 
+    cex = 1, 
     position = sc_ltr_pos,
     axis_text_size = 2, 
     is_category = FALSE) +
@@ -817,11 +818,13 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.5, 0.5), 
-  title = "d", 
+  title = "c", 
   cex = 1, 
   position = sc_ltr_pos,
   axis_text_size = 2, 
-  is_category = FALSE) #+
+  is_category = FALSE) +
+  theme(aspect.ratio = 1)
+#+
   #geom_segment(
   #  data = model_df, 
   #  aes(
@@ -840,7 +843,7 @@ To illustrate the method, we use $7\text{-}D$ simulated data, which we call the 
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (grey points) and true model (blue lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
+#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (blue points) and true model (black lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
@@ -1157,7 +1160,7 @@ trimesh_two_curvy2 <- ggplot() +
             size = 0.5
             ) +
   coord_equal() +
-  interior_annotation("a1", sc_ltr_pos)
+  interior_annotation("a1", sc_ltr_pos) 
 
 ```
 
@@ -1210,15 +1213,15 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 <!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (b) and then lifted to $4\\text{-}D$ (c, d). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
+#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
 #| fig-width: 8
 #| fig-height: 2
 
-nldr_two_curvy2 + 
+#nldr_two_curvy2 + 
   trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_tsne_first_model1 +
   two_curvy_proj_tsne_all_model1 +
-  plot_layout(ncol = 4)
+  plot_layout(ncol = 3)
 ```
 
 

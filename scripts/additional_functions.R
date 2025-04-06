@@ -181,7 +181,6 @@ get_projection <- function(projection, proj_scale, scaled_data,
 }
 
 # Plot projection
-
 plot_proj <- function(projected_df, model_df, axes, circle,
                       point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
                       line_param = c(0.5, 0.5, "#000000"), #linewidth, alpha
