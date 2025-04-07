@@ -28,12 +28,28 @@ source(here::here("scripts/nldr_code.R"))
 p2 <- 4
 vert2 <- simplex(p2)$points
 
-df <- rmvnorm(5000, mean = rep(0, 4), sigma = diag(4) * c(0.05, 0.2, 1, 0.5))/6 #diag(4) * 0.05
-df[1:1000,] <- df[1:1000,] + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
-df[1001:2000,] <- df[1001:2000,] + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
-df[2001:3000,] <- df[2001:3000,] + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
-df[3001:4000,] <- df[3001:4000,] + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
-df[4001:5000,] <- df[4001:5000,] + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
+# df <- rmvnorm(5000, mean = rep(0, 4), sigma = diag(4) * c(0.05, 0.2, 1, 0.5))/6 #diag(4) * 0.05
+# df[1:1000,] <- df[1:1000,] + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
+# df[1001:2000,] <- df[1001:2000,] + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
+# df[2001:3000,] <- df[2001:3000,] + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
+# df[3001:4000,] <- df[3001:4000,] + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
+# df[4001:5000,] <- df[4001:5000,] + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
+df1 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.05)/6
+df1 <- df1 + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
+
+df2 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.3)/6
+df2 <- df2 + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
+
+df3 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
+df3 <- df3 + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
+
+df4 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.02)/6
+df4 <- df4 + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
+
+df5 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.6)/6
+df5 <- df5 + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
+
+df <- rbind(df1, df2, df3, df4, df5)
 df_2 <- as_tibble(df)
 
 df_2 <- df_2 |>

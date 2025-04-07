@@ -2677,7 +2677,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "grey50", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 17
+num_bins_x_gau1 <- 14
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -2744,9 +2744,14 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) 
+  filter(distance < 0.1) #benchmark_gau1
 
-tr_from_to_df_gau1 <- inner_join(
+distance_df_small_edges_gau1 <- distance_df_small_edges_gau1 |>
+  mutate(ID = row_number()) |>
+  dplyr::filter(!(ID %in% c(150, 110))) |>
+  dplyr::select(-ID)
+
+tr_from_to_df_gau1 <- right_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
@@ -2817,7 +2822,10 @@ scaled_gau_data_model <- scaled_gau |>
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
-  dplyr::filter(distance < benchmark_gau1)
+  dplyr::filter(distance < 0.1) |>
+  mutate(ID = row_number()) |>
+  filter(!(ID %in% c(150, 110))) |>
+  dplyr::select(-ID) #benchmark_gau1
 ```
 
 
@@ -2941,7 +2949,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 52
+num_bins_x_gau1 <- 50
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3008,8 +3016,8 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) |>
-  mutate(ID = row_number()) #|>
+  filter(distance < 0.05) #|> benchmark_gau1
+  #mutate(ID = row_number()) #|>
   #filter(!(ID %in% c(112)))
 
 tr_from_to_df_gau1 <- inner_join(
@@ -3068,7 +3076,7 @@ df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
-  dplyr::filter(distance < benchmark_gau1)
+  dplyr::filter(distance < 0.05) #benchmark_gau1
 
 # Apply the scaling
 df_model_data <- bind_rows(data_gau, df_b)
@@ -3203,7 +3211,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 20
+num_bins_x_gau1 <- 22
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3271,11 +3279,11 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < benchmark_gau1) #|>
+  filter(distance < 0.06) #|> #benchmark_gau1
   #mutate(ID = row_number()) #|>
   #filter(!(ID %in% c(97)))
 
-tr_from_to_df_gau1 <- inner_join(
+tr_from_to_df_gau1 <- right_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
   by = c("from", "to"))
 
@@ -3344,7 +3352,7 @@ scaled_gau_data_model <- scaled_gau |>
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
-  dplyr::filter(distance < benchmark_gau1)
+  dplyr::filter(distance < 0.06) #benchmark_gau1 #benchmark_gau1
 ```
 
 ```{r}
