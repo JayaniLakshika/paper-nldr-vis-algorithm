@@ -49,16 +49,36 @@ df4 <- df4 + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
 df5 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.6)/6
 df5 <- df5 + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
 
+df1 <- df1 |>
+  dplyr::mutate(cluster = "cluster1")
+
+df2 <- df2 |>
+  dplyr::mutate(cluster = "cluster2")
+
+df3 <- df3 |>
+  dplyr::mutate(cluster = "cluster3")
+
+df4 <- df4 |>
+  dplyr::mutate(cluster = "cluster4")
+
+df5 <- df5 |>
+  dplyr::mutate(cluster = "cluster5")
+
 df <- rbind(df1, df2, df3, df4, df5)
 df_2 <- as_tibble(df)
 
-df_2 <- df_2 |>
-  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+# df_2 <- df_2 |>
+#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
-names(df_2) <- paste0("x", 1:4)
+names(df_2) <- append(paste0("x", 1:4), "cluster")
 
 df_2 <- df_2 |>
   mutate(ID = row_number())
+
+write_rds(df_2, file = "data/five_gau_clusters/data_five_gau_with_clusts.rds")
+
+df_2 <- df_2 |>
+  dplyr::select(-cluster)
 
 write_rds(df_2, file = "data/five_gau_clusters/data_five_gau.rds")
 
