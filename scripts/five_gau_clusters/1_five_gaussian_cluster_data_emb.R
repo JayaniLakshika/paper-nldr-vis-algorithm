@@ -50,22 +50,26 @@ df5 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.6)/6
 df5 <- df5 + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
 
 df1 <- df1 |>
+  tibble::as_tibble() |>
   dplyr::mutate(cluster = "cluster1")
 
 df2 <- df2 |>
+  tibble::as_tibble() |>
   dplyr::mutate(cluster = "cluster2")
 
 df3 <- df3 |>
+  tibble::as_tibble() |>
   dplyr::mutate(cluster = "cluster3")
 
 df4 <- df4 |>
+  tibble::as_tibble() |>
   dplyr::mutate(cluster = "cluster4")
 
 df5 <- df5 |>
+  tibble::as_tibble() |>
   dplyr::mutate(cluster = "cluster5")
 
-df <- rbind(df1, df2, df3, df4, df5)
-df_2 <- as_tibble(df)
+df_2 <- dplyr::bind_rows(df1, df2, df3, df4, df5)
 
 # df_2 <- df_2 |>
 #   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
