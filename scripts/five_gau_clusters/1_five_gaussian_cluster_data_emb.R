@@ -71,8 +71,8 @@ df5 <- df5 |>
 
 df_2 <- dplyr::bind_rows(df1, df2, df3, df4, df5)
 
-# df_2 <- df_2 |>
-#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+df_2 <- df_2 |>
+  mutate(across(where(is.numeric), ~ (. - mean(.)) / sd(.)))
 
 names(df_2) <- append(paste0("x", 1:4), "cluster")
 
