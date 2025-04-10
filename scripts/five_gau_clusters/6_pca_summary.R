@@ -11,10 +11,11 @@ clr_choice <- "#0077A3"
 calculate_pca <- function(feature_dataset){
   pcaY_cal <- prcomp(feature_dataset, center = TRUE, scale = FALSE)
   PCAresults <- data.frame(pcaY_cal$x[, 1:4])
+  pcaRotations <- data.frame(pcaY_cal$rotation[, 1:4])
   summary_pca <- summary(pcaY_cal)
   var_explained_df <- data.frame(PC= paste0("PC",1:4),
                                  var_explained=(pcaY_cal$sdev[1:2])^2/sum((pcaY_cal$sdev[1:2])^2))
-  return(list(prcomp_out = pcaY_cal,pca_components = PCAresults, summary = summary_pca, var_explained_pca  = var_explained_df))
+  return(list(prcomp_out = pcaY_cal,pca_components = PCAresults, summary = summary_pca, var_explained_pca  = var_explained_df, rotations = pcaRotations))
 }
 
 data <- read_rds("data/five_gau_clusters/data_five_gau_with_clusts.rds")
@@ -31,16 +32,26 @@ data_pca <- pca_ref_calc$pca_components |>
   dplyr::mutate(ID = row_number()) |>
   dplyr::mutate(cluster = data$cluster)
 
+rotations_df <- pca_ref_calc$rotations
+
 ## Model for PaCMAP
-model_pacmap <- read_rds("data/five_gau_clusters/pacmap_model.rds")
-model_pacmap <- model_pacmap |>
+model_model <- read_rds("data/five_gau_clusters/pacmap_model.rds") |>
+  dplyr::select(x1:x4)
+
+projected_model <- as.matrix(model_model) %*% as.matrix(rotations_df[, 1:2])
+projected_model <- projected_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+model_wireframe <- read_rds("data/five_gau_clusters/pacmap_wireframe.rds")
+model_wireframe <- model_wireframe |>
   dplyr::select(from, to)
 
-model_pacmap <- left_join(model_pacmap, data_pca, by = c("from" = "ID"))
-names(model_pacmap)[3:7] <- paste0("from_", names(model_pacmap)[3:7])
+model_wireframe <- left_join(model_wireframe, projected_model, by = c("from" = "ID"))
+names(model_wireframe)[3:4] <- paste0("from_", names(model_wireframe)[3:4])
 
-model_pacmap <- left_join(model_pacmap, data_pca, by = c("to" = "ID"))
-names(model_pacmap)[8:12] <- paste0("to_", names(model_pacmap)[8:12])
+model_wireframe <- left_join(model_wireframe, projected_model, by = c("to" = "ID"))
+names(model_wireframe)[5:6] <- paste0("to_", names(model_wireframe)[5:6])
 
 ## PC1 Vs PC2
 
@@ -54,7 +65,7 @@ data_pca |>
     alpha = 0.05,
     color = clr_choice) +
   geom_segment(
-    data = model_pacmap,
+    data = model_wireframe,
     aes(
       x = from_PC1,
       y = from_PC2,
