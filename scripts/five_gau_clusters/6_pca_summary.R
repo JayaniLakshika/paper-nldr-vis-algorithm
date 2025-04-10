@@ -38,7 +38,7 @@ rotations_df <- pca_ref_calc$rotations
 model_model <- read_rds("data/five_gau_clusters/pacmap_model.rds") |>
   dplyr::select(x1:x4)
 
-projected_model <- as.matrix(model_model) %*% as.matrix(rotations_df[, 1:2])
+projected_model <- as.matrix(model_model) %*% as.matrix(rotations_df)
 projected_model <- projected_model |>
   tibble::as_tibble(.name_repair = "unique") |>
   dplyr::mutate(ID = dplyr::row_number())
@@ -48,10 +48,10 @@ model_wireframe <- model_wireframe |>
   dplyr::select(from, to)
 
 model_wireframe <- left_join(model_wireframe, projected_model, by = c("from" = "ID"))
-names(model_wireframe)[3:4] <- paste0("from_", names(model_wireframe)[3:4])
+names(model_wireframe)[3:6] <- paste0("from_", names(model_wireframe)[3:6])
 
 model_wireframe <- left_join(model_wireframe, projected_model, by = c("to" = "ID"))
-names(model_wireframe)[5:6] <- paste0("to_", names(model_wireframe)[5:6])
+names(model_wireframe)[7:10] <- paste0("to_", names(model_wireframe)[7:10])
 
 ## PC1 Vs PC2
 
@@ -90,7 +90,7 @@ data_pca |>
     alpha = 0.05,
     color = clr_choice) +
   geom_segment(
-    data = model_pacmap,
+    data = model_wireframe,
     aes(
       x = from_PC1,
       y = from_PC3,
@@ -115,7 +115,7 @@ data_pca |>
     alpha = 0.05,
     color = clr_choice) +
   geom_segment(
-    data = model_pacmap,
+    data = model_wireframe,
     aes(
       x = from_PC3,
       y = from_PC4,
@@ -131,11 +131,11 @@ data_pca |>
 ## For selected cluster
 
 data_pca_cluster1 <- data_pca |>
-  dplyr::filter(cluster == "cluster2")
+  dplyr::filter(cluster == "cluster1")
 
-model_pacmap_cluster1 <- model_pacmap |>
-  dplyr::filter(from_cluster == "cluster2") |>
-  dplyr::filter(to_cluster == "cluster2")
+model_pacmap_cluster1 <- model_wireframe |>
+  dplyr::filter(from_cluster == "cluster1") |>
+  dplyr::filter(to_cluster == "cluster1")
 
 ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
   geom_point(alpha = 0.5) +
