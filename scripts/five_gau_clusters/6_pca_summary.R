@@ -34,7 +34,7 @@ data_pca <- pca_ref_calc$pca_components |>
 
 rotations_df <- pca_ref_calc$rotations
 
-## Model for PaCMAP
+################## Model for PaCMAP #######################################
 model_model <- read_rds("data/five_gau_clusters/pacmap_model.rds") |>
   dplyr::select(x1:x4)
 

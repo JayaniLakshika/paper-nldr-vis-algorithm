@@ -2831,6 +2831,29 @@ distance_df_small_edges <- distance_gau1 |>
 # write_rds(df_b, "data/five_gau_clusters/tsne_model.rds")
 ```
 
+```{r}
+
+## Give unique values to hex IDs
+hexid_unique <- tsne_data_with_hb_id |> 
+  arrange(hb_id) |> 
+  distinct(hb_id) |> 
+  mutate(ID = row_number())
+
+## Find points in each hex bin
+pts_df <- tsne_data_with_hb_id |>
+    group_by(hb_id) |>
+    summarize(pts_list = list(ID), .groups = "drop")
+
+unlisted_df <- pts_df |>
+  unnest(cols = pts_list) |>
+  rename(pts_ID = pts_list)
+
+pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
+  select(-pts_list)
+
+write_rds(pts_df, "data/five_gau_clusters/tsne_model_mapping_data.rds")
+```
+
 
 ```{r}
 #| label: langevitour-five-gau-tsne-proj
@@ -3099,6 +3122,29 @@ scaled_gau_data_model <- scaled_gau |>
 ```
 
 ```{r}
+
+## Give unique values to hex IDs
+hexid_unique <- umap_data_with_hb_id |> 
+  arrange(hb_id) |> 
+  distinct(hb_id) |> 
+  mutate(ID = row_number())
+
+## Find points in each hex bin
+pts_df <- umap_data_with_hb_id |>
+    group_by(hb_id) |>
+    summarize(pts_list = list(ID), .groups = "drop")
+
+unlisted_df <- pts_df |>
+  unnest(cols = pts_list) |>
+  rename(pts_ID = pts_list)
+
+pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
+  select(-pts_list)
+
+write_rds(pts_df, "data/five_gau_clusters/umap_model_mapping_data.rds")
+```
+
+```{r}
 #| label: langevitour-five-gau-umap-proj
 #| eval: false
 
@@ -3362,6 +3408,29 @@ distance_df_small_edges <- distance_gau1 |>
 
 # write_rds(distance_df_small_edges, "data/five_gau_clusters/pacmap_wireframe.rds")
 # write_rds(df_b, "data/five_gau_clusters/pacmap_model.rds")
+```
+
+```{r}
+
+## Give unique values to hex IDs
+hexid_unique <- pacmap_data_with_hb_id |> 
+  arrange(hb_id) |> 
+  distinct(hb_id) |> 
+  mutate(ID = row_number())
+
+## Find points in each hex bin
+pts_df <- pacmap_data_with_hb_id |>
+    group_by(hb_id) |>
+    summarize(pts_list = list(ID), .groups = "drop")
+
+unlisted_df <- pts_df |>
+  unnest(cols = pts_list) |>
+  rename(pts_ID = pts_list)
+
+pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
+  select(-pts_list)
+
+write_rds(pts_df, "data/five_gau_clusters/pacmap_model_mapping_data.rds")
 ```
 
 ```{r}
