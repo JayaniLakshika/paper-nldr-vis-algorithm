@@ -2826,6 +2826,8 @@ distance_df_small_edges <- distance_gau1 |>
   mutate(ID = row_number()) |>
   filter(!(ID %in% c(150, 110))) |>
   dplyr::select(-ID) #benchmark_gau1
+
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/tsne_model.rds")
 ```
 
 
@@ -3090,6 +3092,8 @@ scaled_gau_data <- scaled_gau |>
 scaled_gau_data_model <- scaled_gau |>
   filter(type == "model") |>
   select(-type)
+
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/umap_model.rds")
 ```
 
 ```{r}
@@ -3353,6 +3357,8 @@ scaled_gau_data_model <- scaled_gau |>
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < 0.06) #benchmark_gau1 #benchmark_gau1
+
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/pacmap_model.rds")
 ```
 
 ```{r}
