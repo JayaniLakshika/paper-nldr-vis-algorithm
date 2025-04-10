@@ -130,17 +130,40 @@ data_pca |>
 
 ## For selected cluster
 
+pacmap_map_df <- read_rds("data/five_gau_clusters/pacmap_model_mapping_data.rds") |>
+  rename("hexID" = "ID",
+         "ID" = "pts_ID") |>
+  select(-hb_id) |>
+  arrange(ID) |>
+  mutate(cluster = data$cluster) |>
+  group_by(hexID) |>
+  summarize(cluster_list = list(cluster), .groups = "drop")
+
+
+model_wireframe <- left_join(model_wireframe, pacmap_map_df, by = c("from" = "hexID"))
+names(model_wireframe)[11] <- "from_cluster_list"
+
+model_wireframe <- left_join(model_wireframe, pacmap_map_df, by = c("to" = "hexID"))
+names(model_wireframe)[12] <- "to_cluster_list"
+
+unlisted_model_wireframe_df <- model_wireframe |>
+  unnest(cols = c(from_cluster_list)) |>
+  rename(c(from_cluster = from_cluster_list)) |>
+  unnest(cols = c(to_cluster_list)) |>
+  rename(c(to_cluster = to_cluster_list))
+
 data_pca_cluster1 <- data_pca |>
   dplyr::filter(cluster == "cluster1")
 
-model_pacmap_cluster1 <- model_wireframe |>
+model_pacmap_cluster1 <- unlisted_model_wireframe_df |>
   dplyr::filter(from_cluster == "cluster1") |>
-  dplyr::filter(to_cluster == "cluster1")
+  dplyr::filter(to_cluster == "cluster1") |>
+  distinct()
 
 ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
-  geom_point(alpha = 0.05) +
+  geom_point(alpha = 0.1) +
   geom_segment(
-    data = model_wireframe,
+    data = model_pacmap_cluster1,
     aes(
       x = from_PC1,
       y = from_PC2,
@@ -156,7 +179,7 @@ ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
 ## PC1 Vs PC3
 
 ggplot(data_pca_cluster1, aes(x = PC1, y = PC3)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.1) +
   geom_segment(
     data = model_pacmap_cluster1,
     aes(
@@ -174,7 +197,7 @@ theme(
 ## PC3 Vs PC4
 
 ggplot(data_pca_cluster1, aes(x = PC3, y = PC4)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.1) +
   geom_segment(
     data = model_pacmap_cluster1,
     aes(
