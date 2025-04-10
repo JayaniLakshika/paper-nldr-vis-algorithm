@@ -2848,8 +2848,7 @@ unlisted_df <- pts_df |>
   unnest(cols = pts_list) |>
   rename(pts_ID = pts_list)
 
-pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
-  select(-pts_list)
+pts_df <- left_join(hexid_unique, unlisted_df, by = c("hb_id")) 
 
 write_rds(pts_df, "data/five_gau_clusters/tsne_model_mapping_data.rds")
 ```
@@ -3138,8 +3137,7 @@ unlisted_df <- pts_df |>
   unnest(cols = pts_list) |>
   rename(pts_ID = pts_list)
 
-pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
-  select(-pts_list)
+pts_df <- left_join(hexid_unique, unlisted_df, by = c("hb_id"))
 
 write_rds(pts_df, "data/five_gau_clusters/umap_model_mapping_data.rds")
 ```
@@ -3427,8 +3425,7 @@ unlisted_df <- pts_df |>
   unnest(cols = pts_list) |>
   rename(pts_ID = pts_list)
 
-pts_df <- left_join(pts_df, unlisted_df, by = c("hb_id")) |>
-  select(-pts_list)
+pts_df <- left_join(hexid_unique, unlisted_df, by = c("hb_id"))
 
 write_rds(pts_df, "data/five_gau_clusters/pacmap_model_mapping_data.rds")
 ```
