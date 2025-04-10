@@ -2827,7 +2827,8 @@ distance_df_small_edges <- distance_gau1 |>
   filter(!(ID %in% c(150, 110))) |>
   dplyr::select(-ID) #benchmark_gau1
 
-# write_rds(distance_df_small_edges, "data/five_gau_clusters/tsne_model.rds")
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/tsne_wireframe.rds")
+# write_rds(df_b, "data/five_gau_clusters/tsne_model.rds")
 ```
 
 
@@ -3093,7 +3094,8 @@ scaled_gau_data_model <- scaled_gau |>
   filter(type == "model") |>
   select(-type)
 
-# write_rds(distance_df_small_edges, "data/five_gau_clusters/umap_model.rds")
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/umap_wireframe.rds")
+# write_rds(df_b, "data/five_gau_clusters/umap_model.rds")
 ```
 
 ```{r}

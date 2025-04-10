@@ -138,9 +138,9 @@ model_pacmap_cluster1 <- model_wireframe |>
   dplyr::filter(to_cluster == "cluster1")
 
 ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
-  geom_point(alpha = 0.5) +
+  geom_point(alpha = 0.05) +
   geom_segment(
-    data = model_pacmap_cluster1,
+    data = model_wireframe,
     aes(
       x = from_PC1,
       y = from_PC2,
