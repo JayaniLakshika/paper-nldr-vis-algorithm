@@ -179,8 +179,8 @@ names(model_wireframe)[7:10] <- paste0("to_", names(model_wireframe)[7:10])
 
 
 p4 <- ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
-  geom_point(alpha = 0.1,
-             color = clr_choice) +
+  # geom_point(alpha = 0.1,
+  #            color = clr_choice) +
   geom_segment(
     data = model_wireframe,
     aes(
@@ -198,8 +198,8 @@ p4 <- ggplot(data_pca_cluster1, aes(x = PC1, y = PC2)) +
 ## PC1 Vs PC3
 
 p5 <- ggplot(data_pca_cluster1, aes(x = PC1, y = PC3)) +
-  geom_point(alpha = 0.1,
-             color = clr_choice) +
+  # geom_point(alpha = 0.1,
+  #            color = clr_choice) +
   geom_segment(
     data = model_wireframe,
     aes(
@@ -217,8 +217,8 @@ p5 <- ggplot(data_pca_cluster1, aes(x = PC1, y = PC3)) +
 ## PC3 Vs PC4
 
 p6 <- ggplot(data_pca_cluster1, aes(x = PC3, y = PC4)) +
-  geom_point(alpha = 0.1,
-             color = clr_choice) +
+  # geom_point(alpha = 0.1,
+  #            color = clr_choice) +
   geom_segment(
     data = model_wireframe,
     aes(

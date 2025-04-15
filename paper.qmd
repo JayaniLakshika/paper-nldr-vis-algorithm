@@ -3361,31 +3361,11 @@ scaled_gau_data_model <- scaled_gau |>
 distance_df_small_edges <- distance_gau1 |>
   dplyr::filter(distance < 0.06) #benchmark_gau1 #benchmark_gau1
 
-write_rds(distance_df_small_edges, "data/five_gau_clusters/pacmap_wireframe.rds")
+# write_rds(distance_df_small_edges, "data/five_gau_clusters/pacmap_wireframe.rds")
 # write_rds(df_b, "data/five_gau_clusters/pacmap_model.rds")
 ```
 
-```{r}
- 
- ## Give unique values to hex IDs
- hexid_unique <- pacmap_data_with_hb_id |> 
-   arrange(hb_id) |> 
-   distinct(hb_id) |> 
-   mutate(ID = row_number())
- 
- ## Find points in each hex bin
- pts_df <- pacmap_data_with_hb_id |>
-     group_by(hb_id) |>
-     summarize(pts_list = list(ID), .groups = "drop")
- 
- unlisted_df <- pts_df |>
-   unnest(cols = pts_list) |>
-   rename(pts_ID = pts_list)
- 
- pts_df <- left_join(hexid_unique, unlisted_df, by = c("hb_id"))
- 
- write_rds(pts_df, "data/five_gau_clusters/pacmap_model_mapping_data.rds")
-```
+
 
 ```{r}
 #| label: langevitour-five-gau-pacmap-proj
