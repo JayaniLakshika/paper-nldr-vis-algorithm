@@ -104,50 +104,34 @@ knitr::opts_chunk$set(
 #| warning: false
 #| echo: false
 
-if (!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
 
+packages_to_check <- c("remotes", "tibble", "dplyr", "ggplot2", "tidyr", "readr", "patchwork", "colorspace", "kableExtra", "conflicted")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
 
 if (!requireNamespace("quollr", quietly = TRUE)) {
   remotes::install_github("JayaniLakshika/quollr")
 }
 
-if (!requireNamespace("tibble", quietly = TRUE)) {
-  install.packages("tibble")
-}
 
-if (!requireNamespace("dplyr", quietly = TRUE)) {
-  install.packages("dplyr")
-}
-
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2")
-}
-
-if (!requireNamespace("readr", quietly = TRUE)) {
-  install.packages("readr")
-}
-
-if (!requireNamespace("tidyr", quietly = TRUE)) {
-  install.packages("tidyr")
-}
-
-if (!requireNamespace("patchwork", quietly = TRUE)) {
-  install.packages("patchwork")
-}
-
-if (!requireNamespace("colorspace", quietly = TRUE)) {
-  install.packages("colorspace")
-}
-
-if (!requireNamespace("kableExtra", quietly = TRUE)) {
-  install.packages("kableExtra")
-}
-
-if (!requireNamespace("conflicted", quietly = TRUE)) {
-  install.packages("conflicted")
-}
 ```
 
 ```{r}
