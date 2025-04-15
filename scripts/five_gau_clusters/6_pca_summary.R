@@ -210,9 +210,9 @@ p5 <- ggplot(data_pca_cluster1, aes(x = PC1, y = PC3)) +
     color = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
-theme(
-  aspect.ratio = 1
-)
+  theme(
+    aspect.ratio = 1
+  )
 
 ## PC3 Vs PC4
 
@@ -229,9 +229,9 @@ p6 <- ggplot(data_pca_cluster1, aes(x = PC3, y = PC4)) +
     color = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
-theme(
-  aspect.ratio = 1
-)
+  theme(
+    aspect.ratio = 1
+  )
 
 p1 + p2 + p3 +
   p4 + p5 + p6 +
