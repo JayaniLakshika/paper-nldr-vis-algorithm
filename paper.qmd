@@ -99,6 +99,57 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
+
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+
+if (!requireNamespace("quollr", quietly = TRUE)) {
+  remotes::install_github("JayaniLakshika/quollr")
+}
+
+if (!requireNamespace("tibble", quietly = TRUE)) {
+  install.packages("tibble")
+}
+
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+if (!requireNamespace("readr", quietly = TRUE)) {
+  install.packages("readr")
+}
+
+if (!requireNamespace("tidyr", quietly = TRUE)) {
+  install.packages("tidyr")
+}
+
+if (!requireNamespace("patchwork", quietly = TRUE)) {
+  install.packages("patchwork")
+}
+
+if (!requireNamespace("colorspace", quietly = TRUE)) {
+  install.packages("colorspace")
+}
+
+if (!requireNamespace("kableExtra", quietly = TRUE)) {
+  install.packages("kableExtra")
+}
+
+if (!requireNamespace("conflicted", quietly = TRUE)) {
+  install.packages("conflicted")
+}
+```
+
 ```{r}
 #| label: load-libraries
 #| warning: false
@@ -110,7 +161,6 @@ library(ggplot2)
 library(readr)
 library(tidyr)
 library(patchwork)
-library(png)
 library(colorspace)
 library(kableExtra)
 library(conflicted)
