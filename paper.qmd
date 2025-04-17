@@ -239,13 +239,13 @@ nldr2 <- umap_pbmc |>
   ggplot(aes(x = emb1,
              y = emb2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
-  interior_annotation("b")
+  interior_annotation("b", c(0.08, 0.9))
 
 nldr2c <- umap_pbmc |>
   ggplot(aes(x = emb1,
              y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
-  interior_annotation("b")
+  interior_annotation("b", c(0.08, 0.9))
 
 
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
