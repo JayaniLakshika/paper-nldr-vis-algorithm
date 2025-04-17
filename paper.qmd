@@ -3707,11 +3707,11 @@ proj_obj1 <- get_projection(projection = projection,
                             scaled_data = scaled_c_shaped_data,
                             scaled_data_model = scaled_c_shaped_data_model,
                             distance_df_small_edges = distance_df_small_edges_c_shaped_structure,
-                            axis_param = list(limits = 0.35,
-                                              axis_scaled = 2,
+                            axis_param = list(limits = 0.4,
+                                              axis_scaled = 3,
                                               axis_pos_x = -0.28,
                                               axis_pos_y = -0.28,
-                                              threshold = 0.017))
+                                              threshold = 0.02))
 
 proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n2,
                           levels=c("deselected", "selected"))
@@ -3724,7 +3724,7 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     title = "a3", 
     cex = 2,
     position = c(0.08, 0.9),
-    axis_text_size = 4, 
+    axis_text_size = 4.5, 
     is_color = TRUE) +
     scale_color_manual(values = c('#d9d9d9', '#800026')) +
     theme(aspect.ratio = 1,
@@ -3742,7 +3742,7 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
     title = "b3", 
     cex = 2,
     position = c(0.08, 0.9),
-    axis_text_size = 4, 
+    axis_text_size = 4.5, 
     is_color = TRUE) +
     scale_color_manual(values = c('#d9d9d9', '#800026')) +
     theme(aspect.ratio = 1,
