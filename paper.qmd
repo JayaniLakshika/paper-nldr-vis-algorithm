@@ -3590,7 +3590,7 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs,
   ylab("") +
   interior_annotation("b1",
                       position = c(0.95, 0.9),
-                      cex = 1.5) +
+                      cex = 2) +
   theme_bw() +
   theme(aspect.ratio = 1,
         axis.title = element_text(size = 18),
@@ -3607,7 +3607,7 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
   ylab("") +
   interior_annotation("a1",
                       position = c(0.95, 0.9),
-                      cex = 1.5) +
+                      cex = 2) +
   theme_bw() +
   theme(aspect.ratio = 1,
         axis.title = element_text(size = 18),
@@ -3626,7 +3626,7 @@ plot_tsne_dens <- error_df_one_curvy_abs |>
   theme(aspect.ratio = 1) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
-                      cex = 1.5)
+                      cex = 2)
 
 plot_tsne_dens_selected <- error_df_one_curvy_abs |>
   ggplot(aes(x = tSNE1,
@@ -3638,7 +3638,7 @@ plot_tsne_dens_selected <- error_df_one_curvy_abs |>
   theme(aspect.ratio = 1) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
-                      cex = 1.5)
+                      cex = 2)
 
 distance_df_small_edges_c_shaped_structure <- distance_dens_clust |>
   filter(distance < benchmark_dens_clust)
@@ -3722,7 +3722,7 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
     title = "a3", 
-    cex = 1.5,
+    cex = 2,
     position = c(0.08, 0.9),
     axis_text_size = 4, 
     is_color = TRUE) +
@@ -3740,7 +3740,7 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
     title = "a3", 
-    cex = 1.5,
+    cex = 2,
     position = c(0.08, 0.9),
     axis_text_size = 4, 
     is_color = TRUE) +
