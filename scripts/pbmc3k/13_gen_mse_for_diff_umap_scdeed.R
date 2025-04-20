@@ -1,4 +1,4 @@
-## This script is to generate MSE for hyper-parameter suggested by Chen and scDEED
+## This script is to generate MSE for hyper-parameter in UMAP suggested by Chen and scDEED
 library(readr)
 library(quollr)
 library(dplyr)

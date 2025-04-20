@@ -1,15 +1,19 @@
+## This script is to generate MSE for hyper-parameters in tSNE suggested by Chen and scDEED
+
 library(readr)
 library(quollr)
 library(dplyr)
 
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50_scdeed.rds")
-training_data_pbmc <- training_data_pbmc[, 1:50] |>
+training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
+
+names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
 
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_tsne_perplexity_30.rds")
 tsne_pbmc <- as_tibble(tsne_pbmc)
-names(tsne_pbmc) <- c("tSNE1", "tSNE2")
+names(tsne_pbmc) <- c("emb1", "emb2")
 tsne_pbmc <- tsne_pbmc |>
   mutate(ID = 1:NROW(tsne_pbmc))
 
@@ -34,14 +38,12 @@ for (xbins in bin1_vec_pbmc) {
   a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
-    training_data = training_data_pbmc,
-    emb_df = tsne_pbmc_scaled,
+    highd_data = training_data_pbmc,
+    nldr_data = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "PC_"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -49,12 +51,9 @@ for (xbins in bin1_vec_pbmc) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_pbmc,
-    df_bin = df_bin_pbmc,
-    training_data = training_data_pbmc,
-    newdata = NULL,
-    type_NLDR = "tSNE",
-    col_start = "PC_") |>
+    model_2d = df_bin_centroids_pbmc,
+    model_highd = df_bin_pbmc,
+    highd_data = training_data_pbmc) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -73,7 +72,7 @@ write_rds(error_pbmc_tsne, "data/pbmc3k/error_scdeed_pbmc_tsne_perplexity_30.rds
 ## For tsne
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_tsne_perplexity_320.rds")
 tsne_pbmc <- as_tibble(tsne_pbmc)
-names(tsne_pbmc) <- c("tSNE1", "tSNE2")
+names(tsne_pbmc) <- c("emb1", "emb2")
 tsne_pbmc <- tsne_pbmc |>
   mutate(ID = 1:NROW(tsne_pbmc))
 
@@ -97,14 +96,12 @@ for (xbins in bin1_vec_pbmc) {
   a1 <- hb_obj$a1
 
   pbmc_model <- fit_highd_model(
-    training_data = training_data_pbmc,
-    emb_df = tsne_pbmc_scaled,
+    highd_data = training_data_pbmc,
+    nldr_data = tsne_pbmc_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "PC_"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_pbmc <- pbmc_model$df_bin_centroids
@@ -112,12 +109,9 @@ for (xbins in bin1_vec_pbmc) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_pbmc,
-    df_bin = df_bin_pbmc,
-    training_data = training_data_pbmc,
-    newdata = NULL,
-    type_NLDR = "tSNE",
-    col_start = "PC_") |>
+    model_2d = df_bin_centroids_pbmc,
+    model_highd = df_bin_pbmc,
+    highd_data = training_data_pbmc) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
