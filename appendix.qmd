@@ -962,10 +962,10 @@ df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
 
 distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc)#benchmark_pbmc
+  filter(distance < 0.1)#benchmark_pbmc
 
 tsne_pbmc_scaled_with_cluster <- tsne_pbmc_scaled |>
-  mutate(cluster = if_else((emb1 <= 0.4) & (emb2 <= 0.6), "cluster1", if_else((emb1 >= 0.75) & (emb2 <= 0.25), "cluster3", "cluster2"))) |>
+  mutate(cluster = if_else((emb2 <= -emb1 + 0.8) & (emb1 < 0.5), "cluster1", if_else(emb2 >= -2 * emb1 + 1.79, "cluster3", "cluster2"))) |>
   mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
 
 tr_from_to_df_pbmc <- right_join(
@@ -992,7 +992,7 @@ trimesh_removed_pbmc_best <- ggplot() +
                colour = "#000000",
                linewidth = 1) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
-  interior_annotation("a1", cex = 2) +
+  interior_annotation("b1", cex = 2) +
   theme(
     aspect.ratio = 1
   )
@@ -1070,7 +1070,7 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
-  title = "a2", 
+  title = "b2", 
   cex = 2, 
   axis_text_size = 4,
   is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
@@ -1097,7 +1097,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
   proj_obj = proj_obj2, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-1, 0.75), 
-  title = "a3", 
+  title = "b3", 
   cex = 2, 
   axis_text_size = 4,
   is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
