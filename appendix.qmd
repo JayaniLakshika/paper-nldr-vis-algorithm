@@ -673,7 +673,9 @@ Following the process in @xia2023 again using the Human Peripheral Blood Mononuc
 
 For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells) and UMAP cell embeddings. Also, @xia2023 used first $50$ principal components to generate the UMAP. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout.
 
-@fig-pbmc-mse-umap shows layout from the original published article along with that suggested by scDEED to be more accurate. The log MSE vs binwidth plot illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the data.
+The layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2023, and the layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. The layout a and b contain $46$ and $15$ dubious cells respectively. 
+
+The log MSE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
 
 ```{r}
 result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
@@ -761,8 +763,6 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
                                    colour = method)) +
   geom_point(size = 0.8) +
   geom_line(linewidth = 0.3) +
-  # geom_vline(xintercept = 15, linetype="solid",
-  #            color = "black", linewidth=0.8, alpha = 0.5) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19)]) +
   scale_color_manual(values=c('#e41a1c','#377eb8')) +
   scale_y_log10() +
@@ -785,7 +785,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the 2 UMAP layouts with different hyper-parameter settings (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Assessing which of the two UMAP layouts with different hyper-parameter settings (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
   plot_layout(ncol = 1, heights = c(1, 1))

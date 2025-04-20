@@ -487,11 +487,16 @@ to assess the optimized layout by scDEED, and if it does not accurately
 represent the three clusters with small separations of the PBMC dataset,
 then select a reasonable \gD{} layout.
 
-Figure~\ref{fig-pbmc-mse-umap} shows layout from the original published
-article along with that suggested by scDEED to be more accurate. The log
-MSE vs binwidth plot illustrates that our approach would suggest that
-scDEED is correct here, that layout b is more accurately reflecting the
-cluster structure in the data.
+The layout a (Figure~\ref{fig-pbmc-mse-umap}) is generated from the
+hyper-parameters suggested by \citet{chen2023}, and the layout b
+(Figure~\ref{fig-pbmc-mse-umap}) is with suggested hyper-parameters by
+scDEED to be more accurate. The layout a and b contain \(46\) and \(15\)
+dubious cells respectively.
+
+The log MSE vs binwidth (\(a_1\)) plot (Figure~\ref{fig-pbmc-mse-umap})
+illustrates that our approach would suggest that scDEED is correct here,
+that layout b is more accurately reflecting the cluster structure in the
+PBMC data.
 
 \begin{figure}[H]
 
@@ -501,8 +506,8 @@ cluster structure in the data.
 
 }
 
-\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 UMAP layouts
-with different hyper-parameter settings (n\_neighbors: \(30\),
+\caption{\label{fig-pbmc-mse-umap}Assessing which of the two UMAP
+layouts with different hyper-parameter settings (n\_neighbors: \(30\),
 min\_dist: \(0.3\) (red); n\_neighbors: \(80\), min\_dist: \(0.5\)
 (blue)) on the PBMC data is the better representation using MSE for
 varying binwidth (\(a_1\)). Colour used for the lines and points in the
