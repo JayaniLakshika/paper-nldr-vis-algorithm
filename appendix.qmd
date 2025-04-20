@@ -97,16 +97,63 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r}
-library(ggplot2)
-library(dplyr)
-library(quollr)
-library(readr)
-library(ggforce)
-library(patchwork)
-library(kableExtra)
-library(tidyr)
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
 
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
+
+packages_to_check <- c("remotes", "tidyverse", "patchwork", "colorspace", "kableExtra", "conflicted", "ggforce")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
+
+if (!requireNamespace("quollr", quietly = TRUE)) {
+  remotes::install_github("JayaniLakshika/quollr")
+}
+
+
+```
+
+```{r}
+#| label: load-libraries
+#| warning: false
+#| echo: false
+library(quollr)
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(patchwork)
+library(colorspace)
+library(kableExtra)
+library(conflicted)
+library(ggforce)
+
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+```
+
+```{r}
+#| label: plot-theme
 theme_set(theme_linedraw() +
    theme(
      #aspect.ratio = 1,
@@ -123,113 +170,23 @@ theme_set(theme_linedraw() +
                                       colour = NA),
      legend.key = element_rect(fill = 'transparent', 
                                colour = NA),
-     legend.position = "none", 
-     legend.title = element_text(size=5), 
+     legend.position = "bottom", 
+     legend.title = element_blank(), 
      legend.text = element_text(size=4),
      legend.key.height = unit(0.25, 'cm'),
      legend.key.width = unit(0.25, 'cm')
    )
 )
-
-interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="grey70") {
-  annotation_custom(grid::textGrob(label = label,
-      x = unit(position[1], "npc"), y = unit(position[2], "npc"),
-      gp = grid::gpar(cex = cex, col=col)))
-}
 ```
 
 ```{r}
-#| label: scale-highd-data
-# Center the data by subtracting the mean of each column
-center_data <- function(data) {
-  apply(data, 2, function(col) col - mean(col))
-}
-
-# Function to scale data manually
-scale_data_manual <- function(data, type_col) {
-  # Step 1: Center the data (mean 0)
-  data_centered <- center_data(data |> select(-all_of(type_col)))
-  
-  # Step 2: Calculate the standard deviation of each dimension
-  sds <- apply(data_centered, 2, sd)
-  
-  # Step 3: Scale each dimension to have the range [0, 1]
-  data_scaled <- apply(data_centered, 2, function(col) col / max(abs(col)))
-  
-  # Step 4: Scale dimensions according to their variation
-  # The dimension with the highest standard deviation is scaled to [-1, 1]
-  # Other dimensions are scaled to smaller ranges based on their standard deviations
-  max_sd <- max(sds)
-  
-  # Normalize the standard deviations to get scaling factors
-  scaling_factors <- sds / max_sd
-  
-  for (i in seq_along(scaling_factors)) {
-    data_scaled[, i] <- data_scaled[, i] * scaling_factors[i]
-  }
-  
-  # Combine the scaled data with the 'type' column and return as a tibble
-  data_scaled <- as_tibble(data_scaled) %>% 
-    mutate(!!type_col := data[[type_col]])
-  
-  return(data_scaled)
-}
+#| label: import-scripts
+source("scripts/additional_functions.R")
 ```
 
 ```{r}
-#| label: gen-axes
-
-gen_axes <- function(proj, limits = 1, axis_pos_x = NULL, axis_pos_y = NULL, axis_labels, threshold) {
-  
-  axis_scale <- limits/6
-  
-  if (is.null(axis_pos_x)) {
-    
-    axis_pos_x <- -2/3 * limits
-    
-  }
-  
-  if (is.null(axis_pos_y)) {
-    
-    axis_pos_y <- -2/3 * limits
-    
-  }
-  
-  adj <- function(x, axis_pos) axis_pos + x * axis_scale
-  axes <- data.frame(x1 = adj(0, axis_pos_x), 
-                     y1 = adj(0, axis_pos_y), 
-                     x2 = adj(proj[, 1], axis_pos_x), 
-                     y2 = adj(proj[, 2], axis_pos_y))
-  
-  rownames(axes) <- axis_labels
-  
-  ## To remove axes
-  axes <- axes |>
-    mutate(distance = sqrt((x2 - x1)^2 + (y2 - y1)^2)) |>
-    filter(distance >= threshold)
-  
-  theta <- seq(0, 2 * pi, length = 50)
-  circle <- data.frame(c1 = adj(cos(theta), axis_pos_x), 
-                       c2 = adj(sin(theta), axis_pos_y))
-  
-  return(list(axes = axes, circle = circle))
-  
-}
-```
-
-```{r}
-#| label: solve-quad-fun
-
-quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
-{
-  a <- as.complex(a)
-  answer <- c((-b + sqrt(b^2 - 4 * a * c)) / (2 * a),
-              (-b - sqrt(b^2 - 4 * a * c)) / (2 * a))
-  if(all(Im(answer) == 0)) answer <- Re(answer)
-  if(answer[1] == answer[2]) return(answer[1])
-  answer[answer>0] ## only positive 
-}
-
+#| label: code-setup
+set.seed(20240110)
 ```
 
 ```{r}
@@ -399,15 +356,14 @@ hex_param_vis <- ggplot() +
              color = "black", hjust=-0.2) +
     annotate("text", x=-0.18, y=-0.25, 
       label = expression(group("(", list(s[1], s[2]), ")")),
-      color = "black") 
+      color = "black") +
+  coord_equal()  
 ```
 
 ```{r}
 #| label: fig-hex-param
 #| fig-cap: "The components of the hexagon grid illustrating notation."
-#| out-height: 30%
-#| fig-width: 2.5
-#| fig-height: 3.3
+#| out-width: 30%
 #| fig-pos: H
 
 hex_param_vis
@@ -750,6 +706,7 @@ result_umap |>
 
 ```{r}
 #| label: read-pbmc-umap-layouts
+#| eval: false
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio
 umap_pbmc1 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
@@ -776,6 +733,7 @@ nldr2c <- umap_pbmc2 |>
 
 ```{r}
 #| label: combine-data-pbmc-umap
+#| eval: false
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_80_min_dist_0.5.rds")
@@ -793,6 +751,7 @@ error_pbmc <- error_pbmc |>
 
 ```{r}
 #| label: error-comp-pbmc-umap
+#| eval: false
 
 error_umap_plot_pbmc <- ggplot(error_pbmc,
                                aes(x = a1,
@@ -822,6 +781,7 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 
 ```{r}
 #| label: fig-pbmc-mse-umap
+#| eval: false
 #| fig-pos: H
 #| out-height: 53%
 #| fig-cap: "Assessing which of the 2 UMAP layouts with different hyper-parameter settings (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
@@ -832,6 +792,7 @@ free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
 
 ```{r}
 #| label: published-pbmc-scdeed
+#| eval: false
 
 training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50_scdeed.rds")
 training_data_pbmc <- training_data_pbmc[, 1:50] |>
@@ -856,6 +817,7 @@ r2_umap <- diff(lim2)/diff(lim1)
 
 ```{r}
 #| label: hexbin-pbmc-scdeed
+#| eval: false
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 12
 lim1 <- pbmc_scaled_obj_umap$lim1
@@ -933,6 +895,7 @@ trimesh_removed_pbmc <- ggplot() +
 
 ```{r}
 #| label: pbmc-umap-model-proj-scdeed
+#| eval: false
 
 data_pbmc <- training_data_pbmc |>
   select(-ID) |>

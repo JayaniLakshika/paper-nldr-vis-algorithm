@@ -78,15 +78,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 
@@ -166,9 +168,6 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage[]{natbib}
 \bibliographystyle{agsm}
 \usepackage{bookmark}
@@ -278,7 +277,7 @@ y-axis, \(b_2\).
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.3\textheight]{appendix_files/figure-pdf/fig-hex-param-1.pdf}
+\includegraphics[width=0.3\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-hex-param-1.pdf}
 
 }
 
@@ -394,7 +393,7 @@ assigned to the centroid with the lowest hexagonal bin ID.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{appendix_files/figure-pdf/fig-assign-data-1.pdf}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-assign-data-1.pdf}
 
 }
 
@@ -416,7 +415,7 @@ using \(a_1\) and \(a_2\).
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=0.3\textheight]{appendix_files/figure-pdf/fig-tri-param-1.pdf}
+\includegraphics[width=1\linewidth,height=0.3\textheight]{appendix_files/figure-pdf/fig-tri-param-1.pdf}
 
 }
 
@@ -486,30 +485,11 @@ to assess the optimized layout by scDEED, and if it does not accurately
 represent the three clusters with small separations of the PBMC dataset,
 then select a reasonable \gD{} layout.
 
-Figure~\ref{fig-pbmc-mse-umap} shows layout from the original published
+\textbf{?@fig-pbmc-mse-umap} shows layout from the original published
 article along with that suggested by scDEED to be more accurate. The log
 MSE vs binwidth plot illustrates that our approach would suggest that
 scDEED is correct here, that layout b is more accurately reflecting the
 cluster structure in the data.
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=1\textwidth,height=0.53\textheight]{appendix_files/figure-pdf/fig-pbmc-mse-umap-1.pdf}
-
-}
-
-\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 UMAP layouts
-with different hyper-parameter settings (n\_neighbors: \(30\),
-min\_dist: \(0.3\) (red); n\_neighbors: \(80\), min\_dist: \(0.5\)
-(blue)) on the PBMC data is the better representation using MSE for
-varying binwidth (\(a_1\)). Colour used for the lines and points in the
-top plot and in the scatterplots represents UMAP layout (a, b). Of the
-two, layout b is optimal across all binwidths making it the best
-choice.}
-
-\end{figure}%
 
 
   \bibliography{bibliography.bib}
