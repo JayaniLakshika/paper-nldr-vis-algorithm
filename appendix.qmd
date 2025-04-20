@@ -207,6 +207,8 @@ kable(notation_df,
   column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
+\newpage
+
 ## Computing hexagon grid configurations
 
 Given range of embedding component, $r_2$, number of bins along the x-axis, $b_1$, and buffer proportion, $q$, hexagonal starting point coordinates, $s_1 = -q$, and $s_2 = -q \times r_2$. The purpose is to find width of the hexagon. $a_1$, and number of bins along the y-axis, $b_2$.
@@ -688,11 +690,14 @@ result_umap |>
 ```
 
 ```{r}
+#| label: fig-n_neighbors-dubious_cells
 #| out-width: 50%
+#| fig-pos: H
 #| eval: false
 
 result_umap |>
   filter(min.dist == 0.5) |>
+  filter(n_neighbors < 240) |>
   ggplot(aes(
            x = as.numeric(n_neighbors),
            y = number_dubious_cells
@@ -700,13 +705,12 @@ result_umap |>
     geom_line() +
     geom_point() +
     labs(x = "n_neighbors",
-         y = "# of dubious cells") +
+         y = "Number of dubious cells") +
     theme_minimal()
 ```
 
 ```{r}
 #| label: read-pbmc-umap-layouts
-#| eval: false
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio
 umap_pbmc1 <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
@@ -733,7 +737,6 @@ nldr2c <- umap_pbmc2 |>
 
 ```{r}
 #| label: combine-data-pbmc-umap
-#| eval: false
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_scdeed_pbmc_umap_80_min_dist_0.5.rds")
@@ -751,7 +754,6 @@ error_pbmc <- error_pbmc |>
 
 ```{r}
 #| label: error-comp-pbmc-umap
-#| eval: false
 
 error_umap_plot_pbmc <- ggplot(error_pbmc,
                                aes(x = a1,
@@ -781,9 +783,8 @@ error_umap_plot_pbmc <- ggplot(error_pbmc,
 
 ```{r}
 #| label: fig-pbmc-mse-umap
-#| eval: false
 #| fig-pos: H
-#| out-height: 53%
+#| out-width: 100%
 #| fig-cap: "Assessing which of the 2 UMAP layouts with different hyper-parameter settings (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
