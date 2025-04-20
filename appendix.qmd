@@ -671,9 +671,9 @@ As we were writing this paper @xia2023 appeared proposing a new method called sc
 
 Following the process in @xia2023 again using the Human Peripheral Blood Mononuclear Cells (PBMC) data. Note that @xia2023 uses a different subset from the PBMC dataset used by @chen2023, which contains $31,021$ cells including cell type labels, and the gene expression levels were in the unit of log-transformed UMI count per $10,000$. They focused on three sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell.
 
-For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells) and UMAP cell embeddings. Also, @xia2023 used first $9$ principal components to generate the UMAP. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout.
+For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells) and UMAP and tSNE cell embeddings. Also, @xia2023 used first $9$ principal components to generate the UMAP and tSNE. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout.
 
-The layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2023, and the layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. The layout a and b contain $46$ and $15$ dubious cells respectively. 
+The layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2023, and the layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. The layout a and b contain $46$ and $83$ dubious cells respectively. 
 
 The log MSE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
 
@@ -771,7 +771,7 @@ error_umap_plot_pbmc <-  plot_mse(error_pbmc) +
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the two UMAP layouts with different hyper-parameter settings (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $80$, min_dist: $0.5$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP layout (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Assessing which of the two layouts with UMAP and tSNE with different hyper-parameter setting (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $30$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP and tSNE layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
   plot_layout(ncol = 1, heights = c(1, 1))

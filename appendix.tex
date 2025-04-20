@@ -481,16 +481,17 @@ sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell
 types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell.
 
 For illustration purposes, we only selected cells generated with inDrops
-(\(n=5858\) cells) and UMAP cell embeddings. Also, \citet{xia2023} used
-first \(9\) principal components to generate the UMAP. The objective is
-to assess the optimized layout by scDEED, and if it does not accurately
-represent the three clusters with small separations of the PBMC dataset,
-then select a reasonable \gD{} layout.
+(\(n=5858\) cells) and UMAP and tSNE cell embeddings. Also,
+\citet{xia2023} used first \(9\) principal components to generate the
+UMAP and tSNE. The objective is to assess the optimized layout by
+scDEED, and if it does not accurately represent the three clusters with
+small separations of the PBMC dataset, then select a reasonable \gD{}
+layout.
 
 The layout a (Figure~\ref{fig-pbmc-mse-umap}) is generated from the
 hyper-parameters suggested by \citet{chen2023}, and the layout b
 (Figure~\ref{fig-pbmc-mse-umap}) is with suggested hyper-parameters by
-scDEED to be more accurate. The layout a and b contain \(46\) and \(15\)
+scDEED to be more accurate. The layout a and b contain \(46\) and \(83\)
 dubious cells respectively.
 
 The log MSE vs binwidth (\(a_1\)) plot (Figure~\ref{fig-pbmc-mse-umap})
@@ -506,14 +507,13 @@ PBMC data.
 
 }
 
-\caption{\label{fig-pbmc-mse-umap}Assessing which of the two UMAP
-layouts with different hyper-parameter settings (n\_neighbors: \(30\),
-min\_dist: \(0.3\) (red); n\_neighbors: \(80\), min\_dist: \(0.5\)
-(blue)) on the PBMC data is the better representation using MSE for
-varying binwidth (\(a_1\)). Colour used for the lines and points in the
-top plot and in the scatterplots represents UMAP layout (a, b). Of the
-two, layout b is optimal across all binwidths making it the best
-choice.}
+\caption{\label{fig-pbmc-mse-umap}Assessing which of the two layouts
+with UMAP and tSNE with different hyper-parameter setting (n\_neighbors:
+\(30\), min\_dist: \(0.3\) (red); n\_neighbors: \(30\) (blue)) on the
+PBMC data is the better representation using MSE for varying binwidth
+(\(a_1\)). Colour used for the lines and points in the top plot and in
+the scatterplots represents UMAP and tSNE layouts (a, b). Of the two,
+layout b is optimal across all binwidths making it the best choice.}
 
 \end{figure}%
 
