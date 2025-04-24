@@ -2711,7 +2711,7 @@ tsne_gau <- tsne_gau_scaled |>
                fill = "transparent", color = "grey50", linewidth = 0.8)
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 25
+num_bins_x_gau1 <- 23
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -2778,12 +2778,12 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < 0.1) #benchmark_gau1
+  filter(distance < 0.06) #benchmark_gau1
 
-distance_df_small_edges_gau1 <- distance_df_small_edges_gau1 |>
-  mutate(ID = row_number()) |>
-  dplyr::filter(!(ID %in% c(150, 110))) |>
-  dplyr::select(-ID)
+# distance_df_small_edges_gau1 <- distance_df_small_edges_gau1 |>
+#   mutate(ID = row_number()) |>
+#   dplyr::filter(!(ID %in% c(150, 110))) |>
+#   dplyr::select(-ID)
 
 tr_from_to_df_gau1 <- right_join(
   tr_from_to_df_gau1, distance_df_small_edges_gau1, 
@@ -2856,10 +2856,10 @@ scaled_gau_data_model <- scaled_gau |>
 
 ## Set the maximum difference as the criteria
 distance_df_small_edges <- distance_gau1 |>
-  dplyr::filter(distance < 0.1) |>
-  mutate(ID = row_number()) |>
-  filter(!(ID %in% c(150, 110))) |>
-  dplyr::select(-ID) #benchmark_gau1
+  dplyr::filter(distance < 0.06) #|>
+  #mutate(ID = row_number()) |>
+  #filter(!(ID %in% c(150, 110))) |>
+  #dplyr::select(-ID) #benchmark_gau1
 
 # write_rds(distance_df_small_edges, "data/five_gau_clusters/tsne_wireframe.rds")
 # write_rds(df_b, "data/five_gau_clusters/tsne_model.rds")
@@ -2919,8 +2919,8 @@ five_gau_proj_tsne_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    #alpha = 0.4,
-    linewidth = 0.5) +
+    alpha = 0.4,
+    linewidth = 0.8) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -2985,7 +2985,7 @@ umap_gau <- umap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 50
+num_bins_x_gau1 <- 75
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3052,7 +3052,7 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < 0.05) #|> benchmark_gau1
+  filter(distance < benchmark_gau1) #|> benchmark_gau1
   #mutate(ID = row_number()) #|>
   #filter(!(ID %in% c(112)))
 
@@ -3184,8 +3184,8 @@ five_gau_proj_umap_model1 <- projected_df |>
       xend = proj1_to, 
       yend = proj2_to), 
     color = "#000000",
-    #alpha = 0.4,
-    linewidth = 0.5) +
+    alpha = 0.4,
+    linewidth = 0.8) +
   geom_segment(
     data=axes, 
     aes(x=x1, y=y1, xend=x2, yend=y2), 
@@ -3250,7 +3250,7 @@ pacmap_gau <- pacmap_gau_scaled |>
   geom_point(alpha=0.3, color = "#000000")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 22
+num_bins_x_gau1 <- 33
 lim1 <- gau1_scaled_obj$lim1
 lim2 <- gau1_scaled_obj$lim2
 r2_gau1 <- diff(lim2)/diff(lim1)
@@ -3318,7 +3318,7 @@ tr_df <- distinct(tibble(
   y = c(tr_from_to_df_gau1[["y_from"]], tr_from_to_df_gau1[["y_to"]])))
 
 distance_df_small_edges_gau1 <- distance_gau1 |>
-  filter(distance < 0.06) #|> #benchmark_gau1
+  filter(distance < benchmark_gau1) #|> #benchmark_gau1
   #mutate(ID = row_number()) #|>
   #filter(!(ID %in% c(97)))
 
@@ -3455,8 +3455,8 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       xend = proj1_to,
       yend = proj2_to),
     color = "#000000",
-    #alpha = 0.4,
-    linewidth = 0.5) +
+    alpha = 0.4,
+    linewidth = 0.8) +
   geom_segment(
     data=axes,
     aes(x=x1, y=y1, xend=x2, yend=y2),
