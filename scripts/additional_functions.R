@@ -300,12 +300,12 @@ plot_mse <- function(error_df) {
 
   ggplot(error_df,
          aes(x = a1,
-             y = MSE,
+             y = sqrt(MSE),
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
-    scale_y_log10() +
-    ylab("log(MSE)") +
+    #scale_y_log10() +
+    ylab("RMSE") +
     xlab(expression(paste("binwidth (", a[1], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
