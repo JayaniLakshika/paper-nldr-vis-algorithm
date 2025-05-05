@@ -445,9 +445,7 @@ algo_obj_two_curvy <- gen_nldr_vis_algo_obj(
   num_x_bins = num_bins_x_two_curvy)
 
 tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_scaled
-distance_two_curvy <- algo_obj_two_curvy$distance_df
 tr_from_to_df_two_curvy <- algo_obj_two_curvy$tr_from_to_df
-benchmark_two_curvy <- algo_obj_two_curvy$benchmark
 df_bin_centroids_two_curvy <- algo_obj_two_curvy$df_bin_centroids
 df_bin_two_curvy <- algo_obj_two_curvy$df_bin
 hex_grid_with_counts <- algo_obj_two_curvy$hex_grid_with_counts
@@ -516,6 +514,9 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
 
 ```{r}
 #| label: empty-bin-two-curvy
+
+df_bin_centroids_two_curvy <- df_bin_centroids_two_curvy |>
+  dplyr::filter(std_counts > 0)
 
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
