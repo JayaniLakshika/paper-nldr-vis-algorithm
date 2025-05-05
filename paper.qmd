@@ -670,6 +670,7 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
 
 ```{r}
 #| label: langevitour-best-fit-two-curvy-proj-tsne
+#| eval: false
 
 df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
 
@@ -1219,8 +1220,8 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 #nldr_two_curvy2 + 
   trimesh_two_curvy_removed1_tsne_with_data +
-  #two_curvy_proj_tsne_first_model1 +
-  #two_curvy_proj_tsne_all_model1 +
+  two_curvy_proj_tsne_first_model1 +
+  two_curvy_proj_tsne_all_model1 +
   plot_layout(ncol = 3)
 ```
 
@@ -2186,10 +2187,10 @@ model_df <- dplyr::left_join(
   projected_model_df, 
   by = c("from" = "ID"))
 
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+names(model_df)[7:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
 
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+names(model_df)[(6 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 ## For true model
 
@@ -2375,32 +2376,6 @@ tr1_object_two_curvy4 <- tri_bin_centroids(
 tr_from_to_df_two_curvy4 <- gen_edges(
   tri_object = tr1_object_two_curvy4)
 
-## Compute 2D distances
-distance_two_curvy4 <- cal_2d_dist(
-  tr_coord_df = tr_from_to_df_two_curvy4, 
-  start_x = "x_from", 
-  start_y = "y_from", 
-  end_x = "x_to", 
-  end_y = "y_to", 
-  select_vars = c("from", "to", "distance"))
-
-## To find the benchmark value
-benchmark_two_curvy4 <- find_lg_benchmark(
-  distance_edges = distance_two_curvy4, 
-  distance_col = "distance")
-
-benchmark_two_curvy4 <- 0.2
-
-## Benchmark 1
-
-distance_df_small_edges_two_curvy4 <- distance_two_curvy4 |>
-  filter(distance < benchmark_two_curvy4) |> ## 0.221
-  filter(!(row_number() %in% c(35, 89, 83, 25, 80, 56, 13, 59, 16)))
-
-tr_from_to_df_two_curvy4 <- inner_join(
-  tr_from_to_df_two_curvy4, distance_df_small_edges_two_curvy4,
-  by = c("from", "to"))
-
 trimesh_two_curvy_removed1_pacmap_with_data <- ggplot() +
   geom_segment(data = tr_from_to_df_two_curvy4,
                aes(
@@ -2469,14 +2444,14 @@ projected_model_df <- projected_model |>
   dplyr::mutate(ID = dplyr::row_number())
 
 model_df <- dplyr::left_join(
-  distance_df_small_edges_two_curvy4 |> select(-distance), 
+  tr_from_to_df_two_curvy4, 
   projected_model_df, 
   by = c("from" = "ID"))
 
-names(model_df)[3:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
+names(model_df)[7:NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from")
 
 model_df <- dplyr::left_join(model_df, projected_model_df, by = c("to" = "ID"))
-names(model_df)[(2 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
+names(model_df)[(6 + NCOL(projected_model_df)):NCOL(model_df)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to")
 
 ## For true model
 
@@ -3920,22 +3895,8 @@ algo_obj_pbmc <- gen_nldr_vis_algo_obj(
 tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_scaled
 distance_pbmc <- algo_obj_pbmc$distance_df
 tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
-benchmark_pbmc <- algo_obj_pbmc$benchmark
 df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
 df_bin_pbmc <- algo_obj_pbmc$df_bin
-
-distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc) #benchmark_pbmc
-
-# tr_from_to_df_pbmc <- tr_from_to_df_pbmc |>
-#   mutate(ID = row_number()) |>
-#   filter(!(ID %in% c(19, 20, 23, 24, 29, 33, 48,
-#                      183, 181, 178, 176))) #19
-
-tr_from_to_df_pbmc <- right_join(
-  tr_from_to_df_pbmc, distance_df_small_edges_pbmc,
-  by = c("from", "to")) #|>
-  #select(-ID)
 
 tsne_pbmc_scaled_best_with_cluster <- tsne_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
@@ -3998,8 +3959,8 @@ scaled_pbmc_data_model <- scaled_pbmc |>
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = distance_df_small_edges_pbmc$from,
-                         lineTo = distance_df_small_edges_pbmc$to,
+                         lineFrom = tr_from_to_df_pbmc$from,
+                         lineTo = tr_from_to_df_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
                                         c("cluster1", "cluster2", "cluster3", "model")),
                          levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
@@ -4018,7 +3979,7 @@ proj_obj1 <- get_projection(projection = projection,
                             proj_scale = 1.23, 
                             scaled_data = scaled_pbmc_data, 
                             scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = distance_df_small_edges_pbmc, 
+                            distance_df_small_edges = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1, 
                                               axis_scaled = 1,
                                               axis_pos_x = -0.48, 
@@ -4045,7 +4006,7 @@ proj_obj2 <- get_projection(projection = projection,
                             proj_scale = 1.25, 
                             scaled_data = scaled_pbmc_data, 
                             scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = distance_df_small_edges_pbmc, 
+                            distance_df_small_edges = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1.35, 
                                               axis_scaled = 1,
                                               axis_pos_x = -0.75, 
