@@ -39,8 +39,7 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins) {
   counts_df <- hb_obj$std_cts
   df_bin_centroids <- extract_hexbin_centroids(
     centroids_df = all_centroids_df,
-    counts_df = counts_df) |>
-    filter(drop_empty == FALSE)
+    counts_df = counts_df)
 
   nldr_with_hb_id <- hb_obj$data_hb_id
   df_all <- dplyr::bind_cols(high_d_data,
@@ -52,27 +51,17 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins) {
               counts_df,
               by = c("hex_poly_id" = "hb_id"))
 
+  hexID <- df_bin_centroids |>
+    filter(drop_empty == FALSE) |>
+    pull(hexID)
+
   hex_grid_nonempty <- hex_grid |>
-    filter(hex_poly_id %in% df_bin_centroids$hexID)
+    filter(hex_poly_id %in% hexID)
 
   tr1_object <- tri_bin_centroids(
     df_bin_centroids, x = "c_x", y = "c_y")
   tr_from_to_df <- gen_edges(
     tri_object = tr1_object)
-
-  ## Compute 2D distances
-  distance_df <- cal_2d_dist(
-    tr_coord_df = tr_from_to_df,
-    start_x = "x_from",
-    start_y = "y_from",
-    end_x = "x_to",
-    end_y = "y_to",
-    select_vars = c("from", "to", "distance"))
-
-  ## To find the benchmark value
-  benchmark <- find_lg_benchmark(
-    distance_edges = distance_df,
-    distance_col = "distance")
 
   return(list(nldr_scaled = nldr_scaled,
               a1 = a1,
@@ -80,9 +69,7 @@ gen_nldr_vis_algo_obj <- function(high_d_data, nldr_data, num_x_bins) {
               hex_grid_nonempty = hex_grid_nonempty,
               df_bin_centroids = df_bin_centroids,
               tr_from_to_df = tr_from_to_df,
-              df_bin = df_bin,
-              distance_df = distance_df,
-              benchmark = benchmark))
+              df_bin = df_bin))
 
 }
 
@@ -147,7 +134,7 @@ get_projection <- function(projection, proj_scale, scaled_data,
     dplyr::mutate(ID = dplyr::row_number())
 
   model_df <- dplyr::left_join(
-    distance_df_small_edges |> select(-distance),
+    distance_df_small_edges,
     projected_model_df,
     by = c("from" = "ID"))
 
