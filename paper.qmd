@@ -1269,7 +1269,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
   geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
@@ -1277,7 +1277,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -1296,7 +1296,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
   geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
@@ -1305,7 +1305,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -1326,7 +1326,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype=2, 
            linewidth=1) +
-  geom_vline(xintercept = 0.06,
+  geom_vline(xintercept = 0.05,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
@@ -1335,7 +1335,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 5, 8, 10, 12, 14, 15, 16, 17)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
@@ -1547,7 +1547,7 @@ axis.text = element_text(size = 12))
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.03$, $0.06$, and $0.09$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.06$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
+#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.03$, $0.05$, and $0.09$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
 #| label: fig-param-two-curvy
 #| out-width: 80%
 #| fig-width: 12
@@ -2070,11 +2070,11 @@ tsne_two_non_linear_diff_shaped_close_clusters_plt <- tsne_two_curvy_scaled |>
 ## hexagon binning to have regular hexagons
 hb_obj_tsne_two_curvy2 <- hex_binning(
   data = tsne_two_curvy_scaled, 
-  bin1 = 8, 
+  bin1 = 24, 
   r2 = r2_tsne)
 
 a1_2_tsne <- calc_bins_y(
-  bin1 = 8, 
+  bin1 = 24, 
   r2 = r2_tsne
 )$a1
 

@@ -44,14 +44,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = umap_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = umap_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_umap,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -59,12 +57,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "UMAP",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -108,14 +103,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = tsne_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = tsne_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -123,12 +116,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "tSNE",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -171,14 +161,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = tsne_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = tsne_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_tsne,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -186,12 +174,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "tSNE",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -235,14 +220,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = phate_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = phate_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_phate,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -250,12 +233,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "PHATE",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -298,14 +278,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = trimap_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = trimap_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_trimap,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -313,12 +291,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "TriMAP",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
@@ -361,14 +336,12 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
   a2 <- hb_obj$a2
 
   two_non_linear_diff_shaped_close_clusters_model <- fit_highd_model(
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    emb_df = pacmap_two_non_linear_diff_shaped_close_clusters_scaled,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters,
+    nldr_data = pacmap_two_non_linear_diff_shaped_close_clusters_scaled,
     bin1 = xbins,
     r2 = r2_pacmap,
     q = 0.1,
-    is_bin_centroid = TRUE,
-    is_rm_lwd_hex = FALSE,
-    col_start_highd = "x"
+    is_bin_centroid = TRUE
   )
 
   df_bin_centroids_two_non_linear_diff_shaped_close_clusters <- two_non_linear_diff_shaped_close_clusters_model$df_bin_centroids
@@ -376,12 +349,9 @@ for (xbins in bin1_vec_two_non_linear_diff_shaped_close_clusters) {
 
   ## Compute error
   error_df <- glance(
-    df_bin_centroids = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
-    df_bin = df_bin_two_non_linear_diff_shaped_close_clusters,
-    training_data = training_data_two_non_linear_diff_shaped_close_clusters,
-    newdata = NULL,
-    type_NLDR = "PaCMAP",
-    col_start = "x") |>
+    model_2d = df_bin_centroids_two_non_linear_diff_shaped_close_clusters,
+    model_highd = df_bin_two_non_linear_diff_shaped_close_clusters,
+    highd_data = training_data_two_non_linear_diff_shaped_close_clusters) |>
     mutate(bin1 = xbins,
            bin2 = bin2,
            b = bin1 * bin2,
