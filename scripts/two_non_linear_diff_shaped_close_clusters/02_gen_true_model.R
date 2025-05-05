@@ -162,14 +162,14 @@ write_rds(connections_all, "data/two_non_linear_diff_shaped_close_clusters/two_n
 
 data <- read_rds(here::here("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 
-df <- bind_rows(model_data |> mutate(type = "model"),
-                data |> mutate(type = "data"))
+df <- bind_rows(model_data |> dplyr::mutate(type = "model"),
+                data |> dplyr::mutate(type = "data"))
 
 # df <- df |>
 #   mutate(across(-type, ~ (. - mean(.)) / sd(.)))
 
 # Visualize with langevitour
-langevitour(df |> select(-type),
+langevitour(df |> dplyr::select(-type),
             lineFrom = connections_all$from,
             lineTo = connections_all$to,
             group = df$type,
