@@ -2705,19 +2705,19 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 ```{r}
 #| label: five-gau-tsne-projs
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+  c(0.07108,0.19751,-0.21229,0.26341),
+  c(-0.23494,0.27965,-0.01430,-0.15782))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1, 
+               proj_scale = 2, 
                scaled_data = scaled_gau_data, 
                scaled_data_model = scaled_gau_data_model, 
                distance_df_small_edges = tr_from_to_df_gau1, 
                axis_param = list(limits = 1,
-                                 axis_scaled = 1,
+                                 axis_scaled = 2,
                                  axis_pos_x = -0.72, 
                                  axis_pos_y = -0.72, 
-                                 threshold = 0))
+                                 threshold = 0.1))
 
 projected_df <- proj_obj1$projected_df
 model_df <- proj_obj1$model_df
@@ -2880,19 +2880,19 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 ```{r}
 #| label: five-gau-umap-projs
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558, -0.23854, -0.63659, 0.35753))
+  c(0.07108,0.19751,-0.21229,0.26341),
+  c(-0.23494,0.27965,-0.01430,-0.15782))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1, 
+               proj_scale = 2, 
                scaled_data = scaled_gau_data, 
                scaled_data_model = scaled_gau_data_model, 
                distance_df_small_edges = tr_from_to_df_gau1, 
-               axis_param = list(limits = 1, 
-                                 axis_scaled = 1,
+               axis_param = list(limits = 1,
+                                 axis_scaled = 2,
                                  axis_pos_x = -0.72, 
                                  axis_pos_y = -0.72, 
-                                 threshold = 0))
+                                 threshold = 0.1))
 
 projected_df <- proj_obj1$projected_df
 model_df <- proj_obj1$model_df
@@ -3053,19 +3053,19 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 #| label: five-gau-pacmap-projs
 ## First projection
 projection <- cbind(
-  c(-0.00215,-0.68905,-0.04778,-0.54223),
-  c(0.42558,-0.23854,-0.63659,0.35753))
+  c(0.07108,0.19751,-0.21229,0.26341),
+  c(-0.23494,0.27965,-0.01430,-0.15782))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1, 
+               proj_scale = 2, 
                scaled_data = scaled_gau_data, 
                scaled_data_model = scaled_gau_data_model, 
                distance_df_small_edges = tr_from_to_df_gau1, 
                axis_param = list(limits = 1,
-                                 axis_scaled = 1,
+                                 axis_scaled = 2,
                                  axis_pos_x = -0.72, 
                                  axis_pos_y = -0.72, 
-                                 threshold = 0))
+                                 threshold = 0.1))
 
 projected_df <- proj_obj1$projected_df
 model_df <- proj_obj1$model_df
