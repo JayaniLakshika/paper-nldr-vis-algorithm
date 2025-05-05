@@ -3498,6 +3498,9 @@ data_pbmc <- training_data_pbmc |>
   select(-ID) |>
   mutate(type = "data")
 
+df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
+  dplyr::filter(std_counts > 0)
+
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -3678,10 +3681,6 @@ free(error_plot_pbmc) + wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
 ```{r}
 #| label: tsne-pbmc-read-best
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
-pbmc_scaled_obj <- gen_scaled_data(
-  data = tsne_pbmc)
-tsne_pbmc_scaled_best <- pbmc_scaled_obj$scaled_nldr
-
 ```
 
 <!-- We then fit the model for tSNE, and visualize the resultant model in the $9\text{-}D$ data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data. -->
@@ -3735,6 +3734,9 @@ trimesh_removed_pbmc_best <- ggplot() +
 
 ```{r}
 #| label: prep-pbmc-tsne-model-proj-best
+
+df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
+  dplyr::filter(std_counts > 0)
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
