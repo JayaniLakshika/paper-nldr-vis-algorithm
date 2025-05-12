@@ -2636,15 +2636,17 @@ tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 23
 
-algo_obj_gau1 <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_gau, 
+algo_obj_gau1 <- fit_highd_model(
+  highd_data = training_data_gau, 
   nldr_data = tsne_data_gau, 
-  num_x_bins = num_bins_x_gau1)
+  bin1 = num_bins_x_gau1, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tsne_gau_scaled <- algo_obj_gau1$nldr_scaled
-tr_from_to_df_gau1 <- algo_obj_gau1$tr_from_to_df
-df_bin_centroids_gau1 <- algo_obj_gau1$df_bin_centroids
-df_bin_gau1 <- algo_obj_gau1$df_bin
+tsne_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
+tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
+df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
+df_bin_gau1 <- algo_obj_gau1$model_highd
 
 trimesh_removed_gau_tsne <- ggplot() + 
   geom_point(
@@ -2672,8 +2674,8 @@ trimesh_removed_gau_tsne <- ggplot() +
     aspect.ratio = 1
   )
 
-df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-  dplyr::filter(std_counts > 0)
+# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
+#   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
@@ -2811,15 +2813,18 @@ umap_data_gau <- read_rds("data/five_gau_clusters/umap_data_five_gau.rds")
 
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 75
-algo_obj_gau1 <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_gau, 
-  nldr_data = umap_data_gau, 
-  num_x_bins = num_bins_x_gau1)
 
-umap_gau_scaled <- algo_obj_gau1$nldr_scaled
-tr_from_to_df_gau1 <- algo_obj_gau1$tr_from_to_df
-df_bin_centroids_gau1 <- algo_obj_gau1$df_bin_centroids
-df_bin_gau1 <- algo_obj_gau1$df_bin
+algo_obj_gau1 <- fit_highd_model(
+  highd_data = training_data_gau, 
+  nldr_data = tsne_data_gau, 
+  bin1 = num_bins_x_gau1, 
+  q = 0.1, 
+  benchmark_highdens = 5)
+
+tsne_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
+tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
+df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
+df_bin_gau1 <- algo_obj_gau1$model_highd
 
 trimesh_removed_gau_umap <- ggplot() + 
   geom_point(
@@ -2985,15 +2990,17 @@ pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 ## Compute hexbin parameters
 num_bins_x_gau1 <- 33
 
-algo_obj_gau1 <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_gau, 
-  nldr_data = pacmap_data_gau, 
-  num_x_bins = num_bins_x_gau1)
+algo_obj_gau1 <- fit_highd_model(
+  highd_data = training_data_gau, 
+  nldr_data = tsne_data_gau, 
+  bin1 = num_bins_x_gau1, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-pacmap_gau_scaled <- algo_obj_gau1$nldr_scaled
-tr_from_to_df_gau1 <- algo_obj_gau1$tr_from_to_df
-df_bin_centroids_gau1 <- algo_obj_gau1$df_bin_centroids
-df_bin_gau1 <- algo_obj_gau1$df_bin
+tsne_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
+tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
+df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
+df_bin_gau1 <- algo_obj_gau1$model_highd
 
 trimesh_removed_gau_pacmap <- ggplot() + 
   geom_point(
@@ -3183,16 +3190,17 @@ tsne_one_c_shaped <- read_rds(file = "data/one_c_shaped_dens_structure/one_c_sha
 
 num_bins_x_one_c_shaped <- 20
 
-algo_obj_dens_clust <- gen_nldr_vis_algo_obj(
-  high_d_data = one_c_shaped_data, 
+algo_obj_dens_clust <- fit_highd_model(
+  highd_data = one_c_shaped_data, 
   nldr_data = tsne_one_c_shaped, 
-  num_x_bins = num_bins_x_one_c_shaped)
+  bin1 = num_bins_x_one_c_shaped, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_scaled
-tr_from_to_df_dens_clust <- algo_obj_dens_clust$tr_from_to_df
-df_bin_centroids_dens_clust <- algo_obj_dens_clust$df_bin_centroids
-df_bin_dens_clust <- algo_obj_dens_clust$df_bin
-hex_grid_with_counts_dens_clust <- algo_obj_dens_clust$hex_grid_with_counts
+tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_obj$scaled_nldr
+tr_from_to_df_dens_clust <- algo_obj_dens_clust$trimesh_data
+df_bin_centroids_dens_clust <- algo_obj_dens_clust$model_2d
+df_bin_dens_clust <- algo_obj_dens_clust$model_highd
 ```
 
 ```{r}
@@ -3461,15 +3469,17 @@ The visualization of the selected layout in the $9\text{-}D$ shows edges between
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 22
 
-algo_obj_pbmc <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_pbmc, 
+algo_obj_pbmc <- fit_highd_model(
+  highd_data = training_data_pbmc, 
   nldr_data = umap_pbmc, 
-  num_x_bins = num_bins_x_pbmc)
+  bin1 = num_bins_x_pbmc, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-umap_pbmc_scaled <- algo_obj_pbmc$nldr_scaled
-tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
-df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
-df_bin_pbmc <- algo_obj_pbmc$df_bin
+umap_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
+tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
+df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
+df_bin_pbmc <- algo_obj_pbmc$model_highd
 
 umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
   mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
@@ -3509,8 +3519,8 @@ data_pbmc <- training_data_pbmc |>
   select(-ID) |>
   mutate(type = "data")
 
-df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-  dplyr::filter(std_counts > 0)
+# df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
+#   dplyr::filter(std_counts > 0)
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
@@ -3703,16 +3713,17 @@ tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 ## Compute hexbin parameters
 num_bins_x_tsne_pbmc <- 22
 
-algo_obj_pbmc <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_pbmc, 
+algo_obj_pbmc <- fit_highd_model(
+  highd_data = training_data_pbmc, 
   nldr_data = tsne_pbmc, 
-  num_x_bins = num_bins_x_tsne_pbmc)
+  bin1 = num_bins_x_tsne_pbmc, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_scaled
-distance_pbmc <- algo_obj_pbmc$distance_df
-tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
-df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
-df_bin_pbmc <- algo_obj_pbmc$df_bin
+tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_obj$scaled_nldr
+tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
+df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
+df_bin_pbmc <- algo_obj_pbmc$model_highd
 
 tsne_pbmc_scaled_best_with_cluster <- tsne_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
@@ -3745,9 +3756,6 @@ trimesh_removed_pbmc_best <- ggplot() +
 
 ```{r}
 #| label: prep-pbmc-tsne-model-proj-best
-
-df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-  dplyr::filter(std_counts > 0)
 
 df_b_pbmc <- df_bin_pbmc |>
   dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
