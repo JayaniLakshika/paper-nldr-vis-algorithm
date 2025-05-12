@@ -4042,21 +4042,19 @@ data_mnist <- training_data_mnist |>
 
 num_bins_x_mnist <- 30
 
-algo_obj_mnist <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_mnist, 
+algo_obj_mnist <- fit_highd_model(
+  highd_data = training_data_mnist, 
   nldr_data = tsne_mnist2, 
-  num_x_bins = num_bins_x_mnist)
+  bin1 = num_bins_x_mnist, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tsne_minst_scaled <- algo_obj_mnist$nldr_scaled
-tr_from_to_df_mnist <- algo_obj_mnist$tr_from_to_df
-df_bin_centroids_mnist <- algo_obj_mnist$df_bin_centroids
-df_bin_mnist <- algo_obj_mnist$df_bin
+tsne_minst_scaled <- algo_obj_mnist$nldr_obj$scaled_nldr
+tr_from_to_df_mnist <- algo_obj_mnist$trimesh_data
+df_bin_centroids_mnist <- algo_obj_mnist$model_2d
+df_bin_mnist <- algo_obj_mnist$model_highd
 
 sc_ltr_pos_mnist <- c(0.96, 0.96)
-
-# tr_from_to_df_mnist <- tr_from_to_df_mnist |>
-#   mutate(ID = row_number()) |>
-#   filter(!(ID %in% c(1205, 1629, 1170)))
 
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
@@ -4137,7 +4135,7 @@ highd_error_2d_mnist <- error_df |>
 #| label: data-prep-mnist-model-proj
 
 hexID_mnist <- df_bin_centroids_mnist |>
-  dplyr::filter(std_counts > 0) |>
+  #dplyr::filter(std_counts > 0) |>
   dplyr::pull(hexID)
 
 df_b_mnist <- df_bin_mnist |>
