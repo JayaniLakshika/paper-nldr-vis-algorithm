@@ -214,56 +214,57 @@ scale_data_manual <- function(data, type_col) {
 #
 # }
 #
-# # Plot MSE
-#
-# plot_mse <- function(error_df) {
-#
-#   ggplot(error_df,
-#          aes(x = a1,
-#              y = sqrt(MSE),
-#              colour = method)) +
-#     geom_point(size = 0.8) +
-#     geom_line(linewidth = 0.3) +
-#     #scale_y_log10() +
-#     ylab("RMSE") +
-#     xlab(expression(paste("binwidth (", a[1], ")"))) +
-#     theme_minimal() +
-#     theme(panel.border = element_rect(fill = 'transparent'),
-#           plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
-#           axis.ticks.x = element_line(),
-#           axis.ticks.y = element_line(),
-#           legend.position = "none",
-#           axis.text.x = element_text(size = 7),
-#           axis.text.y = element_text(size = 7),
-#           axis.title.x = element_text(size = 7),
-#           axis.title.y = element_text(size = 7))
-#
-# }
-#
-# # creating Standardization function
-# standardize = function(x){
-#   z <- (x - mean(x)) / sd(x)
-#   return( z)
-# }
-#
-# # Plot digits in MNIST
-#
-# plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
-#
-#   ggplot(data = digit_df, aes(x, y, fill = value)) +
-#     geom_tile() +
-#     facet_wrap(~ instance, ncol = ncol) +
-#     ggtitle(title_text) +
-#     coord_fixed() +
-#     scale_fill_continuous_sequential(palette = palette) +
-#     theme(strip.background = element_blank(),
-#           strip.text.x = element_blank(),
-#           legend.position = "none",
-#           plot.title.position = "plot",
-#           plot.title = element_text(hjust = hjust,
-#                                     size = 15))
-#
-# }
+
+# Plot MSE
+
+plot_mse <- function(error_df) {
+
+  ggplot(error_df,
+         aes(x = a1,
+             y = sqrt(MSE),
+             colour = method)) +
+    geom_point(size = 0.8) +
+    geom_line(linewidth = 0.3) +
+    #scale_y_log10() +
+    ylab("RMSE") +
+    xlab(expression(paste("binwidth (", a[1], ")"))) +
+    theme_minimal() +
+    theme(panel.border = element_rect(fill = 'transparent'),
+          plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+          axis.ticks.x = element_line(),
+          axis.ticks.y = element_line(),
+          legend.position = "none",
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7),
+          axis.title.x = element_text(size = 7),
+          axis.title.y = element_text(size = 7))
+
+}
+
+# creating Standardization function
+standardize = function(x){
+  z <- (x - mean(x)) / sd(x)
+  return( z)
+}
+
+# Plot digits in MNIST
+
+plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
+
+  ggplot(data = digit_df, aes(x, y, fill = value)) +
+    geom_tile() +
+    facet_wrap(~ instance, ncol = ncol) +
+    ggtitle(title_text) +
+    coord_fixed() +
+    scale_fill_continuous_sequential(palette = palette) +
+    theme(strip.background = element_blank(),
+          strip.text.x = element_blank(),
+          legend.position = "none",
+          plot.title.position = "plot",
+          plot.title = element_text(hjust = hjust,
+                                    size = 15))
+
+}
 
 # Solve quadratic function
 
