@@ -703,11 +703,11 @@ model_prj1 <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
   c(-0.06466,-0.27052,0.22131,-0.15235))
 
-proj_obj1 <- get_projection(projection = model_prj1, 
+proj_obj1 <- quollr::get_projection(projection = model_prj1, 
                proj_scale = 1, 
-               scaled_data = scaled_two_curvy_data, 
-               scaled_data_model = scaled_two_curvy_data_model, 
-               distance_df_small_edges = tr_from_to_df_two_curvy, 
+               highd_data = scaled_two_curvy_data, 
+               model_highd = scaled_two_curvy_data_model, 
+               trimesh_data = tr_from_to_df_two_curvy, 
                axis_param = list(limits = 0.5, 
                                  axis_scaled = 2,
                                  axis_pos_x = -0.5, 
@@ -744,12 +744,11 @@ two_curvy_proj_true <- plot_proj(
   point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.6, 0.6), 
-  title = "a", 
-  cex = 1.5, 
   axis_text_size = 4, 
-  is_color = FALSE) +
+  is_category = FALSE) +
+  interior_annotation(label = "a", cex = 1.5) +
   theme(aspect.ratio=1, 
-        legend.position = "none")
+        legend.position = "none") 
 
 # Changed the axis parameters
 axis_obj <- gen_axes(
@@ -771,13 +770,11 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-0.6, 0.6), 
-    title = "b", 
-    cex = 1, 
-    position = sc_ltr_pos,
     axis_text_size = 2, 
-    is_color = FALSE) +
-    theme(aspect.ratio = 1,
-          legend.position = "none")
+    is_category = FALSE) +
+  interior_annotation(label = "b", position = sc_ltr_pos, cex = 1) +
+  theme(aspect.ratio = 1,
+        legend.position = "none") 
 
 ## Second projection
 model_prj2 <- cbind(
@@ -786,9 +783,9 @@ model_prj2 <- cbind(
 
 proj_obj2 <- get_projection(projection = model_prj2, 
                             proj_scale = 1, 
-                            scaled_data = scaled_two_curvy_data, 
-                            scaled_data_model = scaled_two_curvy_data_model, 
-                            distance_df_small_edges = tr_from_to_df_two_curvy, 
+                            highd_data = scaled_two_curvy_data, 
+                            model_highd = scaled_two_curvy_data_model, 
+                            trimesh_data = tr_from_to_df_two_curvy, 
                             axis_param = list(limits = 0.35, 
                                               axis_scaled = 2,
                                               axis_pos_x = -0.35, 
@@ -822,12 +819,11 @@ two_curvy_proj_true2 <- plot_proj(
     point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "black"), # linewidth, alpha
     plot_limits = c(-0.42, 0.42), 
-    title = "b", 
-    cex = 1.5, 
     axis_text_size = 4, 
-    is_color = FALSE) +
-    theme(aspect.ratio = 1, 
-          legend.position = "none")
+    is_category = FALSE) +
+  interior_annotation(label = "b", cex = 1.5) +
+  theme(aspect.ratio = 1, 
+        legend.position = "none")
 
 #Changed the axis parameters
 axis_obj <- gen_axes(
@@ -849,11 +845,9 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
   line_param = c(0.5, 0.5, "black"), # linewidth, alpha
   plot_limits = c(-0.5, 0.5), 
-  title = "c", 
-  cex = 1, 
-  position = sc_ltr_pos,
   axis_text_size = 2, 
-  is_color = FALSE) +
+  is_category = FALSE) +
+  interior_annotation(label = "c", position = sc_ltr_pos, cex = 1) +
   theme(aspect.ratio = 1) #+
   #geom_segment(
   #  data = model_df, 
@@ -1137,16 +1131,21 @@ Furthermore, line segments that exist in the \kD{} model generate line segments 
 
 num_bins_x_two_curvy <- 15
 
-algo_obj_two_curvy2 <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_two_curvy, 
+algo_obj_two_curvy2 <- fit_highd_model(
+  highd_data = training_data_two_curvy, 
   nldr_data = tsne_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy)
+  bin1 = num_bins_x_two_curvy, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$tr_from_to_df
-df_bin_centroids_two_curvy2 <- algo_obj_two_curvy2$df_bin_centroids
-df_bin_two_curvy2 <- algo_obj_two_curvy2$df_bin
-hex_grid_with_counts_two_curvy2 <- algo_obj_two_curvy2$hex_grid_with_counts
+tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$trimesh_data
+df_bin_centroids_two_curvy2 <- algo_obj_two_curvy2$model_2d
+df_bin_two_curvy2 <- algo_obj_two_curvy2$model_highd
 
+hex_grid_two_curvy2 <- algo_obj_two_curvy2$hb_obj$hex_poly
+counts_df_two_curvy2 <- algo_obj_two_curvy2$hb_obj$std_cts
+
+hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("hex_poly_id" = "hexID"))
 
 hex_grid_coloured_two_curvy2 <- ggplot() + 
   geom_polygon(
@@ -1200,7 +1199,11 @@ algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj(
 tr_from_to_df_two_curvy3 <- algo_obj_two_curvy3$tr_from_to_df
 df_bin_centroids_two_curvy3 <- algo_obj_two_curvy3$df_bin_centroids
 df_bin_two_curvy3 <- algo_obj_two_curvy3$df_bin
-hex_grid_with_counts_two_curvy3 <- algo_obj_two_curvy3$hex_grid_with_counts
+
+hex_grid_two_curvy3 <- algo_obj_two_curvy3$hb_obj$hex_poly
+counts_df_two_curvy2 <- algo_obj_two_curvy3$hb_obj$std_cts
+
+hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("hex_poly_id" = "hexID"))
 
 hex_grid_coloured_two_curvy3 <-  ggplot() + 
   geom_polygon(
@@ -1862,7 +1865,7 @@ mse_two_curvy_b + a1_m_two_curvy +
 <!--     cex = 2,  -->
 <!--     position = sc_ltr_pos, -->
 <!--     axis_text_size = 4,  -->
-<!--     is_color = FALSE) + -->
+<!--     is_category = FALSE) + -->
 <!--     theme( -->
 <!--         legend.position = "none" -->
 <!--     ) -->
@@ -1882,7 +1885,7 @@ mse_two_curvy_b + a1_m_two_curvy +
 <!--     cex = 2,  -->
 <!--     position = sc_ltr_pos, -->
 <!--     axis_text_size = 4,  -->
-<!--     is_color = FALSE) + -->
+<!--     is_category = FALSE) + -->
 <!--     theme(aspect.ratio = 1,  -->
 <!--           legend.position = "none") -->
 
@@ -1897,7 +1900,7 @@ mse_two_curvy_b + a1_m_two_curvy +
 <!--     cex = 2,  -->
 <!--     position = sc_ltr_pos, -->
 <!--     axis_text_size = 4,  -->
-<!--     is_color = FALSE) + -->
+<!--     is_category = FALSE) + -->
 <!--     theme(aspect.ratio = 1,  -->
 <!--           legend.position = "none") -->
 
@@ -2723,9 +2726,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 2, 
-               scaled_data = scaled_gau_data, 
-               scaled_data_model = scaled_gau_data_model, 
-               distance_df_small_edges = tr_from_to_df_gau1, 
+               highd_data = scaled_gau_data, 
+               model_highd = scaled_gau_data_model, 
+               trimesh_data = tr_from_to_df_gau1, 
                axis_param = list(limits = 1,
                                  axis_scaled = 2,
                                  axis_pos_x = -0.72, 
@@ -2783,9 +2786,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 3, 
-                            scaled_data = scaled_gau_data, 
-                            scaled_data_model = scaled_gau_data_model, 
-                            distance_df_small_edges = tr_from_to_df_gau1, 
+                            highd_data = scaled_gau_data, 
+                            model_highd = scaled_gau_data_model, 
+                            trimesh_data = tr_from_to_df_gau1, 
                             axis_param = list(limits = 1.5,
                                               axis_scaled = 2,
                                               axis_pos_x = -1, 
@@ -2797,13 +2800,11 @@ five_gau_proj_tsne_model2 <- plot_proj(
   point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
   line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
   plot_limits = c(-1.3, 1.3), 
-  title = "a3", 
-  cex = 1.5,
-  position = c(0.08, 0.9),
   axis_text_size = 4, 
-  is_color = FALSE) +
+  is_category = FALSE) +
+  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 1.5) +
   theme(aspect.ratio = 1,
-        legend.position = "none")
+        legend.position = "none") 
 ```
 
 ```{r}
@@ -2901,9 +2902,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 2, 
-               scaled_data = scaled_gau_data, 
-               scaled_data_model = scaled_gau_data_model, 
-               distance_df_small_edges = tr_from_to_df_gau1, 
+               highd_data = scaled_gau_data, 
+               model_highd = scaled_gau_data_model, 
+               trimesh_data = tr_from_to_df_gau1, 
                axis_param = list(limits = 1,
                                  axis_scaled = 2,
                                  axis_pos_x = -0.72, 
@@ -2959,9 +2960,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 3, 
-                            scaled_data = scaled_gau_data, 
-                            scaled_data_model = scaled_gau_data_model, 
-                            distance_df_small_edges = tr_from_to_df_gau1, 
+                            highd_data = scaled_gau_data, 
+                            model_highd = scaled_gau_data_model, 
+                            trimesh_data = tr_from_to_df_gau1, 
                             axis_param = list(limits = 1.5,
                                               axis_scaled = 2,
                                               axis_pos_x = -1, 
@@ -2973,11 +2974,9 @@ five_gau_proj_umap_model2 <- plot_proj(
   point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
   line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
   plot_limits = c(-1.3, 1.3), 
-  title = "b3", 
-  cex = 1.5,
-  position = c(0.08, 0.9),
   axis_text_size = 4, 
-  is_color = FALSE) +
+  is_category = FALSE) +
+  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 1.5) +
   theme(aspect.ratio = 1,
         legend.position = "none")
 ```
@@ -3076,9 +3075,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 2, 
-               scaled_data = scaled_gau_data, 
-               scaled_data_model = scaled_gau_data_model, 
-               distance_df_small_edges = tr_from_to_df_gau1, 
+               highd_data = scaled_gau_data, 
+               model_highd = scaled_gau_data_model, 
+               trimesh_data = tr_from_to_df_gau1, 
                axis_param = list(limits = 1,
                                  axis_scaled = 2,
                                  axis_pos_x = -0.72, 
@@ -3134,9 +3133,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 3, 
-                            scaled_data = scaled_gau_data, 
-                            scaled_data_model = scaled_gau_data_model, 
-                            distance_df_small_edges = tr_from_to_df_gau1, 
+                            highd_data = scaled_gau_data, 
+                            model_highd = scaled_gau_data_model, 
+                            trimesh_data = tr_from_to_df_gau1, 
                             axis_param = list(limits = 1.5,
                                               axis_scaled = 2,
                                               axis_pos_x = -1, 
@@ -3148,11 +3147,9 @@ five_gau_proj_pacmap_model2 <- plot_proj(
   point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
   line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
   plot_limits = c(-1.3, 1.3), 
-  title = "c3", 
-  cex = 1.5,
-  position = c(0.08, 0.9),
   axis_text_size = 4, 
-  is_color = FALSE) +
+  is_category = FALSE) +
+  interior_annotation(label = "c3", position = c(0.08, 0.9), cex = 1.5) +
   theme(aspect.ratio = 1,
         legend.position = "none")
 
@@ -3346,9 +3343,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection,
                             proj_scale = 1,
-                            scaled_data = scaled_c_shaped_data,
-                            scaled_data_model = scaled_c_shaped_data_model,
-                            distance_df_small_edges = tr_from_to_df_dens_clust,
+                            highd_data = scaled_c_shaped_data,
+                            model_highd = scaled_c_shaped_data_model,
+                            trimesh_data = tr_from_to_df_dens_clust,
                             axis_param = list(limits = 0.4,
                                               axis_scaled = 3,
                                               axis_pos_x = -0.28,
@@ -3363,14 +3360,12 @@ five_c_shaped_proj_tsne_model1 <- plot_proj(
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
-    title = "a3", 
-    cex = 2,
-    position = c(0.08, 0.9),
     axis_text_size = 4.5, 
-    is_color = TRUE) +
-    scale_color_manual(values = c('#d9d9d9', '#800026')) +
-    theme(aspect.ratio = 1,
-          legend.position = "none")
+    is_category = TRUE) +
+  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
+  scale_color_manual(values = c('#d9d9d9', '#800026')) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
 
 proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n,
                           levels=c("deselected", "selected"))
@@ -3381,14 +3376,12 @@ five_c_shaped_proj_tsne_model1_selected <- plot_proj(
     point_param = c(1.5, 0.5), # size, alpha, color
     line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
     plot_limits = c(-0.35, 0.35), 
-    title = "b3", 
-    cex = 2,
-    position = c(0.08, 0.9),
     axis_text_size = 4.5, 
-    is_color = TRUE) +
-    scale_color_manual(values = c('#d9d9d9', '#800026')) +
-    theme(aspect.ratio = 1,
-          legend.position = "none")
+    is_category = TRUE) +
+  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 2) +
+  scale_color_manual(values = c('#d9d9d9', '#800026')) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
 ```
 
 ```{r}
@@ -3572,9 +3565,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 1.23, 
-               scaled_data = scaled_pbmc_data, 
-               scaled_data_model = scaled_pbmc_data_model, 
-               distance_df_small_edges = tr_from_to_df_pbmc, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
                axis_param = list(limits = 1,
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.48, 
@@ -3587,10 +3580,10 @@ pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
-  title = "a2", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) +
+  interior_annotation(label = "a2", cex = 2) + 
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -3599,9 +3592,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                proj_scale = 1.25, 
-               scaled_data = scaled_pbmc_data, 
-               scaled_data_model = scaled_pbmc_data_model, 
-               distance_df_small_edges = tr_from_to_df_pbmc, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
                axis_param = list(limits = 1.35, 
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.75, 
@@ -3614,10 +3607,10 @@ pbmc_proj_umap_model2 <- plot_proj(
     proj_obj = proj_obj2, 
     point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
-    title = "a3", 
-    cex = 2, 
     axis_text_size = 4,
-    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+    is_category = TRUE) +
+  interior_annotation(label = "a3", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ```
 
@@ -3804,9 +3797,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                             proj_scale = 1.23, 
-                            scaled_data = scaled_pbmc_data, 
-                            scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = tr_from_to_df_pbmc, 
+                            highd_data = scaled_pbmc_data, 
+                            model_highd = scaled_pbmc_data_model, 
+                            trimesh_data = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1, 
                                               axis_scaled = 1,
                                               axis_pos_x = -0.48, 
@@ -3819,10 +3812,10 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   proj_obj = proj_obj1,
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
-  title = "b2", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) +
+  interior_annotation(label = "b2", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -3831,9 +3824,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 1.25, 
-                            scaled_data = scaled_pbmc_data, 
-                            scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = tr_from_to_df_pbmc, 
+                            highd_data = scaled_pbmc_data, 
+                            model_highd = scaled_pbmc_data_model, 
+                            trimesh_data = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1.35, 
                                               axis_scaled = 1,
                                               axis_pos_x = -0.75, 
@@ -3846,10 +3839,10 @@ pbmc_proj_tsne_model2_best <- plot_proj(
   proj_obj = proj_obj2,
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-1, 0.75), 
-  title = "b3", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) +
+  interior_annotation(label = "b3", cex = 2) + 
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
 <!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
@@ -4195,9 +4188,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 2.5, 
-               scaled_data = scaled_mnist_data, 
-               scaled_data_model = scaled_mnist_data_model, 
-               distance_df_small_edges = tr_from_to_df_mnist, 
+               highd_data = scaled_mnist_data, 
+               model_highd = scaled_mnist_data_model, 
+               trimesh_data = tr_from_to_df_mnist, 
                axis_param = list(limits = 1, 
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.92, 
@@ -4211,10 +4204,9 @@ mnist_proj_tsne_model1 <- plot_proj(
   point_param = c(0.5, 0.5), # size, alpha, color
   line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
   plot_limits = c(-1.1, 0.9), 
-  title = "b", 
-  cex = 2, 
   axis_text_size = 3.5, 
-  is_color = TRUE) +
+  is_category = TRUE) +
+  interior_annotation(label = "b", cex = 2) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
   theme(
     legend.position = "none"
@@ -4225,14 +4217,13 @@ mnist_proj_tsne_model1_link <- plot_proj(
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1.1, 0.9), 
-    title = "b", 
-    cex = 2.5, 
     axis_text_size = 4.5, 
-    is_color = TRUE) +
-    scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
-    theme(
-        legend.position = "none"
-    )
+    is_category = TRUE) +
+  interior_annotation(label = "b", cex = 2.5) +
+  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+  theme(
+      legend.position = "none"
+  )
 
 ## Second projection
 projection <- cbind(
@@ -4241,9 +4232,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                proj_scale = 2, 
-               scaled_data = scaled_mnist_data, 
-               scaled_data_model = scaled_mnist_data_model, 
-               distance_df_small_edges = tr_from_to_df_mnist, 
+               highd_data = scaled_mnist_data, 
+               model_highd = scaled_mnist_data_model, 
+               trimesh_data = tr_from_to_df_mnist, 
                axis_param = list(limits = 1, 
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.83, 
@@ -4257,28 +4248,26 @@ mnist_proj_tsne_model2 <- plot_proj(
     point_param = c(0.5, 0.3), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
-    title = "c", 
-    cex = 2, 
     axis_text_size = 3.5, 
-    is_color = TRUE) +
-    scale_color_manual(values = c("#999999",'#ff7f00')) +
-    theme(
-        legend.position = "none"
-    )
+    is_category = TRUE) +
+  interior_annotation(label = "c", cex = 2) +
+  scale_color_manual(values = c("#999999",'#ff7f00')) +
+  theme(
+      legend.position = "none"
+  )
 
 mnist_proj_tsne_model2_link <- plot_proj(
     proj_obj = proj_obj2, 
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
-    title = "c", 
-    cex = 2.5, 
     axis_text_size = 4.5, 
-    is_color = TRUE) +
-    scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
-    theme(
-        legend.position = "none"
-    )
+    is_category = TRUE) +
+  interior_annotation(label = "c", cex = 2.5) +
+  scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
+  theme(
+      legend.position = "none"
+  )
 
 ```
 
