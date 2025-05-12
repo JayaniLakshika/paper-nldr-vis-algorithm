@@ -932,7 +932,7 @@ start_pt <- all_centroids_df_temp |>
 d_rect <- tibble(x1min = 0, 
                  x1max = 1,
                  x2min = 0,
-                 x2max = 1.6)
+                 x2max = diff(algo_obj_two_curvy$nldr_obj$lim2)/diff(algo_obj_two_curvy$nldr_obj$lim1))
 
 # To move the rectangle to ignore the overlap with the centroids
 # rect_adj <- tibble(x1 = 0.03, x2 = 0.03)
