@@ -2901,9 +2901,9 @@ five_gau_proj_pacmap_model2 <- plot_proj(
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
 five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + 
-  five_gau_proj_tsne_model2 +
-  five_gau_proj_umap_model2 + five_gau_proj_pacmap_model2 +
-  plot_layout(guides = "collect", nrow = 3) &
+  #five_gau_proj_tsne_model2 +
+  #five_gau_proj_umap_model2 + five_gau_proj_pacmap_model2 +
+  plot_layout(guides = "collect", nrow = 2) &
   theme(legend.position='none')
 ```
 
@@ -3734,8 +3734,8 @@ error_plot_mnist <- plot_mse(error_mnist) +
     unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
                                        by = 5), 24)]) +
   scale_color_manual(
-    values=c('#e41a1c','#377eb8',"#ff7f00", 
-             '#984ea3', '#999999', '#a65628')) +
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
   theme(aspect.ratio=1.5)
 
 ```
