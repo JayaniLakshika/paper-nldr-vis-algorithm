@@ -413,7 +413,8 @@ With our goal being to make a representation of this \gD{} layout that can be li
 
 ```{r}
 #| label: two-curvy-training
-training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds")
+training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds") |>
+  mutate(ID = row_number())
 ```
 
 ```{r}
@@ -423,6 +424,7 @@ true_model_df <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_no
 wireframe_true_model <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
 data_two_curvy <- training_data_two_curvy |>
+  select(-ID) |>
   mutate(type = "data")
 
 true_model_two_curvy <- true_model_df |> 
@@ -432,7 +434,10 @@ true_model_two_curvy <- true_model_df |>
 <!--tSNE applied for Two curvy data-->
 ```{r}
 #| label: tsne-two-curvy
-tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") 
+tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
+  mutate(ID = row_number()) |>
+  rename(c("emb1" = "tSNE1",
+           "emb2" = "tSNE2"))
 ```
 
 ```{r}
@@ -440,18 +445,26 @@ tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_cluster
 
 num_bins_x_two_curvy <- 24
 
-algo_obj_two_curvy <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_two_curvy, 
+algo_obj_two_curvy <- fit_highd_model(
+  highd_data = training_data_two_curvy, 
   nldr_data = tsne_two_curvy, 
-  num_x_bins = num_bins_x_two_curvy)
+  bin1 = num_bins_x_two_curvy, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_scaled
-tr_from_to_df_two_curvy <- algo_obj_two_curvy$tr_from_to_df
-df_bin_centroids_two_curvy <- algo_obj_two_curvy$df_bin_centroids
-df_bin_two_curvy <- algo_obj_two_curvy$df_bin
-hex_grid_with_counts <- algo_obj_two_curvy$hex_grid_with_counts
-hex_grid_nonempty <- algo_obj_two_curvy$hex_grid_nonempty
-bin_width <- algo_obj_two_curvy$a1
+tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_obj$scaled_nldr
+tr_from_to_df_two_curvy <- algo_obj_two_curvy$trimesh_data
+df_bin_centroids_two_curvy <- algo_obj_two_curvy$model_2d
+df_bin_two_curvy <- algo_obj_two_curvy$model_highd
+hex_grid <- algo_obj_two_curvy$hb_obj$hex_poly
+counts_df <- algo_obj_two_curvy$hb_obj$std_cts
+
+hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hexID"))
+
+hex_grid_nonempty <- hex_grid |>
+  filter(hex_poly_id %in% df_bin_centroids_two_curvy$hexID)
+
+bin_width <- algo_obj_two_curvy$hb_obj$a1
 
 sc_ltr_pos <- c(0.08, 0.9)
 sc_xlims <- c(-0.3, 1.2)
@@ -464,7 +477,7 @@ sc_ylims <- c(-0.17, 1.25)
 #| label: hexbin-two-curvy
 
 nldr_two_curvy_original <- ggplot(tsne_two_curvy_scaled, 
-                                  aes(x = tSNE1, y = tSNE2)) +
+                                  aes(x = emb1, y = emb2)) +
   geom_point(alpha = 0.5, color = clr_choice, size = 0.5) 
 
 # First plot with xlim and ylim
@@ -489,7 +502,7 @@ hex_grid_two_curvy <- ggplot(
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = tsne_two_curvy_scaled, 
-             aes(x = tSNE1, y = tSNE2), 
+             aes(x = emb1, y = emb2), 
              alpha = 0.5, size = 0.5, color = clr_choice) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos, cex = 1.5)
@@ -501,7 +514,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
       group = hex_poly_id, 
       fill = std_counts), color = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
-             aes(x = tSNE1, y = tSNE2),
+             aes(x = emb1, y = emb2),
              colour = clr_choice,
              alpha = 0.3,
              size = 0.5) +
@@ -516,8 +529,8 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
 ```{r}
 #| label: empty-bin-two-curvy
 
-df_bin_centroids_two_curvy <- df_bin_centroids_two_curvy |>
-  dplyr::filter(std_counts > 0)
+# df_bin_centroids_two_curvy <- df_bin_centroids_two_curvy |>
+#   dplyr::filter(std_counts > 0)
 
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
@@ -547,8 +560,8 @@ trimesh_two_curvy <- ggplot() +
                colour = "#000000") +
   geom_point(data = tsne_two_curvy_scaled,
              aes(
-               x = tSNE1,
-               y = tSNE2
+               x = emb1,
+               y = emb2
              ),
              color = "#636363",
              alpha = 0.5,
@@ -572,8 +585,8 @@ trimesh_removed_two_curvy <- ggplot() +
 trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
   geom_point(data = tsne_two_curvy_scaled,
              aes(
-               x = tSNE1,
-               y = tSNE2
+               x = emb1,
+               y = emb2
              ),
              color = clr_choice,
              alpha = 0.5,
@@ -593,9 +606,6 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
 ```{r}
 #| label: compute-error-tsne
 
-training_data_two_curvy <- training_data_two_curvy |>
-  mutate(ID = row_number())
-
 ## Compute error
 error_df_two_curvy_abs <- augment(
   highd_data = training_data_two_curvy,
@@ -610,8 +620,8 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
               select(-ID))
 
 error_plot_two_curvy <- error_df_two_curvy_abs |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
+  ggplot(aes(x = emb1,
+             y = emb2,
              colour = sqrt_row_wise_total_error)) +
   geom_point(alpha=0.5) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
@@ -634,7 +644,7 @@ error_plot_two_curvy_hist <-
 #| label: prep-data-for-proj-tsne-best
 
 df_bin_two_curvy <- df_bin_two_curvy |>
-  select(-hb_id) |>
+  select(-hexID) |>
   mutate(type = "model")
 
 # Apply the scaling
@@ -1777,7 +1787,7 @@ mse_two_curvy_b + a1_m_two_curvy +
 <!-- #| label: proj-tsne-model -->
 
 <!-- df_bin_two_curvy <- df_bin_two_curvy |> -->
-<!--   select(-hb_id) |> -->
+<!--   select(-hexID) |> -->
 <!--   mutate(type = "model") -->
 
 <!-- # Apply the scaling -->
@@ -2103,12 +2113,12 @@ df_all_two_curvy4 <- dplyr::bind_cols(training_data_two_curvy, tsne_data_two_cur
 df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4)
 
 df_b_two_curvy4 <- df_bin_two_curvy4 |>
-  dplyr::filter(hb_id %in% df_bin_centroids4$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids4$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_two_curvy4 <- df_b_two_curvy4[match(df_bin_centroids4$hexID, df_b_two_curvy4$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_two_curvy4 <- df_b_two_curvy4[match(df_bin_centroids4$hexID, df_b_two_curvy4$hexID),] |>
+  dplyr::select(-hexID) 
 
 ## Triangulate bin centroids
 tr1_object_two_curvy4 <- tri_bin_centroids(
@@ -2364,12 +2374,12 @@ df_all_two_curvy4 <- dplyr::bind_cols(training_data_two_curvy, pacmap_data_two_c
 df_bin_two_curvy4 <- avg_highd_data(data = df_all_two_curvy4)
 
 df_b_two_curvy4 <- df_bin_two_curvy4 |>
-  dplyr::filter(hb_id %in% df_bin_centroids4$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids4$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_two_curvy4 <- df_b_two_curvy4[match(df_bin_centroids4$hexID, df_b_two_curvy4$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_two_curvy4 <- df_b_two_curvy4[match(df_bin_centroids4$hexID, df_b_two_curvy4$hexID),] |>
+  dplyr::select(-hexID) 
 
 ## Triangulate bin centroids
 tr1_object_two_curvy4 <- tri_bin_centroids(
@@ -2666,12 +2676,12 @@ df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
-  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data <- bind_rows(data_gau, df_b)
@@ -2841,12 +2851,12 @@ df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
-  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id)
+df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
+  dplyr::select(-hexID)
 
 # Apply the scaling
 df_model_data <- bind_rows(data_gau, df_b)
@@ -3014,12 +3024,12 @@ df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
-  dplyr::filter(hb_id %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hb_id),] |>
-  dplyr::select(-hb_id)
+df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
+  dplyr::select(-hexID)
 
 # Apply the scaling
 df_model_data <- bind_rows(data_gau, df_b)
@@ -3283,7 +3293,7 @@ data_c_shaped <- one_c_shaped_data |>
   mutate(type = "data")
 
 df_bin_dens_clust <- df_bin_dens_clust |>
-  select(-hb_id) |>
+  select(-hexID) |>
   mutate(type = "model")
 
 df_model_data <- bind_rows(data_c_shaped, df_bin_dens_clust)
@@ -3503,12 +3513,12 @@ df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
   dplyr::filter(std_counts > 0)
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
@@ -3740,12 +3750,12 @@ df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
   dplyr::filter(std_counts > 0)
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
@@ -4131,12 +4141,12 @@ hexID_mnist <- df_bin_centroids_mnist |>
   dplyr::pull(hexID)
 
 df_b_mnist <- df_bin_mnist |>
-  dplyr::filter(hb_id %in% hexID_mnist) |>
+  dplyr::filter(hexID %in% hexID_mnist) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data_mnist <- bind_rows(data_mnist, df_b_mnist)
