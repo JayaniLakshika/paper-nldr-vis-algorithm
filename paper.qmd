@@ -2898,7 +2898,7 @@ The @fig-NLDR-variety (a) shows three well-separated clusters with big separatio
 
 As a result, it is necessary to find an appropriate layout for the dataset. MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings were computed (@fig-pbmc-mse). Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.
 
-The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-mnist-tri-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-mnist-tri-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-mnist-tri-proj (b3)).
+The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-model-pbmc-author-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-model-pbmc-author-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-model-pbmc-author-proj (b3)).
 
 <!-- As shown in @fig-NLDR-variety, layout c, d, and e that show small separations between clusters are universally optimal. But layout d with little separations perform well at tiny binwidth and poorly as binwidth increases. Also, layout e performs well at large binwidths. The layout c is chosen as the best, since it used the UMAP with a different (hyper-) parameter settings. -->
 
@@ -3355,7 +3355,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 <!--add different NLDR layouts-->
 
-The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-mnist-tri-proj (a)). 
+The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). 
 
 
 <!-- @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective is to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}.  -->
@@ -3477,7 +3477,7 @@ The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with d
 
 In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-model-error-mnist), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters.
 
-By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the \gD{} layout. As shown in @fig-mnist-tri-proj (a1), the model provides the evidence for the non-linear structure of the digit 1 data in $10\text{-}D$. The model shows some quirks. The model's twisted pattern provides evidence for the $10\text{-}D$ data structure, which is not observed by \gD{} layout (@fig-mnist-tri-proj (a2)). 
+By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the \gD{} layout. As shown in @fig-clust-mnist (a1), the model provides the evidence for the non-linear structure of the digit 1 data in $10\text{-}D$. The model shows some quirks. The model's twisted pattern provides evidence for the $10\text{-}D$ data structure, which is not observed by \gD{} layout (@fig-clust-mnist (a2)). 
 
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
@@ -3739,6 +3739,7 @@ mnist_proj_tsne_model2_link <- plot_proj(
 #| fig-width: 12
 #| out-width: 100%
 #| fig-cap: "\\gD{} wireframe layout shows that there is a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster. The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>."
+#| eval: false
 
 free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
   mnist_proj_tsne_model2 +
@@ -3752,7 +3753,7 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
 #| fig-height: 5
 #| fig-width: 15
 #| out-width: 100%
-#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
+#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>. The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
 
 tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
   plot_layout(ncol = 3)
