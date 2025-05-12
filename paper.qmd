@@ -2930,7 +2930,7 @@ algo_obj_dens_clust <- fit_highd_model(
   nldr_data = tsne_one_c_shaped, 
   bin1 = num_bins_x_one_c_shaped, 
   q = 0.1, 
-  benchmark_highdens = 5)
+  benchmark_highdens = 1)
 
 tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_obj$scaled_nldr
 tr_from_to_df_dens_clust <- algo_obj_dens_clust$trimesh_data
@@ -3721,7 +3721,9 @@ error_mnist <- error_mnist |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
   filter(MSE == min(MSE)) |>
-  ungroup()
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 ```
 
 ```{r}
@@ -3786,7 +3788,7 @@ algo_obj_mnist <- fit_highd_model(
   nldr_data = tsne_mnist2, 
   bin1 = num_bins_x_mnist, 
   q = 0.1, 
-  benchmark_highdens = 5)
+  benchmark_highdens = 1)
 
 tsne_minst_scaled <- algo_obj_mnist$nldr_obj$scaled_nldr
 tr_from_to_df_mnist <- algo_obj_mnist$trimesh_data
