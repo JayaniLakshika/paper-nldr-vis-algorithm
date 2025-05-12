@@ -34,19 +34,19 @@ vert2 <- simplex(p2)$points
 # df[2001:3000,] <- df[2001:3000,] + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
 # df[3001:4000,] <- df[3001:4000,] + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
 # df[4001:5000,] <- df[4001:5000,] + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
-df1 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.05)/6
+df1 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
 df1 <- df1 + matrix(rep(vert2[1,], 1000), ncol=4, byrow=T)
 
-df2 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.3)/6
+df2 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
 df2 <- df2 + matrix(rep(vert2[2,], 1000), ncol=4, byrow=T)
 
 df3 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
 df3 <- df3 + matrix(rep(vert2[3,], 1000), ncol=4, byrow=T)
 
-df4 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.02)/6
+df4 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
 df4 <- df4 + matrix(rep(vert2[4,], 1000), ncol=4, byrow=T)
 
-df5 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.6)/6
+df5 <- rmvnorm(1000, mean = rep(0, 4), sigma = diag(4) * 0.5)/6
 df5 <- df5 + matrix(rep(vert2[5,], 1000), ncol=4, byrow=T)
 
 df1 <- df1 |>
