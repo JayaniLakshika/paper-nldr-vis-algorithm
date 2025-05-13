@@ -1255,9 +1255,9 @@ Observations are associated with their bin center, $C_{h}^{(p)}$, which are also
 
 <!--#### Error-->
 
-The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the mean squared error (MSE) as:
+The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the root mean squared error (RMSE) as:
 
-$$\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$${#eq-equation1} 
+$$\sqrt{\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
 where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hj} = \sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2$ to be the residual for each observation.
 
