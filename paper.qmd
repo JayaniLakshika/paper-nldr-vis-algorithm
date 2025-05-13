@@ -2052,7 +2052,7 @@ error_plot_two_curvy <-
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-toy-mse
 #| fig-pos: H
 #| out-width: 100%
@@ -2878,7 +2878,7 @@ To showcase the robustness of our method when applied to data with different cha
 
 Single-cell data refers to the characteristics of individual cells within a population (@haque2017). These data also provides insights at the level of individual cells, enabling deeper understanding of gene expression. 
 
-Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the discovered clusters, and help to understand the results. The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined. There are $2622$ single cells, with $1000$ gene expressions. Following their pre-processing, UMAP was performed using nine principal components. @fig-NLDR-variety (a) is the reproduction of the published plot, with colour indicating the clustering results overlaid on the NLDR layout. The question is whether this accurately represents the cluster structure in the data. Our method can help here, and also help to provide a better \gD{} layout, as needed. 
+Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the discovered clusters, and help to understand the results. The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined. There are $2622$ single cells, with $1000$ gene expressions. Following their pre-processing, UMAP was performed using nine principal components. @fig-NLDR-variety (a) is the reproduction of the published plot. The question is whether this accurately represents the cluster structure in the data. Our method can help here, and also help to provide a better \gD{} layout, as needed. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3134,7 +3134,7 @@ error_plot_pbmc <- plot_mse(error_pbmc) +
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using MSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using RMSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
 #| out-width: 100%
@@ -3322,7 +3322,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three clusters in $9\\text{-}D$, where two of them being close and one separated from the others.  Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -3464,7 +3464,7 @@ error_plot_mnist <- plot_mse(error_mnist) +
 
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
 #| out-width: 92%
