@@ -1302,21 +1302,22 @@ error_two_curvy_umap <- error_two_curvy_umap |>
 
 mse_two_curvy_b <- ggplot(error_two_curvy_umap, 
                      aes(x = a1, 
-                         y = MSE)) +
+                         y = sqrt(MSE))) +
   geom_vline(xintercept = 0.09,
-           color = "#d95f02", linetype=2, 
+           color = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
              color = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.03, linetype=2,
+  geom_vline(xintercept = 0.03, linetype="dotted",
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
-  ggtitle("(a)") +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = "RMSE") +
+  #ggtitle("(a)") +
+  interior_annotation("a", position = c(0.28, 0.15), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -1373,7 +1374,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression("prop. non-empty bins " * bgroup("(", m / b, ")"))) +
   ggtitle("(b)") +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
