@@ -3654,10 +3654,10 @@ proj_obj1 <- get_projection(projection = projection,
                model_highd = scaled_mnist_data_model, 
                trimesh_data = tr_from_to_df_mnist, 
                axis_param = list(limits = 1, 
-                                 axis_scaled = 1, 
+                                 axis_scaled = 1.1, 
                                  axis_pos_x = -0.92, 
                                  axis_pos_y = -0.92, 
-                                 threshold = 0.06))
+                                 threshold = 0.065))
 
 proj_obj1[["cluster"]] <- tsne_minst_scaled$cluster
 
@@ -3666,7 +3666,7 @@ mnist_proj_tsne_model1 <- plot_proj(
   point_param = c(0.5, 0.5), # size, alpha, color
   line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
   plot_limits = c(-1.1, 0.9), 
-  axis_text_size = 3.5, 
+  axis_text_size = 4, 
   is_category = TRUE) +
   interior_annotation(label = "b", cex = 2) +
   scale_color_manual(values = c("#999999",'#ff7f00')) +
@@ -3679,7 +3679,7 @@ mnist_proj_tsne_model1_link <- plot_proj(
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1.1, 0.9), 
-    axis_text_size = 4.5, 
+    axis_text_size = 5, 
     is_category = TRUE) +
   interior_annotation(label = "b", cex = 2.5) +
   scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
@@ -3698,10 +3698,10 @@ proj_obj2 <- get_projection(projection = projection,
                model_highd = scaled_mnist_data_model, 
                trimesh_data = tr_from_to_df_mnist, 
                axis_param = list(limits = 1, 
-                                 axis_scaled = 1, 
+                                 axis_scaled = 1.1, 
                                  axis_pos_x = -0.83, 
                                  axis_pos_y = -0.83, 
-                                 threshold = 0.06))
+                                 threshold = 0.065))
 
 proj_obj2[["cluster"]] <- tsne_minst_scaled$cluster
 
@@ -3723,7 +3723,7 @@ mnist_proj_tsne_model2_link <- plot_proj(
     point_param = c(1.2, 0.5), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
     plot_limits = c(-1, 1), 
-    axis_text_size = 4.5, 
+    axis_text_size = 5, 
     is_category = TRUE) +
   interior_annotation(label = "c", cex = 2.5) +
   scale_color_manual(values = c("#d9d9d9",'#ff7f00')) +
