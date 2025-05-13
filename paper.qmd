@@ -484,7 +484,7 @@ nldr_two_curvy_original <- ggplot(tsne_two_curvy_scaled,
 
 # First plot with xlim and ylim
 nldr_two_curvy <- nldr_two_curvy_original +
-  interior_annotation("a", sc_ltr_pos, cex = 1.5) +
+  interior_annotation("a", sc_ltr_pos, cex = 2) +
   xlim(sc_xlims) +
   ylim(sc_ylims)
 
@@ -507,7 +507,7 @@ hex_grid_two_curvy <- ggplot(
              aes(x = emb1, y = emb2), 
              alpha = 0.5, size = 0.5, color = clr_choice) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("b", sc_ltr_pos, cex = 1.5)
+  interior_annotation("b", sc_ltr_pos, cex = 2)
 
 hex_grid_coloured_two_curvy1 <- ggplot() + 
   geom_polygon(
@@ -545,7 +545,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
              color = "#000000",
              size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("c", sc_ltr_pos, cex = 1.5) 
+  interior_annotation("c", sc_ltr_pos, cex = 2) 
 ```
 
 <!--2D model-->
@@ -582,7 +582,7 @@ trimesh_removed_two_curvy <- ggplot() +
                colour = "#000000") +
   coord_equal() +
   xlim(sc_xlims) + ylim(sc_ylims) +
-  interior_annotation("d", sc_ltr_pos, cex = 1.5)
+  interior_annotation("d", sc_ltr_pos, cex = 2)
 
 trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
   geom_point(data = tsne_two_curvy_scaled,
