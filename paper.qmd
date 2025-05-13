@@ -149,6 +149,7 @@ library(colorspace)
 library(kableExtra)
 library(conflicted)
 library(ggbeeswarm)
+library(scales)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -1553,9 +1554,9 @@ error_rm_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/e
 
 mse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
                      aes(x = benchmark_rm_lwd, 
-                         y = sqrt(MSE),
-                         color = bin1,
-                         linetype = bin1)) + 
+                         y = RMSE,
+                         color = a1,
+                         linetype = a1)) + 
   geom_point(
     size = 1
     ) +
@@ -1563,8 +1564,10 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
     linewidth = 0.5
     ) + 
   scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 3, 5, 7, 9, 11, 13, 15, 17)]) +
-  scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77")) +
-  scale_linetype_manual(values = c("dashed", "solid", "dotted")) +
+  scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77"),
+                     labels = parse_format()) +
+  scale_linetype_manual(values = c("dashed", "solid", "dotted"),
+                        labels = parse_format()) +
   xlab("threshold to remove low-density hexagons") +
   ylab("RMSE") +
   interior_annotation("c", position = c(0.1, 0.9), cex = 2) +
@@ -1575,6 +1578,8 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
         legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 18),
         axis.title = element_text(size = 18),
 axis.text = element_text(size = 15))
 ```
@@ -1582,7 +1587,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show MSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the MSE drops and then flattens out. Three binwidth choices were made: $0.03$, $0.05$, and $0.09$ to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in MSE."
+#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.09$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
 #| label: fig-param-two-curvy
 #| out-width: 80%
 #| fig-width: 12

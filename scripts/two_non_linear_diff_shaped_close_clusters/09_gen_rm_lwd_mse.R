@@ -42,6 +42,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+           a1 = paste0("a[1] == ", round(two_curvy_model1$hb_obj$a1, 2)),
            bin1 = two_curvy_model1$hb_obj$bins[1],
            bin2 = two_curvy_model1$hb_obj$bins[2],
            b = bin1 * bin2,
@@ -83,6 +84,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+           a1 = paste0("a[1] == ", round(two_curvy_model2$hb_obj$a1, 2)),
            bin1 = two_curvy_model2$hb_obj$bins[1],
            bin2 = two_curvy_model2$hb_obj$bins[2],
            b = bin1 * bin2,
@@ -124,8 +126,10 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+           a1 = paste0("a[1] == ", round(two_curvy_model3$hb_obj$a1, 2)),
            bin1 = two_curvy_model3$hb_obj$bins[1],
            bin2 = two_curvy_model3$hb_obj$bins[2],
+           b = bin1 * bin2,
            b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
