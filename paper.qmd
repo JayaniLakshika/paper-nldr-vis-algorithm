@@ -203,7 +203,7 @@ Check-list before submission
 
 ## Introduction
 
-Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
+Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
 
 <!-- - What's the problem:
 
@@ -344,6 +344,8 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   nldr5 + nldr6 + nldr7 + nldr8 +
   plot_layout(ncol = 4)
 ```
+
+The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
 
 The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion.
 
