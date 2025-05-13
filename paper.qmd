@@ -1294,7 +1294,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
              color = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "MSE") +
   ggtitle("(a)") +
   theme_minimal() +
@@ -1303,8 +1303,8 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
         plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        axis.title = element_text(size = 15),
-        axis.text = element_text(size = 12))
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
 
 
 prop_dens_a1 <- ggplot(error_two_curvy_umap,
@@ -1322,7 +1322,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
   ggtitle("(d)") +
   theme_minimal() +
@@ -1331,8 +1331,8 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
         plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        axis.title = element_text(size = 15),
-axis.text = element_text(size = 12))
+        axis.title = element_text(size = 18),
+axis.text = element_text(size = 15))
 
 error_two_curvy_umap <- error_two_curvy_umap |>
   mutate(prop_bins = b_non_empty/b)
@@ -1352,7 +1352,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(2, 4, 8, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("proportion of non-empty bins ", bgroup("(", frac(m, b), ")")))) +
   ggtitle("(b)") +
   theme_minimal() +
@@ -1361,8 +1361,8 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
         plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        axis.title = element_text(size = 15),
-axis.text = element_text(size = 12))
+        axis.title = element_text(size = 18),
+axis.text = element_text(size = 15))
 ```
 
 ```{r}
@@ -1557,8 +1557,8 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
         legend.position = "none",
-        axis.title = element_text(size = 15),
-axis.text = element_text(size = 12))
+        axis.title = element_text(size = 18),
+axis.text = element_text(size = 15))
 ```
 
 
