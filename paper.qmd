@@ -3395,7 +3395,8 @@ nldr_mnist1 <- tsne_mnist |>
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#984ea3') +
   interior_annotation("a", c(0.08, 0.93)) +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 
 tsne_mnist2 <- read_rds("data/mnist/mnist_tsne89.rds")
 
@@ -3404,7 +3405,8 @@ nldr_mnist6 <- tsne_mnist2 |>
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("f", c(0.08, 0.93)) +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 
 umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
 
@@ -3413,7 +3415,8 @@ nldr_mnist2 <- umap_mnist |>
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("b") +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 
 phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
 
@@ -3422,7 +3425,8 @@ nldr_mnist3 <- phate_mnist |>
              y = PHATE2))+
   geom_point(alpha=0.1, size=1, colour='#377eb8') +
   interior_annotation("c", position = c(0.94, 0.92)) +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 
 trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
 
@@ -3431,7 +3435,8 @@ nldr_mnist4 <- trimap_mnist |>
              y = TriMAP2))+
   geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("d", position = c(0.86, 0.92)) +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 
 pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
 
@@ -3440,7 +3445,8 @@ nldr_mnist5 <- pacmap_mnist |>
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("e") +
-  theme(aspect.ratio = 1)
+  theme(aspect.ratio = 1,
+        plot.margin = margin(0, 0, 0, 0))
 ```
 
 ```{r}
@@ -3480,7 +3486,8 @@ error_plot_mnist <- plot_mse(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=1.5)
+  theme(aspect.ratio=1.5,
+        plot.margin = margin(0, 0, 0, 0))
 
 ```
 
@@ -3863,7 +3870,7 @@ imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Or
 
 # Define your current layout
 top_layout <- right_top_img / middle_img / right_bottom_img / imge_error_sample_outside
-full_layout <- highd_error_2d_mnist + top_layout
+full_layout <- highd_error_2d_mnist + top_layout 
 
 # Add the new full-width bottom row
 final_layout <- full_layout / imge_error_sample_inside + plot_layout(heights = c(1, 0.2))
