@@ -2129,7 +2129,7 @@ trimesh_removed_gau_tsne <- ggplot() +
     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
-                      cex = 1.5) +
+                      cex = 2) +
   theme(
     aspect.ratio = 1
   )
@@ -2234,7 +2234,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
-                      cex = 1.5)
+                      cex = 2)
 
 ## Second projection
 projection <- cbind(
@@ -2259,7 +2259,7 @@ five_gau_proj_tsne_model2 <- plot_proj(
   plot_limits = c(-1.3, 1.3), 
   axis_text_size = 4, 
   is_category = FALSE) +
-  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 1.5) +
+  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
 ```
@@ -2305,13 +2305,13 @@ trimesh_removed_gau_umap <- ggplot() +
     linewidth = 0.5) +
   interior_annotation("b1", 
                       position = c(0.95, 0.95),
-                      cex = 1.5) +
+                      cex = 2) +
   theme(
     aspect.ratio = 1
   )
 
-df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-  dplyr::filter(std_counts > 0)
+# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
+#   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
@@ -2408,7 +2408,7 @@ five_gau_proj_umap_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("b2", 
                       position = c(0.08, 0.9),
-                      cex = 1.5)
+                      cex = 2)
 
 ## Second projection
 projection <- cbind(
@@ -2433,7 +2433,7 @@ five_gau_proj_umap_model2 <- plot_proj(
   plot_limits = c(-1.3, 1.3), 
   axis_text_size = 4, 
   is_category = FALSE) +
-  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 1.5) +
+  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 2) +
   theme(aspect.ratio = 1,
         legend.position = "none")
 ```
@@ -2478,13 +2478,13 @@ trimesh_removed_gau_pacmap <- ggplot() +
     linewidth = 0.5) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
-                      cex = 1.5) +
+                      cex = 2) +
   theme(
     aspect.ratio = 1
   )
 
-df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-  dplyr::filter(std_counts > 0)
+# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
+#   dplyr::filter(std_counts > 0)
 
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
@@ -2581,7 +2581,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
   ylim(c(-0.89, 0.89)) +
   interior_annotation("c2",
                       position = c(0.08, 0.9),
-                      cex = 1.5)
+                      cex = 2)
 
 ## Second projection
 projection <- cbind(
@@ -2606,7 +2606,7 @@ five_gau_proj_pacmap_model2 <- plot_proj(
   plot_limits = c(-1.3, 1.3), 
   axis_text_size = 4, 
   is_category = FALSE) +
-  interior_annotation(label = "c3", position = c(0.08, 0.9), cex = 1.5) +
+  interior_annotation(label = "c3", position = c(0.08, 0.9), cex = 2) +
   theme(aspect.ratio = 1,
         legend.position = "none")
 
