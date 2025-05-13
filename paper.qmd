@@ -2096,7 +2096,7 @@ data_gau <- training_data_gau |>
 tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 23
+num_bins_x_gau1 <- 18
 
 algo_obj_gau1 <- fit_highd_model(
   highd_data = training_data_gau, 
@@ -2180,11 +2180,11 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 ```{r}
 #| label: five-gau-tsne-projs
 projection <- cbind(
-  c(0.00660,-0.34942,0.14548,-0.12289),
-  c(-0.18758,0.15398,0.30233,-0.08999))
+  c(0.10394,0.08379,-0.17868,0.32960),
+  c(0.35111,-0.01137,-0.09657,-0.16018))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2, 
+               proj_scale = 2.5, 
                highd_data = scaled_gau_data, 
                model_highd = scaled_gau_data_model, 
                trimesh_data = tr_from_to_df_gau1, 
@@ -2227,7 +2227,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
     aes(x=x2, y=y2),
     label=rownames(axes), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -2272,7 +2272,7 @@ five_gau_proj_tsne_model2 <- plot_proj(
 umap_data_gau <- read_rds("data/five_gau_clusters/umap_data_five_gau.rds")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 75
+num_bins_x_gau1 <- 63
 
 algo_obj_gau1 <- fit_highd_model(
   highd_data = training_data_gau, 
@@ -2356,11 +2356,11 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 ```{r}
 #| label: five-gau-umap-projs
 projection <- cbind(
-  c(0.00660,-0.34942,0.14548,-0.12289),
-  c(-0.18758,0.15398,0.30233,-0.08999))
+  c(0.10394,0.08379,-0.17868,0.32960),
+  c(0.35111,-0.01137,-0.09657,-0.16018))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2, 
+               proj_scale = 2.5, 
                highd_data = scaled_gau_data, 
                model_highd = scaled_gau_data_model, 
                trimesh_data = tr_from_to_df_gau1, 
@@ -2401,7 +2401,7 @@ five_gau_proj_umap_model1 <- projected_df |>
     data=axes, 
     aes(x=x2, y=y2, label=rownames(axes)), 
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle, 
     aes(x=c1, y=c2), colour="grey70") +
@@ -2446,7 +2446,7 @@ five_gau_proj_umap_model2 <- plot_proj(
 pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
 
 ## Compute hexbin parameters
-num_bins_x_gau1 <- 33
+num_bins_x_gau1 <- 28
 
 algo_obj_gau1 <- fit_highd_model(
   highd_data = training_data_gau, 
@@ -2529,11 +2529,11 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
 #| label: five-gau-pacmap-projs
 ## First projection
 projection <- cbind(
-  c(0.00660,-0.34942,0.14548,-0.12289),
-  c(-0.18758,0.15398,0.30233,-0.08999))
+  c(0.10394,0.08379,-0.17868,0.32960),
+  c(0.35111,-0.01137,-0.09657,-0.16018))
 
 proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2, 
+               proj_scale = 2.5, 
                highd_data = scaled_gau_data, 
                model_highd = scaled_gau_data_model, 
                trimesh_data = tr_from_to_df_gau1, 
@@ -2574,7 +2574,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
     data=axes,
     aes(x=x2, y=y2, label=rownames(axes)),
     colour="grey50",
-    size = 3) +
+    size = 5) +
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
