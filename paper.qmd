@@ -926,8 +926,8 @@ l_temp <- quad(a=3, b = 2 * a2_temp, c = -(a2_temp^2 + a1_temp^2))
 all_centroids_df_temp <- hb_obj_notation$centroids
 hex_grid_temp <- hb_obj_notation$hex_poly
 
-hex_grid_temp45 <- hex_grid_temp |> 
-  filter(hex_poly_id == 45)
+hex_grid_temp40 <- hex_grid_temp |> 
+  filter(hex_poly_id == 40)
 
 start_pt <- all_centroids_df_temp |> 
   filter(hexID == 1)
@@ -951,10 +951,10 @@ a2 <- tibble(x = all_centroids_df_temp$c_x[25],
              y = all_centroids_df_temp$c_y[25],
              yend = all_centroids_df_temp$c_y[33],
              label = expression(a[2]))
-l <- tibble(x = hex_grid_temp45$x[2],
-            xend = hex_grid_temp45$x[3],
-            y = hex_grid_temp45$y[2],
-            yend = hex_grid_temp45$y[3],
+l <- tibble(x = hex_grid_temp40$x[2],
+            xend = hex_grid_temp40$x[3],
+            y = hex_grid_temp40$y[2],
+            yend = hex_grid_temp40$y[3],
             label = expression(l))
 
 hex_param_vis <- ggplot() + 
@@ -989,16 +989,16 @@ hex_param_vis <- ggplot() +
     annotate("text", x=d_rect$x1min - rect_adj$x1, 
                      y=d_rect$x2min - rect_adj$x2,
                      label = "(0,0)", 
-             hjust=-0.1, vjust=-0.3) + 
+             hjust=-0.1, vjust=-0.3, size = 8) + 
     annotate("text", x=d_rect$x1max - rect_adj$x1, 
                      y=d_rect$x2min - rect_adj$x2,
                      label = "(0,1)", 
-             hjust=1.1, vjust=-0.3) + 
+             hjust=1.1, vjust=-0.3, size = 8) + 
     annotate("text", x=d_rect$x1min - rect_adj$x1, 
                      y=d_rect$x2max - rect_adj$x2,
                      label = expression(group("(", 
                         list(0, y[2][max]),")")), 
-            hjust=-0.1, vjust=1.2) + 
+            hjust=-0.1, vjust=1.2, size = 8) + 
     geom_segment(data=d_rect, aes(
       x = x1min  - rect_adj$x1, # 0 - 0.03, 
       y = -0.31, 
@@ -1008,7 +1008,7 @@ hex_param_vis <- ggplot() +
                                ends = "both"), 
                  color = "black")+
     annotate("text", x=0.5, y=-0.36, 
-             label = expression(r[1]), color = "black") +
+             label = expression(r[1]), color = "black", size = 8) +
     geom_segment(data=d_rect, aes(
       x = -0.25, 
       y = x2min - rect_adj$x2, #0 - 0.05, 
@@ -1018,7 +1018,7 @@ hex_param_vis <- ggplot() +
                        ends = "both"), 
                  color = "black")+ 
     annotate("text", x=-0.3, y=0.4, 
-             label = expression(r[2]), color = "black") +
+             label = expression(r[2]), color = "black", size = 8) +
     geom_segment(data = a1, aes(
       x = x, #-0.1 + 0.2087578, 
       y = y, #-0.15, 
@@ -1032,7 +1032,7 @@ hex_param_vis <- ggplot() +
              y=a1$y, 
              label = expression(a[1]), 
              color = "black",
-             vjust = 1.2) +
+             vjust = 1.2, size = 8) +
     geom_segment(data = a2, aes(
       x = x, #-0.15, 
       y = y, #-0.1*r2 + 0.1807896*2, 
@@ -1043,10 +1043,10 @@ hex_param_vis <- ggplot() +
       color = "black") + # a2 = 0.1807896
     annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
              label = expression(a[2]), 
-             color = "black", hjust=-0.2) +
+             color = "black", hjust=-0.2, size = 8) +
     annotate("text", x=-0.18, y=-0.24, 
       label = expression(group("(", list(s[1], s[2]), ")")),
-      color = "black") +
+      color = "black", size = 8) +
   geom_segment(data = l, aes(
       x = x, #-0.15, 
       y = y, #-0.1*r2 + 0.1807896*2, 
@@ -1057,7 +1057,7 @@ hex_param_vis <- ggplot() +
       color = "black") + 
     annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
              label = expression(l), 
-             color = "black", hjust=-0.2) +
+             color = "black", hjust=-0.2, size = 8) +
   coord_equal()
 ```
 
