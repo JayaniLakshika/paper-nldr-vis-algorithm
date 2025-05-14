@@ -1528,7 +1528,7 @@ hex_grid_coloured_two_curvy2 +
 ``` 
 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{\frac{n}{r_2}}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
 
 <!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-two_curvy (a)).--> 
 
@@ -1538,7 +1538,7 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 
 #### Measurement of capturing the data shape in 2-D 
 
-The area of a hexagon is defined as $A = \frac{3\sqrt{3}}{2}l^2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\frac{\sum^{h}_{i=1}n_h}{A}$ and the proportion is $\frac{\sum^{h}_{i=1}n_h}{A \times b}$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
+The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
 
 #### Removal of low density bins
 
