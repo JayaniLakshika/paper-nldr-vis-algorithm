@@ -49,7 +49,7 @@ plot_mse <- function(error_df) {
 
   ggplot(error_df,
          aes(x = a1,
-             y = sqrt(MSE),
+             y = RMSE,
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
@@ -90,7 +90,6 @@ plot_digit_img <- function(digit_df, palette, title_text, ncol = 5) {
               x = min(digit_df$x), y = max(digit_df$y), inherit.aes = FALSE,
               hjust = -0.3, vjust = 1.3, size = 7, color = "grey70") +
     facet_wrap(~ instance, ncol = ncol) +
-    #ggtitle(title_text) +
     coord_fixed() +
     scale_fill_continuous_sequential(palette = palette) +
     theme(strip.background = element_blank(),

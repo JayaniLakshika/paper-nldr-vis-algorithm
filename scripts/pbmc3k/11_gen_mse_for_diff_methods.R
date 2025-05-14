@@ -32,13 +32,13 @@ write_rds(error_pbmc_umap, "data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
 
 ## For umap
 
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_15_min_dist_0.99.rds")
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
 names(umap_pbmc) <- c("emb1", "emb2", "ID")
 
 error_pbmc_umap <- gen_diffbin1_errors(highd_data = data_pbmc, nldr_data = umap_pbmc) |>
-  dplyr::mutate(method = "UMAP_15_min_dist_0.99")
+  dplyr::mutate(method = "UMAP_5_min_dist_0.8")
 
-write_rds(error_pbmc_umap, "data/pbmc3k/error_pbmc_umap_15_min_dist_0.99.rds")
+write_rds(error_pbmc_umap, "data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
 
 ###########
 

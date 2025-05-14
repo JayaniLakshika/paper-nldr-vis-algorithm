@@ -1320,7 +1320,7 @@ error_two_curvy_umap <- error_two_curvy_umap |>
 
 mse_two_curvy_b <- ggplot(error_two_curvy_umap, 
                      aes(x = a1, 
-                         y = sqrt(MSE))) +
+                         y = RMSE)) +
   geom_vline(xintercept = 0.09,
            color = "#d95f02", linetype="dashed", 
            linewidth=1) +
@@ -2069,7 +2069,7 @@ error_two_curvy <- error_two_curvy |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
-  filter(MSE == min(MSE)) |>
+  filter(RMSE == min(RMSE)) |>
   ungroup()
 ```
 
@@ -3242,7 +3242,7 @@ error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
-  filter(MSE == min(MSE)) |>
+  filter(RMSE == min(RMSE)) |>
   ungroup()
 
 error_pbmc <- error_pbmc |>
@@ -3575,7 +3575,7 @@ error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
-  filter(MSE == min(MSE)) |>
+  filter(RMSE == min(RMSE)) |>
   ungroup() |>
   mutate(method = factor(method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
