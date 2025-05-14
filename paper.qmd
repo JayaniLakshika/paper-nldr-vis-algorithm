@@ -1585,7 +1585,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
                      labels = parse_format()) +
   scale_linetype_manual(values = c("dashed", "solid", "dotted"),
                         labels = parse_format()) +
-  xlab("threshold to remove low-density hexagons") +
+  xlab("bin density cutoff") +
   ylab("RMSE") +
   interior_annotation("c", position = c(0.07, 0.9), cex = 2) +
   theme_minimal() +
@@ -1604,7 +1604,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and threshold. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.09$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
+#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and bin density cutoff. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.09$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
 #| label: fig-param-two-curvy
 #| out-width: 80%
 #| fig-width: 12
