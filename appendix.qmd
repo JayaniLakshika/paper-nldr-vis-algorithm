@@ -217,12 +217,7 @@ Given range of embedding component, $r_2$, number of bins along the x-axis, $b_1
 umap_scurve <- read_rds(file = here::here("data/s_curve/s_curve_umap.rds")) 
 
 scurve_scaled_obj <- gen_scaled_data(
-  data = umap_scurve)
-
-umap_scurve_scaled <- scurve_scaled_obj$scaled_nldr
-lim1 <- scurve_scaled_obj$lim1
-lim2 <- scurve_scaled_obj$lim2
-r2 <- diff(lim2)/diff(lim1)
+  nldr_data = umap_scurve)
 
 sc_ltr_pos <- c(0.08, 0.96)
 sc_xlims <- c(-0.5, 1.47)
@@ -237,9 +232,9 @@ num_bins_x_scurve <- 7
 
 ## hexagon binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
-  data = umap_scurve_scaled, 
-  bin1 = num_bins_x_scurve, 
-  r2 = r2)
+  nldr_obj = scurve_scaled_obj, 
+  bin1 = 8, 
+  q = 0.1)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
@@ -255,7 +250,7 @@ start_pt <- all_centroids_df |>
 d_rect <- tibble(x1min = 0, 
                  x1max = 1,
                  x2min = 0,
-                 x2max = r2)
+                 x2max = diff(scurve_scaled_obj$nldr_obj$lim2)/diff(scurve_scaled_obj$nldr_obj$lim1))
 
 c_start <- tibble(s1 = 0.03, s2 = -0.05)
 
@@ -425,7 +420,9 @@ This is a linear optimization problem. Therefore, the optimal solution must occu
 
 $$
 \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1 + q)}{(b_1 - 1)}.
-$$ After rearranging this,
+$$ 
+
+After rearranging this,
 
 $$
 b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
@@ -465,9 +462,9 @@ num_bins_x_scurve <- 3
 
 ## hexagon binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
-  data = umap_scurve_scaled, 
+  nldr_obj = scurve_scaled_obj, 
   bin1 = num_bins_x_scurve, 
-  r2 = r2)
+  q = 0.1)
 
 ## Data set with all centroids
 all_centroids_df <- hb_obj_scurve$centroids
@@ -552,6 +549,7 @@ assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) +
 #| fig-cap: "Binning the data. Points are assigned to the nearest centroid. If a point is equidistant from multiple centroids, assigned to the lowest centroid."
 #| fig-width: 9
 #| fig-height: 6
+
 assign_data_vis1 + assign_data_vis2 +
   plot_layout(ncol = 2)
 ```
@@ -650,9 +648,9 @@ $$
 
 where $l > 0$.
 
-### Single-cell gene expression
+## Single-cell gene expression: comparison with results of scDEED recommendations
 
-#### Comparison with results of scDEED recommendations
+<!-- ### Comparison with results of scDEED recommendations -->
 
 <!-- XXX What this section needs: -->
 
@@ -755,7 +753,7 @@ error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
-  filter(MSE == min(MSE)) |>
+  filter(RMSE == min(RMSE)) |>
   ungroup()
 ```
 
@@ -771,7 +769,7 @@ error_umap_plot_pbmc <-  plot_mse(error_pbmc) +
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the two layouts with UMAP and tSNE with different hyper-parameter setting (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $30$ (blue)) on the PBMC data is the better representation using MSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP and tSNE layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Assessing which of the two layouts with UMAP and tSNE with different hyper-parameter setting (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $30$ (blue)) on the PBMC data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP and tSNE layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
   plot_layout(ncol = 1, heights = c(1, 1))
@@ -788,28 +786,21 @@ names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 30
 
-algo_obj_pbmc <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_pbmc, 
+algo_obj_pbmc <- fit_highd_model(
+  highd_data = training_data_pbmc, 
   nldr_data = umap_pbmc, 
-  num_x_bins = num_bins_x_pbmc)
+  bin1 = num_bins_x_pbmc, 
+  q = 0.1, 
+  benchmark_highdens = 5)
 
-umap_pbmc_scaled <- algo_obj_pbmc$nldr_scaled
-distance_pbmc <- algo_obj_pbmc$distance_df
-tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
-benchmark_pbmc <- algo_obj_pbmc$benchmark
-df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
-df_bin_pbmc <- algo_obj_pbmc$df_bin
-
-distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc)#benchmark_pbmc
+umap_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
+tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
+df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
+df_bin_pbmc <- algo_obj_pbmc$model_highd
 
 umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
   mutate(cluster = if_else(emb1 <= 0.3, "cluster1", if_else((emb1 >= 0.75) & (emb2 <= 0.25), "cluster3", "cluster2"))) |>
   mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
-
-tr_from_to_df_pbmc <- right_join(
-  tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
-  by = c("from", "to")) 
 
 trimesh_removed_pbmc <- ggplot() + 
   geom_point(
@@ -845,12 +836,12 @@ data_pbmc <- training_data_pbmc |>
   mutate(type = "data")
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
@@ -877,8 +868,8 @@ data_pbmc_n <- data_pbmc |>
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = distance_df_small_edges_pbmc$from,
-                         lineTo = distance_df_small_edges_pbmc$to,
+                         lineFrom = tr_from_to_df_pbmc$from,
+                         lineTo = tr_from_to_df_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
                                         c("cluster1", "cluster2", "cluster3", "model")),
                          levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
@@ -894,9 +885,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                proj_scale = 1.23, 
-               scaled_data = scaled_pbmc_data, 
-               scaled_data_model = scaled_pbmc_data_model, 
-               distance_df_small_edges = distance_df_small_edges_pbmc, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
                axis_param = list(limits = 1,
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.48, 
@@ -909,10 +900,10 @@ pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
-  title = "a2", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) + 
+  interior_annotation(label = "a2", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -921,9 +912,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                proj_scale = 1.25, 
-               scaled_data = scaled_pbmc_data, 
-               scaled_data_model = scaled_pbmc_data_model, 
-               distance_df_small_edges = distance_df_small_edges_pbmc, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
                axis_param = list(limits = 1.35, 
                                  axis_scaled = 1, 
                                  axis_pos_x = -0.75, 
@@ -936,10 +927,10 @@ pbmc_proj_umap_model2 <- plot_proj(
     proj_obj = proj_obj2, 
     point_param = c(1.5, 0.2), # size, alpha, color
     plot_limits = c(-1, 0.75), 
-    title = "a3", 
-    cex = 2, 
     axis_text_size = 4,
-    is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+    is_category = TRUE) +
+  interior_annotation(label = "a3", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ```
 
@@ -949,28 +940,21 @@ pbmc_proj_umap_model2 <- plot_proj(
 ## Compute hexbin parameters
 num_bins_x_pbmc <- 30
 
-algo_obj_pbmc <- gen_nldr_vis_algo_obj(
-  high_d_data = training_data_pbmc, 
+algo_obj_pbmc <- fit_highd_model(
+  highd_data = training_data_pbmc, 
   nldr_data = tsne_pbmc, 
-  num_x_bins = num_bins_x_pbmc)
+  bin1 = num_bins_x_pbmc, 
+  q = 0.1, 
+  benchmark_highdens = 1)
 
-tsne_pbmc_scaled <- algo_obj_pbmc$nldr_scaled
-distance_pbmc <- algo_obj_pbmc$distance_df
-tr_from_to_df_pbmc <- algo_obj_pbmc$tr_from_to_df
-benchmark_pbmc <- algo_obj_pbmc$benchmark
-df_bin_centroids_pbmc <- algo_obj_pbmc$df_bin_centroids
-df_bin_pbmc <- algo_obj_pbmc$df_bin
-
-distance_df_small_edges_pbmc <- distance_pbmc |>
-  filter(distance < benchmark_pbmc)#benchmark_pbmc
+tsne_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
+tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
+df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
+df_bin_pbmc <- algo_obj_pbmc$model_highd
 
 tsne_pbmc_scaled_with_cluster <- tsne_pbmc_scaled |>
   mutate(cluster = if_else((emb2 <= -emb1 + 0.8) & (emb1 < 0.5), "cluster1", if_else(emb2 >= -2 * emb1 + 1.79, "cluster3", "cluster2"))) |>
   mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
-
-tr_from_to_df_pbmc <- right_join(
-  tr_from_to_df_pbmc, distance_df_small_edges_pbmc, 
-  by = c("from", "to")) 
 
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_point(
@@ -1006,12 +990,12 @@ data_pbmc <- training_data_pbmc |>
   mutate(type = "data")
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hb_id %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hb_id),] |>
-  dplyr::select(-hb_id) 
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
+  dplyr::select(-hexID) 
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
@@ -1038,8 +1022,8 @@ data_pbmc_n <- data_pbmc |>
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = distance_df_small_edges_pbmc$from,
-                         lineTo = distance_df_small_edges_pbmc$to,
+                         lineFrom = tr_from_to_df_pbmc$from,
+                         lineTo = tr_from_to_df_pbmc$to,
                          group = factor(df_model_data_pbmc_n$type,
                                         c("cluster1", "cluster2", "cluster3", "model")),
                          levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
@@ -1055,9 +1039,9 @@ projection <- cbind(
 
 proj_obj1 <- get_projection(projection = projection, 
                             proj_scale = 1.23, 
-                            scaled_data = scaled_pbmc_data, 
-                            scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = distance_df_small_edges_pbmc, 
+                            highd_data = scaled_pbmc_data, 
+                            model_highd = scaled_pbmc_data_model, 
+                            trimesh_data = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1,
                                               axis_scaled = 1, 
                                               axis_pos_x = -0.48, 
@@ -1070,10 +1054,10 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.65, 0.65), 
-  title = "b2", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) + 
+  interior_annotation(label = "b2", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
 projection <- cbind(
@@ -1082,9 +1066,9 @@ projection <- cbind(
 
 proj_obj2 <- get_projection(projection = projection, 
                             proj_scale = 1.25, 
-                            scaled_data = scaled_pbmc_data, 
-                            scaled_data_model = scaled_pbmc_data_model, 
-                            distance_df_small_edges = distance_df_small_edges_pbmc, 
+                            highd_data = scaled_pbmc_data, 
+                            model_highd = scaled_pbmc_data_model, 
+                            trimesh_data = tr_from_to_df_pbmc, 
                             axis_param = list(limits = 1.35, 
                                               axis_scaled = 1, 
                                               axis_pos_x = -0.75, 
@@ -1097,10 +1081,10 @@ pbmc_proj_tsne_model2_best <- plot_proj(
   proj_obj = proj_obj2, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-1, 0.75), 
-  title = "b3", 
-  cex = 2, 
   axis_text_size = 4,
-  is_color = TRUE) + scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
+  is_category = TRUE) + 
+  interior_annotation(label = "b3", cex = 2) +
+  scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ```
 
