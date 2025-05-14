@@ -1,6 +1,6 @@
 # Add plot label
 
-interior_annotation <- function(label, position = c(0.92, 0.92), cex = 1, col="grey70") {
+interior_annotation <- function(label, position = c(0.9, 0.9), cex = 1, col="grey70") {
   annotation_custom(grid::textGrob(label = label,
                                    x = unit(position[1], "npc"), y = unit(position[2], "npc"),
                                    gp = grid::gpar(cex = cex, col=col)))
