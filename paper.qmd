@@ -3843,28 +3843,28 @@ img_right_top <- c(868, 1465, 1787)
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
 
-right_top_img <- plot_digit_img(pixels_gathered_within, palette = "Blues 2", title_text = "a", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+right_top_img <- plot_digit_img(pixels_gathered_within, palette = "Blues 2", title_text = "a", hjust = 0.17) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_middle <- c(130, 2091, 7795)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_middle)
 
-middle_img <- plot_digit_img(pixels_gathered_within, palette = "Greens 3", title_text = "b", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+middle_img <- plot_digit_img(pixels_gathered_within, palette = "Greens 3", title_text = "b", hjust = 0.17) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_right_bottom <- c(2035, 7708, 7710)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_bottom)
 
-right_bottom_img <- plot_digit_img(pixels_gathered_within, palette = "Purples 2", title_text = "c", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+right_bottom_img <- plot_digit_img(pixels_gathered_within, palette = "Purples 2", title_text = "c", hjust = 0.17) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_error_outside <- c(999, 3650, 4916)
 
 pixels_gathered_outside <-  mnist_data |>
   filter(instance %in% img_error_outside)
 
-imge_error_sample_outside <- plot_digit_img(pixels_gathered_outside, palette = "Grays", title_text = "d", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+imge_error_sample_outside <- plot_digit_img(pixels_gathered_outside, palette = "Grays", title_text = "d", hjust = 0.17) + theme(plot.margin = margin(0, 0, 0, 0))
 
 ##### inside
 img_error_inside <- c(3179, 7363, 7650) #, 5241, 5173, 6981, 7228, 6673, 4636
@@ -3872,7 +3872,7 @@ img_error_inside <- c(3179, 7363, 7650) #, 5241, 5173, 6981, 7228, 6673, 4636
 pixels_gathered_inside <-  mnist_data |>
   filter(instance %in% img_error_inside)
 
-imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Oranges", title_text = "e", hjust = 0, ncol = 9) + theme(plot.margin = margin(0, 0, 0, 0))
+imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Oranges", title_text = "e", hjust = 0.17, ncol = 3) + theme(plot.margin = margin(0, 0, 0, 0))
 
 ```
 

@@ -77,21 +77,25 @@ standardize = function(x){
 
 # Plot digits in MNIST
 
-plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
+plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 3) {
+
+  # Add a label column only to the first instance
+  digit_df <- digit_df |>
+    mutate(label = ifelse(instance == unique(instance)[1], title_text, NA))
 
   ggplot(data = digit_df, aes(x, y, fill = value)) +
     geom_tile() +
+    geom_text(data = digit_df |> filter(!is.na(label)),
+              aes(label = label),
+              x = min(digit_df$x), y = max(digit_df$y), inherit.aes = FALSE,
+              hjust = 0, vjust = 1, size = 10, color = "grey70") +
     facet_wrap(~ instance, ncol = ncol) +
-    ggtitle(title_text) +
+    #ggtitle(title_text) +
     coord_fixed() +
     scale_fill_continuous_sequential(palette = palette) +
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
-          legend.position = "none",
-          plot.title.position = "plot",
-          plot.title = element_text(hjust = hjust,
-                                    size = 15,
-                                    colour = "grey70"))
+          legend.position = "none")
 
 }
 
