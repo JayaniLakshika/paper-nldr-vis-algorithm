@@ -248,10 +248,11 @@ hex_grid <- hb_obj_scurve$hex_poly
 # Code to draw illustration for notation
 start_pt <- all_centroids_df |> 
   filter(hexID == 1)
+
 d_rect <- tibble(x1min = 0, 
                  x1max = 1,
                  x2min = 0,
-                 x2max = diff(scurve_scaled_obj$nldr_obj$lim2)/diff(scurve_scaled_obj$nldr_obj$lim1))
+                 x2max = diff(scurve_scaled_obj$lim2)/diff(scurve_scaled_obj$lim1))
 
 c_start <- tibble(s1 = 0.03, s2 = -0.05)
 
@@ -265,6 +266,7 @@ a2 <- tibble(x = all_centroids_df$c_x[27],
              y = all_centroids_df$c_y[27],
              yend = all_centroids_df$c_y[33],
              label = expression(a[2]))
+
 hex_param_vis <- ggplot() + 
     geom_polygon(data = hex_grid, 
                         aes(x = x, 
@@ -297,16 +299,16 @@ hex_param_vis <- ggplot() +
     annotate("text", x=d_rect$x1min - c_start$s1, 
                      y=d_rect$x2min - c_start$s2,
                      label = "(0,0)", 
-             hjust=-0.1, vjust=-0.3) + 
+             hjust=-0.1, vjust=-0.3, size = 8) + 
     annotate("text", x=d_rect$x1max - c_start$s1, 
                      y=d_rect$x2min - c_start$s2,
                      label = "(0,1)", 
-             hjust=1.1, vjust=-0.3) + 
+             hjust=1.1, vjust=-0.3, size = 8) + 
     annotate("text", x=d_rect$x1min - c_start$s1, 
                      y=d_rect$x2max - c_start$s2,
                      label = expression(group("(", 
                         list(0, y[2][max]),")")), 
-            hjust=-0.1, vjust=1.2) + 
+            hjust=-0.1, vjust=1.2, size = 8) + 
     geom_segment(data=d_rect, aes(
       x = x1min  - c_start$s1, # 0 - 0.03, 
       y = -0.35, 
@@ -316,7 +318,7 @@ hex_param_vis <- ggplot() +
                                ends = "both"), 
                  color = "black")+
     annotate("text", x=0.5, y=-0.45, 
-             label = expression(r[1]), color = "black") +
+             label = expression(r[1]), color = "black", size = 8) +
     geom_segment(data=d_rect, aes(
       x = -0.25, 
       y = x2min - c_start$s2, #0 - 0.05, 
@@ -326,7 +328,7 @@ hex_param_vis <- ggplot() +
                        ends = "both"), 
                  color = "black")+ 
     annotate("text", x=-0.35, y=1, 
-             label = expression(r[2]), color = "black") +
+             label = expression(r[2]), color = "black", size = 8) +
     geom_segment(data = a1, aes(
       x = x, #-0.1 + 0.2087578, 
       y = y, #-0.15, 
@@ -340,7 +342,7 @@ hex_param_vis <- ggplot() +
              y=a1$y, 
              label = expression(a[1]), 
              color = "black",
-             vjust = 1.2) +
+             vjust = 1.2, size = 8) +
     geom_segment(data = a2, aes(
       x = x, #-0.15, 
       y = y, #-0.1*r2 + 0.1807896*2, 
@@ -351,10 +353,10 @@ hex_param_vis <- ggplot() +
       color = "black") + # a2 = 0.1807896
     annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
              label = expression(a[2]), 
-             color = "black", hjust=-0.2) +
+             color = "black", hjust=-0.2, size = 8) +
     annotate("text", x=-0.18, y=-0.25, 
       label = expression(group("(", list(s[1], s[2]), ")")),
-      color = "black") +
+      color = "black", size = 8) +
   coord_equal()  
 ```
 
