@@ -3821,7 +3821,7 @@ mnist_data <- mnist_data |>
   extract(pixel, "pixel", "(\\d+)", convert = TRUE) |>
   mutate(pixel = pixel - 2, x = pixel %% 28, y = 28 - pixel %/% 28)
 
-img_right_top <- c(868, 1465, 1787, 1788, 1789)
+img_right_top <- c(868, 1465, 1787, 2006, 4314)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
@@ -3829,7 +3829,7 @@ pixels_gathered_within <-  mnist_data |>
 right_top_img <- plot_digit_img(
   pixels_gathered_within, palette = "Blues 2", title_text = "a")
 
-img_middle <- c(130, 2091, 7795, 7796, 7797)
+img_middle <- c(130, 2091, 7795, 163, 77)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_middle)
@@ -3837,7 +3837,7 @@ pixels_gathered_within <-  mnist_data |>
 middle_img <- plot_digit_img(
   pixels_gathered_within, palette = "Greens 3", title_text = "b")
 
-img_right_bottom <- c(2035, 7708, 7710, 7711, 7712)
+img_right_bottom <- c(2035, 7708, 7710, 4134, 5006)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_bottom)
@@ -3845,7 +3845,7 @@ pixels_gathered_within <-  mnist_data |>
 right_bottom_img <- plot_digit_img(
   pixels_gathered_within, palette = "Purples 2", title_text = "c")
 
-img_error_outside <- c(999, 3650, 4916, 4917, 4918)
+img_error_outside <- c(999, 3650, 4916, 2964, 5622)
 
 pixels_gathered_outside <-  mnist_data |>
   filter(instance %in% img_error_outside)
