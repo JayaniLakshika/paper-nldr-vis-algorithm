@@ -3630,7 +3630,8 @@ highd_error_2d_mnist <- error_df |>
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
                fill = "transparent", color = "#4c389a", linewidth = 1) +
   theme(legend.position = "none",
-        plot.margin = margin(0, 0, 0, 0))
+        plot.margin = margin(0, 0, 0, 0),
+        aspect.ratio = 1)
 ```
 
 <!-- As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). It also shows some quirks like twisted patterns and long edges (@fig-mnist-tri-proj). Furthermore, the results help to identify anomalies (with large model errors) within and the outside the non-linear structure, displaying different patterns of the digit 1 (@fig-model-error-mnist).  -->
@@ -3842,36 +3843,36 @@ img_right_top <- c(868, 1465, 1787)
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
 
-right_top_img <- plot_digit_img(pixels_gathered_within, palette = "Blues 2", title_text = "(a)", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+right_top_img <- plot_digit_img(pixels_gathered_within, palette = "Blues 2", title_text = "a", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_middle <- c(130, 2091, 7795)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_middle)
 
-middle_img <- plot_digit_img(pixels_gathered_within, palette = "Greens 3", title_text = "(b)", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+middle_img <- plot_digit_img(pixels_gathered_within, palette = "Greens 3", title_text = "b", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_right_bottom <- c(2035, 7708, 7710)
 
 pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_bottom)
 
-right_bottom_img <- plot_digit_img(pixels_gathered_within, palette = "Purples 2", title_text = "(c)", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+right_bottom_img <- plot_digit_img(pixels_gathered_within, palette = "Purples 2", title_text = "c", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
 
 img_error_outside <- c(999, 3650, 4916)
 
 pixels_gathered_outside <-  mnist_data |>
   filter(instance %in% img_error_outside)
 
-imge_error_sample_outside <- plot_digit_img(pixels_gathered_outside, palette = "Grays", title_text = "(d)", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
+imge_error_sample_outside <- plot_digit_img(pixels_gathered_outside, palette = "Grays", title_text = "d", hjust = 0.31) + theme(plot.margin = margin(0, 0, 0, 0))
 
 ##### inside
-img_error_inside <- c(3179, 7363, 7650, 5241, 5173, 6981, 7228, 6673, 4636)
+img_error_inside <- c(3179, 7363, 7650) #, 5241, 5173, 6981, 7228, 6673, 4636
 
 pixels_gathered_inside <-  mnist_data |>
   filter(instance %in% img_error_inside)
 
-imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Oranges", title_text = "(e)", hjust = 0, ncol = 9) + theme(plot.margin = margin(0, 0, 0, 0))
+imge_error_sample_inside <- plot_digit_img(pixels_gathered_inside, palette = "Oranges", title_text = "e", hjust = 0, ncol = 9) + theme(plot.margin = margin(0, 0, 0, 0))
 
 ```
 
@@ -3891,7 +3892,9 @@ full_layout <- highd_error_2d_mnist + top_layout
 final_layout <- full_layout / imge_error_sample_inside + plot_layout(heights = c(1, 0.2))
 
 # Display the final combined plot
-final_layout
+#final_layout
+full_layout/imge_error_sample_inside + plot_layout(widths = c(1, 1), 
+                                                   heights = c(1, 0.2)) 
 ```
 
 <!-- These anomalies can be classified into two types: those that are anomalies within the non-linear cluster and those that lie in the small cluster. The images associated with large model error points within the non-linear cluster display different patterns of the digit 1.  -->

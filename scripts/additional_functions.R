@@ -82,7 +82,7 @@ plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
   ggplot(data = digit_df, aes(x, y, fill = value)) +
     geom_tile() +
     facet_wrap(~ instance, ncol = ncol) +
-    #ggtitle(title_text) +
+    ggtitle(title_text) +
     coord_fixed() +
     scale_fill_continuous_sequential(palette = palette) +
     theme(strip.background = element_blank(),
@@ -90,7 +90,8 @@ plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 4) {
           legend.position = "none",
           plot.title.position = "plot",
           plot.title = element_text(hjust = hjust,
-                                    size = 15))
+                                    size = 15,
+                                    colour = "grey70"))
 
 }
 
