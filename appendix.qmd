@@ -174,7 +174,8 @@ theme_set(theme_linedraw() +
      legend.title = element_blank(), 
      legend.text = element_text(size=4),
      legend.key.height = unit(0.25, 'cm'),
-     legend.key.width = unit(0.25, 'cm')
+     legend.key.width = unit(0.25, 'cm'),
+     plot.margin = margin(0, 0, 0, 0)
    )
 )
 ```
@@ -731,7 +732,6 @@ names(tsne_pbmc) <- c("emb1", "emb2")
 tsne_pbmc <- tsne_pbmc |>
   dplyr::mutate(ID = row_number())
 
-
 nldr2c <- tsne_pbmc |>
   ggplot(aes(x = emb1,
              y = emb2))+
@@ -771,8 +771,15 @@ error_umap_plot_pbmc <-  plot_mse(error_pbmc) +
 #| out-width: 100%
 #| fig-cap: "Assessing which of the two layouts with UMAP and tSNE with different hyper-parameter setting (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $30$ (blue)) on the PBMC data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP and tSNE layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
-free(error_umap_plot_pbmc) + wrap_plots(nldr1c, nldr2c, ncol = 2) +
-  plot_layout(ncol = 1, heights = c(1, 1))
+# Define the layout design
+layout_design <- "
+AA
+BC
+"
+
+# Combine the plots using the layout
+(error_umap_plot_pbmc + nldr1c + nldr2c) +
+  plot_layout(design = layout_design)
 ```
 
 ```{r}
