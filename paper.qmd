@@ -228,13 +228,13 @@ nldr1 <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
-  interior_annotation("a", cex = 1.3)
+  interior_annotation("a", c(0.08, 0.9), cex = 1.3)
 
 nldr1c <- umap_pbmc |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour='#a65628') +
-  interior_annotation("a")
+  interior_annotation("a", c(0.08, 0.9))
 
 # umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_12_min_dist_0.99.rds")
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
@@ -285,13 +285,13 @@ nldr5 <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour=clr_choice) +
-  interior_annotation("e", cex = 1.3)
+  interior_annotation("e", c(0.08, 0.9), cex = 1.3)
 
 nldr5c <- tsne_pbmc |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#4daf4a') +
-  interior_annotation("e") 
+  interior_annotation("e", c(0.08, 0.9)) 
 
 phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
 nldr6 <- phate_pbmc |>
