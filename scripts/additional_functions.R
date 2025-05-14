@@ -77,7 +77,7 @@ standardize = function(x){
 
 # Plot digits in MNIST
 
-plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 3) {
+plot_digit_img <- function(digit_df, palette, title_text, ncol = 3) {
 
   # Add a label column only to the first instance
   digit_df <- digit_df |>
@@ -95,7 +95,8 @@ plot_digit_img <- function(digit_df, palette, title_text, hjust, ncol = 3) {
     scale_fill_continuous_sequential(palette = palette) +
     theme(strip.background = element_blank(),
           strip.text.x = element_blank(),
-          legend.position = "none")
+          legend.position = "none",
+          plot.margin = margin(0, 0, 0, 0))
 
 }
 
