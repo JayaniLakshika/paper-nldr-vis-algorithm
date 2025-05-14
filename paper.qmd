@@ -3085,7 +3085,7 @@ trimesh_removed_pbmc <- ggplot() +
                colour = "#000000",
                linewidth = 1) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
-  interior_annotation("a1", cex = 2) +
+  interior_annotation("a1", c(0.08, 0.9), cex = 2) +
   theme(
     aspect.ratio = 1
   )
@@ -3505,7 +3505,7 @@ nldr_mnist1 <- tsne_mnist |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#984ea3') +
-  interior_annotation("a", c(0.08, 0.93)) +
+  interior_annotation("a", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
 
 tsne_mnist2 <- read_rds("data/mnist/mnist_tsne89.rds")
@@ -3514,7 +3514,7 @@ nldr_mnist6 <- tsne_mnist2 |>
   ggplot(aes(x = tSNE1,
              y = tSNE2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
-  interior_annotation("f", c(0.08, 0.93)) +
+  interior_annotation("f", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
 
 umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
@@ -3532,7 +3532,7 @@ nldr_mnist3 <- phate_mnist |>
   ggplot(aes(x = PHATE1,
              y = PHATE2))+
   geom_point(alpha=0.1, size=1, colour='#377eb8') +
-  interior_annotation("c", position = c(0.94, 0.92)) +
+  interior_annotation("c", c(0.94, 0.92)) +
   theme(aspect.ratio = 1)
 
 trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
@@ -3550,7 +3550,7 @@ nldr_mnist5 <- pacmap_mnist |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
-  interior_annotation("e") +
+  interior_annotation("e", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
 ```
 

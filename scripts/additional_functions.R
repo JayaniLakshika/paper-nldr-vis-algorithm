@@ -88,7 +88,7 @@ plot_digit_img <- function(digit_df, palette, title_text, ncol = 5) {
     geom_text(data = digit_df |> filter(!is.na(label)),
               aes(label = label),
               x = min(digit_df$x), y = max(digit_df$y), inherit.aes = FALSE,
-              hjust = 0, vjust = 1, size = 10, color = "grey70") +
+              hjust = -0.3, vjust = 1.3, size = 7, color = "grey70") +
     facet_wrap(~ instance, ncol = ncol) +
     #ggtitle(title_text) +
     coord_fixed() +
