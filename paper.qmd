@@ -1334,7 +1334,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "RMSE") +
-  interior_annotation("a", position = c(0.9, 0.15), cex = 2) +
+  interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -1392,7 +1392,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression("prop. non-empty bins " * bgroup("(", m / b, ")"))) +
-  interior_annotation("b", position = c(0.9, 0.15), cex = 2) +
+  interior_annotation("b", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -1587,7 +1587,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
                         labels = parse_format()) +
   xlab("threshold to remove low-density hexagons") +
   ylab("RMSE") +
-  interior_annotation("c", position = c(0.1, 0.9), cex = 2) +
+  interior_annotation("c", position = c(0.07, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
