@@ -2709,12 +2709,20 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "selected", "deselected")) |> ## high_error points
   mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "selected", "deselected")) ## corner points
 
-error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs, 
+error_df_one_curvy_abs_selected1 <- error_df_one_curvy_abs |>
+  dplyr::filter(error_cat_n == "selected")
+
+error_df_one_curvy_abs_deselected1 <- error_df_one_curvy_abs |>
+  dplyr::filter(error_cat_n == "deselected")
+
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected1, 
       aes(x = sqrt_row_wise_total_error, 
-          y = density,
-          colour = factor(error_cat_n, levels = c("deselected", "selected")))) +
-  geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#d9d9d9', '#800026')) +
+          y = density)) +
+  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected1, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density),
+      alpha=0.7, color = "#800026", size = 3) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("b1",
@@ -2725,13 +2733,21 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs,
         axis.title = element_text(size = 18),
         axis.text = element_text(size = 15))
 
+error_df_one_curvy_abs_selected1 <- error_df_one_curvy_abs |>
+  dplyr::filter(error_cat_n2 == "selected")
 
-error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs,
-        aes(x = sqrt_row_wise_total_error, 
-            y = density,
-            colour = factor(error_cat_n2, levels = c("deselected", "selected")))) +
-  geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#d9d9d9', '#800026')) +
+error_df_one_curvy_abs_deselected1 <- error_df_one_curvy_abs |>
+  dplyr::filter(error_cat_n2 == "deselected")
+
+
+error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected1, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density)) +
+  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected1, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density),
+      alpha=0.7, color = "#800026", size = 3) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("a1",
@@ -3166,8 +3182,6 @@ AABB
 AABB
 AABB
 "
-
-# Put error plot in area A, and wrap_plots in area B
 error_plot_pbmc + 
   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
