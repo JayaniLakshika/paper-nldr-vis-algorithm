@@ -919,7 +919,7 @@ nldr_two_curvy + hex_grid_two_curvy +
 
 #### Scale the data
 
-Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1$. <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
+Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1.$ <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
 
 #### Computing hexagon grid configuration
 
@@ -929,7 +929,23 @@ The \gD{} hexagon grid is defined by its bin centroids. Each hexagon, $H_h$ ($h 
 
 To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = -q$ and $s_2 = -qr_2$. 
 
-The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of the first NLDR component, $a_1 > (1+2q)/(b_1 -1)$. Similarly, for the second NLDR component, $a_2 > (r_2 + q(1 + r_2))/(b_2 - 1)$. Since $a_2 = \sqrt(3)a_1/2$ for regular hexagons, $a_1 > \frac{2[r_2 + q(1 + r_2)]}{\sqrt{3}(b_2 - 1)}$. This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. Therefore, $b_2 = \Big\lceil1 +\frac{2[r_2 + q(1 + r_2)](b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil$.
+The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of the first NLDR component, $a_1 > (1+2q)/(b_1 -1)$. Similarly, for the second NLDR component, 
+
+$$
+a_2 > \frac{r_2 + q(1 + r_2)}{(b_2 - 1)}.
+$$
+
+Since $a_2 = \sqrt{3}a_1/2$ for regular hexagons,
+
+$$
+a_1 > \frac{2[r_2 + q(1 + r_2)]}{\sqrt{3}(b_2 - 1)}.
+$$
+
+This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. Therefore,
+
+$$
+b_2 = \Big\lceil1 +\frac{2[r_2 + q(1 + r_2)](b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil.
+$$
 
 ```{r}
 #| label: code-illustration
