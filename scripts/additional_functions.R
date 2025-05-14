@@ -53,7 +53,6 @@ plot_mse <- function(error_df) {
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
-    #scale_y_log10() +
     ylab("RMSE") +
     xlab(expression(paste("binwidth (", a[1], ")"))) +
     theme_minimal() +

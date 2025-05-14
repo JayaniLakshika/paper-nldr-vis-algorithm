@@ -2709,17 +2709,17 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "selected", "deselected")) |> ## high_error points
   mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "selected", "deselected")) ## corner points
 
-error_df_one_curvy_abs_selected1 <- error_df_one_curvy_abs |>
+error_df_one_curvy_abs_selected11 <- error_df_one_curvy_abs |>
   dplyr::filter(error_cat_n == "selected")
 
-error_df_one_curvy_abs_deselected1 <- error_df_one_curvy_abs |>
+error_df_one_curvy_abs_deselected11 <- error_df_one_curvy_abs |>
   dplyr::filter(error_cat_n == "deselected")
 
-error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected1, 
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected11, 
       aes(x = sqrt_row_wise_total_error, 
           y = density)) +
   geom_point(alpha=0.7, color = "#d9d9d9") +
-  geom_point(data = error_df_one_curvy_abs_selected1, 
+  geom_point(data = error_df_one_curvy_abs_selected11, 
       aes(x = sqrt_row_wise_total_error, 
           y = density),
       alpha=0.7, color = "#800026", size = 3) +
@@ -2733,18 +2733,18 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected1,
         axis.title = element_text(size = 18),
         axis.text = element_text(size = 15))
 
-error_df_one_curvy_abs_selected1 <- error_df_one_curvy_abs |>
+error_df_one_curvy_abs_selected12 <- error_df_one_curvy_abs |>
   dplyr::filter(error_cat_n2 == "selected")
 
-error_df_one_curvy_abs_deselected1 <- error_df_one_curvy_abs |>
+error_df_one_curvy_abs_deselected12 <- error_df_one_curvy_abs |>
   dplyr::filter(error_cat_n2 == "deselected")
 
 
-error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected1, 
+error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12, 
       aes(x = sqrt_row_wise_total_error, 
           y = density)) +
   geom_point(alpha=0.7, color = "#d9d9d9") +
-  geom_point(data = error_df_one_curvy_abs_selected1, 
+  geom_point(data = error_df_one_curvy_abs_selected12, 
       aes(x = sqrt_row_wise_total_error, 
           y = density),
       alpha=0.7, color = "#800026", size = 3) +
@@ -2761,25 +2761,26 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected1,
 
 ```{r}
 #| label: link-model-one-dens-clust
-plot_tsne_dens <- error_df_one_curvy_abs |>
+
+plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
   ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             colour = factor(error_cat_n2,
-                             levels = c("deselected", "selected")))) +
-  geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#d9d9d9', '#800026')) +
+             y = tSNE2)) +
+  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected12,
+             aes(x = tSNE1, y = tSNE2),
+             alpha=0.7, color = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
                       cex = 2)
 
-plot_tsne_dens_selected <- error_df_one_curvy_abs |>
+plot_tsne_dens_selected <- error_df_one_curvy_abs_deselected11 |>
   ggplot(aes(x = tSNE1,
-             y = tSNE2,
-             colour = factor(error_cat_n,
-                             levels = c("deselected", "selected")))) +
-  geom_point(alpha=0.7) +
-  scale_color_manual(values=c('#d9d9d9', '#800026')) +
+             y = tSNE2)) +
+  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected11,
+             aes(x = tSNE1, y = tSNE2),
+             alpha=0.7, color = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
@@ -2828,7 +2829,8 @@ langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
                          lineTo = tr_from_to_df_dens_clust$to,
                          group = factor(df_model_data_n$type,
                                         c("deselected", "selected", "model")),
-                         levelColors = c('#d9d9d9', '#800026', "#000000"))
+                         levelColors = c('#d9d9d9', '#800026', "#000000"),
+                         pointSize = c(1.5, 3, 0))
 ```
 
 ```{r}
@@ -2853,31 +2855,103 @@ proj_obj1 <- get_projection(projection = projection,
 proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n2,
                           levels=c("deselected", "selected"))
 
-five_c_shaped_proj_tsne_model1 <- plot_proj(
-    proj_obj = proj_obj1,
-    point_param = c(1.5, 0.5), # size, alpha, color
-    line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
-    plot_limits = c(-0.35, 0.35), 
-    axis_text_size = 4.5, 
-    is_category = TRUE) +
-  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
-  scale_color_manual(values = c('#d9d9d9', '#800026')) +
-  theme(aspect.ratio = 1,
-        legend.position = "none")
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
+
+projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj1$cluster)
+
+five_c_shaped_proj_tsne_model1 <- ggplot() +
+      geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2,
+          colour = factor(cluster, levels = c("deselected", "selected")),
+          size = factor(cluster, levels = c("deselected", "selected"))),
+        alpha = 0.5) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        color = "#000000",
+        linewidth = 0.8,
+        alpha = 0.4) +
+      geom_segment(
+          data=axes,
+          aes(x=x1, y=y1, xend=x2, yend=y2),
+          colour="grey70") +
+        geom_text(
+          data=axes,
+          aes(x=x2, y=y2),
+          label=rownames(axes),
+          colour="grey50",
+          size = 4.5) +
+        geom_path(
+          data=circle,
+          aes(x=c1, y=c2), colour="grey70") +
+        xlim(c(-0.35, 0.35)) +
+        ylim(c(-0.35, 0.35)) +
+        interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
+        scale_color_manual(values = c('#d9d9d9', '#800026')) +
+        scale_size_manual(values = c('deselected' = 1.5, 'selected' = 3)) +
+        theme(aspect.ratio = 1,
+              legend.position = "none")
+
 
 proj_obj1[["cluster"]] <- factor(error_df_one_curvy_abs$error_cat_n,
                           levels=c("deselected", "selected"))
 
+projected_df <- proj_obj1$projected_df
+model_df <- proj_obj1$model_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
 
-five_c_shaped_proj_tsne_model1_selected <- plot_proj(
-    proj_obj = proj_obj1, 
-    point_param = c(1.5, 0.5), # size, alpha, color
-    line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
-    plot_limits = c(-0.35, 0.35), 
-    axis_text_size = 4.5, 
-    is_category = TRUE) +
+projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj1$cluster)
+
+five_c_shaped_proj_tsne_model1_selected <- ggplot() +
+      geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2,
+          colour = factor(cluster, levels = c("deselected", "selected")),
+          size = factor(cluster, levels = c("deselected", "selected"))),
+        alpha = 0.5) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        color = "#000000",
+        linewidth = 0.8,
+        alpha = 0.4) +
+      geom_segment(
+          data=axes,
+          aes(x=x1, y=y1, xend=x2, yend=y2),
+          colour="grey70") +
+        geom_text(
+          data=axes,
+          aes(x=x2, y=y2),
+          label=rownames(axes),
+          colour="grey50",
+          size = 4.5) +
+        geom_path(
+          data=circle,
+          aes(x=c1, y=c2), colour="grey70") +
+        xlim(c(-0.35, 0.35)) +
+        ylim(c(-0.35, 0.35)) +
   interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 2) +
   scale_color_manual(values = c('#d9d9d9', '#800026')) +
+  scale_size_manual(values = c('deselected' = 1.5, 'selected' = 3)) +
   theme(aspect.ratio = 1,
         legend.position = "none")
 ```
