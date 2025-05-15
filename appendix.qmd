@@ -979,9 +979,20 @@ algo_obj_pbmc <- fit_highd_model(
   benchmark_highdens = 5)
 
 tsne_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
-tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
+#tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
 df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
 df_bin_pbmc <- algo_obj_pbmc$model_highd
+
+## Removed some bins manually to fit a better model
+df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
+  filter(!(hexID %in% c(559, 617, 677)))
+
+tri_object <- tri_bin_centroids(
+  centroids_data = df_bin_centroids_pbmc)
+
+tr_from_to_df_pbmc <- gen_edges(tri_object = tri_object, a1 = algo_obj_pbmc$hb_obj$a1)
+tr_from_to_df_pbmc <- tr_from_to_df_pbmc <- update_trimesh_index(trimesh_data = tr_from_to_df_pbmc)
+
 
 tsne_pbmc_scaled_with_cluster <- tsne_pbmc_scaled |>
   mutate(cluster = if_else((emb2 <= -emb1 + 0.8) & (emb1 < 0.5), "cluster1", if_else(emb2 >= -2 * emb1 + 1.79, "cluster3", "cluster2"))) |>
@@ -1121,7 +1132,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) and the \\gD{} layout selected (@fig-pbmc-mse-umap b) by RMSE plot (@fig-pbmc-mse-umap) from tSNE and UMAP with default hyper-parameters. The PBMC data ($n =  5858$) has three clusters in $9\\text{-}D$, where three clusters are close. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse-umap a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse-umap b ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse-umap b is more reasonable than @fig-pbmc-mse-umap a. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) and the \\gD{} layout selected (@fig-pbmc-mse-umap b) by RMSE plot (@fig-pbmc-mse-umap) from tSNE and UMAP with default hyper-parameters. The PBMC data ($n =  5858$) has three clusters in $9\\text{-}D$, where three clusters are close. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse-umap a ($a_1 = 0.04$, $b = 900/179 (30, 30)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse-umap b ($a_1 = 0.04$, $b = 1110/317 (30, 37)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse-umap b is more reasonable than @fig-pbmc-mse-umap a. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
