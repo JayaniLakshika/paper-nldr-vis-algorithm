@@ -234,7 +234,7 @@ num_bins_x_scurve <- 7
 ## hexagon binning to have regular hexagons
 hb_obj_scurve <- hex_binning(
   nldr_obj = scurve_scaled_obj, 
-  bin1 = 8, 
+  bin1 = num_bins_x_scurve, 
   q = 0.1)
 
 ## Data set with all centroids
@@ -242,6 +242,11 @@ all_centroids_df <- hb_obj_scurve$centroids
 
 ## Generate all coordinates of hexagons
 hex_grid <- hb_obj_scurve$hex_poly
+
+a1_temp <- hb_obj_scurve$a1
+a2_temp <- hb_obj_scurve$a2
+l_temp <- quad(a=3, b = 2 * a2_temp, c = -(a2_temp^2 + a1_temp^2))
+
 ```
 
 ```{r}
@@ -254,18 +259,27 @@ d_rect <- tibble(x1min = 0,
                  x2min = 0,
                  x2max = diff(scurve_scaled_obj$lim2)/diff(scurve_scaled_obj$lim1))
 
+hex_grid_temp40 <- hex_grid |> 
+  filter(hex_poly_id == 53)
+
 c_start <- tibble(s1 = 0.03, s2 = -0.05)
 
 a1 <- tibble(x = all_centroids_df$c_x[4],
              xend = all_centroids_df$c_x[5],
-             y = all_centroids_df$c_y[21],
-             yend = all_centroids_df$c_y[21],
+             y = all_centroids_df$c_y[29],
+             yend = all_centroids_df$c_y[29],
              label = expression(a[1]))
-a2 <- tibble(x = all_centroids_df$c_x[27],
-             xend = all_centroids_df$c_x[27],
-             y = all_centroids_df$c_y[27],
-             yend = all_centroids_df$c_y[33],
+a2 <- tibble(x = all_centroids_df$c_x[39],
+             xend = all_centroids_df$c_x[39],
+             y = all_centroids_df$c_y[39],
+             yend = all_centroids_df$c_y[47],
              label = expression(a[2]))
+
+l <- tibble(x = hex_grid_temp40$x[2],
+            xend = hex_grid_temp40$x[3],
+            y = hex_grid_temp40$y[2],
+            yend = hex_grid_temp40$y[3],
+            label = expression(l))
 
 hex_param_vis <- ggplot() + 
     geom_polygon(data = hex_grid, 
@@ -357,6 +371,17 @@ hex_param_vis <- ggplot() +
     annotate("text", x=-0.18, y=-0.25, 
       label = expression(group("(", list(s[1], s[2]), ")")),
       color = "black", size = 8) +
+  geom_segment(data = l, aes(
+      x = x, #-0.15, 
+      y = y, #-0.1*r2 + 0.1807896*2, 
+      xend = xend, #-0.15, 
+      yend = yend), #-0.1*r2 + 0.1807896*3),
+      arrow = arrow(length = unit(0.03, "npc"),
+                               ends = "both"), 
+      color = "black") + 
+    annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
+             label = expression(l), 
+             color = "black", hjust=-0.2, size = 8) +
   coord_equal()  
 ```
 
