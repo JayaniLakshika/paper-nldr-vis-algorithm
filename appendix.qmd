@@ -919,11 +919,11 @@ proj_obj1 <- get_projection(projection = projection,
                highd_data = scaled_pbmc_data, 
                model_highd = scaled_pbmc_data_model, 
                trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 1,
-                                 axis_scaled = 1, 
+               axis_param = list(limits = 0.05,
+                                 axis_scaled = 17, 
                                  axis_pos_x = -0.03, 
                                  axis_pos_y = -0.03, 
-                                 threshold = 0.0051))
+                                 threshold = 0.0044))
 
 proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
@@ -931,7 +931,7 @@ pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
   point_param = c(1.5, 0.2), # size, alpha, color
   plot_limits = c(-0.04, 0.045), 
-  axis_text_size = 5,
+  axis_text_size = 4,
   is_category = TRUE) + 
   interior_annotation(label = "a2", cex = 2) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
@@ -946,11 +946,11 @@ proj_obj2 <- get_projection(projection = projection,
                highd_data = scaled_pbmc_data, 
                model_highd = scaled_pbmc_data_model, 
                trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 1.35, 
-                                 axis_scaled = 1, 
-                                 axis_pos_x = -0.03, 
-                                 axis_pos_y = -0.02, 
-                                 threshold = 0.006))
+               axis_param = list(limits = 0.035, 
+                                 axis_scaled = 17, 
+                                 axis_pos_x = -0.023, 
+                                 axis_pos_y = -0.023, 
+                                 threshold = 0.0027))
 
 proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
 
@@ -1080,15 +1080,15 @@ projection <- cbind(
   c(0.026495,-0.024817,0.021623,-0.014036,-0.010220,0.016634,-0.006496,-0.022928,0.016045))
 
 proj_obj1 <- get_projection(projection = projection, 
-                            proj_scale = 1.23, 
-                            highd_data = scaled_pbmc_data, 
-                            model_highd = scaled_pbmc_data_model, 
-                            trimesh_data = tr_from_to_df_pbmc, 
-                            axis_param = list(limits = 1,
-                                              axis_scaled = 1, 
-                                              axis_pos_x = -0.03, 
-                                              axis_pos_y = -0.03, 
-                                              threshold = 0.0051))
+               proj_scale = 1.23, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
+               axis_param = list(limits = 0.05,
+                                 axis_scaled = 17, 
+                                 axis_pos_x = -0.03, 
+                                 axis_pos_y = -0.03, 
+                                 threshold = 0.0044))
 
 proj_obj1[["cluster"]] <- as.character(tsne_pbmc_scaled_with_cluster$cluster)
 
@@ -1107,15 +1107,15 @@ projection <- cbind(
   c(0.004528,0.006465,-0.042452,0.009837,0.010040,-0.023820,0.005236,0.014775,-0.017712))
 
 proj_obj2 <- get_projection(projection = projection, 
-                            proj_scale = 1.25, 
-                            highd_data = scaled_pbmc_data, 
-                            model_highd = scaled_pbmc_data_model, 
-                            trimesh_data = tr_from_to_df_pbmc, 
-                            axis_param = list(limits = 1.35, 
-                                              axis_scaled = 1, 
-                                              axis_pos_x = -0.03, 
-                                              axis_pos_y = -0.02, 
-                                              threshold = 0.006))
+               proj_scale = 1.25, 
+               highd_data = scaled_pbmc_data, 
+               model_highd = scaled_pbmc_data_model, 
+               trimesh_data = tr_from_to_df_pbmc, 
+               axis_param = list(limits = 0.035, 
+                                 axis_scaled = 17, 
+                                 axis_pos_x = -0.023, 
+                                 axis_pos_y = -0.023, 
+                                 threshold = 0.0027))
 
 proj_obj2[["cluster"]] <- as.character(tsne_pbmc_scaled_with_cluster$cluster)
 
