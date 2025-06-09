@@ -216,15 +216,6 @@ Check-list before submission
 
 Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
 
-<!-- - What's the problem:
-
-  Non-linear dimension reduction being used to summarise high-dimensional data.
-
-  - Summary of literature
-
-  Relevant high-d vis, NLDR history
--->
-
 ```{r}
 #| label: read-pbmc-nldr
 # Read a variety of different NLDR representations of PBMC
@@ -378,29 +369,11 @@ The solution is to use the tour to examine how the NLDR is warping the space. Th
 
 @wickham2015 provides several examples of models overlaid on the data in \pD{}. In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by $(p-1)\text{-}D$ ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the \kD{} plane of the reduced dimension using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in \pD{}.
 
-<!-- Linked brushing as done by @article21
-
-- Model-in-the-data-space: how can we represent the model, eg plane for PCA, grid of values for classification boundaries, ellipses for LDA and mclust, nets for SOM.--> 
-
 ## Method {#sec-method}
 
 ### What is the NLDR model?
 
 At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{}   NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, that will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@cfa69] and MDS. (Note that, for this thinking the full \pD{}   data needs to be available, not just the interpoint distances.)
-<!--### Notation -->
-
-<!-- @tbl-notation summarises the notation used to explain the new methodology. The observed data is denoted as $\mathbfit{x}_{n \times p}$ where $x_{ij}$ would indicate the $i^{th}$ observation on the $j^{th}$ variable sampled from a population $\mathbfit{X}$. To refer to variable $j$, we would use $X_j$.--> 
-
-<!--
-$X_{n \times p} = \begin{bmatrix} \textbf{x} _{1} & \textbf{x}_ {2} & \cdots & \textbf{x}_{n} \\  \end{bmatrix}^\top$
-
-$Y_{n \times d} = \begin{bmatrix} \textbf{y} _{1} & \textbf{y}_ {2} & \cdots & \textbf{y}_{n} \\  \end{bmatrix}^\top$
-
-$C_k^{(2)} \equiv (C_{ky_1}, C_{ky_2})$
-
-$C_k^{(p)} \equiv (C_{kx_1}, ..., C_{kx_p})$ $p$-D mappings of 2D hexagon bin centroids of the $k^{th}$ hexagon
-
--->
 
 ```{r}
 #| label: tbl-notation
@@ -927,7 +900,7 @@ nldr_two_curvy + hex_grid_two_curvy +
 
 #### Scale the data
 
-Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1.$ <!-- \times \frac{2}{\sqrt{3}}$. (The $\frac{2}{\sqrt{3}}$ accounts for the different height ($a_1$) and width ($a_2$) of a regular hexagon.) The scaling of data should take the size of the hexagons into account, but choice of number of bins should. -->
+Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1.$ 
 
 #### Computing hexagon grid configuration
 
@@ -1116,30 +1089,7 @@ hex_param_vis <- ggplot() +
 hex_param_vis
 ```
 
-<!-- Number of bins is set by fixing $b_1$, which determines the binwidth accounting the offset $q_1$ and breaks on $x_1$, is calculated as  -->
-
-<!-- $$ -->
-<!-- a_1 = \frac{r_1 + q_1}{b_1}. -->
-<!-- $$ -->
-
-<!-- The computed binwidth then determines the number of vertical bins, $b_2$, and vertical binwidth, which are computed based on $r_2$, the offset $q_2$, and the height/width ratio of a regular hexagon, $\frac{2}{\sqrt{3}}$ as -->
-
-<!-- $$ -->
-<!-- a_2 = \frac{r_2 + q_2}{0.75 \times b_2}. -->
-<!-- $$ -->
-
-<!-- To define a hexagon grid across the \kD{} space, with hexagons of fixed height ($a_1$), width ($a_2$),  it is necessary to determine how many hexagons should be represented along each axis in the \kD{} space.
-
-When $k=2$, the number of bins along the $x$ and $y$ axes, $b_1$ and $b_2$, is computed by considering the scaling factors ${r_1, r_2}$, along with the offset along the axes ($q_1$, $q_2$), and the height ($a_1$) and width ($a_2$) of a regular hexagon (@fig-NLDR-two-curvy (b)). ($b_1 = \frac{r_1 + q_1}{a_2}$, and $b_2 = \frac{r_2 + q_2}{0.75 \times a_1}$) where $0.75 \times a_1$ accommodate to have hexagons fill the entire 2D space without leaving any gaps between them.)-->
-
-<!-- XXX We don't need parameters for the regular hexagon, these are fixed constants. -->
-
-
 #### Binning the data
-
-<!-- Points are allocated to the bin they fall into based on the nearest centroid. In situations where a point is equidistant from multiple centroids, tie-breaking rules are applied. If multiple centroids are in the same row, the point is assigned to the leftmost centroid. If multiple centroids are in different rows, the point is assigned to the bottom centroid. -->
-
-<!-- $\{ i \in H_h, h = 1, \dots, b, \text{ and } i = 1, \dots, n\}$ -->
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
 $u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2}$, mapping observation $i$ into $H_h = \{i| u(i) = h\}$. 
@@ -1148,23 +1098,11 @@ By default, the bin centroid is used for describing a hexagon (as done in @fig-N
 
 <!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
 
-<!--
-Define a hexagon grid across the \kD{} space, using hexagons with fixed height ($a_2$), width ($a_1$). Each of the \kD{} points will belong to a hexagon bin. That is, for each $y \in \mathbfit{Y}$, we can (uniquely) identify the hexagon that the point belongs to. This identification is done finding the nearest bin centroid for the \kD{} points by considering the \kD{} Euclidean distance.    
-
-When $k=2$, the starting coordinates $(s_1, s_2)$ mark the lower left of the grid. This is the bottom left bin centroid. By starting from there, points are generated to fill the grid accounting $b_1$, $b_2$, $a_1$, and $a_2$. 
--->
-
-<!--We deliberately separate out the creation of the hexagon grid from the mapping of points on the grid.-->
-
 #### Indicating neighborhood
 
 Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connectd centroids. The edges preserve the neighborhood information when the model is lifted into \pD{}. 
 
-<!-- When $k = 2$ Delaunay triangulation on $C^{(2)}$ generates the model in \gD{} space, which is a triangular mesh (@fig-NLDR-two-curvy (d)). It generates convex hulls of $C^{(2)}$ such that the circumcircle of every triangle in the triangulation contains no other points from $C^{(2)}$. -->
-
 When shapes are non-linear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit.
-
-<!--need to add what is meant by a long edge-->
 
 ### Rendering the model in \pD{}
 
@@ -1270,12 +1208,6 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
   interior_annotation("c", sc_ltr_pos, cex = 2)
 ```
 
-
-<!-- XXX You need to have consistent colouring. In langevitour the points corresponding to observations are purple. They should be purple in the \gD{} view too.  -->
-
-<!-- XXX Should there be a second long edge removal? You can compute the edges in \pD{} now, and if there are long edges maybe these should be pruned, and we re-plot the \gD{} view.  -->
-
-<!-- langevitour with pD model for two-curvy clusters -->
 ```{r}
 #| label: best-fit-tsne
 #| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)parameter choice. Video of the langevitour animation is available at <>."
@@ -1486,24 +1418,7 @@ proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_tsne_tw
   plot_layout(ncol = 3)
 ```
 
-
-<!--The prediction approach involves finding the nearest \kD{} model point for a new \pD{} point. We define the function $z: \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{m\times p}$, where $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$ maps each \pD{} point to its nearest \pD{} mapping of the model. Therefore, the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$ be the predicted values.-->  
-
-
-
-<!-- ::: {#fig-two_curvy-pred-sc layout-ncol="2" fig-pos="H"} -->
-<!-- ![](figures/two_curvy/sc_true_only.png){width="150" fig-align="center"} -->
-
-<!-- ![](figures/two_curvy/pred_true_view.png){width="150" fig-align="center"} -->
-
-
-<!-- A view of the true model in projections from $7\text{-}D$, and predictions of the true model in \gD{}, for the S-curve data. The predictions fits the UMAP layout which means that it capture the geometry of S-curve with UMAP. -->
-<!-- ::: -->
-
-<!-- XXX Prediction should have a jitter option, to spread the predicted points out fully in the hexagons. -->
-
 ### Tuning
-<!-- removal of low density bins, removing long edges, choice of bins-->
 
 The model fitting can be adjusted using these parameters: 
 
@@ -1517,8 +1432,6 @@ Default values are provided for each of these, but it is expected that the user 
 #### Hexagon bin parameters
 
 The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts. @fig-bins-two-curvy illustrates this. The distribution of bin counts for $s_1$ varying between $-0.1-0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
-
-<!--The starting position of the hexagonal grid is important because different starting points result in different distributions of data across bins, even with the same total number of bins. This variation affects the model due to the differing number of non-empty bins. Therefore, it is necessary to evaluate various starting points with different total numbers of bins to determine which configurations are more effective at capturing the structure and fitting the model.--> 
 
 ```{r}
 #| echo: false
@@ -1535,41 +1448,16 @@ hex_grid_coloured_two_curvy2 +
   theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
 
-
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
 
-<!-- To determine the effective $b$, candidate values are selected based on the range between the minimum and approximate maximum $b_1$, because $b_2$ is computed from $b_1$. The minimum $b_1$ is set to $2$, while the maximum number is estimated by taking the square root of $\frac{n}{2}$. By evaluating MSE across varying $b$ within this range for different $q$, helps to determine an appropriate values for $b$ and $q$ (@fig-param-two_curvy (a)).--> 
-
-<!--add MSE vs total number of error plot-->
-
-<!--To generate errors for different total number of bins-->
-
 #### Measurement of capturing the data shape in 2-D 
-
 The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
 
 #### Removal of low density bins
 
 By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
 
-<!-- Once setting up the hexagon grid with an appropriate number of bins, some hexagon bins may have few or no data points within them (@fig-bins-two_curvy (b)). To ensure comprehensive coverage of the NLDR data, it is necessary to select hexagon bins with a considerable number of data points. This involves calculating the number of points within each hexagon. Then, the standard count is computed by dividing the number of points within each hexagon by the maximum number of points in the grid. Next, bins with a standard count less than a benchmark value are removed (@fig-param-two_curvy (c)). There is no specific rule for selecting a benchmark value. However, the following steps can help determine a suitable value for removing low-density hexagons:
-
-1. Plot the distribution of the standardized counts (@fig-param-two_curvy (b)).
-2. Examine the distribution of counts.
-3. Select the first quantile value if the distribution is skewed.
--->
-
-
-
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (@fig-param-two-curvy (c)). The MSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
-
-<!--add MSE vs density (0 to 1)-->
-
-
-
-<!--base line -->
-
-<!-- Furthermore, selecting the benchmark value for removing low-density hexagons is important. Removing unnecessary bins may lead to the formation of long edges and an uneven \gD{} model. Hence, rather than solely relying on the benchmark value to identify hexagons for removal, it's essential to consider the standard number of points in the neighboring hexagons of the identified low-density bins (see @fig-lwd-two_curvy (b)). If neighboring bins also show low counts, only those bins will be removed. The remaining bins are used to construct the \gD{} model.    -->
 
 ```{r}
 #| label: rm-lwd-bin-error
@@ -1624,353 +1512,6 @@ mse_two_curvy_b + a1_m_two_curvy +
   plot_layout(ncol=2, guides = "collect")
 ```
 
-<!-- #### Removing long edges -->
-
-<!-- Edges define the neighbourhood structure, in order to provide a smooth \gD{} representation of the fitted model. @fig-two-curvy-true-proj shows a wire frame of the true model that was used to generate the non-linear clusters example data. The ideal is that the representation of the fitted model, at least for this example where we know the true model, should look similar to this.  -->
-
-<!-- The Delaunay triangulation will ensure that all centroids are connected into a triangular mesh. For some structures, like clustered data, or highly non-linear shapes, breaks in the mesh are meaningful. When separated clusters are present the mesh should be broken across the gaps. For non-linear structures like the C-shaped curvilinear, the mesh should run unbroken along the C, but there should be no edges connecting the top of the C directly to the bottom of the C. For these reasons it is necessary to remove edges from the mesh in some applications. -->
-
-<!-- The decision on edge length removal is made based on the distribution of edge lengths. In particular, a gap between values, where there a concentration of small values and then a few larger values, likely suggests a cutoff for edge removal. Because the triangulation is typically done on the hexagon centroids, there are particular discrete edge lengths, based on bin widths. @fig-rm-lg illustrates edge length distributions.  -->
-
-<!-- There is an additional step that is needed. When the model is lifted into \pD{}, if the fit is good all the edges should be relatively small in this space, too. If this is not the case, then there are several possible actions: (1) re-do the NLDR to get a more representative layout; (2) identify the edge and remove it from the model, in \gD{} and \pD{}; (3) consider different values for the model fit, number of bins, initial bin position or removing low density bins. -->
-
-<!-- ```{r} -->
-<!-- #| label: model-two-curvy-umap -->
-
-<!-- umap_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds") -->
-
-<!-- num_bins_x_two_curvy <- 42 -->
-
-<!-- algo_obj_two_curvy3 <- gen_nldr_vis_algo_obj( -->
-<!--   high_d_data = training_data_two_curvy,  -->
-<!--   nldr_data = umap_two_curvy,  -->
-<!--   num_x_bins = num_bins_x_two_curvy) -->
-
-<!-- umap_two_curvy_scaled <- algo_obj_two_curvy3$nldr_scaled -->
-<!-- distance_two_curvy <- algo_obj_two_curvy3$distance_df -->
-<!-- tr_from_to_df_two_curvy <- algo_obj_two_curvy3$tr_from_to_df -->
-<!-- benchmark_two_curvy <- algo_obj_two_curvy3$benchmark -->
-<!-- df_bin_centroids_two_curvy <- algo_obj_two_curvy3$df_bin_centroids -->
-<!-- df_bin_two_curvy <- algo_obj_two_curvy3$df_bin -->
-<!-- hex_grid_with_counts <- algo_obj_two_curvy3$hex_grid_with_counts -->
-<!-- a1 <- algo_obj_two_curvy3$a1 -->
-
-<!-- trimesh_two_curvy_umap <- ggplot() + -->
-<!--   geom_segment(data = tr_from_to_df_two_curvy, -->
-<!--                aes( -->
-<!--                  x = x_from, -->
-<!--                  y = y_from, -->
-<!--                  xend = x_to, -->
-<!--                  yend = y_to), -->
-<!--                colour = "#000000", -->
-<!--                alpha = 0.5, -->
-<!--                linewidth = 0.5) + -->
-<!--   geom_point(data = umap_two_curvy_scaled, -->
-<!--              aes( -->
-<!--                x = UMAP1, -->
-<!--                y = UMAP2 -->
-<!--              ), -->
-<!--              color = "#636363", -->
-<!--              alpha = 0.5, -->
-<!--              size = 0.5 -->
-<!--   ) + -->
-<!--   coord_equal() + -->
-<!--   xlim(c(0, 1)) + -->
-<!--   ylim(c(0, 1)) + -->
-<!--   interior_annotation("a1", sc_ltr_pos, cex = 2) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- # With the computed benchmark value -->
-<!-- # distance_df_small_edges_two_curvy <- distance_two_curvy |> -->
-<!-- #   filter(distance < benchmark_two_curvy) -->
-
-<!-- ####With diff benchmark values -->
-
-<!-- ## Benchmark 2 -->
-
-<!-- benchmark_two_curvy <- 8 * a1 -->
-
-<!-- distance_df_small_edges_two_curvy3 <- distance_two_curvy |> -->
-<!--   filter(distance < benchmark_two_curvy) -->
-
-<!-- tr_from_to_df_two_curvy4 <- inner_join( -->
-<!--   tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy3, -->
-<!--   by = c("from", "to")) -->
-
-<!-- trimesh_two_curvy_removed2_umap <- ggplot() + -->
-<!--   geom_segment(data = tr_from_to_df_two_curvy4, -->
-<!--                aes( -->
-<!--                  x = x_from, -->
-<!--                  y = y_from, -->
-<!--                  xend = x_to, -->
-<!--                  yend = y_to), -->
-<!--                colour = "#000000", -->
-<!--                alpha = 0.5, -->
-<!--                linewidth = 0.5)+ -->
-<!--   geom_point(data = umap_two_curvy_scaled, -->
-<!--              aes( -->
-<!--                x = UMAP1, -->
-<!--                y = UMAP2 -->
-<!--              ), -->
-<!--              color = "#636363", -->
-<!--              alpha = 0.5, -->
-<!--              size = 0.5 -->
-<!--   ) + -->
-<!--   coord_equal() + -->
-<!--   xlim(c(0, 1)) + -->
-<!--   ylim(c(0, 1)) + -->
-<!--   interior_annotation("b1", sc_ltr_pos, cex = 2) -->
-
-<!-- ## Benchmark 1 -->
-
-<!-- benchmark_two_curvy <- 2.5 * bin_width -->
-
-<!-- distance_df_small_edges_two_curvy2 <- distance_two_curvy |> -->
-<!--   filter(distance < benchmark_two_curvy) ## 0.231 -->
-
-<!-- tr_from_to_df_two_curvy3 <- inner_join( -->
-<!--   tr_from_to_df_two_curvy, distance_df_small_edges_two_curvy2, -->
-<!--   by = c("from", "to")) -->
-
-<!-- trimesh_two_curvy_removed1_umap <- ggplot() + -->
-<!--   geom_segment(data = tr_from_to_df_two_curvy3, -->
-<!--                aes( -->
-<!--                  x = x_from, -->
-<!--                  y = y_from, -->
-<!--                  xend = x_to, -->
-<!--                  yend = y_to), -->
-<!--                colour = "#000000", -->
-<!--                alpha = 0.5, -->
-<!--                linewidth = 0.5)+ -->
-<!--   geom_point(data = umap_two_curvy_scaled, -->
-<!--              aes( -->
-<!--                x = UMAP1, -->
-<!--                y = UMAP2 -->
-<!--              ), -->
-<!--              color = "#636363", -->
-<!--              alpha = 0.5, -->
-<!--              size = 0.5 -->
-<!--   ) + -->
-<!--   coord_equal() + -->
-<!--   xlim(c(0, 1)) + -->
-<!--   ylim(c(0, 1)) + -->
-<!--   interior_annotation("c1", sc_ltr_pos, cex = 2) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- #| label: compare-2d-and-4d-dist -->
-
-<!-- ### Compute highD distance -->
-<!-- dist_vec <- proxy::dist(x = df_bin_two_curvy[, -1], method = "Euclidean") |> as.vector() -->
-
-<!-- from_vec <- c() -->
-<!-- to_vec <- c() -->
-<!-- num_obs <- 1:(NROW(df_bin_two_curvy) - 1) -->
-
-<!-- for (obs in num_obs) { -->
-
-<!--   from_val <- rep(obs, (NROW(df_bin_two_curvy) - obs)) -->
-<!--   if ((obs + 1) <= NROW(df_bin_two_curvy)) { -->
-<!--     to_val <- (obs + 1):NROW(df_bin_two_curvy) -->
-<!--   } -->
-<!--   from_vec <- append(from_vec, from_val) -->
-<!--   to_vec <- append(to_vec, to_val) -->
-
-<!-- } -->
-
-<!-- dist_highd <- tibble::tibble(from = from_vec, to = to_vec, dist_highd = dist_vec) -->
-
-
-<!-- ## To plot the distribution of distances -->
-
-<!-- # Define bin width and starting point -->
-<!-- start_point <- a1/2 -->
-
-<!-- # Create bins and calculate the mean value for each bin range -->
-<!-- bins <- seq(start_point, max(distance_two_curvy$distance) + a1, -->
-<!--             by = a1) -->
-<!-- bin_labels <- bins[-length(bins)] + a1 / 2  # mean of each bin range -->
-
-<!-- distance_two_curvy_dist <- distance_two_curvy |> -->
-<!--   mutate(bin = cut(distance, breaks = bins, include.lowest = TRUE, labels = bin_labels)) -->
-
-<!-- distance_two_curvy_dist <- left_join(distance_two_curvy_dist, dist_highd, by = c("from", "to")) -->
-
-<!-- text_df <- tibble::tibble( -->
-<!--   x = c(0.12, 0.43), -->
-<!--   y = c(10, 10), -->
-<!--   text = c("c", "b") -->
-<!-- ) -->
-
-<!-- distance_points_umap <- ggplot( -->
-<!--   distance_two_curvy_dist, -->
-<!--   aes(x = distance, -->
-<!--       y = dist_highd)) + -->
-<!--   geom_point(alpha = 0.5) + -->
-<!--   geom_text( -->
-<!--     data=text_df, -->
-<!--     aes(x=x, y=y, -->
-<!--         label=text), -->
-<!--     colour="#bdbdbd", -->
-<!--     size = 10) + -->
-<!--   geom_vline(xintercept = 8 * bin_width, -->
-<!--              linetype="solid", -->
-<!--              color = "#bdbdbd", -->
-<!--              linewidth=1) + -->
-<!--   geom_vline(xintercept = 2.5 * bin_width, -->
-<!--              linetype="solid", -->
-<!--              color = "#bdbdbd", -->
-<!--              linewidth=1) + -->
-<!--   ylab(expression(d^{(4)})) + -->
-<!--   xlab(expression(d^{(2)})) + -->
-<!--   theme_minimal() + -->
-<!--   theme(aspect.ratio = 0.75, -->
-<!--         panel.border = element_rect(fill = 'transparent'), -->
-<!--         plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5), -->
-<!--         panel.grid.major.x = element_blank(), -->
-<!--         axis.ticks.x = element_line(), -->
-<!--         axis.ticks.y = element_line(), -->
-<!--         axis.title = element_text(size = 15), -->
-<!--         axis.text = element_text(size = 12)) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- #| label: proj-tsne-model -->
-
-<!-- df_bin_two_curvy <- df_bin_two_curvy |> -->
-<!--   select(-hexID) |> -->
-<!--   mutate(type = "model") -->
-
-<!-- # Apply the scaling -->
-<!-- df_model_data_two_curvy <- bind_rows(data_two_curvy, df_bin_two_curvy) -->
-
-<!-- scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |> -->
-<!--   as_tibble() -->
-
-<!-- scaled_two_curvy_data <- scaled_two_curvy |> -->
-<!--   filter(type == "data") |> -->
-<!--   select(-type) -->
-
-<!-- scaled_two_curvy_data_model <- scaled_two_curvy |> -->
-<!--   filter(type == "model") |> -->
-<!--   select(-type) -->
-
-
-<!-- ## First projection -->
-<!-- projection <- cbind( -->
-<!--   c(0.37847,-0.06517,0.04231,0.01655), -->
-<!--   c(-0.06466,-0.27052,0.22131,-0.15235)) -->
-
-<!-- proj_obj1 <- get_projection(projection = projection,  -->
-<!--                             proj_scale = 1,  -->
-<!--                             scaled_data = scaled_two_curvy_data,  -->
-<!--                             scaled_data_model = scaled_two_curvy_data_model,  -->
-<!--                             distance_df_small_edges = distance_df_small_edges_two_curvy2,  -->
-<!--                             axis_param = list(limits = 0.6,  -->
-<!--                                               axis_scaled = 2, -->
-<!--                                               axis_pos_x = -0.5,  -->
-<!--                                               axis_pos_y = -0.5,  -->
-<!--                                               threshold = 0.04)) -->
-
-<!-- ## Projection with Delauany triangulation -->
-
-<!-- projected_model <- as.matrix(scaled_two_curvy_data_model) %*% projection_scaled -->
-
-<!-- projected_model_df <- projected_model |> -->
-<!--   tibble::as_tibble(.name_repair = "unique") |> -->
-<!--   dplyr::rename(c("proj1" = "...1", -->
-<!--                   "proj2" = "...2")) |> -->
-<!--   dplyr::mutate(ID = dplyr::row_number()) -->
-
-<!-- model_df1 <- dplyr::left_join( -->
-<!--   distance_two_curvy |> select(-distance), -->
-<!--   projected_model_df, -->
-<!--   by = c("from" = "ID")) -->
-
-<!-- names(model_df1)[3:NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from") -->
-
-<!-- model_df1 <- dplyr::left_join(model_df1, projected_model_df, by = c("to" = "ID")) -->
-<!-- names(model_df1)[(2 + NCOL(projected_model_df)):NCOL(model_df1)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to") -->
-
-<!-- ## With benchmark option 2 -->
-
-<!-- model_df2 <- dplyr::left_join( -->
-<!--   distance_df_small_edges_two_curvy3 |> select(-distance), -->
-<!--   projected_model_df, -->
-<!--   by = c("from" = "ID")) -->
-
-<!-- names(model_df2)[3:NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_from") -->
-
-<!-- model_df2 <- dplyr::left_join(model_df2, projected_model_df, by = c("to" = "ID")) -->
-<!-- names(model_df2)[(2 + NCOL(projected_model_df)):NCOL(model_df2)] <- paste0(names(projected_model_df)[-NCOL(projected_model_df)], "_to") -->
-
-<!-- two_curvy_proj_first_model1_umap <- plot_proj( -->
-<!--     proj_obj = proj_obj1,  -->
-<!--     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color -->
-<!--     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha -->
-<!--     plot_limits = c(-0.6, 0.6),  -->
-<!--     title = "c2",  -->
-<!--     cex = 2,  -->
-<!--     position = sc_ltr_pos, -->
-<!--     axis_text_size = 4,  -->
-<!--     is_category = FALSE) + -->
-<!--     theme( -->
-<!--         legend.position = "none" -->
-<!--     ) -->
-
-<!-- ## Projection with Delauany triangulation -->
-
-<!-- proj_obj1_temp1 <- proj_obj1 -->
-<!-- proj_obj1_temp2 <- proj_obj1 -->
-<!-- proj_obj1_temp1[["model_df"]] <- model_df1 -->
-
-<!-- two_curvy_proj_model_delaunay_umap <- plot_proj( -->
-<!--     proj_obj = proj_obj1_temp1,  -->
-<!--     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color -->
-<!--     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha -->
-<!--     plot_limits = c(-0.6, 0.6),  -->
-<!--     title = "a2",  -->
-<!--     cex = 2,  -->
-<!--     position = sc_ltr_pos, -->
-<!--     axis_text_size = 4,  -->
-<!--     is_category = FALSE) + -->
-<!--     theme(aspect.ratio = 1,  -->
-<!--           legend.position = "none") -->
-
-<!-- proj_obj1_temp2[["model_df"]] <- model_df2 -->
-
-<!-- two_curvy_proj_model_benchmark2_umap <- plot_proj( -->
-<!--     proj_obj = proj_obj1_temp2,  -->
-<!--     point_param = c(0.5, 0.2, "#636363"), # size, alpha, color -->
-<!--     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha -->
-<!--     plot_limits = c(-0.6, 0.6),  -->
-<!--     title = "b2",  -->
-<!--     cex = 2,  -->
-<!--     position = sc_ltr_pos, -->
-<!--     axis_text_size = 4,  -->
-<!--     is_category = FALSE) + -->
-<!--     theme(aspect.ratio = 1,  -->
-<!--           legend.position = "none") -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- #| label: fig-rm-lg -->
-<!-- #| fig-cap: "The choice of long edge removal significantly impacts the model's accuracy. \\gD{} Vs $7\\text{-}D$ distances between the bin centroids, where the model is fitted with UMAP for the non-linear clusters data. The two benchmarks for long edge removal: (b) benchmark = 8$a_1$ and (c) benchmark = 2.5$a_1$, where $a_1$ = 0.03 are made. The wireframes in \\gD{} and a projection from $7\\text{-}D$ are shown with Delaunay triangulation (a1, a2) and the two benchmark values (b1, b2, c1, c2). With the benchmark set at 6.5$a_1$, long edges exist within the C-shaped cluster, which distrupts the model. In contrast, using 2$a_1$ is a better option, as it effectively captures the non-linear shapes of the clusters. To generate an accurate model that captures the data structure, the choice of long edge removal does matter." -->
-<!-- #| fig-height: 15 -->
-<!-- #| fig-width: 15 -->
-
-<!-- free(distance_points_umap) +  -->
-<!--     wrap_plots(trimesh_two_curvy_umap, trimesh_two_curvy_removed2_umap, -->
-<!--                trimesh_two_curvy_removed1_umap, two_curvy_proj_model_delaunay_umap, -->
-<!--                two_curvy_proj_model_benchmark2_umap, two_curvy_proj_first_model1_umap, -->
-<!--                ncol = 3) + -->
-<!--     plot_layout(heights = c(0.8, 1)) -->
-<!-- ``` -->
-
 ### Linked plots
 
 Diagnosing the model while locating points in the \gD{} layout and displaying the generated model overlaid on data in the \pD{} is important.
@@ -1978,10 +1519,6 @@ Diagnosing the model while locating points in the \gD{} layout and displaying th
 The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
 
 To understand how well the model fits the points whether it fits well, works better in some positions, or fails to match the overall pattern. It is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
-
-<!-- Brushing the high model error in the \gD{} layout, with dense C-shaped data explained in @sec-effect-dens, helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying the high model errors that occur due to the sparse end (add the video). -->
-
-<!-- Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video).  -->
 
 ## Assessing the best fit, and hence most accurate 2D layout 
 
@@ -2124,7 +1661,7 @@ When examining the \gD{} model representations it appears to be flatter or like 
 
 @fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
 
-The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This seingle projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. <!-- likely that the points are organised by the global principal components. So the layout of the model in \fD{} doesn't reflect the dimension of each cluster. This can be happen because PaCMAP balances three components (near, mid-range, and far) rather than focusing solely on near neighbors. Mid-range neighbors ensure that transitions between clusters or groups are preserved and less concern with local preservation.-->
+The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This seingle projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. 
 
 <!--Projections-->
 ```{r}
@@ -2995,19 +2532,9 @@ error_plot_one_curvy_hist + plot_tsne_dens +
 
 ## Applications {#sec-applications}
 
-<!-- XXX WHY THESE EXAMPLES. NEEDS AN OVERVIEW PARAGRAPH -->
-
 To showcase the robustness of our method when applied to data with different characteristics, this section presents two case studies. The first application focuses on single-cell data, a domain where the high dimensionality, sparsity, and heterogeneity of gene expression measurements pose significant analytical challenges. Our approach facilitates the identification of the most accurate NLDR layout, enabling the discovery of cell populations with similar expression profiles. The second case study explores the MNIST hand-written digits dataset, which serves as a benchmark for evaluating the preservation of local structures, specifically with digit 1.  
 
 ### Single-cell gene expression {#sec-pbmc}
-<!--
-- NLDR view used to illustrate clusters
-- Use our method to assess is it a reasonable representation
-- Demonstrate that it is not
-- Illustrate how to use our method to get a better representation
--->
-
-<!-- XXX What is single cell data???? -->
 
 Single-cell data refers to the characteristics of individual cells within a population [@haque2017]. These data also provides insights at the level of individual cells, enabling deeper understanding of gene expression. 
 
@@ -3034,20 +2561,6 @@ The @fig-NLDR-variety (a) shows three well-separated clusters with big separatio
 As a result, it is necessary to find an appropriate layout for the dataset. MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings were computed (@fig-pbmc-mse). Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.
 
 The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-model-pbmc-author-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-model-pbmc-author-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-model-pbmc-author-proj (b3)).
-
-<!-- As shown in @fig-NLDR-variety, layout c, d, and e that show small separations between clusters are universally optimal. But layout d with little separations perform well at tiny binwidth and poorly as binwidth increases. Also, layout e performs well at large binwidths. The layout c is chosen as the best, since it used the UMAP with a different (hyper-) parameter settings. -->
-
-<!-- The visualization of the model generated for the selected layout in $9\text{-}D$ shows edges between the clusters (@fig-mnist-tri-proj (b2)). This provides evidence for the small separations between clusters. Furthermore, the data does not uniformally distributed along the clusters and therefore shows densed points (@fig-mnist-tri-proj (b2). Also, the clusters are non-linear shaped (@fig-mnist-tri-proj (b3).   -->
-
-<!-- To determine whether the UMAP representation with the specific (hyper-)parameter choice suggested by @chen2023 preserves the data structure present in $9\text{-}D$ (@fig-model-pbmc-author-proj (b)), we visualize the model constructed with UMAP overlaid on the $9\text{-}D$ data.  -->
-
-<!-- But, when visualizing the *model-in-the-data-space* some unobserved structures can be seen. Some clusters have non-linear continuity patterns and high-density patches (@fig-model-pbmc-author-proj). -->
-
-<!-- As shown in @fig-NLDR-variety (e), there are three well-separated clusters, although the separation between the clusters are small. Additionally, non-linear structures can also be observed within the clusters (@fig-NLDR-variety (e)). This demonstrates that tSNE accurately captures the data structure of the PBMC3k dataset, which UMAP did not achieve. -->
-
-
-<!-- In order to find a reasonable NLDR representation for the PBMC3k dataset, the MSE for different $b_1$ using UMAP with different (hyper-)parameter settings and tSNE with default (hyper-)parameter setting (@fig-pbmc-mse) were calculated. After analyzing the results, it was found that tSNE with default (hyper-)parameter setting (perplexity: $30$) achieved the lowest error. Therefore, tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset. -->
-
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -3207,19 +2720,6 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 ```
 
-<!-- ::: {#fig-pbmc1-sc layout-ncol="4" fig-pos="H"} -->
-<!-- ![](figures/pbmc3k/umap_trimesh_plot.png) -->
-
-<!-- ![](figures/pbmc3k/sc_1.png) -->
-
-<!-- ![](figures/pbmc3k/sc_2.png) -->
-
-<!-- ![](figures/pbmc3k/sc_3.png) -->
-
-<!-- Model in \gD{}, on the UMAP layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.041)$, $b = 870 \  (30, \ 29)$, $m = 135$, benchmark value to remove large edges is $0.099$) (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/VqqWuE0Jj6A>). -->
-<!-- ::: -->
-<!--compute absolute error for different parameter choices-->
-
 ```{r}
 #| label: combine-data-pbmc
 
@@ -3283,21 +2783,12 @@ error_plot_pbmc +
   plot_layout(design = design)
 ```
 
-<!-- The MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with different (hyper-)parameter settings (@fig-pbmc-mse) were calculated.  -->
-
-<!-- It is found that tSNE (@fig-mnist-mse (a)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap (@fig-tsne-best).  -->
-
-<!-- In order to find a reasonable NLDR representation for the PBMC3k dataset, the MSE for different $a_1$ using UMAP, tSNE, PHATE, PaCMAP, and TriMAP with different (hyper-)parameter settings (@fig-pbmc-mse) were calculated. tSNE with a perplexity value set to $30$, the default parameter setting, is considered as a reasonable representation for the PBMC3k dataset. As shown in @fig-NLDR-variety (e), there are three well-separated clusters, although the separation between the clusters are small. Additionally, non-linear structures can also be observed within the clusters (@fig-NLDR-variety (e)). -->
-<!-- The visualization of the *model-in-the-data-space* provides evidence for this (@fig-pbmc2-sc). Therefore, tSNE with perplexity $30$ accurately captures the data structure of the PBMC3k dataset, which is better than UMAP. -->
-
 <!--best choice-->
 
 ```{r}
 #| label: tsne-pbmc-read-best
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 ```
-
-<!-- We then fit the model for tSNE, and visualize the resultant model in the $9\text{-}D$ data space. The model shows a quirk, as shown in @fig-pbmc2-sc. All three clusters are connected by an edge except the small and large clusters. Because the clusters are so close in \gD{}, they attempt to maintain the structure in \pD{} as well. This is evident that tSNE with perplexity $30$ provides a reasonable representation of PBMC3k data. -->
 
 <!--Fit the best model and compute error-->
 ```{r}
@@ -3445,21 +2936,6 @@ pbmc_proj_tsne_model2_best <- plot_proj(
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
-<!-- <!--bin1 = 15, bin2 = 20, b = 300, non_empty = 136--> 
-<!-- ```{r} -->
-<!-- #| echo: false -->
-<!-- #| fig-cap: "(a) Model generated in $2\\text{-}D$ with tSNE, and (b) $p\\text{-}D$ model error in $2\\text{-}D$. The $2\\text{-}D$ model shows three well-separated distant clusters. The $p\\text{-}D$ model errors are distributed along clusters, but most low $p\\text{-}D$ model errors present in the large cluster." -->
-<!-- #| label: fig-model-pbmc -->
-<!-- #| fig-pos: H -->
-<!-- #| out-height: 30% -->
-
-<!-- trimesh_removed_pbmc + error_plot_pbmc +  -->
-<!--   plot_layout(guides='collect', ncol=2) & -->
-<!--   theme(legend.position='bottom') -->
-<!-- ``` -->
-
-<!-- XXX Number of bins for b is inadequate. Caption needs to start with what this figure is for XXX -->
-
 ```{r}
 #| echo: false
 #| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
@@ -3476,31 +2952,9 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
-<!-- ::: {#fig-pbmc2-sc layout-ncol="2" fig-pos="H"} -->
-<!-- ![](figures/pbmc3k/tsne_trimesh_plot.png) -->
-
-<!-- ![](figures/pbmc3k/sc_4.png) -->
-
-<!-- ![](figures/pbmc3k/sc_5.png) -->
-
-<!-- ![](figures/pbmc3k/sc_6.png) -->
-
-<!-- Model in \gD{}, on the tSNE layout, and three views of the fit in projections from $9\text{-}D$, for the PBMC3k data ($(s_1, \ s_2) = (-0.050, \ -0.058)$, $b = 300 \  (15, \ 20)$, $m = 136$, benchmark value to remove large edges is $0.133$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/5Y1hE4i7N2k>). -->
-<!-- ::: -->
-
 ### Hand-written digits {#sec-mnist}
-<!--
-- NLDR is used to illustrate different ways 1's are drawn
-- Use our method to assess is it a reasonable representation
-- Demonstrate that it is, except for the anomalies 
--->
-
-<!--add different NLDR layouts-->
 
 The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). 
-
-
-<!-- @yingfan2021 used this dataset to evaluate how PaCMAP preserves local structures in \gD{}. Because of the large number of images, the focus was specifically on the handwritten digit 1, which exhibits a non-linear structure in \gD{} (@fig-pacmap-author). There are $7877$ images of the digit 1 in the dataset. Additionally, PCA was applied as a preprocessing step and the first $10$ principal components were selected. The objective is to assess whether PaCMAP effectively preserves the non-linear structure in \gD{}.  -->
 
 ```{r}
 #| label: read-mnist-nldr
@@ -3612,8 +3066,6 @@ error_plot_mnist <- plot_mse(error_mnist) +
 error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
-
-<!-- PaCMAP preserves non-linear structure in $784\text{-}D$. To evaluate whether PaCMAP provides a reasonable representation of the data, the \gD{} embedding of the handwritten digit 1 was selected. As shown in @fig-pacmap-author, the angle of the digit 1 images varies along the \gD{} structure. -->
 
 The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with default (hyper-)parameter setting and tSNE with default (hyper-)parameter setting and perplexity $89$ (@fig-mnist-mse) were calculated. It is found that tSNE with perplexity $89$ (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap. 
 
@@ -3734,10 +3186,6 @@ highd_error_2d_mnist <- error_df |>
         axis.title = element_blank()   # Optional
         )
 ```
-
-<!-- As a result of visualizing the *model-in-the-data-space*, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data (@fig-mnist-tri-proj). It also shows some quirks like twisted patterns and long edges (@fig-mnist-tri-proj). Furthermore, the results help to identify anomalies (with large model errors) within and the outside the non-linear structure, displaying different patterns of the digit 1 (@fig-model-error-mnist).  -->
-
-<!-- According to @fig-mnist-tri-proj (b), the non-linear structure observed in the \gD{} layout of PaCMAP (@fig-pacmap-author) is also visible when visualizing the model overlaid on the data space. This indicates that PaCMAP accurately captures the non-linear structure of the $10\text{-}D$ data. Additionally, the model shows a twisted pattern within the non-linear structure in $10\text{-}D$ space (@fig-mnist-tri-proj (c)), which is an additional pattern not visible in the \gD{} representation (@fig-pacmap-author). Furthermore, as shown in @fig-mnist-tri-proj (d), some long edges exist in the $10\text{-}D$ space that are not recognized as long edges in the \gD{} representation. However, PaCMAP provides a reasonable \gD{} representation of MNIST digit 1 data, as it preserves the non-linear structure present in the $10\text{-}D$ data.  -->
 
 <!--bin1 = 22, bin2 = 17, b = 374, non_empty = 140-->
 
@@ -3908,25 +3356,6 @@ tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_lin
   plot_layout(ncol = 3)
 ```
 
-<!-- ::: {#fig-mnist1-sc layout-ncol="4" fig-pos="H"} -->
-<!-- ![](figures/mnist/mnist_model_2d.png){#fig-mnist1-model} -->
-
-<!-- ![](figures/mnist/sc_1.png){#fig-mnist1-sc1} -->
-
-<!-- ![](figures/mnist/sc_2.png){#fig-mnist1-sc2} -->
-
-<!-- ![](figures/mnist/sc_3.png){#fig-mnist1-sc3} -->
-
-<!-- Model in \gD{}, on the PaCMAP layout, and three views of the fit in projections from $10\text{-}D$, for the digit 1 of MNIST data ($(s_1, \ s_2) = (-0.100, \ -0.059)$, $b = 374 \  (22, \ 17)$, $m = 140$, benchmark value to remove large edges is $0.094$). (The **langevitour** software is used to view the data with a tour, and the full video is available at <https://youtu.be/zcg_GXBmqjA>). -->
-
-
-<!-- ::: -->
-<!-- need to update the youtube recording-->
-
-<!--images that occur large error-->
-<!-- within the nonlinear structure-->
-<!--outside the nonlinear structure-->
-
 ```{r}
 #| label: img-diff-pos
 
@@ -3998,31 +3427,7 @@ final_layout <- wrap_plots(highd_error_2d_mnist, top_layout)
 final_layout
 ```
 
-<!-- These anomalies can be classified into two types: those that are anomalies within the non-linear cluster and those that lie in the small cluster. The images associated with large model error points within the non-linear cluster display different patterns of the digit 1.  -->
-
-<!-- There are certain data points that exhibit high error rates due to their deviation from the usual $10\text{-}D$ data structure, which makes them anomalies (@fig-model-mnist). These anomalies can be classified into two types: those that are anomalies within the non-linear structure and those that lie outside of it. The images associated with high model error points within the non-linear structure display different patterns of the digit 1, as shown in @fig-mnist1-within. However, when comparing these images to the ones found outside of the non-linear structure, it becomes evident that the latter display different patterns of the digit 1 (@fig-mnist1-out).  -->
-
-<!--images that occur large error-->
-<!-- within the nonlinear structure-->
-<!--outside the nonlinear structure-->
-
-<!-- ::: {#fig-mnist-anomalies layout-ncol="2" fig-pos="H"} -->
-<!-- ![](figures/mnist/img_error_sample_within.png){#fig-mnist1-within} -->
-
-<!-- ![](figures/mnist/img_error_sample_out.png){#fig-mnist1-out} -->
-
-<!-- Some images of handwritten digit 1 which occur high model error (a) within the non-linear structure, and (b) outside the non-linear structure. The images shows different patterns of digit 1. -->
-<!-- ::: -->
-
 ## Discussion {#sec-discussion}
-
-<!-- - Summarise contributions -->
-<!-- - Explain where it is expected or not expected to work, eg higher dimensional relationships -->
-<!-- - Human behaviour, the desire to have more certainty, and a tendency to prefer the well-separated views (need to add) -->
-<!-- - Predicting new observations in $k$-D -->
-<!-- - Extending layouts beyond $k$-D, when 2D is clearly inadequate. -->
-<!-- - Diagnostic app to explore differences in distances (need to add) -->
-<!-- - What might be useful enhancements -->
 
 We have developed an approach to help assess and compare NLDR layouts, generated by different methods and (hyper-)parameter choice(s). It depends on conceptualising the \gD{} layout as a model, creating a wireframe representation of it that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and RMSE. Different layouts can be compared using the RMSE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
 
@@ -4035,30 +3440,6 @@ This new method also reveals some interesting curiosities about NLDR procedures.
 Most NLDR methods only provide a \gD{} but if a \kD{} ($k>2$) layout is provided the approach developed here could be extended. Binning into cubes could be done in $3\text{-}D$ or higher, relatively easily, and used asa the basis for a wireframe of the fitted model. @barber1996 and the software @cxhull have algorithms for convex hulls, which \pD{} which serve as an inspiration. A simpler approach using $k$-means clustering to provide centroids could also be possible, but the complication would be to determine how to connect the centroids into an appropriate wireframe.
 
 The new methodology is accompanied by an R package called quollr, so that it is readily usable and broadly accessible. The package has methods to fit the model, compute diagnostics and also visualise the results, with interactivity. We have primarily used the langevitour software [@harisson2024] to view the model in the data space, but other tour software such as tourr [@wickham2011] and detourr [@hart2022] could be also used.
-
-<!-- and choose the most accurate representation of the structure(s) present in the \pD{} data. Starting from \gD{} layout, the fitted model, as represented by the positions of points in \kD{}, and turn it into a \pD{} wireframe to overlay on the data, viewing it with a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.
-
-With the model fit, several observations can be made. The simulated \fD{} data, which contains five Gaussian clusters, was analyzed. Both tSNE and UMAP demonstrated the fitted model as a *crumpled \gD{} sheet* that stretches across all four dimensions, highlighting its ability to preserve local structure. In contrast, the flat representation generated by PaCMAP indicates its failure to capture the variation within the clusters. This highlights how different NLDR methods organize the data points differently.
-
-Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated \fD{} C-shaped data with different densities are used. The high \fD{} model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
-
-Our algorithm can also be useful in practice to decide on a reasonable NLDR layout that accurately represents the data, as described with a single-cell gene expression data, **PBMC3k**. The published results of UMAP with default (hyper-)parameter setting by @chen2024 were evaluated. The data showed three close clusters. But the published layout showed three well-separated clusters. Therefore, by changing the NLDR method to tSNE with default (hyper-)parameters, we found a better layout, which is more representative the data. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the \gD{} layout, demonstrating the ability of our model in uncovering hidden data characteristics. Also, as explained in Appendix, with recently introduced approach, scDEED [@xia2023] also proved the layout suggested by our layout is better than the published one.  
-
-The digit 1 of **Hand-written digits** data shows how the model accurately capture the non-linear structure. Not only that, the $10\text{-}D$ model error help to find the anomalies of digit 1 images. Also, twisted pattern of the model evident that how tSNE tries to maintain the local structure by positioning the similar patterns of digit 1 close to each other. 
-
-Diagnose is important to find where the \gD{} points located in \pD{}. One approach is to use interactivity. By linking the \gD{} layout with the fitted model in \pD{} and employing brushing techniques, we can identify which points fit well and which do not. Additionally, linking the \gD{} error plot with the fitted model in \pD{} can help pinpoint where mismatches occur.
-
-Predicting new observations in \kD{} is particularly valuable due to the limitations of some NLDR methods, like tSNE, which don't provide a straightforward method for prediction. As a result, our approach offers a solution that capable of generating predicted \kD{} embedding regardless of the NLDR method employed, effectively addressing this functional gap.
-
-Furthermore, to extend layouts beyond \kD{}, when \gD{} is clearly inadequate, k-means can be used as an alternative to bin centroids.
-
-There are many avenues for future work. First, the development of
-evaluation metrics is important for NLDR. We introduced a qualitative approach. But having a quantitative measure also will be useful for various application domains. Second, one could use our approach to create an approach for tuning (hyper-)parameters.  Another direction for future work is to introduce more approaches to diagnose the fitted model. Finally, one can think of designing a new NLDR method by following the binning in high-dimensions.
-
-Other tour software instead of langevitour. 
--->
-
-<!-- In conclusion, while our method effectively captures and represents high-dimensional data structures, further enhancements could involve introducing approaches to diagnose the fitted model. These improvements would help in creating a more accurate representation of the data when \gD{} layout is inadequate. -->
 
 ## Supplementary Materials
 
