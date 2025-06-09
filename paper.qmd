@@ -82,6 +82,13 @@ header-includes: |
   \newcommand\gD{$2\text{-}D$}
 ---
 
+XXX TO DO:
+
+- Make sure langevitour is explained before using it
+- Too much code needs to be streamlined
+- Remove all the extraneous commented text
+- Ensure that the SCdeed paper is mentioned in main part of this paper
+
 ```{r include=FALSE}
 # Set up chunk for for knitr
 knitr::opts_chunk$set(
@@ -1975,16 +1982,19 @@ To understand how well the model fits the points whether it fits well, works bet
 
 <!-- Furthermore, when examining the digit 1 from the MNIST dataset (@sec-mnist), brushing the small cluster in the \gD{} layout helps in locating the positions of the related \pD{} points in langevitour view. This process helps in identifying how close the small cluster to the big cluster (add the video). We can also explore which data corresponds to the twisted pattern of the big cluster (add the video).  -->
 
-## Best fit, or at least avoiding an inaccurate representation
+## Assessing the best fit, and hence most accurate 2D layout 
 
-@fig-toy-mse shows a summary of plots that can be used to help assess the strength of the fit, and compare the fits for different representations. What does it mean to be a best fit for this problem? There probably isn't a best fit, but there are wrong representations. The goal is to help users decide on a useful and appropriate low-dimensional representation of the high-dimensional data. 
+@fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient 2D display. It is a competitor to linear dimension reduction that can better represent non-linear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
-Deciding on the best fit relies on several elements: 
+A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any 2D representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
-- the choice of NLDR method, and the parameters used to create it, and
-- model fit parameters: bin size, low density bin removal.
+To compare and assess a range of representations needs these items:
 
-Comparing the MSE to obtain the best fit is suitable if one starts from the same NLDR representation. In theory, because the MSE is computed on \pD{} measuring the fit between model and data it might still be useful to compare different NLDR representations. A good NLDR representation should produce a good fit, producing a low MSE if the model fits the data well. However, it technically might be quite variable.
+- a selection of NLDR representations made with a range of parameter choices and possibly different methods (tSNE, UMAP, ...).
+- a range of model fits made by varying bin size and low density bin removal.
+- calculated RMSE for each layout, when it is transformed into the \pD{} space. 
+
+Comparing the RMSE to obtain the best fit is appropraite if the same NLDR method is used. However, because the RMSE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower RMSE indicates a better NLDR representation.
 
 ```{r}
 #| label: read-two-curvy-clust-nldr
@@ -2103,23 +2113,17 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
                                     widths = c(50, 50))
 ```
 
-## Curiosities
-
-<!-- XXX THIS IS NOT INTERESTING IN ITS CURRENT FORM. THIS IS ONLY ANY INTERESTING EXAMPLE WHEN THE FILLED OUT VS FLAT SHAPES ARE DISCUSSED. -->
+## Curiosities discovered by examining the model in the data space
 
 With the drawing of the model in the data, several interesting differences between NLDR methods can be observed.
 
-### Ordering of points
+### Some methods appear to order points in the layout
 
-<!-- DHC: Will need to have more bins in each of the methods to illustrate this properly. -->
+When examining the \gD{} model representations it appears to be flatter or like a pancake with some methods, especially PACMAP, when the data is structure is higher than two dimensional. A simple example of this can be seen with data simulated to contain five $4\text{-}D$ Gaussian clusters. Each cluster is essentially a ball in $4\text{-}D$, so there is no \2D{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out $4\text{-}D$.
 
-To illustrate a difference in how the methods organise points in the NLDR layout, simulated $4\text{-}D$ data having five Gaussian clusters is used. @fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters are used. All three methods show the five clusters, with varying degrees of separation.
+@fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
 
-The models are fitted to these layouts, but we focus on a single cluster to illustrate the curious detail. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the $4\text{-}D$ space. In this projection the difference between methods can be seen. These clusters are fully $4\text{-}D$ in nature, so we would expect the model to be a *crumpled \gD{} sheet* that stretches in all four dimensions. This is what is observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape! What this means is that there has to be some ordering of points in the \gD{} PaCMAP layout that induces the flat model, likely that the points are organised by the global principal components. So the layout of the model in $4\text{-}D$ doesn't reflect the dimension of each cluster. This can be happen because PaCMAP balances three components (near, mid-range, and far) rather than focusing solely on near neighbors. Mid-range neighbors ensure that transitions between clusters or groups are preserved and less concern with local preservation.
-
-<!-- DHC: is there something in the documentation that might help to explain what has happened? -->
-
-<!-- This pattern can also be observed by examining the error from the model fit (@fig-five-gau-projs a3, b3, c3). With tSNE and UMAP the error is relatively uniformly distributed, but with PaCMAP there is more error in the center of the \gD{} layout, reflecting that there are more points in the middle that are further from the fitted model. -->
+The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the $4\text{-}D$ space, taken from a tour. These clusters are fully $4\text{-}D$ in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This seingle projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbours in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. <!-- likely that the points are organised by the global principal components. So the layout of the model in $4\text{-}D$ doesn't reflect the dimension of each cluster. This can be happen because PaCMAP balances three components (near, mid-range, and far) rather than focusing solely on near neighbors. Mid-range neighbors ensure that transitions between clusters or groups are preserved and less concern with local preservation.-->
 
 <!--Projections-->
 ```{r}
@@ -2667,7 +2671,9 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
   theme(legend.position='none')
 ```
 
-### The effect of density {#sec-effect-dens}
+### Low density results in a squishing of the 2D representation in all methods {#sec-effect-dens}
+
+Differences in density can be due to be sampling at different rates in different subspaces of \gD{}. For example, the data shown in @fig-one-dens_clust-error all lies on a \2D{} curved sheet in $4\text{-}D$, but one end of the sheet is sampled densely and the other very sparsely. It was simulated to illustrate the effect on layout generated by tSNE. 
 
 To illustrate how tSNE organize different number of points within the structure in the tSNE layout, simulated $4\text{-}D$ data having C-shaped structure is used. @fig-one-dens_clust-error b shows \gD{} layouts for tSNE. The default hyper-parameters are used. The \gD{} layout is colored according to the $4\text{-}D$ model error (@fig-one-dens_clust-error a). In @fig-one-dens_clust-error a, the large model error points are clustered in the top corner, forming a separate cluster with high model errors.   
 
@@ -4035,6 +4041,8 @@ Furthermore, to extend layouts beyond \kD{}, when \gD{} is clearly inadequate, k
 
 There are many avenues for future work. First, the development of
 evaluation metrics is important for NLDR. We introduced a qualitative approach. But having a quantitative measure also will be useful for various application domains. Second, one could use our approach to create an approach for tuning (hyper-)parameters.  Another direction for future work is to introduce more approaches to diagnose the fitted model. Finally, one can think of designing a new NLDR method by following the binning in high-dimensions.
+
+Other tour software instead of langevitour. 
 
 <!-- In conclusion, while our method effectively captures and represents high-dimensional data structures, further enhancements could involve introducing approaches to diagnose the fitted model. These improvements would help in creating a more accurate representation of the data when \gD{} layout is inadequate. -->
 
