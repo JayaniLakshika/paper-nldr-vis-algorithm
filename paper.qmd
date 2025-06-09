@@ -80,6 +80,7 @@ header-includes: |
   \newcommand\kD{$k\text{-}D$}
   \newcommand\dD{$d\text{-}D$}
   \newcommand\gD{$2\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
 ---
 
 XXX TO DO:
@@ -1292,7 +1293,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
 
-The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T}(X_1, X_2, X_3, X_4) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are $4\text{-}D$. 
+The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T}(X_1, X_2, X_3, X_4) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are \fD{}. 
 
 <!--#### Fitted values-->
 
@@ -2113,17 +2114,17 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
                                     widths = c(50, 50))
 ```
 
-## Curiosities discovered by examining the model in the data space
+## Curiosities about NLDR results discovered by examining the model in the data space
 
 With the drawing of the model in the data, several interesting differences between NLDR methods can be observed.
 
 ### Some methods appear to order points in the layout
 
-When examining the \gD{} model representations it appears to be flatter or like a pancake with some methods, especially PACMAP, when the data is structure is higher than two dimensional. A simple example of this can be seen with data simulated to contain five $4\text{-}D$ Gaussian clusters. Each cluster is essentially a ball in $4\text{-}D$, so there is no \2D{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out $4\text{-}D$.
+When examining the \gD{} model representations it appears to be flatter or like a pancake with some methods, especially PACMAP, when the data is structure is higher than two dimensional. A simple example of this can be seen with data simulated to contain five \fD{} Gaussian clusters. Each cluster is essentially a ball in \fD{}, so there is no \2D{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out \fD{}.
 
 @fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
 
-The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the $4\text{-}D$ space, taken from a tour. These clusters are fully $4\text{-}D$ in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This seingle projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbours in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. <!-- likely that the points are organised by the global principal components. So the layout of the model in $4\text{-}D$ doesn't reflect the dimension of each cluster. This can be happen because PaCMAP balances three components (near, mid-range, and far) rather than focusing solely on near neighbors. Mid-range neighbors ensure that transitions between clusters or groups are preserved and less concern with local preservation.-->
+The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This seingle projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbours in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. <!-- likely that the points are organised by the global principal components. So the layout of the model in \fD{} doesn't reflect the dimension of each cluster. This can be happen because PaCMAP balances three components (near, mid-range, and far) rather than focusing solely on near neighbors. Mid-range neighbors ensure that transitions between clusters or groups are preserved and less concern with local preservation.-->
 
 <!--Projections-->
 ```{r}
@@ -2673,11 +2674,13 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 
 ### Low density results in a squishing of the 2D representation in all methods {#sec-effect-dens}
 
-Differences in density can be due to be sampling at different rates in different subspaces of \gD{}. For example, the data shown in @fig-one-dens_clust-error all lies on a \2D{} curved sheet in $4\text{-}D$, but one end of the sheet is sampled densely and the other very sparsely. It was simulated to illustrate the effect on layout generated by tSNE. 
+Differences in density can arise by sampling at different rates in different subspaces of \gD{}. For example, the data shown in @fig-one-dens_clust-error all lies on a \2D{} curved sheet in \fD{}, but one end of the sheet is sampled densely and the other very sparsely. It was simulated to illustrate the effect of the density difference on layout generated by an NLDR, illustrated using the tSNE results. 
 
-To illustrate how tSNE organize different number of points within the structure in the tSNE layout, simulated $4\text{-}D$ data having C-shaped structure is used. @fig-one-dens_clust-error b shows \gD{} layouts for tSNE. The default hyper-parameters are used. The \gD{} layout is colored according to the $4\text{-}D$ model error (@fig-one-dens_clust-error a). In @fig-one-dens_clust-error a, the large model error points are clustered in the top corner, forming a separate cluster with high model errors.   
+@fig-one-dens_clust-error (a2, b2) shows \gD{} layout for tSNE created using the default hyper-parameters. One would expect to see a rectangular shape if the curved sheet is flattened, but the layout is triangular. The other two displays show the residuals as a dot density plot (a1, b1), and a \2D{} projection of the data and the model from \fD{} (a3, b3). Using the linked brushing tool, we can highlight points in the residuals 
 
-The model is fitted to this layout. @fig-one-dens_clust-error c shows the $2\text{-}D$ projection of the fitted model. In this projection, the distribution of $4\text{-}D$ model errors can be observed. The dense C-shaped structure shows high model errors at the sparse end. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.
+The \gD{} layout is colored according to the \fD{} model error (@fig-one-dens_clust-error a). In @fig-one-dens_clust-error a, the large model error points are clustered in the top corner, forming a separate cluster with high model errors.   
+
+The model is fitted to this layout. @fig-one-dens_clust-error c shows the \gD{} projection of the fitted model. In this projection, the distribution of \fD{} model errors can be observed. The dense C-shaped structure shows high model errors at the sparse end. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.
 
 ```{r}
 #| label: model-one-dens-clust
@@ -4025,9 +4028,9 @@ final_layout
 
 We have developed an algorithm to assess the NLDR method and (hyper-)parameter choice(s) and choose the most accurate representation of the structure(s) present in the \pD{} data. Starting from \gD{} layout, the fitted model, as represented by the positions of points in \kD{}, and turn it into a \pD{} wireframe to overlay on the data, viewing it with a tour. This approach is defined as *model-in-data-space*. Viewing a model in the data space is an ideal way to examine the fit.
 
-With the model fit, several observations can be made. The simulated $4\text{-}D$ data, which contains five Gaussian clusters, was analyzed. Both tSNE and UMAP demonstrated the fitted model as a *crumpled \gD{} sheet* that stretches across all four dimensions, highlighting its ability to preserve local structure. In contrast, the flat representation generated by PaCMAP indicates its failure to capture the variation within the clusters. This highlights how different NLDR methods organize the data points differently.
+With the model fit, several observations can be made. The simulated \fD{} data, which contains five Gaussian clusters, was analyzed. Both tSNE and UMAP demonstrated the fitted model as a *crumpled \gD{} sheet* that stretches across all four dimensions, highlighting its ability to preserve local structure. In contrast, the flat representation generated by PaCMAP indicates its failure to capture the variation within the clusters. This highlights how different NLDR methods organize the data points differently.
 
-Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated $4\text{-}D$ C-shaped data with different densities are used. The high $4\text{-}D$ model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
+Another usability of our approach is how NLDR methods behave with different density of the data structure. The tSNE layout of simulated \fD{} C-shaped data with different densities are used. The high \fD{} model errors are scattered to a corner of the \gD{} layout of dense C-shaped structure. In the dense C-shaped structure, the high model errors occur because there are fewer data points positioned within the bins at the sparse end of the structure.  
 
 Our algorithm can also be useful in practice to decide on a reasonable NLDR layout that accurately represents the data, as described with a single-cell gene expression data, **PBMC3k**. The published results of UMAP with default (hyper-)parameter setting by @chen2024 were evaluated. The data showed three close clusters. But the published layout showed three well-separated clusters. Therefore, by changing the NLDR method to tSNE with default (hyper-)parameters, we found a better layout, which is more representative the data. Additionally, the model discovers non-uniform data distribution and non-linear structures within the clusters that are not visible in the \gD{} layout, demonstrating the ability of our model in uncovering hidden data characteristics. Also, as explained in Appendix, with recently introduced approach, scDEED also proved the layout suggested by our layout is better than the published one.  
 
