@@ -357,7 +357,7 @@ The paper is organized as follows. @sec-background provides a summary of the lit
 ## Background {#sec-background}
 
 <!-- - Connection between NLDR and MDS-->
-Historically, \kD{}   representations of \pD{} data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) [@jolliffe2011] as a special case. (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{}   representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{}   layout is constructed by minimizing a stress function that differences distances between points in \pD{}   with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
+Historically, \kD{} representations of \pD{} data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) [@jolliffe2011] as a special case. (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
 Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP and PaCMAP. tNSE and UMAP can be considered to produce the \kD{}   minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@coifman2005] spreading to capture geometric shapes, that include both global and local structure.
 
@@ -2962,7 +2962,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 ### MNIST hand-written digits {#sec-mnist}
 
-The digit "1" of the MNIST dataset [@lecun2010] consists of $7877$ grayscale images of handwritten 1s. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). 
+The digit "1" of the MNIST dataset [@lecun2010] consists of $7877$ grayscale images of handwritten "1"s. Each image is $28 \times 28$ pixels which corresponds to 784 variables. The first 10 principal components, explaining 83% of the total variation, are used. This data is essentially lies on a nonlinear manifold in the high dimensions, defined by the shapes that "1"s make in when sketched, menaing that some pixels are almost always dark and some almost always light. We expect that the best layout captures this type of structure and does not exhibit distinct clusters. <!-- The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). -->
 
 ```{r}
 #| label: read-mnist-nldr
@@ -3075,11 +3075,17 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
 
-The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with default (hyper-)parameter setting and tSNE with default (hyper-)parameter setting and perplexity $89$ (@fig-mnist-mse) were calculated. It is found that tSNE with perplexity $89$ (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap. 
+@fig-mnist-mse compares the fit of six layouts computed using UMAP (a), PHATE (b), PaCMAP (c), TriMAP (d) with default (hyper-)parameter setting and two tSNE runs, one with default (hyper-)parameter setting (e) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. XXX are the labels I put for each method above correct? please fix if not.
 
-In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-model-error-mnist), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters.
+The layout plot are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
 
-By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the \gD{} layout. As shown in @fig-clust-mnist (a1), the model provides the evidence for the non-linear structure of the digit 1 data in $10\text{-}D$. The model shows some quirks. The model's twisted pattern provides evidence for the $10\text{-}D$ data structure, which is not observed by \gD{} layout (@fig-clust-mnist (a2)). 
+The next step is to investigate the \gD{} to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape we can see that the "1"s are drawn with from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarise the variation in way "1"s are drawn.
+
+<!-- The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with default (hyper-)parameter setting and tSNE with default (hyper-)parameter setting and perplexity $89$ (@fig-mnist-mse) were calculated. It is found that tSNE with perplexity $89$ (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap.--> 
+
+<!-- In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-model-error-mnist), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters.
+
+By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the \gD{} layout. As shown in @fig-clust-mnist (a1), the model provides the evidence for the non-linear structure of the digit 1 data in $10\text{-}D$. The model shows some quirks. The model's twisted pattern provides evidence for the $10\text{-}D$ data structure, which is not observed by \gD{} layout (@fig-clust-mnist (a2)). --> 
 
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
@@ -3182,9 +3188,10 @@ highd_error_2d_mnist <- error_df |>
   geom_rect(aes(xmin = 0.9, xmax = 1, ymin = 1.25, ymax = 1.45),
                fill = "transparent", color = "#375cb1", linewidth = 1)  +
   geom_rect(aes(xmin = 0.35, xmax = 0.45, ymin = 0.55, ymax = 0.7),
-               fill = "transparent", color = "#004616", linewidth = 1)  +
+               fill = "transparent", color = "#008000", linewidth = 1)  +
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
                fill = "transparent", color = "#4c389a", linewidth = 1) +
+  interior_annotation(label = "a", c(0.1, 1), cex = 2.5) +
   theme(legend.position = "none",
         aspect.ratio = 1,
         plot.margin = margin(0, 0, 0, 0),
@@ -3382,7 +3389,7 @@ pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_top)
 
 right_top_img <- plot_digit_img(
-  pixels_gathered_within, palette = "Blues 2", title_text = "a")
+  pixels_gathered_within, palette = "Blues 2", title_text = "b")
 
 img_middle <- c(130, 2091, 7795, 163, 77)
 
@@ -3390,7 +3397,7 @@ pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_middle)
 
 middle_img <- plot_digit_img(
-  pixels_gathered_within, palette = "Greens 3", title_text = "b")
+  pixels_gathered_within, palette = "Greens 3", title_text = "c")
 
 img_right_bottom <- c(2035, 7708, 7710, 4134, 5006)
 
@@ -3398,7 +3405,7 @@ pixels_gathered_within <-  mnist_data |>
   filter(instance %in% img_right_bottom)
 
 right_bottom_img <- plot_digit_img(
-  pixels_gathered_within, palette = "Purples 2", title_text = "c")
+  pixels_gathered_within, palette = "Purples 2", title_text = "d")
 
 img_error_outside <- c(999, 3650, 4916, 2964, 5622)
 
@@ -3406,7 +3413,7 @@ pixels_gathered_outside <-  mnist_data |>
   filter(instance %in% img_error_outside)
 
 imge_error_sample_outside <- plot_digit_img(
-  pixels_gathered_outside, palette = "Grays", title_text = "d")
+  pixels_gathered_outside, palette = "Grays", title_text = "e")
 
 ##### inside
 img_error_inside <- c(5173, 6981, 7228, 6673, 3179) #, 6673, 3179, 7363, 7650, 5241, 4636
@@ -3415,7 +3422,7 @@ pixels_gathered_inside <-  mnist_data |>
   filter(instance %in% img_error_inside)
 
 imge_error_sample_inside <- plot_digit_img(
-  pixels_gathered_inside, palette = "Oranges", title_text = "e")
+  pixels_gathered_inside, palette = "Oranges", title_text = "f")
 
 ```
 
