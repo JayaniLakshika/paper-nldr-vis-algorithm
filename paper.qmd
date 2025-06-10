@@ -90,6 +90,8 @@ XXX TO DO:
 - Remove all the extraneous commented text (Done)
 - Check how \kD{} and \gD{} are used, and make sure it's sensible
 - Check spelling is consistently American
+- Check references
+- Add videos
 
 ```{r include=FALSE}
 # Set up chunk for for knitr
@@ -2735,10 +2737,6 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
 error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_12_min_dist_0.99.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_3_min_dist_0.6.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_4_min_dist_0.6.rds")
-# error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
 error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
 error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
 error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
@@ -2948,7 +2946,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
