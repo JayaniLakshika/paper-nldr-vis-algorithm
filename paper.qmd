@@ -2539,7 +2539,7 @@ To illustrate the approach we use two examples: PBMC3k data (single cell gene ex
 
 ### PBMC3k {#sec-pbmc}
 
-This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @chen2024. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. <!-- The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined.--> 
+This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. <!-- The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined.--> 
 
 In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
@@ -3455,27 +3455,6 @@ The new methodology is accompanied by an R package called quollr, so that it is 
 All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
 
 The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. 
-
-Direct links to videos for viewing online are available in @tbl-links.
-
-```{r}
-#| label: tbl-links
-#| tbl-cap: "Example videos."
-#| tbl-pos: H
-
-links_df <- tibble(
-  data = c("PBMC3k"),
-  URL = c("link1")
-)
-
-
-links_df |>
-  kableExtra::kable(format = "latex", 
-                    booktabs = TRUE, 
-                    label = "tbllinks") |>
-  kableExtra::kable_styling(latex_options = "scale_down")
-
-```
 
 ## Acknowledgments
 
