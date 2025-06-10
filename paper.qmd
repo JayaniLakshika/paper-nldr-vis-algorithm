@@ -89,6 +89,7 @@ XXX TO DO:
 - Too much code needs to be streamlined
 - Remove all the extraneous commented text (Done)
 - Check how \kD{} and \gD{} are used, and make sure it's sensible
+- Check spelling is consistently American
 
 ```{r include=FALSE}
 # Set up chunk for for knitr
@@ -2532,13 +2533,15 @@ error_plot_one_curvy_hist + plot_tsne_dens +
 
 ## Applications {#sec-applications}
 
-To showcase the robustness of our method when applied to data with different characteristics, this section presents two case studies. The first application focuses on single-cell data, a domain where the high dimensionality, sparsity, and heterogeneity of gene expression measurements pose significant analytical challenges. Our approach facilitates the identification of the most accurate NLDR layout, enabling the discovery of cell populations with similar expression profiles. The second case study explores the MNIST hand-written digits dataset, which serves as a benchmark for evaluating the preservation of local structures, specifically with digit 1.  
+To illustrate the approach we use two examples: PBMC3k data (single cell gene expression) where an NLDR layout is used to represent cluster structure present in the \pD{} data, and MNIST hand-written digits where NLDR is used to represent essentially a low-dimensional nonlinear manifold in \pD{}.
 
-### Single-cell gene expression {#sec-pbmc}
+<!-- To showcase the robustness of our method when applied to data with different characteristics, this section presents two case studies. The first application focuses on single-cell data, a domain where the high dimensionality, sparsity, and heterogeneity of gene expression measurements pose significant analytical challenges. Our approach facilitates the identification of the most accurate NLDR layout, enabling the discovery of cell populations with similar expression profiles. The second case study explores the MNIST hand-written digits dataset, which serves as a benchmark for evaluating the preservation of local structures, specifically with digit 1.-->  
 
-Single-cell data refers to the characteristics of individual cells within a population [@haque2017]. These data also provides insights at the level of individual cells, enabling deeper understanding of gene expression. 
+### PBMC3k {#sec-pbmc}
 
-Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the discovered clusters, and help to understand the results. The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined. There are $2622$ single cells, with $1000$ gene expressions. Following their pre-processing, UMAP was performed using nine principal components. @fig-NLDR-variety (a) is the reproduction of the published plot. The question is whether this accurately represents the cluster structure in the data. Our method can help here, and also help to provide a better \gD{} layout, as needed. 
+This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @chen2024. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. <!-- The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined.--> 
+
+In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -2556,11 +2559,17 @@ pbmc_scaled_obj <- gen_scaled_data(
 umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 ```
 
-The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj (a2), there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset.
+<!-- The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj (a2), there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset.-->
 
-As a result, it is necessary to find an appropriate layout for the dataset. MSE for different binwidths ($a_1$) using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings were computed (@fig-pbmc-mse). Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.
+@fig-pbmc-mse shows RMSE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were made using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings. Lines are color coded to match the color of the layouts shown on the right. Lower RMSE indicates the better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low RMSE across all binwidths. It can be seen that layout f is sub-optimal with universally higher RMSE. Layout a, the published one, is better but it is not as good as layouts b, d, or e. With some imagination layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better RMSE when the $a_1$ is small, but layout e beats it at larger values. Thus we could argue that layout e is the most accurate representation of the cluster structure, of these eight.
 
-The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-model-pbmc-author-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-model-pbmc-author-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-model-pbmc-author-proj (b3)).
+<!-- Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.-->
+
+XXX can we use a and e in these figures instead of a and b, so it is easier to describe relative to the first figure, and previous figure?
+
+To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that, the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
+
+<!-- The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-model-pbmc-author-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-model-pbmc-author-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-model-pbmc-author-proj (b3)).-->
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -2952,9 +2961,9 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
-### Hand-written digits {#sec-mnist}
+### MNIST hand-written digits {#sec-mnist}
 
-The digit 1 of the MNIST dataset consists of $7877$ grayscale images of handwritten digits [@lecun2010]. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). 
+The digit "1" of the MNIST dataset [@lecun2010] consists of $7877$ grayscale images of handwritten 1s. Before further analysis, PCA was used to preprocess the data, where the first $10$ principal components, explaining 83% of the total variation, were selected. The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). 
 
 ```{r}
 #| label: read-mnist-nldr
@@ -3443,9 +3452,9 @@ The new methodology is accompanied by an R package called quollr, so that it is 
 
 ## Supplementary Materials
 
-The GitHub repository for the paper can be found at https://github.com/JayaniLakshika/paper-nldr-vis-algorithm. The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
+All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
 
-The R package `quollr`, available on CRAN and at https://jayanilakshika.github.io/quollr/, provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. 
+The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. 
 
 Direct links to videos for viewing online are available in @tbl-links.
 
