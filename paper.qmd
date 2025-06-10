@@ -2565,7 +2565,7 @@ umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 
 <!-- Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.-->
 
-XXX can we use a and e in these figures instead of a and b, so it is easier to describe relative to the first figure, and previous figure?
+<!-- XXX can we use a and e in these figures instead of a and b, so it is easier to describe relative to the first figure, and previous figure? -->
 
 To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that, the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
 
@@ -2841,7 +2841,7 @@ trimesh_removed_pbmc_best <- ggplot() +
                colour = "#000000",
                linewidth = 1) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada")) +
-  interior_annotation("b1", cex = 2, c(0.08, 0.9)) +
+  interior_annotation("e1", cex = 2, c(0.08, 0.9)) +
   theme(
     aspect.ratio = 1
   )
@@ -2914,7 +2914,7 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   plot_limits = c(-0.65, 0.65), 
   axis_text_size = 4,
   is_category = TRUE) +
-  interior_annotation(label = "b2", cex = 2) +
+  interior_annotation(label = "e2", cex = 2) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
@@ -2941,7 +2941,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
   plot_limits = c(-1, 0.75), 
   axis_text_size = 4,
   is_category = TRUE) +
-  interior_annotation(label = "b3", cex = 2) + 
+  interior_annotation(label = "e3", cex = 2) + 
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 ```
 
