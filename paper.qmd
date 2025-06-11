@@ -85,7 +85,7 @@ header-includes: |
 
 XXX TO DO:
 
-- Remove all the extraneous commented text (NOT Done)
+- Remove all the extraneous commented text (Done)
 - Check how \kD{} and \gD{} are used, and make sure it's sensible
 - Check spelling is consistently American
 - Check references
@@ -378,25 +378,7 @@ The solution is to use the tour to examine how the NLDR is warping the space. Th
 
 At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{}   NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, that will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@cfa69] and MDS. (Note that, for this thinking the full \pD{}   data needs to be available, not just the interpoint distances.)
 
-```{r}
-#| label: tbl-notation
-#| tbl-cap: "Summary of notation for describing new methodology."
-# Notation used in the paper
-
-notation_df <- read_csv("misc/notation.csv")
-
-# Create the table
-kable(notation_df, 
-      format = "latex", 
-      booktabs = TRUE, escape = FALSE) |>
-  kable_styling(position = "center", 
-                full_width = FALSE, 
-                font_size = 12) |>
-  row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("3cm", "12cm"))
-```
-
-We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. <!--Any input requirements for the data (such as normalization, or preprocessing through the use of PCA or similar) is considered part of the function $g$.-->
+We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
@@ -621,15 +603,6 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
     aspect.ratio = 1,
     legend.position = "none"
   )
-
-# error_plot_two_curvy_hist <- 
-#   ggplot(error_df_two_curvy_abs) +
-#   geom_histogram(aes(x=sqrt_row_wise_total_error, y=..density..)) +
-#   geom_density(aes(x=sqrt_row_wise_total_error, y=..density..), colour="red") +
-#   #xlab(expression(group("|", e[hj], "|"))) +
-#   xlab(expression(e[hj])) +
-#   ylab("") +
-#   theme_bw() 
 
 error_plot_two_curvy_quasi <- ggplot(
   error_df_two_curvy_abs, 
@@ -856,15 +829,7 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   axis_text_size = 2, 
   is_category = FALSE) +
   interior_annotation(label = "c", position = sc_ltr_pos, cex = 1.2) +
-  theme(aspect.ratio = 1) #+
-  #geom_segment(
-  #  data = model_df, 
-  #  aes(
-  #    x = proj1_from, 
-  #    y = proj2_from, 
-  #    xend = proj1_to, 
-  #    yend = proj2_to), 
-  #  color = "#000000")
+  theme(aspect.ratio = 1)
 
 ```
 
@@ -1099,8 +1064,6 @@ $u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C
 
 By default, the bin centroid is used for describing a hexagon (as done in @fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used. The bin centers, and the binned data, are the two important components needed to render the model representation in high dimensions.  
 
-<!-- XXX How are you doing this? Do you check the bounds of the hexagon? Or do you use distance to centroid? -->
-
 #### Indicating neighborhood
 
 Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connectd centroids. The edges preserve the neighborhood information when the model is lifted into \pD{}. 
@@ -1232,8 +1195,7 @@ The model here is similar to a confirmatory factor analysis model [@brown2015], 
 
 <!--#### Fitted values-->
 
-Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. These can also be denoted as $\widehat{X}$. <!--The fitted values of the points in $H_h$ refers to the \pD{} mapping $C_{h}^{(p)}$ of the corresponding \kD{} model point $C_{h}^{(2)}$.-->
-
+Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. These can also be denoted as $\widehat{X}$. 
 <!--#### Error-->
 
 The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the root mean squared error (RMSE) as:
@@ -1404,8 +1366,6 @@ plot_predict_umap_connect_two_curvy <- ggplot(
   geom_line(alpha = 0.3) +
   interior_annotation("d", c(0.08, 0.93), cex = 1.5)
 ```
-
-
 
 ```{r}
 #| echo: false
@@ -1719,9 +1679,6 @@ trimesh_removed_gau_tsne <- ggplot() +
     aspect.ratio = 1
   )
 
-# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-#   dplyr::filter(std_counts > 0)
-
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -1896,9 +1853,6 @@ trimesh_removed_gau_umap <- ggplot() +
     aspect.ratio = 1
   )
 
-# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-#   dplyr::filter(std_counts > 0)
-
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -2069,9 +2023,6 @@ trimesh_removed_gau_pacmap <- ggplot() +
     aspect.ratio = 1
   )
 
-# df_bin_centroids_gau1 <- df_bin_centroids_gau1 |>
-#   dplyr::filter(std_counts > 0)
-
 df_b <- df_bin_gau1 |>
   dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
@@ -2207,8 +2158,6 @@ five_gau_proj_pacmap_model2 <- plot_proj(
 
 trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
 five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + 
-  #five_gau_proj_tsne_model2 +
-  #five_gau_proj_umap_model2 + five_gau_proj_pacmap_model2 +
   plot_layout(guides = "collect", nrow = 2) &
   theme(legend.position='none')
 ```
@@ -2538,11 +2487,9 @@ error_plot_one_curvy_hist + plot_tsne_dens +
 
 To illustrate the approach we use two examples: PBMC3k data (single cell gene expression) where an NLDR layout is used to represent cluster structure present in the \pD{} data, and MNIST hand-written digits where NLDR is used to represent essentially a low-dimensional nonlinear manifold in \pD{}.
 
-<!-- To showcase the robustness of our method when applied to data with different characteristics, this section presents two case studies. The first application focuses on single-cell data, a domain where the high dimensionality, sparsity, and heterogeneity of gene expression measurements pose significant analytical challenges. Our approach facilitates the identification of the most accurate NLDR layout, enabling the discovery of cell populations with similar expression profiles. The second case study explores the MNIST hand-written digits dataset, which serves as a benchmark for evaluating the preservation of local structures, specifically with digit 1.-->  
-
 ### PBMC3k {#sec-pbmc}
 
-This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. <!-- The purpose of this example is to *illustrate how to use our method to help decide on an appropriate NLDR layout that accurately represents the data*. The cluster results of Human Peripheral Blood Mononuclear Cells (PBMC3k) in @chen2024 are examined.--> 
+This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarise the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. 
 
 In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
@@ -2562,17 +2509,9 @@ pbmc_scaled_obj <- gen_scaled_data(
 umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
 ```
 
-<!-- The @fig-NLDR-variety (a) shows three well-separated clusters with big separations. However, as shown in @fig-model-pbmc-author-proj (a2), there is no big separation between three clusters in $9\text{-}D$. Therefore, the suggested UMAP representation (@fig-NLDR-variety (a)) does not accurately represent the structure of PBMC3k dataset.-->
-
 @fig-pbmc-mse shows RMSE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were made using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings. Lines are color coded to match the color of the layouts shown on the right. Lower RMSE indicates the better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low RMSE across all binwidths. It can be seen that layout f is sub-optimal with universally higher RMSE. Layout a, the published one, is better but it is not as good as layouts b, d, or e. With some imagination layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better RMSE when the $a_1$ is small, but layout e beats it at larger values. Thus we could argue that layout e is the most accurate representation of the cluster structure, of these eight.
 
-<!-- Layouts c, d, and e, which show small separations between clusters, are universally optimal. However, layout d performs well with smaller binwidths and poorly with larger binwidths. On the other hand, layout e performs well with larger binwidths. Layout c was selected for further analysis due to its better (hyper-)parameter selection for the same method of the published plot.-->
-
-<!-- XXX can we use a and e in these figures instead of a and b, so it is easier to describe relative to the first figure, and previous figure? -->
-
 To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that, the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
-
-<!-- The visualization of the selected layout in the $9\text{-}D$ shows edges between the clusters (@fig-model-pbmc-author-proj (b2)). This supports the presence of small separations between clusters. Additionally, the data points are not uniformly distributed across the clusters, resulting in dense areas (@fig-model-pbmc-author-proj (b2)). Furthermore, the clusters shows non-linear shapes (@fig-model-pbmc-author-proj (b3)).-->
 
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
@@ -2962,7 +2901,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 ### MNIST hand-written digits {#sec-mnist}
 
-The digit "1" of the MNIST dataset [@lecun2010] consists of $7877$ grayscale images of handwritten "1"s. Each image is $28 \times 28$ pixels which corresponds to 784 variables. The first 10 principal components, explaining 83% of the total variation, are used. This data is essentially lies on a nonlinear manifold in the high dimensions, defined by the shapes that "1"s make in when sketched, menaing that some pixels are almost always dark and some almost always light. We expect that the best layout captures this type of structure and does not exhibit distinct clusters. <!-- The objective is to select a reasonable \gD{} layout, representing the non-linear structure of the digit 1 dataset in $10\text{-}D$ (@fig-clust-mnist (a)). -->
+The digit "1" of the MNIST dataset [@lecun2010] consists of $7877$ grayscale images of handwritten "1"s. Each image is $28 \times 28$ pixels which corresponds to 784 variables. The first 10 principal components, explaining 83% of the total variation, are used. This data is essentially lies on a nonlinear manifold in the high dimensions, defined by the shapes that "1"s make in when sketched, menaing that some pixels are almost always dark and some almost always light. We expect that the best layout captures this type of structure and does not exhibit distinct clusters. 
 
 ```{r}
 #| label: read-mnist-nldr
@@ -3080,13 +3019,6 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
 The layout plot are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
 
 The next step is to investigate the \gD{} to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape we can see that the "1"s are drawn with from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarise the variation in way "1"s are drawn.
-
-<!-- The MSE for different binwidths ($a_1$) using UMAP, PHATE, PaCMAP, TriMAP with default (hyper-)parameter setting and tSNE with default (hyper-)parameter setting and perplexity $89$ (@fig-mnist-mse) were calculated. It is found that tSNE with perplexity $89$ (@fig-mnist-mse (f)) provide the most reasonable representation for the digit 1 dataset, showing universally best. However, \gD{} representation shows a big non-linear cluster and a small cluster with a small gap.--> 
-
-<!-- In the case of digit 1 data, there should not be any clusters unless anomalies exist, indicating different digit 1 patterns. The angle of the digit 1 images varies along this non-linear clustering structure (@fig-model-error-mnist), while the small cluster contains the digit 1 images with different patterns of the digit 1, unlike the usual (@fig-model-error-mnist (c)). This provides the evidence for two close clusters.
-
-By visualizing the model generated for tSNE in $10\text{-}D$ helps to assess the \gD{} layout. As shown in @fig-clust-mnist (a1), the model provides the evidence for the non-linear structure of the digit 1 data in $10\text{-}D$. The model shows some quirks. The model's twisted pattern provides evidence for the $10\text{-}D$ data structure, which is not observed by \gD{} layout (@fig-clust-mnist (a2)). --> 
-
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
