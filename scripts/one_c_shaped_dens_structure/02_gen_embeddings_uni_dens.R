@@ -29,7 +29,7 @@ tSNE_fit <- data |>
 
 tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
-names(tSNE_data) <- c("tSNE1", "tSNE2")
+names(tSNE_data) <- c("emb1", "emb2")
 
 write_rds(tSNE_data, file = paste0("data/one_c_shaped_dens_structure/one_c_shaped_uni_dens_structure_tsne_perplexity_", perplexity, ".rds"))
 
@@ -47,6 +47,6 @@ tSNE_fit <- data |>
 
 tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
-names(tSNE_data) <- c("tSNE1", "tSNE2")
+names(tSNE_data) <- c("emb1", "emb2")
 
 write_rds(tSNE_data, file = paste0("data/one_c_shaped_dens_structure/one_c_shaped_dens_structure_tsne_perplexity_", perplexity, ".rds"))

@@ -2203,6 +2203,10 @@ error_df_one_curvy_abs <- augment(
   model_2d = df_bin_centroids_dens_clust,
   model_highd = df_bin_dens_clust)
 
+df_bin_dens_clust_temp <- df_bin_dens_clust
+
+error_df_one_curvy_abs_temp <- error_df_one_curvy_abs
+
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
   bind_cols(tsne_one_c_shaped_scaled |>
               select(-ID))
@@ -2219,8 +2223,8 @@ error_df_one_curvy_abs <- error_df_one_curvy_abs %>%
   mutate(density = approx(density_df$x, density_df$y, xout = sqrt_row_wise_total_error)$y)
 
 error_df_one_curvy_abs <- error_df_one_curvy_abs |>
-  mutate(error_cat_n = if_else(tSNE1 <= 0.25 & tSNE2 <= 0.25, "selected", "deselected")) |> ## high_error points
-  mutate(error_cat_n2 = if_else(tSNE2 >= 1.2, "selected", "deselected")) ## corner points
+  mutate(error_cat_n = if_else(emb1 <= 0.25 & emb2 <= 0.25, "selected", "deselected")) |> ## high_error points
+  mutate(error_cat_n2 = if_else(emb2 >= 1.2, "selected", "deselected")) ## corner points
 
 error_df_one_curvy_abs_selected11 <- error_df_one_curvy_abs |>
   dplyr::filter(error_cat_n == "selected")
@@ -2274,11 +2278,11 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12,
 #| label: link-model-one-dens-clust
 
 plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2)) +
+  ggplot(aes(x = emb1,
+             y = emb2)) +
   geom_point(alpha=0.7, color = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected12,
-             aes(x = tSNE1, y = tSNE2),
+             aes(x = emb1, y = emb2),
              alpha=0.7, color = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("a2",
@@ -2286,11 +2290,11 @@ plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
                       cex = 2)
 
 plot_tsne_dens_selected <- error_df_one_curvy_abs_deselected11 |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2)) +
+  ggplot(aes(x = emb1,
+             y = emb2)) +
   geom_point(alpha=0.7, color = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected11,
-             aes(x = tSNE1, y = tSNE2),
+             aes(x = emb1, y = emb2),
              alpha=0.7, color = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("b2",
@@ -2325,23 +2329,18 @@ scaled_c_shaped_data_model <- scaled_c_shaped |>
 ```
 
 ```{r}
-#| label: langevitour-c-shaped-tsne-proj
+#| label: link-plts-c-shaped-data
 #| eval: false
 
-data_c_shaped_n <- data_c_shaped |>
-  select(-type) |>
-  mutate(type = factor(error_df_one_curvy_abs$error_cat_n2,
-                          levels=c("deselected", "selected")))
+df_exe_c_shaped_data <- comb_all_data_model_error(
+  highd_data = one_c_shaped_data,
+  nldr_data = tsne_one_c_shaped,
+  model_highd = df_bin_dens_clust_temp,
+  model_2d = df_bin_centroids_dens_clust,
+  error_data = error_df_one_curvy_abs_temp)
 
-df_model_data_n <- bind_rows(df_bin_dens_clust, data_c_shaped_n)
-
-langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
-                         lineFrom = tr_from_to_df_dens_clust$from,
-                         lineTo = tr_from_to_df_dens_clust$to,
-                         group = factor(df_model_data_n$type,
-                                        c("deselected", "selected", "model")),
-                         levelColors = c('#d9d9d9', '#800026', "#000000"),
-                         pointSize = c(1.5, 3, 0))
+show_error_link_plots(point_data = df_exe_c_shaped_data,
+                      edge_data = tr_from_to_df_dens_clust)
 ```
 
 ```{r}
@@ -3057,6 +3056,10 @@ df_bin_mnist <- algo_obj_mnist$model_highd
 
 sc_ltr_pos_mnist <- c(0.96, 0.96)
 
+tsne_minst_scaled_temp <- tsne_minst_scaled |>
+  rename(c("emb1" = "tSNE1",
+           "emb2" = "tSNE2"))
+
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
 
@@ -3181,6 +3184,20 @@ langevitour::langevitour(df_model_data_mnist_n[1:(length(df_model_data_mnist_n)-
                          group = factor(df_model_data_mnist_n$type,
                                         c("big_clust", "small_clust", "model")),
                          levelColors = c("#999999",'#ff7f00', "#000000"))
+```
+
+```{r}
+#| label: link-plts-mnist
+#| eval: false
+
+df_exe_mnist <- comb_all_data_model(
+  highd_data = training_data_mnist,
+  nldr_data = tsne_minst_scaled_temp,
+  model_highd = df_bin_mnist,
+  model_2d = df_bin_centroids_dens_clust)
+
+show_link_plots(point_data = df_exe_mnist,
+                edge_data = tr_from_to_df_dens_clust)
 ```
 
 ```{r}
