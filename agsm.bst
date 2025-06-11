@@ -703,7 +703,7 @@ FUNCTION {article}
   author "author" item.check
   title.field field.used =
     { skip$ }
-    { format.title quote "title" output.check }
+    { format.title "title" output.check }
   if$
   crossref missing$
     { journal emphasize "journal" duplicate$ item.check
