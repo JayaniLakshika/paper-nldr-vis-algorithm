@@ -449,7 +449,7 @@ sc_ylims <- c(-0.17, 1.25)
 
 nldr_two_curvy_original <- ggplot(tsne_two_curvy_scaled, 
                                   aes(x = emb1, y = emb2)) +
-  geom_point(alpha = 0.5, color = clr_choice, size = 0.5) 
+  geom_point(alpha = 0.5, colour = clr_choice, size = 0.5) 
 
 # First plot with xlim and ylim
 nldr_two_curvy <- nldr_two_curvy_original +
@@ -469,12 +469,12 @@ nldr_two_curvy_original2 <- nldr_two_curvy_original +
 hex_grid_two_curvy <- ggplot(
   data = hex_grid_with_counts, 
   aes(x = x, y = y)) +
-  geom_polygon(color = "grey70", 
+  geom_polygon(colour = "grey70", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = tsne_two_curvy_scaled, 
              aes(x = emb1, y = emb2), 
-             alpha = 0.5, size = 0.5, color = clr_choice) +
+             alpha = 0.5, size = 0.5, colour = clr_choice) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("b", sc_ltr_pos, cex = 2)
 
@@ -483,7 +483,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
     data = hex_grid_with_counts, 
     aes(x = x, y = y,
       group = hex_poly_id, 
-      fill = std_counts), color = "grey70", linewidth=0.2) +
+      fill = std_counts), colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
              aes(x = emb1, y = emb2),
              colour = clr_choice,
@@ -506,12 +506,12 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
   aes(x = x, y = y)) +
-  geom_polygon(color = "grey70", 
+  geom_polygon(colour = "grey70", 
                aes(group = hex_poly_id), 
                fill = "#ffffff") +
   geom_point(data = df_bin_centroids_two_curvy, 
              aes(x = c_x, y = c_y), 
-             color = "#000000",
+             colour = "#000000",
              size = 1) +
   xlim(sc_xlims) + ylim(sc_ylims) +
   interior_annotation("c", sc_ltr_pos, cex = 2) 
@@ -534,7 +534,7 @@ trimesh_two_curvy <- ggplot() +
                x = emb1,
                y = emb2
              ),
-             color = "#636363",
+             colour = "#636363",
              alpha = 0.5,
              size = 0.5
   ) +
@@ -559,7 +559,7 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
                x = emb1,
                y = emb2
              ),
-             color = clr_choice,
+             colour = clr_choice,
              alpha = 0.5,
              size = 0.5) +
   geom_segment(data = tr_from_to_df_two_curvy,
@@ -950,21 +950,21 @@ hex_param_vis <- ggplot() +
                             y = y, 
                             group = hex_poly_id),
                  fill = "white", 
-                 color = "#bdbdbd") +
+                 colour = "#bdbdbd") +
     geom_point(data = all_centroids_df_temp, aes(
       x = c_x, 
       y = c_y), 
-      color = "#31a354", size = 0.9) +
+      colour = "#31a354", size = 0.9) +
     geom_point(data = start_pt, aes(x = c_x, 
                                     y = c_y), 
-               color = "black") + 
+               colour = "black") + 
     geom_rect(data=d_rect, 
               aes(xmin = x1min - rect_adj$x1,# - rect_adj$s1, 
                   xmax = x1max - rect_adj$x1,# - rect_adj$s1, 
                   ymin = x2min - rect_adj$x2,# - rect_adj$s2, 
                   ymax = x2max - rect_adj$x2),# - rect_adj$s2), 
               fill = "white", 
-              color = "black", 
+              colour = "black", 
               alpha = 0, 
               linewidth = 0.7) +
     geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
@@ -993,9 +993,9 @@ hex_param_vis <- ggplot() +
       yend = -0.31), #-0.35),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
-                 color = "black")+
+                 colour = "black")+
     annotate("text", x=0.5, y=-0.36, 
-             label = expression(r[1]), color = "black", size = 8) +
+             label = expression(r[1]), colour = "black", size = 8) +
     geom_segment(data=d_rect, aes(
       x = -0.25, 
       y = x2min - rect_adj$x2, #0 - 0.05, 
@@ -1003,9 +1003,9 @@ hex_param_vis <- ggplot() +
       yend = x2max - rect_adj$x2), #r2 - 0.05),
       arrow = arrow(length = unit(0.03, "npc"),
                        ends = "both"), 
-                 color = "black")+ 
+                 colour = "black")+ 
     annotate("text", x=-0.3, y=0.4, 
-             label = expression(r[2]), color = "black", size = 8) +
+             label = expression(r[2]), colour = "black", size = 8) +
     geom_segment(data = a1, aes(
       x = x, #-0.1 + 0.2087578, 
       y = y, #-0.15, 
@@ -1013,12 +1013,12 @@ hex_param_vis <- ggplot() +
       yend = yend), #-0.15),
       arrow = arrow(length = unit(0.03, "npc"),
         ends = "both"), 
-        color = "black")+ # a1 = 0.2087578
+        colour = "black")+ # a1 = 0.2087578
     annotate("text", 
              x=(a1$x+a1$xend)/2, 
              y=a1$y, 
              label = expression(a[1]), 
-             color = "black",
+             colour = "black",
              vjust = 1.2, size = 8) +
     geom_segment(data = a2, aes(
       x = x, #-0.15, 
@@ -1027,13 +1027,13 @@ hex_param_vis <- ggplot() +
       yend = yend), #-0.1*r2 + 0.1807896*3),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
-      color = "black") + # a2 = 0.1807896
+      colour = "black") + # a2 = 0.1807896
     annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
              label = expression(a[2]), 
-             color = "black", hjust=-0.2, size = 8) +
+             colour = "black", hjust=-0.2, size = 8) +
     annotate("text", x=-0.18, y=-0.24, 
       label = expression(group("(", list(s[1], s[2]), ")")),
-      color = "black", size = 8) +
+      colour = "black", size = 8) +
   geom_segment(data = l, aes(
       x = x, #-0.15, 
       y = y, #-0.1*r2 + 0.1807896*2, 
@@ -1041,10 +1041,10 @@ hex_param_vis <- ggplot() +
       yend = yend), #-0.1*r2 + 0.1807896*3),
       arrow = arrow(length = unit(0.03, "npc"),
                                ends = "both"), 
-      color = "black") + 
+      colour = "black") + 
     annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
              label = expression(l), 
-             color = "black", hjust=-0.2, size = 8) +
+             colour = "black", hjust=-0.2, size = 8) +
   coord_equal()
 ```
 
@@ -1104,7 +1104,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
     aes(x = x, y = y, 
         group = hex_poly_id, 
         fill = std_counts), 
-        color = "grey70", 
+        colour = "grey70", 
         linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
            aes(x = emb1, y = emb2),
@@ -1128,7 +1128,7 @@ trimesh_two_curvy2 <- ggplot() +
                x = tSNE1,
                y = tSNE2
              ),
-             color = "#636363",
+             colour = "#636363",
             alpha = 0.5,
             size = 0.5
             ) +
@@ -1164,7 +1164,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
     aes(x = x, y = y, 
         group = hex_poly_id, 
         fill = std_counts), 
-        color = "grey70", linewidth=0.2) +
+        colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
            aes(x = emb1, y = emb2),
            alpha = 0.3,
@@ -1227,14 +1227,14 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
                      aes(x = a1, 
                          y = RMSE)) +
   geom_vline(xintercept = 0.09,
-           color = "#d95f02", linetype="dashed", 
+           colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1f78b4", 
+             colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
   geom_vline(xintercept = 0.03, linetype="dotted",
-             color = "#1b9e77", linewidth=1) +
+             colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
@@ -1254,14 +1254,14 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
                      aes(x = a1,
                          y = prop_comp)) +
   geom_vline(xintercept = 0.09,
-           color = "#d95f02", linetype="dashed", 
+           colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1f78b4", 
+             colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
   geom_vline(xintercept = 0.03, linetype="dotted",
-             color = "#1b9e77", linewidth=1) +
+             colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
@@ -1284,14 +1284,14 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
                      aes(x = a1,
                          y = prop_bins)) +
   geom_vline(xintercept = 0.09,
-           color = "#d95f02", linetype="dashed", 
+           colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
-             color = "#1f78b4", 
+             colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
   geom_vline(xintercept = 0.03, linetype="dotted",
-             color = "#1b9e77", linewidth=1) +
+             colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
@@ -1310,7 +1310,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark colour indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
+#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
 #| out-width: 80%
 #| fig-pos: H
 
@@ -1394,7 +1394,7 @@ Default values are provided for each of these, but it is expected that the user 
 
 #### Hexagon bin parameters
 
-The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts. @fig-bins-two-curvy illustrates this. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
+The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = \text{-}q, s_2 = \text{-}qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts. @fig-bins-two-curvy illustrates this. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
 
 ```{r}
 #| echo: false
@@ -1431,7 +1431,7 @@ error_rm_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/e
 mse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
                      aes(x = benchmark_rm_lwd, 
                          y = RMSE,
-                         color = a1,
+                         colour = a1,
                          linetype = a1)) + 
   geom_point(
     size = 1
@@ -1485,9 +1485,9 @@ To understand how well the model fits the points whether it fits well, works bet
 
 ## Assessing the best fit, and hence most accurate \gD{} layout 
 
-@fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient 2D display. It is a competitor to linear dimension reduction that can better represent non-linear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
+@fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent non-linear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
-A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any 2D representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
+A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
 To compare and assess a range of representations needs these items:
 
@@ -1601,7 +1601,7 @@ error_plot_two_curvy <-
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-toy-mse
 #| fig-pos: H
 #| out-width: 100%
@@ -1669,7 +1669,7 @@ trimesh_removed_gau_tsne <- ggplot() +
       y = y_from,
       xend = x_to,
       yend = y_to),
-    color = "#000000",
+    colour = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("a1", 
@@ -1748,7 +1748,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
   geom_point(
     #size = 0.5,
     alpha = 0.05,
-    color = clr_choice) +
+    colour = clr_choice) +
   geom_segment(
     data = model_df, 
     aes(
@@ -1756,7 +1756,7 @@ five_gau_proj_tsne_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#000000",
+    colour = "#000000",
     alpha = 0.4,
     linewidth = 0.8) +
   geom_segment(
@@ -1843,7 +1843,7 @@ trimesh_removed_gau_umap <- ggplot() +
       y = y_from,
       xend = x_to,
       yend = y_to),
-    color = "#000000",
+    colour = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("b1", 
@@ -1920,7 +1920,7 @@ five_gau_proj_umap_model1 <- projected_df |>
       y = proj2)) +
   geom_point(
     alpha = 0.05,
-    color = clr_choice) +
+    colour = clr_choice) +
   geom_segment(
     data = model_df, 
     aes(
@@ -1928,7 +1928,7 @@ five_gau_proj_umap_model1 <- projected_df |>
       y = proj2_from, 
       xend = proj1_to, 
       yend = proj2_to), 
-    color = "#000000",
+    colour = "#000000",
     alpha = 0.4,
     linewidth = 0.8) +
   geom_segment(
@@ -2013,7 +2013,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
       y = y_from,
       xend = x_to,
       yend = y_to),
-    color = "#000000",
+    colour = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("c1", 
@@ -2090,7 +2090,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       y = proj2)) +
   geom_point(
     alpha = 0.05,
-    color = clr_choice) +
+    colour = clr_choice) +
   geom_segment(
     data = model_df,
     aes(
@@ -2098,7 +2098,7 @@ five_gau_proj_pacmap_model1 <- projected_df |>
       y = proj2_from,
       xend = proj1_to,
       yend = proj2_to),
-    color = "#000000",
+    colour = "#000000",
     alpha = 0.4,
     linewidth = 0.8) +
   geom_segment(
@@ -2235,11 +2235,11 @@ error_df_one_curvy_abs_deselected11 <- error_df_one_curvy_abs |>
 error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected11, 
       aes(x = sqrt_row_wise_total_error, 
           y = density)) +
-  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected11, 
       aes(x = sqrt_row_wise_total_error, 
           y = density),
-      alpha=0.7, color = "#800026", size = 3) +
+      alpha=0.7, colour = "#800026", size = 3) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("b1",
@@ -2259,11 +2259,11 @@ error_df_one_curvy_abs_deselected12 <- error_df_one_curvy_abs |>
 error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12, 
       aes(x = sqrt_row_wise_total_error, 
           y = density)) +
-  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected12, 
       aes(x = sqrt_row_wise_total_error, 
           y = density),
-      alpha=0.7, color = "#800026", size = 3) +
+      alpha=0.7, colour = "#800026", size = 3) +
   xlab(expression(e[hj])) +
   ylab("") +
   interior_annotation("a1",
@@ -2280,10 +2280,10 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12,
 plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
   ggplot(aes(x = emb1,
              y = emb2)) +
-  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected12,
              aes(x = emb1, y = emb2),
-             alpha=0.7, color = "#800026", size = 3) +
+             alpha=0.7, colour = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("a2",
                       position = c(0.08, 0.9),
@@ -2292,10 +2292,10 @@ plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
 plot_tsne_dens_selected <- error_df_one_curvy_abs_deselected11 |>
   ggplot(aes(x = emb1,
              y = emb2)) +
-  geom_point(alpha=0.7, color = "#d9d9d9") +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
   geom_point(data = error_df_one_curvy_abs_selected11,
              aes(x = emb1, y = emb2),
-             alpha=0.7, color = "#800026", size = 3) +
+             alpha=0.7, colour = "#800026", size = 3) +
   theme(aspect.ratio = 1) +
   interior_annotation("b2",
                       position = c(0.08, 0.9),
@@ -2389,7 +2389,7 @@ five_c_shaped_proj_tsne_model1 <- ggplot() +
           y = proj2_from,
           xend = proj1_to,
           yend = proj2_to),
-        color = "#000000",
+        colour = "#000000",
         linewidth = 0.8,
         alpha = 0.4) +
       geom_segment(
@@ -2441,7 +2441,7 @@ five_c_shaped_proj_tsne_model1_selected <- ggplot() +
           y = proj2_from,
           xend = proj1_to,
           yend = proj2_to),
-        color = "#000000",
+        colour = "#000000",
         linewidth = 0.8,
         alpha = 0.4) +
       geom_segment(
@@ -2540,11 +2540,11 @@ trimesh_removed_pbmc <- ggplot() +
     aes(
       x = UMAP1,
       y = UMAP2,
-      color = cluster
+      colour = cluster
     ),
     alpha = 0.2#,
     #size = 0.1#,
-    #color = '#a65628'
+    #colour = '#a65628'
   )  +
   geom_segment(data = tr_from_to_df_pbmc, 
                aes(
@@ -2713,7 +2713,7 @@ error_plot_pbmc <- plot_mse(error_pbmc) +
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using RMSE for varying binwidth ($a_1$). Colour  used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is the best choice."
 #| label: fig-pbmc-mse
 #| fig-pos: H
 #| out-width: 100%
@@ -2764,10 +2764,10 @@ trimesh_removed_pbmc_best <- ggplot() +
     aes(
       x = tSNE1,
       y = tSNE2,
-      color = cluster
+      colour = cluster
     ),
     alpha = 0.3#,
-    #color = "#999999"
+    #colour = "#999999"
   ) +
   geom_segment(data = tr_from_to_df_pbmc, 
                aes(
@@ -3004,7 +3004,7 @@ error_plot_mnist <- plot_mse(error_mnist) +
 
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
 #| label: fig-mnist-mse
 #| fig-pos: H
 #| out-width: 92%
@@ -3119,13 +3119,13 @@ highd_error_2d_mnist <- error_df |>
   geom_point(alpha=0.2) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
   geom_rect(aes(xmin = 0.82, xmax = 0.92, ymin = 0.38, ymax = 0.58),
-               fill = "transparent", color = "#000000", linewidth = 1) +
+               fill = "transparent", colour = "#000000", linewidth = 1) +
   geom_rect(aes(xmin = 0.9, xmax = 1, ymin = 1.25, ymax = 1.45),
-               fill = "transparent", color = "#375cb1", linewidth = 1)  +
+               fill = "transparent", colour = "#375cb1", linewidth = 1)  +
   geom_rect(aes(xmin = 0.35, xmax = 0.45, ymin = 0.55, ymax = 0.7),
-               fill = "transparent", color = "#008000", linewidth = 1)  +
+               fill = "transparent", colour = "#008000", linewidth = 1)  +
   geom_rect(aes(xmin = 0.7, xmax = 0.8, ymin = 0.25, ymax = 0.4),
-               fill = "transparent", color = "#4c389a", linewidth = 1) +
+               fill = "transparent", colour = "#4c389a", linewidth = 1) +
   interior_annotation(label = "a", c(0.08, 0.93), cex = 2) +
   theme(legend.position = "none",
         aspect.ratio = 1,
