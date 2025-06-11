@@ -90,7 +90,7 @@ XXX TO DO:
 - Check spelling is consistently American
 - Check references
 - Add videos - make a list of the videos in the supplementary section, with the number of the figure that it corresponds too. This avoids having captions that are too long and awkward with raw URLs. And it keeps all of this supplementary material in one place.
-- Move the notation table to appendix
+- Move the notation table to appendix (Done)
 - Code clean up: recommend that all of the calculations done with quollr are done with a separate script(s) and put in a scripts directory. Save the resulting data need to make plots and tables. Only code for the plots and tables is directly in the qmd in the final version.
 
 ```{r include=FALSE}
@@ -3014,7 +3014,7 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
 
-@fig-mnist-mse compares the fit of six layouts computed using UMAP (a), PHATE (b), PaCMAP (c), TriMAP (d) with default (hyper-)parameter setting and two tSNE runs, one with default (hyper-)parameter setting (e) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. XXX are the labels I put for each method above correct? please fix if not.
+@fig-mnist-mse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e) with default (hyper-)parameter setting and two tSNE runs, one with default (hyper-)parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. 
 
 The layout plot are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
 
