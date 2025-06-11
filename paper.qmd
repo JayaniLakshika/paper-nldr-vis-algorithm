@@ -3275,22 +3275,6 @@ mnist_proj_tsne_model2_link <- plot_proj(
 
 ```
 
-<!--add langevitour screenshots and youtube animation link-->
-```{r}
-#| label: fig-mnist-tri-proj
-#| fig-pos: H
-#| fig-height: 4
-#| fig-width: 12
-#| out-width: 100%
-#| fig-cap: "\\gD{} wireframe layout shows that there is a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster. The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>."
-#| eval: false
-
-free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
-  mnist_proj_tsne_model2 +
-  plot_layout(ncol = 3)
-
-```
-
 ```{r}
 #| label: fig-clust-mnist
 #| fig-pos: H
@@ -3412,7 +3396,7 @@ kable(links_df,
                 full_width = FALSE, 
                 font_size = 12) |>
   row_spec(0, bold = TRUE) |>
-  column_spec(1:3, width = c("1cm", "5cm", "9cm"))
+  column_spec(1:3, width = c("1.5cm", "4.5cm", "9cm"))
 ```
 
 ## Acknowledgments
