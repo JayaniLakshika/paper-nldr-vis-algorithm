@@ -88,7 +88,7 @@ XXX TO DO:
 - Remove all the extraneous commented text (Done)
 - Check how \kD{} and \gD{} are used, and make sure it's sensible
 - Check spelling is consistently American
-- Check references
+- Check references (Done)
 - Add videos - make a list of the videos in the supplementary section, with the number of the figure that it corresponds too. This avoids having captions that are too long and awkward with raw URLs. And it keeps all of this supplementary material in one place.
 - Move the notation table to appendix (Done)
 - Code clean up: recommend that all of the calculations done with quollr are done with a separate script(s) and put in a scripts directory. Save the resulting data need to make plots and tables. Only code for the plots and tables is directly in the qmd in the final version.
@@ -2885,7 +2885,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default hyper-parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <https://youtu.be/Es84bwQcndU> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -3297,7 +3297,7 @@ free(trimesh_removed_mnist) + mnist_proj_tsne_model1 +
 #| fig-height: 5
 #| fig-width: 15
 #| out-width: 100%
-#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <>. The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
+#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <https://youtu.be/sUcGd57Swdg>. The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
 
 tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
   plot_layout(ncol = 3)
@@ -3398,21 +3398,21 @@ Direct links to videos for viewing online are available in @tbl-links.
 
 ```{r}
 #| label: tbl-links
-#| tbl-cap: "Example videos."
 #| tbl-pos: H
+#| tbl-cap: "Videos of the langevitour animations and linked plots."
+# Video links in the paper
 
-links_df <- tibble(
-  data = c("PBMC3k"),
-  URL = c("link1")
-)
+links_df <- read_csv("misc/video_links.csv")
 
-
-links_df |>
-  kableExtra::kable(format = "latex", 
-                    booktabs = TRUE, 
-                    label = "tbllinks") |>
-  kableExtra::kable_styling(latex_options = "scale_down")
-
+# Create the table
+kable(links_df, 
+      format = "latex", 
+      booktabs = TRUE, escape = FALSE) |>
+  kable_styling(position = "center", 
+                full_width = FALSE, 
+                font_size = 12) |>
+  row_spec(0, bold = TRUE) |>
+  column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
 ## Acknowledgments
