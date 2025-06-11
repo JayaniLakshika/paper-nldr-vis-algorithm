@@ -86,7 +86,7 @@ header-includes: |
 XXX TO DO:
 
 - Remove all the extraneous commented text (Done)
-- Check how \kD{} and \gD{} are used, and make sure it's sensible
+- Check how \kD{} and \gD{} are used, and make sure it's sensible (changed in Rendering the model)
 - Check spelling is consistently American
 - Check references (Done)
 - Add videos - make a list of the videos in the supplementary section, with the number of the figure that it corresponds too. This avoids having captions that are too long and awkward with raw URLs. And it keeps all of this supplementary material in one place.
@@ -1072,10 +1072,10 @@ When shapes are non-linear in the NLDR layout, some edges could be long. It can 
 
 ### Rendering the model in \pD{}
 
-The last step is to lift the \kD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in $H_h$ to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
+The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in $H_h$ to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
 
 $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
-Furthermore, line segments that exist in the \kD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \kD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
+Furthermore, line segments that exist in the \gD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \gD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
 
 ```{r}
 #| label: hexbin-regular-two-curvy2
