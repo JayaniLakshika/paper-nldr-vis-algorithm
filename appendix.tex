@@ -279,9 +279,9 @@ configurations}\label{computing-hexagon-grid-configurations}
 
 Given range of embedding component, \(r_2\), number of bins along the
 x-axis, \(b_1\), and buffer proportion, \(q\), hexagonal starting point
-coordinates, \(s_1 = -q\), and \(s_2 = -q \times r_2\). The purpose is
-to find width of the hexagon. \(a_1\), and number of bins along the
-y-axis, \(b_2\).
+coordinates, \(s_1 = \text{-}q\), and \(s_2 = \text{-}qr_2\). The
+purpose is to find width of the hexagon. \(a_1\), and number of bins
+along the y-axis, \(b_2\).
 
 Geometric arguments give rise to the following constraints.
 
@@ -320,8 +320,8 @@ Since \(a_1\) and \(a_2\) are distances,
 
 \[
 a_1, a_2 > 0.
-\] Also, \((s_1, s_2) \in (-0.1, -0.05)\) as these are multiplicative
-offsets in the negative direction.
+\] Also, \((s_1, s_2) \in (\text{-}0.1, \text{-}0.05)\) as these are
+multiplicative offsets in the negative direction.
 
 Equation~\ref{eq-equation1} can be rearranged as,
 
@@ -331,21 +331,21 @@ a_1 > 2s_1
 
 which given \(s_1 < 0\) and \(a_1 > 0\) will \emph{always} be true. The
 same logic follows for Equation~\ref{eq-equation4} and substituting
-\(a_2 = \sqrt{3}a_1/{2}\), and \(s_2 = -q \times r_2\) to
+\(a_2 = \sqrt{3}a_1/{2}\), and \(s_2 = \text{-}qr_2\) to
 Equation~\ref{eq-equation4} can be written as,
 
 \[
 a_1 > -\frac{4}{\sqrt{3}}qr_2
 \]
 
-Also, substituting \(a_2 = \sqrt{3}a_1/{2}\), \(s_2 = -q \times r_2\)
-and rearranging Equation~\ref{eq-equation5} gives:
+Also, substituting \(a_2 = \sqrt{3}a_1/{2}\), \(s_2 = \text{-}qr_2\) and
+rearranging Equation~\ref{eq-equation5} gives:
 
 \begin{equation}\phantomsection\label{eq-equation6}{
 a_1 > \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
 }\end{equation}
 
-Similarly, substituting \(s_1 = -q\) Equation~\ref{eq-equation2}
+Similarly, substituting \(s_1 = \text{-}q\) Equation~\ref{eq-equation2}
 becomes,
 
 \begin{equation}\phantomsection\label{eq-equation7}{
@@ -416,9 +416,9 @@ assigned to the lowest centroid.}
 
 \section{Area of a hexagon}\label{area-of-a-hexagon}
 
-The area of a hexagon is defined as \(A = \frac{3\sqrt{3}}{2}l^2\),
-where \(l\) is the side length of the hexagon. \(l\) can be computed
-using \(a_1\) and \(a_2\).
+The area of a hexagon is defined as \(A = 3\sqrt{3}l^2/2\), where \(l\)
+is the side length of the hexagon. \(l\) can be computed using \(a_1\)
+and \(a_2\).
 
 \begin{figure}[H]
 
