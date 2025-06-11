@@ -834,7 +834,7 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 ```
 
 
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "nonlinear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(-3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, $X_3 = -(X_1^3 + X_2) + \gamma$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "nonlinear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(\text{-}3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, $X_3 = \text{-}(X_1^3 + X_2) + \gamma$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 <!-- The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance.  -->
 
@@ -876,7 +876,7 @@ Although there are several implementations of hexagon binning [@carr1987], and a
 
 The \gD{} hexagon grid is defined by its bin centroids. Each hexagon, $H_h$ ($h = 1, \dots, b$) is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The number of bins in each direction is denoted as $(b_1, b_2)$, with  $b = b_1 \times b_2$ being the total number of bins. We expect the user to provide just $b_1$ and we calculate $b_2$ using the NLDR ratio, to compute the grid. 
 
-To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = -q$ and $s_2 = -qr_2$. 
+To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = \text{-}q$ and $s_2 = \text{-}qr_2$. 
 
 The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of the first NLDR component, $a_1 > (1+2q)/(b_1 -1)$. Similarly, for the second NLDR component, 
 
