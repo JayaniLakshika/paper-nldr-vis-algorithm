@@ -913,7 +913,7 @@ FUNCTION {misc}
   " \harvardyearleft " list.year * "\harvardyearright " * output.nonnull
   title.field field.used =
     { skip$ }
-    { format.title quote output }
+    { format.title output }
   if$
   howpublished output
   new.block
