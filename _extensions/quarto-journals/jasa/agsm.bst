@@ -703,7 +703,7 @@ FUNCTION {article}
   author "author" item.check
   title.field field.used =
     { skip$ }
-    { format.title "title" output.check }
+    { format.title quote "title" output.check }
   if$
   crossref missing$
     { journal emphasize "journal" duplicate$ item.check
@@ -913,7 +913,7 @@ FUNCTION {misc}
   " \harvardyearleft " list.year * "\harvardyearright " * output.nonnull
   title.field field.used =
     { skip$ }
-    { format.title output }
+    { format.title quote output }
   if$
   howpublished output
   new.block
