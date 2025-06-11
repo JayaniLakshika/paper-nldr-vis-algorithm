@@ -834,13 +834,13 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 ```
 
 
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "non-linear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(-3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, $X_3 = -(X_1^3 + X_2) + \gamma$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
+To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "nonlinear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(-3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, $X_3 = -(X_1^3 + X_2) + \gamma$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 <!-- The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance.  -->
 
 ```{r}
 #| label: fig-two-curvy-true-proj
-#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two non-linear clusters data (blue points) and true model (black lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
+#| fig-cap: "Two \\gD{} projections from $4\\text{-}D$, for the two nonlinear clusters data (blue points) and true model (black lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 5
@@ -853,7 +853,7 @@ two_curvy_proj_true + two_curvy_proj_true2 +
 ```{r}
 #| label: fig-NLDR-two-curvy
 #| echo: false
-#| fig-cap: "Key steps for constructing the model on the tSNE layout ($k=2$): (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The two non-linear clusters data is shown."
+#| fig-cap: "Key steps for constructing the model on the tSNE layout ($k=2$): (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The two nonlinear clusters data is shown."
 #| fig-width: 12
 #| fig-height: 4
 #| out-width: 100%
@@ -1068,7 +1068,7 @@ By default, the bin centroid is used for describing a hexagon (as done in @fig-N
 
 Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connectd centroids. The edges preserve the neighborhood information when the model is lifted into \pD{}. 
 
-When shapes are non-linear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit.
+When shapes are nonlinear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit.
 
 ### Rendering the model in \pD{}
 
@@ -1176,7 +1176,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of non-linear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)~parameter choice. Video of the langevitour animation is available at <>."
+#| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of nonlinear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)~parameter choice. Video of the langevitour animation is available at <>."
 #| fig-width: 8
 #| fig-height: 2
 
@@ -1310,7 +1310,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the non-linear cluster with dense corner."
+#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster with dense corner."
 #| out-width: 80%
 #| fig-pos: H
 
@@ -1400,7 +1400,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the non-linear cluster data, using three different bin inputs: (a) $b = 240/98 \\text{ } (15, \\text{ }16)$, (b) $b = 720/215 \\text{ } (24, \\text{ }30)$, and (c) $b = 2496/549 \\text{ } (48, \\text{ }52)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the nonlinear cluster data, using three different bin inputs: (a) $b = 240/98 \\text{ } (15, \\text{ }16)$, (b) $b = 720/215 \\text{ } (24, \\text{ }30)$, and (c) $b = 2496/549 \\text{ } (48, \\text{ }52)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the MSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -1485,7 +1485,7 @@ To understand how well the model fits the points whether it fits well, works bet
 
 ## Assessing the best fit, and hence most accurate \gD{} layout 
 
-@fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent non-linear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
+@fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
 A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
@@ -1601,7 +1601,7 @@ error_plot_two_curvy <-
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the two non-linear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the two nonlinear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-toy-mse
 #| fig-pos: H
 #| out-width: 100%
@@ -2884,7 +2884,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default (hyper-)~parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) non-linear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <https://youtu.be/Es84bwQcndU> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse a) and the \\gD{} layout selected (@fig-pbmc-mse e) by MSE plot (@fig-pbmc-mse) from the UMAP and tSNE with default (hyper-)~parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse e is more reasonable than @fig-pbmc-mse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) nonlinear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <https://youtu.be/Es84bwQcndU> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -3298,7 +3298,7 @@ mnist_proj_tsne_model2_link <- plot_proj(
 #| fig-height: 5
 #| fig-width: 15
 #| out-width: 100%
-#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big non-linear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a non-linear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <https://youtu.be/sUcGd57Swdg>. The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
+#| fig-cap: "The tSNE layout of the MNIST digit 1 data shows a big nonlinear cluster (grey) and a small cluster (orange) located very close to the one corner of the big cluster in \\gD{} (a). The MNIST digit 1 data ($n =  7877$ and $p = 10$) has a nonlinear structure in $10\\text{-}D$. Two \\gD{} projections from a tour on $10\\text{-}D$ reveal that the closeness of the clusters in $10\\text{-}D$ and the twisted pattern of the model fit with tSNE ($a_1 = 0.041$, $b = 659/585 \\text{ } (30, \\text{ }48)$). Video of the langevitour animation is available at <https://youtu.be/sUcGd57Swdg>. The brushing feature in the linked plots helps in visualizing the closeness of the small cluster to the big cluster. Videos of the linked plots are available at <>."
 
 tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_link +
   plot_layout(ncol = 3)
@@ -3361,7 +3361,7 @@ imge_error_sample_inside <- plot_digit_img(
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big non-linear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (f) the non-linear structure and others outside (e). Along the non-linear cluster, the angle of digit 1 changes (b-d)."
+#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big nonlinear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (f) the nonlinear structure and others outside (e). Along the nonlinear cluster, the angle of digit 1 changes (b-d)."
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
