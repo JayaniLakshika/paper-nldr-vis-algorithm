@@ -339,7 +339,7 @@ nldr8c <- pacmap_pbmc |>
 ```{r}
 #| label: fig-NLDR-variety
 #| echo: false
-#| fig-cap: "Eight different NLDR representations of the same data. Different techniques and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
+#| fig-cap: "Eight different NLDR representations of the same data. Different methods and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
 #| fig-width: 8
 #| fig-height: 4
 #| out-width: 100%
@@ -354,12 +354,17 @@ The dilemma for the analyst is then, **which representation to use**. The choice
 
 The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion.
 
+<!-- Where are sections 4 & 5 in this description? -->
+
 ## Background {#sec-background}
 
 <!-- - Connection between NLDR and MDS-->
-Historically, \kD{} representations of \pD{} data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) [@jolliffe2011] as a special case. (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
+Historically, low-dimensional (\kD{}) representations of high-dimensional (\pD{}) data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) [@jolliffe2011] as a special case. (A contemporary comprehensive guide to MDS can be found in @borg2005.)
+<!-- Does JASA allow footnotes? If so this is a footnote, otherwise the punctuation has gone a bit rogue - can't have an entire sentence in brackets surely --> The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
-Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques, tSNE, UMAP, PHATE, TriMAP and PaCMAP. tNSE and UMAP can be considered to produce the \kD{}   minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@coifman2005] spreading to capture geometric shapes, that include both global and local structure.
+<!-- Non-expert comment: This to me is a leap from MDS to NLDR. Is NLDR an MDS? I don't think so, but I'm missing the link -->
+<!-- Suggested rewording: "To better capture specific structures potentially existing in \pD{}, many new methods for NLDR have emerged in recent years." -->
+Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. Both tNSE and UMAP can be considered to produce the \kD{} representation by minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@coifman2005] spreading to capture geometric shapes, that include both global and local structure.
 
 The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d) which would **contradict** the other representations. 
 
@@ -378,7 +383,7 @@ The solution is to use the tour to examine how the NLDR is warping the space. Th
 
 At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{}   NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, that will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@joreskog1969] and MDS. (Note that, for this thinking the full \pD{}   data needs to be available, not just the interpoint distances.)
 
-We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)~parameters $\mathbfit{\theta}$. The parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
+We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with (hyper-)parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
@@ -876,7 +881,7 @@ Although there are several implementations of hexagon binning [@carr1987], and a
 
 The \gD{} hexagon grid is defined by its bin centroids. Each hexagon, $H_h$ ($h = 1, \dots, b$) is uniquely described by centroid, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The number of bins in each direction is denoted as $(b_1, b_2)$, with  $b = b_1 \times b_2$ being the total number of bins. We expect the user to provide just $b_1$ and we calculate $b_2$ using the NLDR ratio, to compute the grid. 
 
-To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = \text{-}q$ and $s_2 = \text{-}qr_2$. 
+To ensure that the grid covers the range of data values a buffer parameter ($q$) is set as a proportion of the range. By default,  $q=0.1$. The buffer should be extending a full hexagon width ($a_1$) and height ($a_2$) beyond the data, in all directions. The lower left position where the grid starts is defined as $(s_1, s_2)$, and corresponds to the centroid of the lowest left hexagon, $C_{1}^{(2)} = (c_{11}, c_{12})$. This must be smaller than the minimum data value. Because it is one buffer unit, $q$ below the minimum data values, $s_1 = -q$ and $s_2 = -qr_2$. 
 
 The value for $b_2$ is computed by fixing $b_1$. Considering the upper bound of the first NLDR component, $a_1 > (1+2q)/(b_1 -1)$. Similarly, for the second NLDR component, 
 
@@ -1060,22 +1065,25 @@ hex_param_vis
 #### Binning the data
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
-$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2}$, mapping observation $i$ into $H_h = \{i| u(i) = h\}$. 
+$$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2}$$, maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
+
+<!-- I'm not thrilled about H_h but I guess it can stay because changing it everywhere is a pain -->
 
 By default, the bin centroid is used for describing a hexagon (as done in @fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used. The bin centers, and the binned data, are the two important components needed to render the model representation in high dimensions.  
 
 #### Indicating neighborhood
 
-Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connectd centroids. The edges preserve the neighborhood information when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connects centroids. The edges preserve the neighborhood information from the \kD{} representation when the model is lifted into \pD{}. 
 
-When shapes are nonlinear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit.
+When shapes are nonlinear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit. <!-- I don't think this is a thing anymore -->
 
 ### Rendering the model in \pD{}
 
-The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in $H_h$ to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
+The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
 
 $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
-Furthermore, line segments that exist in the \gD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \gD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and pruned any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data.
+
+Line segments that exist in the \gD{} model generate line segments in \pD{} by connecting the \pD{} means of the corresponding \gD{} bin centroids. If additional long edges need to be removed, compute the edges in \pD{} and prune any detected long edges to improve the accuracy. Once pruned, re-plot the \gD{} view to ensure it accurately captures the data. <!-- Do we still do this after the new binning system? -->
 
 ```{r}
 #| label: hexbin-regular-two-curvy2
@@ -1174,6 +1182,9 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
   interior_annotation("c", sc_ltr_pos, cex = 2)
 ```
 
+
+<!-- In Figure 4, is the "sparse space" in the middle of each cluster (i.e. the holes) or is it the gap between clusters? If it's between clusters, I'd argue tSNE is making this gap smaller than in reality, which I don't think the caption currently conveys. -->
+
 ```{r}
 #| label: best-fit-tsne
 #| fig-cap: "Lifting the fitted model into \\pD{}. Starting from a default tSNE layout (a) of nonlinear clusters data ($n =  2000$ and $p = 4$), from which the \\gD{} wireframe is constructed (a) and then lifted to $4\\text{-}D$ (b, c). The fit is reasonbly tight with the data, although it does not fully spread the full width. This highlights a key characteristic of tSNE, which compresses the data when applying tSNE. Furthermore, the sparse space observed in the middle of the tSNE layout is a result of (hyper-)~parameter choice. Video of the langevitour animation is available at <>."
@@ -1202,7 +1213,7 @@ The error is computed by taking the squared \pD{} Euclidean distance, correspond
 
 $$\sqrt{\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
-where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables, $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hj} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
+where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hj} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
 
 ```{r}
 #| label: error-two-curvy
@@ -1308,6 +1319,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
 axis.text = element_text(size = 15))
 ```
 
+<!-- Sparse end with dense corner to me is very hard to understand - sparse and dense are pretty much antonyms -->
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
 #| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster with dense corner."
@@ -1320,7 +1332,14 @@ error_plot_two_curvy + error_plot_two_curvy_quasi +
 
 ### Prediction into \gD{}
 
-A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
+<!-- Does this really need an entire subsection? It's only 3 sentences long. -->
+
+In this paradigm of model fitting, it is now possible to predict a new observation's value in the NLDR representation, independent of the choice of NLDR method. To do this, we first need to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, to the new observation, which is,
+
+$$z = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}.$$
+
+Then, the predicted value is is the centroid of this bin in \gD{}, $C^{(2)}_{z} = (c_{z1}, c_{z2})$.
+
 
 <!--prediction for true-model of two-curvy clust-->
 ```{r}
@@ -1394,7 +1413,7 @@ Default values are provided for each of these, but it is expected that the user 
 
 #### Hexagon bin parameters
 
-The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = \text{-}q, s_2 = \text{-}qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts. @fig-bins-two-curvy illustrates this. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
+The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts which is seen in @fig-bins-two-curvy. <!-- Figure 6 doesn't seem to have any varying s_1 unless I'm missing something --> The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
 
 ```{r}
 #| echo: false
@@ -1411,16 +1430,18 @@ hex_grid_coloured_two_curvy2 +
   theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ <!-- What is the formula for this? -->. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
 
 #### Measurement of capturing the data shape in 2-D 
+
+<!-- I'll be honest I've no idea what this section is -->
 The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
 
 #### Removal of low density bins
 
-By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
+By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the MSE than the full number of bins in the grid. It may be beneficial to remove low count bins also, such as when the data is clustered or stringy, or where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest 5% of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
 
-The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (@fig-param-two-curvy (c)). The MSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
+The benchmark value for removing low-density hexagons ranges between $0$ and $1$, where $0$ corresponds to no bins being removed, and $1$ to 100% of bins being removed. When analyzing how these benchmark values influence model performance, it's essential to observe the change in MSE as the benchmark value increases (@fig-param-two-curvy (c)). The MSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
 ```{r}
 #| label: rm-lwd-bin-error
@@ -1481,15 +1502,15 @@ Diagnosing the model while locating points in the \gD{} layout and displaying th
 
 The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
 
-To understand how well the model fits the points whether it fits well, works better in some positions, or fails to match the overall pattern. It is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
+To understand how well the model fits the points whether it fits well, works better in some positions, or fails to match the overall pattern, it is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
 
 ## Assessing the best fit, and hence most accurate \gD{} layout 
 
 @fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
-A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
+A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually often the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
-To compare and assess a range of representations needs these items:
+To compare and assess a range of representations an analyst needs:
 
 - a selection of NLDR representations made with a range of parameter choices and possibly different methods (tSNE, UMAP, ...).
 - a range of model fits made by varying bin size and low density bin removal.
@@ -1624,7 +1645,7 @@ When examining the \gD{} model representations it appears to be flatter or like 
 
 @fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default (hyper-)~parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
 
-The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This single projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. 
+The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This single projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this, it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. 
 
 <!--Projections-->
 ```{r}
@@ -2166,7 +2187,7 @@ five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_mod
 
 Differences in density can arise by sampling at different rates in different subspaces of \pD{}. For example, the data shown in @fig-one-dens_clust-error all lies on a \gD{} curved sheet in \fD{}, but one end of the sheet is sampled densely and the other very sparsely. It was simulated to illustrate the effect of the density difference on layout generated by an NLDR, illustrated using the tSNE results. 
 
-@fig-one-dens_clust-error (a2, b2) shows \gD{} layout for tSNE created using the default (hyper-)~parameters. One would expect to see a rectangular shape if the curved sheet is flattened, but the layout is triangular. The other two displays show the residuals as a dot density plot (a1, b1), and a \gD{} projection of the data and the model from \fD{} (a3, b3). Using linked brushing between the plots, we can highlight points in the tSNE layout, and examine where they fall in the original \fD{}. The darker (maroon) points indicate points that have been highlighted by linking. In row a, the points at the top of the triangle are highlighted, and we can see these correspond to higher residuals, and also to all points at the low density end of the curved sheet. In row b, points at the lower left side of the triangle are highlighted which corresponds to smaller residuals and one corner of the sheet at the high density end of the curved sheet. 
+@fig-one-dens_clust-error (a2, b2) shows a \gD{} layout for tSNE created using the default (hyper-)~parameters. One would expect to see a rectangular shape if the curved sheet is flattened, but the layout is triangular. The other two displays show the residuals as a dot density plot (a1, b1), and a \gD{} projection of the data and the model from \fD{} (a3, b3). Using linked brushing between the plots, we can highlight points in the tSNE layout, and examine where they fall in the original \fD{}. The darker (maroon) points indicate points that have been highlighted by linking. In row a, the points at the top of the triangle are highlighted, and we can see these correspond to higher residuals, and also to all points at the low density end of the curved sheet. In row b, points at the lower left side of the triangle are highlighted which corresponds to smaller residuals and one corner of the sheet at the high density end of the curved sheet. 
 
 The tSNE behaviour is to squeeze the low density area of the data together into the layout. This is common in other NLDR methods also, which means analysts need to be aware that if their data is not sampled relatively uniformly, apparent closeness in the \gD{} may correspond to sparseness in \pD{}.
 
@@ -2490,7 +2511,7 @@ To illustrate the approach we use two examples: PBMC3k data (single cell gene ex
 
 This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarize the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. 
 
-In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
+In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. <!-- I think some of these panels aren't umap - if so saying "umap was performed on the first nine principal components" is not necessarily correct. I think its what the publication did but not what is in our figure --> You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3015,9 +3036,9 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
 
 @fig-mnist-mse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e) with default (hyper-)~parameter setting and two tSNE runs, one with default (hyper-)~parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. 
 
-The layout plot are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
+The layout plots are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
 
-The next step is to investigate the \gD{} to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape we can see that the "1"s are drawn with from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarize the variation in way "1"s are drawn.
+The next step is to investigate the \gD{} layout to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. <!-- I understand the convenience of b-f all lined up but I did go looking for a red box. With enough reading I know why it's not there but I wonder if this can be improved --> Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape we can see that the "1"s are drawn with from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarize the variation in way "1"s are drawn.
 
 <!-- PaCMAP layout with author's suggested parameter choice-->
 ```{r}
@@ -3377,7 +3398,7 @@ final_layout
 
 ## Discussion {#sec-discussion}
 
-We have developed an approach to help assess and compare NLDR layouts, generated by different methods and (hyper-)~parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, creating a wireframe representation of it that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and RMSE. Different layouts can be compared using the RMSE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
+We have developed an approach to help assess and compare NLDR layouts, generated by different methods and (hyper-)~parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and RMSE. Different layouts can be compared using the RMSE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
 
 Two examples illustrating usage are provided: the PBMC3k data where the NLDR is summarizing clustering in \pD{} and hand-written digits illustrating how NLDR represents an intrinsically lower dimensional nonlinear manifold. We demonstrated that the published layout of the PBMC3k is inaccurate, because it grossly exaggerates separation between clusters, and even suggests separation when there is none. This is common when layouts are chosen subjectively -- often a preference for the "prettiest". Our approach provides a way to objectively choose the layout and hopefully avoids the use of misleading layouts in the future. In the hand-written digits we illustrate how our model fit statistics show that a flat disc layout is superior to the curved shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
 
