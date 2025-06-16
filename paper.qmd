@@ -3166,7 +3166,11 @@ df_b_mnist <- df_bin_mnist |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
 ## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$hexID),] |>
+df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$hexID),] 
+
+df_b_mnist_temp <- df_b_mnist
+
+df_b_mnist <- df_b_mnist |>
   dplyr::select(-hexID) 
 
 # Apply the scaling
@@ -3208,7 +3212,7 @@ langevitour::langevitour(df_model_data_mnist_n[1:(length(df_model_data_mnist_n)-
 df_exe_mnist <- comb_all_data_model(
   highd_data = training_data_mnist,
   nldr_data = tsne_minst_scaled_temp,
-  model_highd = df_bin_mnist,
+  model_highd = df_b_mnist_temp,
   model_2d = df_bin_centroids_dens_clust)
 
 show_link_plots(point_data = df_exe_mnist,
