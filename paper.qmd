@@ -1645,28 +1645,8 @@ The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show
 ```{r}
 #| label: five-gau-proj-tsne-model
 
-training_data_gau <- read_rds("data/five_gau_clusters/data_five_gau.rds")
-
-data_gau <- training_data_gau |> 
-  select(-ID) |>
-  mutate(type = "data")
-
-tsne_data_gau <- read_rds("data/five_gau_clusters/tsne_data_five_gau_71.rds")
-
-## Compute hexbin parameters
-num_bins_x_gau1 <- 18
-
-algo_obj_gau1 <- fit_highd_model(
-  highd_data = training_data_gau, 
-  nldr_data = tsne_data_gau, 
-  bin1 = num_bins_x_gau1, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-tsne_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
-tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
-df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
-df_bin_gau1 <- algo_obj_gau1$model_highd
+tsne_gau_scaled <- read_rds("data/five_gau_clusters/tsne_gau_scaled.rds")
+tr_from_to_df_gau1 <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1.rds")
 
 trimesh_removed_gau_tsne <- ggplot() + 
   geom_point(
@@ -1685,7 +1665,6 @@ trimesh_removed_gau_tsne <- ggplot() +
       xend = x_to,
       yend = y_to),
     colour = "#000000",
-    #alpha = 0.4,
     linewidth = 0.5) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
@@ -1694,121 +1673,28 @@ trimesh_removed_gau_tsne <- ggplot() +
     aspect.ratio = 1
   )
 
-df_b <- df_bin_gau1 |>
-  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
-  dplyr::select(-hexID) 
-
-# Apply the scaling
-df_model_data <- bind_rows(data_gau, df_b)
-scaled_gau <- scale_data_manual(df_model_data, "type") |>
-  as_tibble()
-
-scaled_gau_data <- scaled_gau |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_gau_data_model <- scaled_gau |>
-  filter(type == "model") |>
-  select(-type)
-
 ```
-
-```{r}
-#| label: langevitour-five-gau-tsne-proj
-#| eval: false
-
-df_model_data_n <- bind_rows(df_b, data_gau)
-
-langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
-                         lineFrom = tr_from_to_df_gau1$from,
-                         lineTo = tr_from_to_df_gau1$to,
-                         group = factor(df_model_data_n$type,
-                                        c("data", "model")),
-                         levelColors = c(clr_choice, "#000000"),
-                         pointSize = 0.7)
-```
-
 
 ```{r}
 #| label: five-gau-tsne-projs
-projection <- cbind(
-  c(0.10394,0.08379,-0.17868,0.32960),
-  c(0.35111,-0.01137,-0.09657,-0.16018))
+## First projection
+proj_obj1 <- read_rds("data/five_gau_clusters/tsne_gau_proj_obj1.rds")
 
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2.5, 
-               highd_data = scaled_gau_data, 
-               model_highd = scaled_gau_data_model, 
-               trimesh_data = tr_from_to_df_gau1, 
-               axis_param = list(limits = 1,
-                                 axis_scaled = 2,
-                                 axis_pos_x = -0.72, 
-                                 axis_pos_y = -0.72, 
-                                 threshold = 0.1))
-
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
-five_gau_proj_tsne_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_point(
-    #size = 0.5,
-    alpha = 0.05,
-    colour = clr_choice) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    colour = "#000000",
-    alpha = 0.4,
-    linewidth = 0.8) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2),
-    label=rownames(axes), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.89, 0.89)) +
-  ylim(c(-0.89, 0.89)) +
+five_gau_proj_tsne_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05, clr_choice),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = FALSE
+) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
                       cex = 2)
 
 ## Second projection
-projection <- cbind(
-  c(0.30943,-0.08452,-0.23005,-0.05284),
-  c(0.22463,-0.06682,0.32106,0.02452))
 
-proj_obj2 <- get_projection(projection = projection, 
-                            proj_scale = 3, 
-                            highd_data = scaled_gau_data, 
-                            model_highd = scaled_gau_data_model, 
-                            trimesh_data = tr_from_to_df_gau1, 
-                            axis_param = list(limits = 1.5,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -1, 
-                                              axis_pos_y = -1, 
-                                              threshold = 0.05))
+proj_obj2 <- read_rds("data/five_gau_clusters/tsne_gau_proj_obj2.rds")
 
 five_gau_proj_tsne_model2 <- plot_proj(
   proj_obj = proj_obj2,
@@ -1825,22 +1711,8 @@ five_gau_proj_tsne_model2 <- plot_proj(
 ```{r}
 #| label: five-gau-proj-umap-model
 
-umap_data_gau <- read_rds("data/five_gau_clusters/umap_data_five_gau.rds")
-
-## Compute hexbin parameters
-num_bins_x_gau1 <- 63
-
-algo_obj_gau1 <- fit_highd_model(
-  highd_data = training_data_gau, 
-  nldr_data = umap_data_gau, 
-  bin1 = num_bins_x_gau1, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-umap_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
-tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
-df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
-df_bin_gau1 <- algo_obj_gau1$model_highd
+umap_gau_scaled <- read_rds("data/five_gau_clusters/umap_gau_scaled.rds")
+tr_from_to_df_gau1_umap <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1_umap.rds")
 
 trimesh_removed_gau_umap <- ggplot() + 
   geom_point(
@@ -1852,7 +1724,7 @@ trimesh_removed_gau_umap <- ggplot() +
     colour = clr_choice,
     alpha = 0.05) + 
   geom_segment(
-    data = tr_from_to_df_gau1,
+    data = tr_from_to_df_gau1_umap,
     aes(
       x = x_from,
       y = y_from,
@@ -1867,119 +1739,28 @@ trimesh_removed_gau_umap <- ggplot() +
   theme(
     aspect.ratio = 1
   )
-
-df_b <- df_bin_gau1 |>
-  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
-  dplyr::select(-hexID)
-
-# Apply the scaling
-df_model_data <- bind_rows(data_gau, df_b)
-scaled_gau <- scale_data_manual(df_model_data, "type") |>
-  as_tibble()
-
-scaled_gau_data <- scaled_gau |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_gau_data_model <- scaled_gau |>
-  filter(type == "model") |>
-  select(-type)
-
 ```
-
-```{r}
-#| label: langevitour-five-gau-umap-proj
-#| eval: false
-
-df_model_data_n <- bind_rows(df_b, data_gau)
-
-langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
-                         lineFrom = tr_from_to_df_gau1$from,
-                         lineTo = tr_from_to_df_gau1$to,
-                         group = factor(df_model_data_n$type,
-                                        c("data", "model")),
-                         levelColors = c(clr_choice, "#000000"), pointSize = 0.7)
-```
-
 
 ```{r}
 #| label: five-gau-umap-projs
-projection <- cbind(
-  c(0.10394,0.08379,-0.17868,0.32960),
-  c(0.35111,-0.01137,-0.09657,-0.16018))
 
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2.5, 
-               highd_data = scaled_gau_data, 
-               model_highd = scaled_gau_data_model, 
-               trimesh_data = tr_from_to_df_gau1, 
-               axis_param = list(limits = 1,
-                                 axis_scaled = 2,
-                                 axis_pos_x = -0.72, 
-                                 axis_pos_y = -0.72, 
-                                 threshold = 0.1))
+## First projection
+proj_obj1 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj1.rds")
 
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
-five_gau_proj_umap_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1, 
-      y = proj2)) +
-  geom_point(
-    alpha = 0.05,
-    colour = clr_choice) +
-  geom_segment(
-    data = model_df, 
-    aes(
-      x = proj1_from, 
-      y = proj2_from, 
-      xend = proj1_to, 
-      yend = proj2_to), 
-    colour = "#000000",
-    alpha = 0.4,
-    linewidth = 0.8) +
-  geom_segment(
-    data=axes, 
-    aes(x=x1, y=y1, xend=x2, yend=y2), 
-    colour="grey70") +
-  geom_text(
-    data=axes, 
-    aes(x=x2, y=y2, label=rownames(axes)), 
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle, 
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.89, 0.89)) +
-  ylim(c(-0.89, 0.89)) +
+five_gau_proj_umap_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05, clr_choice),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = FALSE
+) +
   interior_annotation("b2", 
                       position = c(0.08, 0.9),
                       cex = 2)
 
 ## Second projection
-projection <- cbind(
-  c(0.30943,-0.08452,-0.23005,-0.05284),
-  c(0.22463,-0.06682,0.32106,0.02452))
-
-proj_obj2 <- get_projection(projection = projection, 
-                            proj_scale = 3, 
-                            highd_data = scaled_gau_data, 
-                            model_highd = scaled_gau_data_model, 
-                            trimesh_data = tr_from_to_df_gau1, 
-                            axis_param = list(limits = 1.5,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -1, 
-                                              axis_pos_y = -1, 
-                                              threshold = 0.05))
+proj_obj2 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj2.rds")
 
 five_gau_proj_umap_model2 <- plot_proj(
   proj_obj = proj_obj2,
@@ -1996,23 +1777,9 @@ five_gau_proj_umap_model2 <- plot_proj(
 ```{r}
 #| label: five-gau-proj-pacmap-model
 
-pacmap_data_gau <- read_rds("data/five_gau_clusters/pacmap_data_five_gau.rds")
-
-## Compute hexbin parameters
-num_bins_x_gau1 <- 28
-
-algo_obj_gau1 <- fit_highd_model(
-  highd_data = training_data_gau, 
-  nldr_data = pacmap_data_gau, 
-  bin1 = num_bins_x_gau1, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-pacmap_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
-tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
-df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
-df_bin_gau1 <- algo_obj_gau1$model_highd
-
+pacmap_gau_scaled <- read_rds("data/five_gau_clusters/pacmap_gau_scaled.rds")
+tr_from_to_df_gau1_pacmap <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1_pacmap.rds")
+  
 trimesh_removed_gau_pacmap <- ggplot() + 
   geom_point(
     data = pacmap_gau_scaled,
@@ -2022,7 +1789,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
       colour = clr_choice,
     alpha = 0.1) +
   geom_segment(
-    data = tr_from_to_df_gau1,
+    data = tr_from_to_df_gau1_pacmap,
     aes(
       x = x_from,
       y = y_from,
@@ -2037,119 +1804,27 @@ trimesh_removed_gau_pacmap <- ggplot() +
   theme(
     aspect.ratio = 1
   )
-
-df_b <- df_bin_gau1 |>
-  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
-  dplyr::select(-hexID)
-
-# Apply the scaling
-df_model_data <- bind_rows(data_gau, df_b)
-scaled_gau <- scale_data_manual(df_model_data, "type") |>
-  as_tibble()
-
-scaled_gau_data <- scaled_gau |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_gau_data_model <- scaled_gau |>
-  filter(type == "model") |>
-  select(-type)
 ```
-
-```{r}
-#| label: langevitour-five-gau-pacmap-proj
-#| eval: false
-
-df_model_data_n <- bind_rows(df_b, data_gau)
-
-langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
-                         lineFrom = tr_from_to_df_gau1$from,
-                         lineTo = tr_from_to_df_gau1$to,
-                         group = factor(df_model_data_n$type,
-                                        c("data", "model")),
-                         levelColors = c(clr_choice, "#000000"), pointSize = 0.7)
-```
-
 
 ```{r}
 #| label: five-gau-pacmap-projs
 ## First projection
-projection <- cbind(
-  c(0.10394,0.08379,-0.17868,0.32960),
-  c(0.35111,-0.01137,-0.09657,-0.16018))
+proj_obj1 <- read_rds("data/five_gau_clusters/pacmap_gau_proj_obj1.rds")
 
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 2.5, 
-               highd_data = scaled_gau_data, 
-               model_highd = scaled_gau_data_model, 
-               trimesh_data = tr_from_to_df_gau1, 
-               axis_param = list(limits = 1,
-                                 axis_scaled = 2,
-                                 axis_pos_x = -0.72, 
-                                 axis_pos_y = -0.72, 
-                                 threshold = 0.1))
-
-projected_df <- proj_obj1$projected_df
-model_df <- proj_obj1$model_df
-axes <- proj_obj1$axes
-circle <- proj_obj1$circle
-
-five_gau_proj_pacmap_model1 <- projected_df |>
-  ggplot(
-    aes(
-      x = proj1,
-      y = proj2)) +
-  geom_point(
-    alpha = 0.05,
-    colour = clr_choice) +
-  geom_segment(
-    data = model_df,
-    aes(
-      x = proj1_from,
-      y = proj2_from,
-      xend = proj1_to,
-      yend = proj2_to),
-    colour = "#000000",
-    alpha = 0.4,
-    linewidth = 0.8) +
-  geom_segment(
-    data=axes,
-    aes(x=x1, y=y1, xend=x2, yend=y2),
-    colour="grey70") +
-  geom_text(
-    data=axes,
-    aes(x=x2, y=y2, label=rownames(axes)),
-    colour="grey50",
-    size = 5) +
-  geom_path(
-    data=circle,
-    aes(x=c1, y=c2), colour="grey70") +
-  coord_fixed() +
-  xlim(c(-0.89, 0.89)) +
-  ylim(c(-0.89, 0.89)) +
+five_gau_proj_pacmap_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05, clr_choice),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = FALSE
+) +
   interior_annotation("c2",
                       position = c(0.08, 0.9),
                       cex = 2)
 
 ## Second projection
-projection <- cbind(
-  c(0.30943,-0.08452,-0.23005,-0.05284),
-  c(0.22463,-0.06682,0.32106,0.02452))
-
-proj_obj2 <- get_projection(projection = projection, 
-                            proj_scale = 3, 
-                            highd_data = scaled_gau_data, 
-                            model_highd = scaled_gau_data_model, 
-                            trimesh_data = tr_from_to_df_gau1, 
-                            axis_param = list(limits = 1.5,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -1, 
-                                              axis_pos_y = -1, 
-                                              threshold = 0.05))
+proj_obj2 <- read_rds("data/five_gau_clusters/pacmap_gau_proj_obj2.rds")
 
 five_gau_proj_pacmap_model2 <- plot_proj(
   proj_obj = proj_obj2,
