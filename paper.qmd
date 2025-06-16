@@ -352,9 +352,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
 
 The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
 
-The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion.
-
-<!-- Where are sections 4 & 5 in this description? -->
+The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics. Curiosities and unexpected patterns discovered in NLDR results by examining the model in the data space are discussed in @sec-curiosities. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion.
 
 ## Background {#sec-background}
 
@@ -1504,7 +1502,7 @@ The \gD{} layout and the langevitour view with the model are linked together via
 
 To understand how well the model fits the points whether it fits well, works better in some positions, or fails to match the overall pattern, it is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
 
-## Assessing the best fit, and hence most accurate \gD{} layout 
+## Assessing the best fit, and hence most accurate \gD{} layout {#sec-bestfit} 
 
 @fig-toy-mse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
@@ -1635,7 +1633,7 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
                                     widths = c(50, 50))
 ```
 
-## Curiosities about NLDR results discovered by examining the model in the data space
+## Curiosities about NLDR results discovered by examining the model in the data space {#sec-curiosities}
 
 With the drawing of the model in the data, several interesting differences between NLDR methods can be observed.
 
