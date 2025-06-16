@@ -1073,8 +1073,6 @@ By default, the bin centroid is used for describing a hexagon (as done in @fig-N
 
 Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connects centroids. The edges preserve the neighborhood information from the \kD{} representation when the model is lifted into \pD{}. 
 
-When shapes are nonlinear in the NLDR layout, some edges could be long. It can also happen that distant centroids can be connected, particularly if clustering is present, which can result in long line segments. In order to generate a smooth surface in \gD{}, these long line segments should be removed when tuning the model fit. <!-- I don't think this is a thing anymore -->
-
 ### Rendering the model in \pD{}
 
 The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
@@ -1430,7 +1428,7 @@ hex_grid_coloured_two_curvy2 +
 
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ <!-- What is the formula for this? -->. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the MSE of the fitted model.
 
-#### Measurement of capturing the data shape in 2-D 
+#### Measurement of capturing the data shape in \gD{} 
 
 <!-- I'll be honest I've no idea what this section is -->
 The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
@@ -2509,7 +2507,7 @@ To illustrate the approach we use two examples: PBMC3k data (single cell gene ex
 
 This is a benchmark single-cell data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see  for example, @haque2017). This type of data is used to obtain an understanding of cellular level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR often used to summarize the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. 
 
-In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, UMAP was performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. <!-- I think some of these panels aren't umap - if so saying "umap was performed on the first nine principal components" is not necessarily correct. I think its what the publication did but not what is in our figure --> You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
+In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, different NLDR techniques were performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
 <!-- UMAP layout with author's suggested parameter choice-->
 ```{r}
