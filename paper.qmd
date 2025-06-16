@@ -897,7 +897,7 @@ This is a linear optimization problem. Therefore, the optimal solution must occu
 
 $$
 b_2 = \Big\lceil1 +\frac{2[r_2 + q(1 + r_2)](b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil.
-$$
+$${#eq-bin2}
 
 ```{r}
 #| label: code-illustration
@@ -1424,7 +1424,7 @@ hex_grid_coloured_two_curvy2 +
   theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ <!-- What is the formula for this? -->. Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the RMSE of the fitted model.
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the RMSE of the fitted model.
 
 #### Measurement of capturing the data shape in \gD{} 
 
