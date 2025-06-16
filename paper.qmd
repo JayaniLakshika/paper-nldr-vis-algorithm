@@ -89,7 +89,7 @@ XXX TO DO:
 - Check how \kD{} and \gD{} are used, and make sure it's sensible (changed in Rendering the model: Done)
 - Check spelling is consistently American (Done)
 - Check references (Done)
-- Add videos - make a list of the videos in the supplementary section, with the number of the figure that it corresponds too. This avoids having captions that are too long and awkward with raw URLs. And it keeps all of this supplementary material in one place.
+- Add videos - make a list of the videos in the supplementary section, with the number of the figure that it corresponds too. This avoids having captions that are too long and awkward with raw URLs. And it keeps all of this supplementary material in one place. (Done)
 - Move the notation table to appendix (Done)
 - Code clean up: recommend that all of the calculations done with quollr are done with a separate script(s) and put in a scripts directory. Save the resulting data need to make plots and tables. Only code for the plots and tables is directly in the qmd in the final version.
 
@@ -3074,25 +3074,6 @@ sc_ltr_pos_mnist <- c(0.96, 0.96)
 tsne_minst_scaled <- tsne_minst_scaled |>
   mutate(cluster = if_else((emb1 <= 1) & (emb1 >= 0.78) & (emb2 <= 0.62) & (emb2 >= 0.39), "small_clust", "big_clust"))
 
-trimesh_removed_mnist <- ggplot() + 
-  geom_point(data = tsne_minst_scaled,
-             aes(
-               x = emb1,
-               y = emb2,
-               colour = cluster
-             ),
-             alpha=0.2)+
-    geom_segment(data = tr_from_to_df_mnist, 
-               aes(
-                 x = x_from, 
-                 y = y_from, 
-                 xend = x_to, 
-                 yend = y_to),
-               colour = "#000000") +
-  scale_color_manual(values=c("#999999",'#ff7f00')) +
-  interior_annotation("a", c(0.08, 0.93), cex = 2) +
-  theme(legend.position = "none") 
-
 tsne_plot_mnist_clust <- ggplot() + 
   geom_point(data = tsne_minst_scaled,
              aes(
@@ -3235,19 +3216,6 @@ proj_obj1 <- get_projection(projection = projection,
 
 proj_obj1[["cluster"]] <- tsne_minst_scaled$cluster
 
-mnist_proj_tsne_model1 <- plot_proj(
-  proj_obj = proj_obj1, 
-  point_param = c(0.5, 0.5), # size, alpha, color
-  line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
-  plot_limits = c(-1.1, 0.9), 
-  axis_text_size = 4, 
-  is_category = TRUE) +
-  interior_annotation(label = "b", cex = 2) +
-  scale_color_manual(values = c("#999999",'#ff7f00')) +
-  theme(
-    legend.position = "none"
-  )
-
 mnist_proj_tsne_model1_link <- plot_proj(
     proj_obj = proj_obj1,
     point_param = c(1.2, 0.5), # size, alpha, color
@@ -3278,19 +3246,6 @@ proj_obj2 <- get_projection(projection = projection,
                                  threshold = 0.065))
 
 proj_obj2[["cluster"]] <- tsne_minst_scaled$cluster
-
-mnist_proj_tsne_model2 <- plot_proj(
-    proj_obj = proj_obj2,
-    point_param = c(0.5, 0.3), # size, alpha, color
-    line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
-    plot_limits = c(-1, 1), 
-    axis_text_size = 3.5, 
-    is_category = TRUE) +
-  interior_annotation(label = "c", cex = 2) +
-  scale_color_manual(values = c("#999999",'#ff7f00')) +
-  theme(
-      legend.position = "none"
-  )
 
 mnist_proj_tsne_model2_link <- plot_proj(
     proj_obj = proj_obj2, 
