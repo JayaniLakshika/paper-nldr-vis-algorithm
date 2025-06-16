@@ -1063,7 +1063,7 @@ hex_param_vis
 #### Binning the data
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
-$$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2}$$, maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
+$$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
 
 <!-- I'm not thrilled about H_h but I guess it can stay because changing it everywhere is a pain -->
 
@@ -1316,7 +1316,7 @@ axis.text = element_text(size = 15))
 <!-- Sparse end with dense corner to me is very hard to understand - sparse and dense are pretty much antonyms -->
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster with dense corner."
+#| fig-cap: "The $4\\text{-}D$ model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster and most small errors are distributed near the dense corners."
 #| out-width: 80%
 #| fig-pos: H
 
@@ -1407,7 +1407,7 @@ Default values are provided for each of these, but it is expected that the user 
 
 #### Hexagon bin parameters
 
-The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts which is seen in @fig-bins-two-curvy. <!-- Figure 6 doesn't seem to have any varying s_1 unless I'm missing something --> The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$ is shown. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
+The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts which is seen in @fig-bins-two-curvy. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
 
 ```{r}
 #| echo: false
