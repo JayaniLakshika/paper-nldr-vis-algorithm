@@ -2507,22 +2507,6 @@ This is a benchmark single-cell data set collected on Human Peripheral Blood Mon
 
 In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following their pre-processing, different NLDR techniques were performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different (hyper-)~parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
-<!-- UMAP layout with author's suggested parameter choice-->
-```{r}
-#| label: published-pbmc
-## Import data
-training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
-names(training_data_pbmc) <- paste0("x", 1:50)
-
-training_data_pbmc <- training_data_pbmc[, 1:9] |>
-  mutate(ID = 1:NROW(training_data_pbmc))
-
-umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
-pbmc_scaled_obj <- gen_scaled_data(
-  nldr_data = umap_pbmc)
-umap_pbmc_scaled <- pbmc_scaled_obj$scaled_nldr
-```
-
 @fig-pbmc-rmse shows RMSE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were made using tSNE, UMAP, PHATE, PaCMAP, and TriMAP with various (hyper-)~parameter settings. Lines are color coded to match the color of the layouts shown on the right. Lower RMSE indicates the better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low RMSE across all binwidths. It can be seen that layout f is sub-optimal with universally higher RMSE. Layout a, the published one, is better but it is not as good as layouts b, d, or e. With some imagination layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better RMSE when the $a_1$ is small, but layout e beats it at larger values. Thus we could argue that layout e is the most accurate representation of the cluster structure, of these eight.
 
 To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that, the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
@@ -2530,25 +2514,11 @@ To further assess the choices, we need to look at the model in the data space, b
 <!--Fit the best model for author suggestion and compute error-->
 ```{r}
 #| label: hexbin-pbmc
-## Compute hexbin parameters
-num_bins_x_pbmc <- 22
+#| 
+umap_pbmc_scaled_with_cluster <- read_rds("data/pbmc3k/umap_pbmc_scaled_with_cluster.rds")
 
-algo_obj_pbmc <- fit_highd_model(
-  highd_data = training_data_pbmc, 
-  nldr_data = umap_pbmc, 
-  bin1 = num_bins_x_pbmc, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-umap_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
-tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
-df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
-df_bin_pbmc <- algo_obj_pbmc$model_highd
-
-umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
-  mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
-  mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
-
+umap_tr_from_to_df_pbmc <- read_rds("data/pbmc3k/umap_tr_from_to_df_pbmc.rds")
+  
 trimesh_removed_pbmc <- ggplot() + 
   geom_point(
     data = umap_pbmc_scaled_with_cluster,
@@ -2561,7 +2531,7 @@ trimesh_removed_pbmc <- ggplot() +
     #size = 0.1#,
     #colour = '#a65628'
   )  +
-  geom_segment(data = tr_from_to_df_pbmc, 
+  geom_segment(data = umap_tr_from_to_df_pbmc, 
                aes(
                  x = x_from, 
                  y = y_from, 
@@ -2576,76 +2546,12 @@ trimesh_removed_pbmc <- ggplot() +
   )
 ```
 
-```{r}
-#| label: prep-pbmc-umap-model-proj
-
-data_pbmc <- training_data_pbmc |> 
-  select(-ID) |>
-  mutate(type = "data")
-
-# df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-#   dplyr::filter(std_counts > 0)
-
-df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID) 
-
-# Apply the scaling
-df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
-scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
-  as_tibble()
-
-scaled_pbmc_data <- scaled_pbmc |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_pbmc_data_model <- scaled_pbmc |>
-  filter(type == "model") |>
-  select(-type)
-```
-
-```{r}
-#| label: langevitour-pbmc-umap-author-proj
-#| eval: false
-
-data_pbmc_n <- data_pbmc |>
-  select(-type) |>
-  mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
-
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
-
-langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = tr_from_to_df_pbmc$from,
-                         lineTo = tr_from_to_df_pbmc$to,
-                         group = factor(df_model_data_pbmc_n$type,
-                                        c("cluster1", "cluster2", "cluster3", "model")),
-                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
-```
 
 ```{r}
 #| label: pbmc-umap-model-proj
 
 ## First projection
-projection <- cbind(
-    c(-0.4545,-0.5533,-0.1235,0.3984,-0.2065,-0.3586,-0.0088,0.3572,-0.1368),
-    c(0.4576,-0.3157,0.4708,0.1410,-0.4479,-0.1685,0.3668,-0.2692,0.1332))
-
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1.23, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 1,
-                                 axis_scaled = 1, 
-                                 axis_pos_x = -0.48, 
-                                 axis_pos_y = -0.48, 
-                                 threshold = 0.082))
-
-proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj1 <- read_rds("data/pbmc3k/pbmc_umap_proj_obj1.rds")
 
 pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
@@ -2657,22 +2563,7 @@ pbmc_proj_umap_model1 <- plot_proj(
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
-projection <- cbind(
-    c(0.0734,0.6138,-0.4671,0.2589,0.1189,0.0778,-0.0819,0.0308,-0.5561),
-    c(0.6625,0.0034,0.2412,0.3360,0.2463,0.1070,-0.2903,-0.4705,0.1293))
-
-proj_obj2 <- get_projection(projection = projection, 
-               proj_scale = 1.25, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 1.35, 
-                                 axis_scaled = 1, 
-                                 axis_pos_x = -0.75, 
-                                 axis_pos_y = -0.75, 
-                                 threshold = 0.12))
-
-proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj2 <- read_rds("data/pbmc3k/pbmc_umap_proj_obj2.rds")
 
 pbmc_proj_umap_model2 <- plot_proj(
     proj_obj = proj_obj2, 
@@ -2745,33 +2636,12 @@ error_plot_pbmc +
 ```
 
 <!--best choice-->
-
-```{r}
-#| label: tsne-pbmc-read-best
-tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
-```
-
 <!--Fit the best model and compute error-->
 ```{r}
 #| label: tsne-num-bins-pbmc
+tsne_pbmc_scaled_best_with_cluster <- read_rds("data/pbmc3k/tsne_pbmc_scaled_best_with_cluster.rds")
 
-## Compute hexbin parameters
-num_bins_x_tsne_pbmc <- 22
-
-algo_obj_pbmc <- fit_highd_model(
-  highd_data = training_data_pbmc, 
-  nldr_data = tsne_pbmc, 
-  bin1 = num_bins_x_tsne_pbmc, 
-  q = 0.1, 
-  benchmark_highdens = 1)
-
-tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_obj$scaled_nldr
-tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
-df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
-df_bin_pbmc <- algo_obj_pbmc$model_highd
-
-tsne_pbmc_scaled_best_with_cluster <- tsne_pbmc_scaled_best |>
-  mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
+tsne_tr_from_to_df_pbmc <- read_rds("data/pbmc3k/tsne_tr_from_to_df_pbmc.rds")
 
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_point(
@@ -2784,7 +2654,7 @@ trimesh_removed_pbmc_best <- ggplot() +
     alpha = 0.3#,
     #colour = "#999999"
   ) +
-  geom_segment(data = tr_from_to_df_pbmc, 
+  geom_segment(data = tsne_tr_from_to_df_pbmc, 
                aes(
                  x = x_from, 
                  y = y_from, 
@@ -2800,65 +2670,10 @@ trimesh_removed_pbmc_best <- ggplot() +
 ```
 
 ```{r}
-#| label: prep-pbmc-tsne-model-proj-best
-
-df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID) 
-
-# Apply the scaling
-df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
-scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
-  as_tibble()
-
-scaled_pbmc_data <- scaled_pbmc |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_pbmc_data_model <- scaled_pbmc |>
-  filter(type == "model") |>
-  select(-type)
-```
-
-```{r}
-#| label: langevitour-pbmc-tsne-best-proj
-#| eval: false
-
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
-
-langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = tr_from_to_df_pbmc$from,
-                         lineTo = tr_from_to_df_pbmc$to,
-                         group = factor(df_model_data_pbmc_n$type,
-                                        c("cluster1", "cluster2", "cluster3", "model")),
-                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
-```
-
-
-```{r}
 #| label: pbmc-tsne-model-proj-best
 
 ## First projection
-projection <- cbind(
-  c(-0.4545,-0.5533,-0.1235,0.3984,-0.2065,-0.3586,-0.0088,0.3572,-0.1368),
-  c(0.4576,-0.3157,0.4708,0.1410,-0.4479,-0.1685,0.3668,-0.2692,0.1332))
-
-proj_obj1 <- get_projection(projection = projection, 
-                            proj_scale = 1.23, 
-                            highd_data = scaled_pbmc_data, 
-                            model_highd = scaled_pbmc_data_model, 
-                            trimesh_data = tr_from_to_df_pbmc, 
-                            axis_param = list(limits = 1, 
-                                              axis_scaled = 1,
-                                              axis_pos_x = -0.48, 
-                                              axis_pos_y = -0.48, 
-                                              threshold = 0.082))
-
-proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj1 <- read_rds("data/pbmc3k/pbmc_tsne_proj_obj1.rds")
 
 pbmc_proj_tsne_model1_best <- plot_proj(
   proj_obj = proj_obj1,
@@ -2870,22 +2685,7 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
 ## Second projection
-projection <- cbind(
-  c(0.0734,0.6138,-0.4671,0.2589,0.1189,0.0778,-0.0819,0.0308,-0.5561),
-  c(0.6625,0.0034,0.2412,0.3360,0.2463,0.1070,-0.2903,-0.4705,0.1293))
-
-proj_obj2 <- get_projection(projection = projection, 
-                            proj_scale = 1.25, 
-                            highd_data = scaled_pbmc_data, 
-                            model_highd = scaled_pbmc_data_model, 
-                            trimesh_data = tr_from_to_df_pbmc, 
-                            axis_param = list(limits = 1.35, 
-                                              axis_scaled = 1,
-                                              axis_pos_x = -0.75, 
-                                              axis_pos_y = -0.75, 
-                                              threshold = 0.12))
-
-proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj2 <- read_rds("data/pbmc3k/pbmc_tsne_proj_obj2.rds")
 
 pbmc_proj_tsne_model2_best <- plot_proj(
   proj_obj = proj_obj2,
@@ -2899,7 +2699,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-rmse a) and the \\gD{} layout selected (@fig-pbmc-rmse e) by RMSE plot (@fig-pbmc-rmse) from the UMAP and tSNE with default (hyper-)~parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-rmse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-rmse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-rmse e is more reasonable than @fig-pbmc-rmse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) nonlinear clusters. Videos of the langevitour animations are available at <https://youtu.be/3VfK3M2gnZM> and <https://youtu.be/Es84bwQcndU> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-rmse a) and the \\gD{} layout selected (@fig-pbmc-rmse e) by RMSE plot (@fig-pbmc-rmse) from the UMAP and tSNE with default (hyper-)~parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-rmse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-rmse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-rmse e is more reasonable than @fig-pbmc-rmse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) nonlinear clusters. The links to the videos of langevitour animations are available in @tbl-links."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10

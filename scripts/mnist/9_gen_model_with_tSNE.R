@@ -4,6 +4,7 @@ library(quollr)
 library(tidyverse)
 
 source("scripts/additional_functions.R")
+set.seed(20240110)
 
 ## Data
 training_data_mnist <- read_rds("data/mnist/mnist_10_pcs_of_digit_1.rds")
