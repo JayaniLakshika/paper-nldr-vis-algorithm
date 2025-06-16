@@ -2924,8 +2924,8 @@ The digit "1" of the MNIST dataset [@lecun1998] consists of $7877$ grayscale ima
 tsne_mnist <- read_rds("data/mnist/mnist_tsne30.rds")
 
 nldr_mnist1 <- tsne_mnist |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#984ea3') +
   interior_annotation("a", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
@@ -2933,8 +2933,8 @@ nldr_mnist1 <- tsne_mnist |>
 tsne_mnist2 <- read_rds("data/mnist/mnist_tsne89.rds")
 
 nldr_mnist6 <- tsne_mnist2 |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#999999') +
   interior_annotation("f", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
@@ -2942,8 +2942,8 @@ nldr_mnist6 <- tsne_mnist2 |>
 umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
 
 nldr_mnist2 <- umap_mnist |>
-  ggplot(aes(x = UMAP1,
-             y = UMAP2)) +
+  ggplot(aes(x = emb1,
+             y = emb2)) +
   geom_point(alpha=0.1, size=1, colour='#a65628') +
   interior_annotation("b") +
   theme(aspect.ratio = 1)
@@ -2951,8 +2951,8 @@ nldr_mnist2 <- umap_mnist |>
 phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
 
 nldr_mnist3 <- phate_mnist |>
-  ggplot(aes(x = PHATE1,
-             y = PHATE2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#377eb8') +
   interior_annotation("c", c(0.94, 0.92)) +
   theme(aspect.ratio = 1)
@@ -2960,8 +2960,8 @@ nldr_mnist3 <- phate_mnist |>
 trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
 
 nldr_mnist4 <- trimap_mnist |>
-  ggplot(aes(x = TriMAP1,
-             y = TriMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#ff7f00') +
   interior_annotation("d", position = c(0.86, 0.92)) +
   theme(aspect.ratio = 1)
@@ -2969,8 +2969,8 @@ nldr_mnist4 <- trimap_mnist |>
 pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
 
 nldr_mnist5 <- pacmap_mnist |>
-  ggplot(aes(x = PaCMAP1,
-             y = PaCMAP2))+
+  ggplot(aes(x = emb1,
+             y = emb2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
   interior_annotation("e", c(0.08, 0.9)) +
   theme(aspect.ratio = 1)
@@ -3071,18 +3071,14 @@ df_bin_mnist <- algo_obj_mnist$model_highd
 
 sc_ltr_pos_mnist <- c(0.96, 0.96)
 
-tsne_minst_scaled_temp <- tsne_minst_scaled |>
-  rename(c("emb1" = "tSNE1",
-           "emb2" = "tSNE2"))
-
 tsne_minst_scaled <- tsne_minst_scaled |>
-  mutate(cluster = if_else((tSNE1 <= 1) & (tSNE1 >= 0.78) & (tSNE2 <= 0.62) & (tSNE2 >= 0.39), "small_clust", "big_clust"))
+  mutate(cluster = if_else((emb1 <= 1) & (emb1 >= 0.78) & (emb2 <= 0.62) & (emb2 >= 0.39), "small_clust", "big_clust"))
 
 trimesh_removed_mnist <- ggplot() + 
   geom_point(data = tsne_minst_scaled,
              aes(
-               x = tSNE1,
-               y = tSNE2,
+               x = emb1,
+               y = emb2,
                colour = cluster
              ),
              alpha=0.2)+
@@ -3100,8 +3096,8 @@ trimesh_removed_mnist <- ggplot() +
 tsne_plot_mnist_clust <- ggplot() + 
   geom_point(data = tsne_minst_scaled,
              aes(
-               x = tSNE1,
-               y = tSNE2,
+               x = emb1,
+               y = emb2,
                colour = cluster
              ),
              alpha=0.2)+
@@ -3128,8 +3124,8 @@ error_df <- error_df |>
   mutate(sqrt_row_wise_tot_error = standardize(sqrt_row_wise_tot_error))
   
 highd_error_2d_mnist <- error_df |>
-  ggplot(aes(x = tSNE1,
-             y = tSNE2,
+  ggplot(aes(x = emb1,
+             y = emb2,
              colour = sqrt_row_wise_tot_error)) +
   geom_point(alpha=0.2) +
   scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
