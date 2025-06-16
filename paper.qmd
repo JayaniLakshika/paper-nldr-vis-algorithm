@@ -503,9 +503,6 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
 ```{r}
 #| label: empty-bin-two-curvy
 
-# df_bin_centroids_two_curvy <- df_bin_centroids_two_curvy |>
-#   dplyr::filter(std_counts > 0)
-
 hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
   aes(x = x, y = y)) +
@@ -687,7 +684,7 @@ model_prj1 <- cbind(
   c(0.37847,-0.06517,0.04231,0.01655),
   c(-0.06466,-0.27052,0.22131,-0.15235))
 
-proj_obj1 <- quollr::get_projection(projection = model_prj1, 
+proj_obj1 <- get_projection(projection = model_prj1, 
                proj_scale = 1, 
                highd_data = scaled_two_curvy_data, 
                model_highd = scaled_two_curvy_data_model, 
@@ -840,18 +837,6 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "nonlinear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(\text{-}3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $\gamma \sim U(0, 0.5)$, $X_3 = \text{-}(X_1^3 + X_2) + \gamma$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 <!-- The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance.  -->
-
-```{r}
-#| label: fig-two-curvy-true-proj
-#| fig-cap: "Two \\gD{} projections from \\fD{}, for the two nonlinear clusters data (blue points) and true model (black lines) are shown. The top cluster in (a) shows uniformly distributed data along a C-shape, while in the bottom cluster, the data is more concentrated in one corner of the curvy shape. Video of the langevitour animations are available at <>." 
-#| fig-pos: H
-#| fig-width: 10
-#| fig-height: 5
-#| eval: false
-
-two_curvy_proj_true + two_curvy_proj_true2 +
-  plot_layout(ncol = 2)
-```
 
 ```{r}
 #| label: fig-NLDR-two-curvy
@@ -1333,66 +1318,6 @@ In this paradigm of model fitting, it is now possible to predict a new observati
 $$z = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}.$$
 
 Then, the predicted value is is the centroid of this bin in \gD{}, $C^{(2)}_{z} = (c_{z1}, c_{z2})$.
-
-
-<!--prediction for true-model of two-curvy clust-->
-```{r}
-#| label: model-prediction-umap-original
-
-predict_tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_predict_true.rds")
-
-predict_two_curvy_obj <- gen_scaled_data(
-    nldr_data = predict_tsne_two_curvy)
-
-predict_tsne_two_curvy_scaled <- predict_two_curvy_obj$scaled_nldr
-
-plot_predict_umap_fun_two_curvy <- ggplot(
-  data = predict_tsne_two_curvy_scaled, 
-  aes(x = UMAP1, 
-      y = UMAP2)) +
-  geom_point(alpha = 0.5) +
-  interior_annotation("b", c(0.08, 0.93), cex = 1.5)
-```
-
-```{r}
-#| label: model-prediction-points-line
-#| eval: false
-
-predict_tsne_two_curvy_scaled <- predict_tsne_two_curvy_scaled |>
-  mutate(ID = row_number()) |>
-  mutate(type = "predict_from_umap") 
-
-jittered_points_df <- jittered_points_df |>
-  mutate(type = "predict_from_model") 
-
-predict_point_df <- bind_rows(
-  predict_tsne_two_curvy_scaled,
-  jittered_points_df
-)
-
-plot_predict_umap_connect_two_curvy <- ggplot(
-  data = predict_point_df, 
-  aes(x = UMAP1, 
-      y = UMAP2, 
-      group = ID)) +
-  geom_point(alpha = 0.5) +
-  geom_line(alpha = 0.3) +
-  interior_annotation("d", c(0.08, 0.93), cex = 1.5)
-```
-
-```{r}
-#| echo: false
-#| label: fig-predict-two-curvy
-#| fig-pos: H
-#| fig-width: 10
-#| fig-height: 10
-#| out-width: 80%
-#| fig-cap: "Comparison of prediction generated using the exiting `umap` R package's prediction method and our method: (a) A view of the true model in projection from $7\\text{-}D$, (b) predicted data from the `umap` prediction method, and (c) predicted data from our method."
-#| eval: false
-
-proj_plot_two_curvy_true + plot_predict_umap_fun_two_curvy +plot_predict_tsne_two_curvy +
-  plot_layout(ncol = 3)
-```
 
 ### Tuning
 
