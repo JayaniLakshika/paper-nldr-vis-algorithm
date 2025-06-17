@@ -166,11 +166,16 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
 ## Model error
 langevitour::langevitour(data_two_curvy[1:(length(data_two_curvy)-1)],
                          group = factor(error_df_two_curvy_abs$error_cat,
-                                        c("error01", "error02", "error03", "error04", "error05",
-                                          "error06", "error07", "error08", "error09")),
-                         levelColors = c('#ffffcc','#ffeda0','#fed976',
-                                         '#feb24c','#fd8d3c','#fc4e2a',
-                                         '#e31a1c','#bd0026','#800026'))
+                                        c("error01", "error02", "error03", "error04",
+                                          "error05", "error06", "error07", "error08",
+                                          "error09", "error10", "error11", "error12",
+                                          "error13", "error14", "error15", "error16",
+                                          "error17", "error18", "error19", "error20")),
+                         levelColors = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
+                                         "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
+                                         "#F5AA00", "#F49B00", "#F28A00", "#F07800",
+                                         "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
+                                         "#BB1B00", "#A70C00", "#93001C", "#7D0025"))
 
 ## Model projections
 ## First projection

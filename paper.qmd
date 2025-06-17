@@ -511,9 +511,11 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = emb2,
              colour = error_cat)) +
   geom_point(alpha=0.5) +
-  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
-                                 '#feb24c','#fd8d3c','#fc4e2a',
-                                 '#e31a1c','#bd0026','#800026')) +
+  scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
+                                 "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
+                                 "#F5AA00", "#F49B00", "#F28A00", "#F07800",
+                                 "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
+                                 "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlab("tSNE1") +
   ylab("tSNE2") +
   theme_bw() +
@@ -528,9 +530,11 @@ error_plot_two_curvy_quasi <- ggplot(
       y = 0, 
       colour = error_cat)) +
   geom_quasirandom(alpha = 0.5) +
-  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
-                                 '#feb24c','#fd8d3c','#fc4e2a',
-                                 '#e31a1c','#bd0026','#800026')) +
+  scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
+                                 "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
+                                 "#F5AA00", "#F49B00", "#F28A00", "#F07800",
+                                 "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
+                                 "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlab(expression(e[hj])) +
   ylab("") +
   theme_bw() +
@@ -590,9 +594,11 @@ two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
   geom_path(
     data=circle,
     aes(x=c1, y=c2), colour="grey70") +
-  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
-                                 '#feb24c','#fd8d3c','#fc4e2a',
-                                 '#e31a1c','#bd0026','#800026')) +
+  scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
+                                 "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
+                                 "#F5AA00", "#F49B00", "#F28A00", "#F07800",
+                                 "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
+                                 "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
   theme(aspect.ratio = 1,
