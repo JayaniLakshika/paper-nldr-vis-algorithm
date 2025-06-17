@@ -2165,9 +2165,7 @@ The new methodology is accompanied by an R package called quollr, so that it is 
 
 All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
 
-The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. 
-
-Direct links to videos for viewing online are available in @tbl-links.
+The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. Direct links to videos for viewing online are available in @tbl-links.
 
 ```{r}
 #| label: tbl-links
@@ -2180,12 +2178,12 @@ links_df <- read_csv("misc/video_links.csv")
 # Create the table
 kable(links_df, 
       format = "latex", 
-      booktabs = TRUE, escape = FALSE) |>
+      booktabs = TRUE, escape = FALSE, linesep = "") |>
   kable_styling(position = "center", 
                 full_width = FALSE, 
                 font_size = 12) |>
   row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("1.5cm", "4.5cm"))
+  column_spec(1:2, width = c("1.5cm", "14cm"))
 ```
 
 ## Acknowledgments
