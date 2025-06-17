@@ -1824,7 +1824,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-rmse a) and the \\gD{} layout selected (@fig-pbmc-rmse e) by RMSE plot (@fig-pbmc-rmse) from the UMAP and tSNE with default (hyper-)~parameters. The PBMC3k data ($n =  2622$) has three close clusters in $9\\text{-}D$. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-rmse a ($a_1 = 0.06$, $b = 616/86 (22, 28)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-rmse e ($a_1 = 0.06$, $b = 704/227 (22, 32)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-rmse e is more reasonable than @fig-pbmc-rmse a. Also, the fitted models in $9\\text{-}D$ help to see some unobserved patterns of the data: (i) dense points, and (ii) nonlinear clusters. The links to the videos of langevitour animations are available in @tbl-links."
+#| fig-cap: "Compare the published \\gD{} layout (a) made with UMAP and the \\gD{} layout selected by RMSE plot (e) made by tSNE, both with default (hyper-)parameters. The two plots on the right show  projections from a tour, with the models overlaid. The published layout suggested three very separated clusters, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not spread out fully into the point cloud like the model generated from layout e. This supports the choice that layout e is the better representation of the data, because it does not exaggerate separation between clusters."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -1944,7 +1944,7 @@ error_plot_mnist <- plot_mse(error_mnist) +
 
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). All the layouts appear to be very similar. Layout c is universally poor. Layouts a, f that show two close clusters are universally suboptimal. Layout a with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout f is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts of the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Colour is used for the lines and points in the left plot to match the scatterplots of the NLDR layouts (a-f). Layout c is universally poor. Layouts a, f that show a big cluster and a small circular cluster are universally optimal. Layout a performs well at tiny binwidth (where most points are in their own bin) and not as well as f with larger binwidth, thus layout f is the best choice."
 #| label: fig-mnist-rmse
 #| fig-pos: H
 #| out-width: 92%
