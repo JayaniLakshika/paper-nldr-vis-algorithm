@@ -971,11 +971,7 @@ error_plot_two_curvy + error_plot_two_curvy_quasi +
 
 <!-- Does this really need an entire subsection? It's only 3 sentences long. -->
 
-In this paradigm of model fitting, it is now possible to predict a new observation's value in the NLDR representation, independent of the choice of NLDR method. To do this, we first need to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, to the new observation, which is,
-
-$$z = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}.$$
-
-Then, the predicted value is is the centroid of this bin in \gD{}, $C^{(2)}_{z} = (c_{z1}, c_{z2})$.
+A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
 
 ### Tuning
 
