@@ -169,6 +169,21 @@ proj_obj1 <- get_projection(projection = model_prj1,
                                               axis_pos_y = -0.5,
                                               threshold = 0.03))
 
+# Changed the axis parametersAdd commentMore actions
+axis_obj <- gen_axes(
+  proj = model_prj1 * 2,
+  limits = 0.9,
+  axis_pos_x = -0.4,
+  axis_pos_y = -0.4,
+  axis_labels = names(scaled_two_curvy_data),
+  threshold = 0.05)
+
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
+proj_obj1[["axes"]] <- axes
+proj_obj1[["circle"]] <- circle
+
 write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1.rds")
 
 
@@ -187,6 +202,21 @@ proj_obj2 <- get_projection(projection = model_prj2,
                                               axis_pos_x = -0.35,
                                               axis_pos_y = -0.35,
                                               threshold = 0.01))
+
+#Changed the axis parametersAdd commentMore actions
+axis_obj <- gen_axes(
+  proj = model_prj2 * 2,
+  limits = 0.7,
+  axis_pos_x = -0.35,
+  axis_pos_y = -0.35,
+  axis_labels = names(scaled_two_curvy_data),
+  threshold = 0.02)
+
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
+proj_obj2[["axes"]] <- axes
+proj_obj2[["circle"]] <- circle
 
 write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
