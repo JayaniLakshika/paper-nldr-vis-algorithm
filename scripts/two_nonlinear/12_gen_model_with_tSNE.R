@@ -123,15 +123,14 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
               select(-ID))
 
 ## Add error type
+breaks <- c(-Inf, 0.003, 0.026, 0.036, 0.045, 0.054, 0.06, 0.07, 0.08, 0.086, 0.09, 0.1, 0.11, 0.13, 0.14, 0.16, 0.17, 0.19, 0.22, 0.27, Inf)
+labels <- paste0("error", sprintf("%02d", 1:(length(breaks) - 1)))
+
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  mutate(error_cat = if_else(sqrt_row_wise_total_error <= 0.05, "error01",
-                             if_else(sqrt_row_wise_total_error <= 0.07, "error02",
-                                     if_else(sqrt_row_wise_total_error <= 0.08, "error03",
-                                             if_else(sqrt_row_wise_total_error <= 0.09, "error04",
-                                                     if_else(sqrt_row_wise_total_error <= 0.11, "error05",
-                                                             if_else(sqrt_row_wise_total_error <= 0.14, "error06",
-                                                                     if_else(sqrt_row_wise_total_error <= 0.17, "error07",
-                                                                             if_else(sqrt_row_wise_total_error <= 0.22, "error08", "error09")))))))))
+  mutate(error_cat = cut(sqrt_row_wise_total_error,
+                         breaks = breaks,
+                         labels = labels,
+                         right = TRUE))
 
 write_rds(error_df_two_curvy_abs, "data/two_nonlinear/error_df_two_curvy_abs.rds")
 
