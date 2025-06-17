@@ -111,4 +111,85 @@ quad <- function(a = 3, b = 2 * a2, c = -(a2^2 + a1^2))
   answer[answer>0] ## only positive
 }
 
+plot_proj <- function(proj_obj,
+                      point_param = c(1.5, 0.5, "#000000"), # size, alpha, color
+                      line_param = c(0.5, 0.5, "#000000"), #linewidth, alpha
+                      plot_limits,
+                      axis_text_size = 3,
+                      is_category = FALSE) {
+
+  projected_df <- proj_obj$projected_df
+  model_df <- proj_obj$model_df
+  axes <- proj_obj$axes
+  circle <- proj_obj$circle
+
+  if(is_category == FALSE) {
+
+    initial_plot <- projected_df |>
+      ggplot(
+        aes(
+          x = proj1,
+          y = proj2)) +
+      geom_point(
+        size = as.numeric(point_param[1]),
+        alpha = as.numeric(point_param[2]),
+        color = point_param[3]) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        color = line_param[3],
+        linewidth = as.numeric(line_param[1]),
+        alpha = as.numeric(line_param[2]))
+
+  } else {
+
+    projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj$cluster)
+
+    initial_plot <- projected_df |>
+      ggplot(
+        aes(
+          x = proj1,
+          y = proj2,
+          colour = cluster)) +
+      geom_point(
+        size = as.numeric(point_param[1]),
+        alpha = as.numeric(point_param[2])) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        color = line_param[3],
+        linewidth = as.numeric(line_param[1]),
+        alpha = as.numeric(line_param[2]))
+
+  }
+
+  initial_plot <- initial_plot +
+    geom_segment(
+      data=axes,
+      aes(x=x1, y=y1, xend=x2, yend=y2),
+      colour="grey70") +
+    geom_text(
+      data=axes,
+      aes(x=x2, y=y2),
+      label=rownames(axes),
+      colour="grey50",
+      size = axis_text_size) +
+    geom_path(
+      data=circle,
+      aes(x=c1, y=c2), colour="grey70") +
+    xlim(plot_limits) +
+    ylim(plot_limits)
+
+  initial_plot
+
+}
 
