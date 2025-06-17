@@ -122,6 +122,17 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(tsne_two_curvy_scaled |>
               select(-ID))
 
+## Add error type
+error_df_two_curvy_abs <- error_df_two_curvy_abs |>
+  mutate(error_cat = if_else(sqrt_row_wise_total_error <= 0.05, "error01",
+                             if_else(sqrt_row_wise_total_error <= 0.07, "error02",
+                                     if_else(sqrt_row_wise_total_error <= 0.08, "error03",
+                                             if_else(sqrt_row_wise_total_error <= 0.09, "error04",
+                                                     if_else(sqrt_row_wise_total_error <= 0.11, "error05",
+                                                             if_else(sqrt_row_wise_total_error <= 0.14, "error06",
+                                                                     if_else(sqrt_row_wise_total_error <= 0.17, "error07",
+                                                                             if_else(sqrt_row_wise_total_error <= 0.22, "error08", "error09")))))))))
+
 write_rds(error_df_two_curvy_abs, "data/two_nonlinear/error_df_two_curvy_abs.rds")
 
 
@@ -151,6 +162,15 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "model")),
                          levelColors = c(clr_choice, "#000000"))
+
+## Model error
+langevitour::langevitour(data_two_curvy[1:(length(data_two_curvy)-1)],
+                         group = factor(error_df_two_curvy_abs$error_cat,
+                                        c("error01", "error02", "error03", "error04", "error05",
+                                          "error06", "error07", "error08", "error09")),
+                         levelColors = c('#ffffcc','#ffeda0','#fed976',
+                                         '#feb24c','#fd8d3c','#fc4e2a',
+                                         '#e31a1c','#bd0026','#800026'))
 
 ## Model projections
 ## First projection
@@ -183,9 +203,9 @@ circle <- axis_obj$circle
 
 proj_obj1[["axes"]] <- axes
 proj_obj1[["circle"]] <- circle
+proj_obj1[["cluster"]] <- error_df_two_curvy_abs$error_cat
 
 write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1.rds")
-
 
 ## Second projection
 model_prj2 <- cbind(

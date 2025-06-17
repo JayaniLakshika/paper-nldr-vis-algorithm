@@ -509,9 +509,11 @@ error_df_two_curvy_abs <- read_rds("data/two_nonlinear/error_df_two_curvy_abs.rd
 error_plot_two_curvy <- error_df_two_curvy_abs |>
   ggplot(aes(x = emb1,
              y = emb2,
-             colour = sqrt_row_wise_total_error)) +
+             colour = error_cat)) +
   geom_point(alpha=0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
+                                 '#feb24c','#fd8d3c','#fc4e2a',
+                                 '#e31a1c','#bd0026','#800026')) +
   xlab("tSNE1") +
   ylab("tSNE2") +
   theme_bw() +
@@ -524,9 +526,11 @@ error_plot_two_curvy_quasi <- ggplot(
   error_df_two_curvy_abs, 
   aes(x = sqrt_row_wise_total_error, 
       y = 0, 
-      colour = sqrt_row_wise_total_error)) +
+      colour = error_cat)) +
   geom_quasirandom(alpha = 0.5) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
+                                 '#feb24c','#fd8d3c','#fc4e2a',
+                                 '#e31a1c','#bd0026','#800026')) +
   xlab(expression(e[hj])) +
   ylab("") +
   theme_bw() +
@@ -534,7 +538,8 @@ error_plot_two_curvy_quasi <- ggplot(
         axis.ticks.y = element_blank(),
         panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
-        legend.position = "none")
+        legend.position = "none",
+        plot.margin = margin(0, 0, 0, 0))
 ```
 
 ```{r}
@@ -551,6 +556,45 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     axis_text_size = 2, 
     is_category = FALSE) +
   interior_annotation(label = "b", cex = 1.2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none") 
+
+
+projected_df <- proj_obj1$projected_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
+cluster <- proj_obj1$cluster
+
+projected_df <- projected_df |>
+      dplyr::mutate(cluster = proj_obj1$cluster)
+
+two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1,
+      y = proj2,
+      colour = cluster)) +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2) +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2),
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle,
+    aes(x=c1, y=c2), colour="grey70") +
+  scale_colour_manual(values = c('#ffffcc','#ffeda0','#fed976',
+                                 '#feb24c','#fd8d3c','#fc4e2a',
+                                 '#e31a1c','#bd0026','#800026')) +
+  xlim(c(-0.6, 0.6)) +
+  ylim(c(-0.6, 0.6)) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
 
@@ -948,15 +992,14 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
 axis.text = element_text(size = 15))
 ```
 
-<!-- Sparse end with dense corner to me is very hard to understand - sparse and dense are pretty much antonyms -->
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
 #| fig-cap: "The \\fD{} model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster and most small errors are distributed near the dense corners."
 #| out-width: 80%
 #| fig-pos: H
 
-error_plot_two_curvy + error_plot_two_curvy_quasi +
-  plot_layout(ncol=2)
+ error_plot_two_curvy_quasi + error_plot_two_curvy + two_curvy_proj_tsne_first_model1_coloured +
+  plot_layout(ncol=3)
 ```
 
 ### Prediction into \gD{}
