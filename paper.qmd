@@ -386,59 +386,13 @@ We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
 ```{r}
-#| label: two-curvy-training
-training_data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds") |>
-  mutate(ID = row_number())
-```
-
-```{r}
-#| label: two-curvy-true-proj-data
-
-true_model_df <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model.rds")
-wireframe_true_model <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
-
-data_two_curvy <- training_data_two_curvy |>
-  select(-ID) |>
-  mutate(type = "data")
-
-true_model_two_curvy <- true_model_df |> 
-  mutate(type = "true model")
-```
-
-<!--tSNE applied for Two curvy data-->
-```{r}
-#| label: tsne-two-curvy
-tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
-  mutate(ID = row_number()) |>
-  rename(c("emb1" = "tSNE1",
-           "emb2" = "tSNE2"))
-```
-
-```{r}
 #| label: fit_model-two-curvy
 
-num_bins_x_two_curvy <- 24
-
-algo_obj_two_curvy <- fit_highd_model(
-  highd_data = training_data_two_curvy, 
-  nldr_data = tsne_two_curvy, 
-  bin1 = num_bins_x_two_curvy, 
-  q = 0.1, 
-  benchmark_highdens = 1)
-
-tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_obj$scaled_nldr
-tr_from_to_df_two_curvy <- algo_obj_two_curvy$trimesh_data
-df_bin_centroids_two_curvy <- algo_obj_two_curvy$model_2d
-df_bin_two_curvy <- algo_obj_two_curvy$model_highd
-hex_grid <- algo_obj_two_curvy$hb_obj$hex_poly
-counts_df <- algo_obj_two_curvy$hb_obj$std_cts
-
-hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hexID"))
-
-hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids_two_curvy$hexID)
-
-bin_width <- algo_obj_two_curvy$hb_obj$a1
+tsne_two_curvy_scaled <- read_rds("data/two_nonlinear/tsne_two_curvy_scaled.rds")
+hex_grid_with_counts <- read_rds("data/two_nonlinear/hex_grid_with_counts.rds")
+hex_grid_nonempty <- read_rds("data/two_nonlinear/hex_grid_nonempty.rds")
+tr_from_to_df_two_curvy <- read_rds("data/two_nonlinear/tr_from_to_df_two_curvy.rds")
+df_bin_centroids_two_curvy <- read_rds("data/two_nonlinear/df_bin_centroids_two_curvy.rds")
 
 sc_ltr_pos <- c(0.08, 0.9)
 sc_xlims <- c(-0.3, 1.2)
@@ -459,15 +413,6 @@ nldr_two_curvy <- nldr_two_curvy_original +
   interior_annotation("a", sc_ltr_pos, cex = 2) +
   xlim(sc_xlims) +
   ylim(sc_ylims)
-
-# Second plot (identical to base except for xlim/ylim)
-nldr_two_curvy2 <- nldr_two_curvy_original +
-  interior_annotation("a", sc_ltr_pos, cex = 1.5)
-
-# Third plot with aspect ratio and different annotation
-nldr_two_curvy_original2 <- nldr_two_curvy_original +
-  theme(aspect.ratio = 1) +
-  interior_annotation("a1", sc_ltr_pos)
 
 hex_grid_two_curvy <- ggplot(
   data = hex_grid_with_counts, 
@@ -578,17 +523,7 @@ trimesh_two_curvy_removed1_tsne_with_data <- ggplot() +
 #| label: compute-error-tsne
 
 ## Compute error
-error_df_two_curvy_abs <- augment(
-  highd_data = training_data_two_curvy,
-  model_2d = df_bin_centroids_two_curvy,
-  model_highd = df_bin_two_curvy)
-
-error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
-
-error_df_two_curvy_abs <- error_df_two_curvy_abs |>
-  bind_cols(tsne_two_curvy_scaled |>
-              select(-ID))
+error_df_two_curvy_abs <- read_rds("data/two_nonlinear/error_df_two_curvy_abs.rds")
 
 error_plot_two_curvy <- error_df_two_curvy_abs |>
   ggplot(aes(x = emb1,
@@ -622,129 +557,10 @@ error_plot_two_curvy_quasi <- ggplot(
 ```
 
 ```{r}
-#| label: prep-data-for-proj-tsne-best
-
-df_bin_two_curvy <- df_bin_two_curvy |>
-  select(-hexID) |>
-  mutate(type = "model")
-
-# Apply the scaling
-df_model_data_two_curvy <- bind_rows(data_two_curvy, true_model_two_curvy, df_bin_two_curvy)
-
-scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
-  as_tibble()
-
-scaled_two_curvy_data <- scaled_two_curvy |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_two_curvy_data_true_model <- scaled_two_curvy |>
-  filter(type == "true model") |>
-  select(-type)
-
-scaled_two_curvy_data_model <- scaled_two_curvy |>
-  filter(type == "model") |>
-  select(-type)
-
-```
-
-```{r}
-#| label: langevitour-true-two-curvy-proj
-#| eval: false
-df_model_data_two_curvy_filtered <- bind_rows(true_model_two_curvy, data_two_curvy)
-
-langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
-                         lineFrom = wireframe_true_model$from,
-                         lineTo = wireframe_true_model$to,
-                         group = factor(df_model_data_two_curvy_filtered$type,
-                                        c("data", "true model")),
-                         levelColors = c(clr_choice, "#000000"))
-```
-
-```{r}
-#| label: langevitour-best-fit-two-curvy-proj-tsne
-#| eval: false
-
-df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
-
-langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
-                         lineFrom = tr_from_to_df_two_curvy$from,
-                         lineTo = tr_from_to_df_two_curvy$to,
-                         group = factor(df_model_data_two_curvy_filtered$type,
-                                        c("data", "model")),
-                         levelColors = c(clr_choice, "#000000"))
-```
-
-
-```{r}
 #| label: best-fit-two-curvy-proj-tsne
 
 ## First projection
-model_prj1 <- cbind(
-  c(0.37847,-0.06517,0.04231,0.01655),
-  c(-0.06466,-0.27052,0.22131,-0.15235))
-
-proj_obj1 <- get_projection(projection = model_prj1, 
-               proj_scale = 1, 
-               highd_data = scaled_two_curvy_data, 
-               model_highd = scaled_two_curvy_data_model, 
-               trimesh_data = tr_from_to_df_two_curvy, 
-               axis_param = list(limits = 0.5, 
-                                 axis_scaled = 2,
-                                 axis_pos_x = -0.5, 
-                                 axis_pos_y = -0.5, 
-                                 threshold = 0.03))
-
-## For true model
-
-projection_scaled <- model_prj1 * 1
-
-projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
-
-projected_true_model_df <- projected_true_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-true_model_df_proj <- dplyr::left_join(
-  wireframe_true_model, 
-  projected_true_model_df, 
-  by = c("from" = "ID"))
-
-names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
-
-true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
-names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
-
-proj_obj1_true <- proj_obj1
-proj_obj1_true[["model_df"]] <- true_model_df_proj
-
-two_curvy_proj_true <- plot_proj(
-  proj_obj = proj_obj1_true, 
-  point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.6, 0.6), 
-  axis_text_size = 4, 
-  is_category = FALSE) +
-  interior_annotation(label = "a", cex = 1.5) +
-  theme(aspect.ratio=1, 
-        legend.position = "none") 
-
-# Changed the axis parameters
-axis_obj <- gen_axes(
-    proj = model_prj1 * 2,
-    limits = 0.9,
-    axis_pos_x = -0.4,
-    axis_pos_y = -0.4,
-    axis_labels = names(scaled_two_curvy_data),
-    threshold = 0.05)
-
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj1[["axes"]] <- axes
-proj_obj1[["circle"]] <- circle
+proj_obj1 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj1.rds")
 
 two_curvy_proj_tsne_first_model1 <- plot_proj(
     proj_obj = proj_obj1, 
@@ -758,68 +574,8 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
         legend.position = "none") 
 
 ## Second projection
-model_prj2 <- cbind(
-  c(-0.38281,-0.04870,0.00619,-0.02451),
-  c(-0.01303,0.00634,-0.37421,0.09648))
 
-proj_obj2 <- get_projection(projection = model_prj2, 
-                            proj_scale = 1, 
-                            highd_data = scaled_two_curvy_data, 
-                            model_highd = scaled_two_curvy_data_model, 
-                            trimesh_data = tr_from_to_df_two_curvy, 
-                            axis_param = list(limits = 0.35, 
-                                              axis_scaled = 2,
-                                              axis_pos_x = -0.35, 
-                                              axis_pos_y = -0.35, 
-                                              threshold = 0.01))
-
-
-projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% model_prj2
-
-projected_true_model_df <- projected_true_model |>
-  tibble::as_tibble(.name_repair = "unique") |>
-  dplyr::rename(c("proj1" = "...1",
-                  "proj2" = "...2")) |>
-  dplyr::mutate(ID = dplyr::row_number())
-
-true_model_df_proj <- dplyr::left_join(
-  wireframe_true_model, 
-  projected_true_model_df, 
-  by = c("from" = "ID"))
-
-names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
-
-true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
-names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
-
-proj_obj2_true <- proj_obj2
-proj_obj2_true[["model_df"]] <- true_model_df_proj
-
-two_curvy_proj_true2 <- plot_proj(
-    proj_obj = proj_obj2_true, 
-    point_param = c(0.5, 0.5, clr_choice), # size, alpha, color
-    line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-    plot_limits = c(-0.42, 0.42), 
-    axis_text_size = 4, 
-    is_category = FALSE) +
-  interior_annotation(label = "b", cex = 1.5) +
-  theme(aspect.ratio = 1, 
-        legend.position = "none")
-
-#Changed the axis parameters
-axis_obj <- gen_axes(
-    proj = model_prj2 * 2,
-    limits = 0.7,
-    axis_pos_x = -0.35,
-    axis_pos_y = -0.35,
-    axis_labels = names(scaled_two_curvy_data),
-    threshold = 0.02)
-
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj2[["axes"]] <- axes
-proj_obj2[["circle"]] <- circle
+proj_obj2 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
 two_curvy_proj_tsne_all_model1 <- plot_proj(
   proj_obj = proj_obj2, 
@@ -888,49 +644,15 @@ $${#eq-bin2}
 #| label: code-illustration
 # Code to draw illustration for notation
 ## hexagon binning to have regular hexagons
-hb_obj_notation <- hex_binning(
-  nldr_obj = algo_obj_two_curvy$nldr_obj, 
-  bin1 = 7, 
-  q = 0.1)
 
-a1_temp <- hb_obj_notation$a1
-a2_temp <- hb_obj_notation$a2
-l_temp <- quad(a=3, b = 2 * a2_temp, c = -(a2_temp^2 + a1_temp^2))
-
-## Data set with all centroids
-all_centroids_df_temp <- hb_obj_notation$centroids
-hex_grid_temp <- hb_obj_notation$hex_poly
-
-hex_grid_temp40 <- hex_grid_temp |> 
-  filter(hex_poly_id == 40)
-
-start_pt <- all_centroids_df_temp |> 
-  filter(hexID == 1)
-d_rect <- tibble(x1min = 0, 
-                 x1max = 1,
-                 x2min = 0,
-                 x2max = diff(algo_obj_two_curvy$nldr_obj$lim2)/diff(algo_obj_two_curvy$nldr_obj$lim1))
-
-# To move the rectangle to ignore the overlap with the centroids
-# rect_adj <- tibble(x1 = 0.03, x2 = 0.03)
-rect_adj <- tibble(x1 = -0.03, x2 = 0.03)
-
-
-a1 <- tibble(x = all_centroids_df_temp$c_x[4],
-             xend = all_centroids_df_temp$c_x[5],
-             y = all_centroids_df_temp$c_y[21],
-             yend = all_centroids_df_temp$c_y[21],
-             label = expression(a[1]))
-a2 <- tibble(x = all_centroids_df_temp$c_x[25],
-             xend = all_centroids_df_temp$c_x[25],
-             y = all_centroids_df_temp$c_y[25],
-             yend = all_centroids_df_temp$c_y[33],
-             label = expression(a[2]))
-l <- tibble(x = hex_grid_temp40$x[2],
-            xend = hex_grid_temp40$x[3],
-            y = hex_grid_temp40$y[2],
-            yend = hex_grid_temp40$y[3],
-            label = expression(l))
+hex_grid_temp <- read_rds("data/two_nonlinear/hex_grid_temp.rds")
+all_centroids_df_temp <- read_rds("data/two_nonlinear/all_centroids_df_tempp.rds")
+start_pt <- read_rds("data/two_nonlinear/start_pt.rds")
+d_rect <- read_rds("data/two_nonlinear/d_rect.rds")
+a1 <- read_rds("data/two_nonlinear/a2_data.rds")
+a2 <- read_rds("data/two_nonlinear/a1_data.rds")
+l <- read_rds("data/two_nonlinear/l_data.rds")
+rect_adj <- read_rds("data/two_nonlinear/rect_adj.rds")
 
 hex_param_vis <- ggplot() + 
     geom_polygon(data = hex_grid_temp, 
@@ -1067,23 +789,8 @@ $$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$
 ```{r}
 #| label: hexbin-regular-two-curvy2
 
-num_bins_x_two_curvy <- 15
-
-algo_obj_two_curvy2 <- fit_highd_model(
-  highd_data = training_data_two_curvy, 
-  nldr_data = tsne_two_curvy, 
-  bin1 = num_bins_x_two_curvy, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$trimesh_data
-df_bin_centroids_two_curvy2 <- algo_obj_two_curvy2$model_2d
-df_bin_two_curvy2 <- algo_obj_two_curvy2$model_highd
-
-hex_grid_two_curvy2 <- algo_obj_two_curvy2$hb_obj$hex_poly
-counts_df_two_curvy2 <- algo_obj_two_curvy2$hb_obj$std_cts
-
-hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("hex_poly_id" = "hexID"))
+hex_grid_with_counts_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy2.rds")
+tr_from_to_df_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy2.rds")
 
 hex_grid_coloured_two_curvy2 <- ggplot() + 
   geom_polygon(
@@ -1127,23 +834,8 @@ trimesh_two_curvy2 <- ggplot() +
 ```{r}
 #| label: hexbin-regular-two-curvy3
 
-num_bins_x_two_curvy <- 48
-
-algo_obj_two_curvy3 <- fit_highd_model(
-    highd_data = training_data_two_curvy, 
-    nldr_data = tsne_two_curvy, 
-    bin1 = num_bins_x_two_curvy, 
-    q = 0.1, 
-    benchmark_highdens = 5)
-
-tr_from_to_df_two_curvy3 <- algo_obj_two_curvy3$trimesh_data
-df_bin_centroids_two_curvy3 <- algo_obj_two_curvy3$model_2d
-df_bin_two_curvy3 <- algo_obj_two_curvy3$model_highd
-
-hex_grid_two_curvy3 <- algo_obj_two_curvy3$hb_obj$hex_poly
-counts_df_two_curvy3 <- algo_obj_two_curvy3$hb_obj$std_cts
-
-hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("hex_poly_id" = "hexID"))
+hex_grid_with_counts_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy3.rds")
+tr_from_to_df_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
 
 hex_grid_coloured_two_curvy3 <-  ggplot() + 
   geom_polygon(
@@ -1170,8 +862,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 #| fig-width: 8
 #| fig-height: 2
 
-#nldr_two_curvy2 + 
-  trimesh_two_curvy_removed1_tsne_with_data +
+trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_tsne_first_model1 +
   two_curvy_proj_tsne_all_model1 +
   plot_layout(ncol = 3)
@@ -1197,21 +888,7 @@ where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the
 ```{r}
 #| label: error-two-curvy
 
-error_two_curvy_umap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
-
-## Find the minimum RMSE when have duplicate a1
-error_two_curvy_umap <- error_two_curvy_umap |>
-  group_by(a1) |>
-  filter(bin1 == min(bin1)) |>
-  ungroup() |>
-  mutate(prop_dens = 1/(b*side_length^2)) 
-
-base_line_prop_dens <- error_two_curvy_umap |>
-  filter(a1 == min(a1)) |>
-  pull(prop_dens)
-
-error_two_curvy_umap <- error_two_curvy_umap |>
-  mutate(prop_comp = prop_dens/base_line_prop_dens)
+error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_curvy_umap.rds")
 
 mse_two_curvy_b <- ggplot(error_two_curvy_umap, 
                      aes(x = a1, 
@@ -1266,9 +943,6 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
         axis.ticks.y = element_line(),
         axis.title = element_text(size = 18),
 axis.text = element_text(size = 15))
-
-error_two_curvy_umap <- error_two_curvy_umap |>
-  mutate(prop_bins = b_non_empty/b)
 
 a1_m_two_curvy <- ggplot(error_two_curvy_umap,
                      aes(x = a1,
@@ -1365,7 +1039,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 ```{r}
 #| label: rm-lwd-bin-error
 
-error_rm_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_rm_lwd_diff_bin.rds") |>
+error_rm_two_curvy <- read_rds("data/two_nonlinear/error_rm_lwd_diff_bin.rds") |>
   mutate(bin1  = as.factor(bin1))
 
 mse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
@@ -1441,7 +1115,7 @@ Comparing the RMSE to obtain the best fit is appropraite if the same NLDR method
 #| label: read-two-curvy-clust-nldr
 # Read a variety of different NLDR representations of two_non_linear_diff_shaped_close_clusters
 # and plot them on same aspect ratio
-tsne_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds")
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds")
 
 nldr_two_curvy1 <- tsne_two_curvy |>
   ggplot(aes(x = tSNE1,
@@ -1450,7 +1124,7 @@ nldr_two_curvy1 <- tsne_two_curvy |>
   interior_annotation("a") +
   theme(aspect.ratio = 1) 
 
-tsne_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds")
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds")
 
 nldr_two_curvy6 <- tsne_two_curvy |>
   ggplot(aes(x = tSNE1,
@@ -1459,7 +1133,7 @@ nldr_two_curvy6 <- tsne_two_curvy |>
   interior_annotation("f") +
   theme(aspect.ratio = 1) 
 
-umap_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+umap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
 
 nldr_two_curvy2 <- umap_two_curvy |>
   ggplot(aes(x = UMAP1,
@@ -1468,7 +1142,7 @@ nldr_two_curvy2 <- umap_two_curvy |>
   interior_annotation("b", c(0.08, 0.9)) +
   theme(aspect.ratio = 1) 
 
-phate_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds")
+phate_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds")
 
 nldr_two_curvy3 <- phate_two_curvy |>
   ggplot(aes(x = PHATE1,
@@ -1477,7 +1151,7 @@ nldr_two_curvy3 <- phate_two_curvy |>
   interior_annotation("c") +
   theme(aspect.ratio = 1) 
 
-trimap_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+trimap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
 
 nldr_two_curvy4 <- trimap_two_curvy |>
   ggplot(aes(x = TriMAP1,
@@ -1486,7 +1160,7 @@ nldr_two_curvy4 <- trimap_two_curvy |>
   interior_annotation("d") +
   theme(aspect.ratio = 1)
 
-pacmap_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+pacmap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
 
 nldr_two_curvy5 <- pacmap_two_curvy |>
   ggplot(aes(x = PaCMAP1,
@@ -1499,12 +1173,12 @@ nldr_two_curvy5 <- pacmap_two_curvy |>
 ```{r}
 #| label: combine-data-two_curvy
 
-error_two_curvy_umap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
-error_two_curvy_tsne <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
-error_two_curvy_phate <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
-error_two_curvy_trimap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
-error_two_curvy_pacmap <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
-error_two_curvy_tsne2 <- read_rds("data/two_non_linear_diff_shaped_close_clusters/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
+error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
+error_two_curvy_phate <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
+error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
+error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
+error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
 error_two_curvy_tsne2 <- error_two_curvy_tsne2 |>
   mutate(method = "tSNE2")
