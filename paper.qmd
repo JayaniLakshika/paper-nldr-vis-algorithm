@@ -511,6 +511,7 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = emb2,
              colour = error_cat)) +
   geom_point(alpha=0.5) +
+  interior_annotation(label = "b", cex = 1.2) +
   scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
                                  "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
@@ -530,6 +531,7 @@ error_plot_two_curvy_quasi <- ggplot(
       y = 0, 
       colour = error_cat)) +
   geom_quasirandom(alpha = 0.5) +
+  interior_annotation(label = "a", cex = 1.2) +
   scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
                                  "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
@@ -601,6 +603,7 @@ two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
+  interior_annotation(label = "c", cex = 1.2) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
 
@@ -1000,7 +1003,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "The \\fD{} model error in \\gD{} layout. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed near the sparse end of the nonlinear cluster and most small errors are distributed near the dense corners."
+#| fig-cap: "Explore the distribution of residuals in \\gD{} and \\fD{}. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
 #| out-width: 80%
 #| fig-pos: H
 
