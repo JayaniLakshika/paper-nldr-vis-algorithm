@@ -1226,7 +1226,7 @@ error_two_curvy <- error_two_curvy |>
 #| label: error-comp-two_curvy
 
 error_plot_two_curvy <-
-  plot_mse(error_two_curvy) +
+  plot_rmse(error_two_curvy) +
   scale_x_continuous(breaks =
     sort(unique(error_two_curvy$a1))[
       seq(1, length(
@@ -1782,7 +1782,7 @@ error_pbmc <- error_pbmc |>
 ```{r}
 #| label: error-comp-pbmc
 
-error_plot_pbmc <- plot_mse(error_pbmc) +
+error_plot_pbmc <- plot_rmse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) 
 
@@ -1975,7 +1975,7 @@ error_mnist <- error_mnist |>
 ```{r}
 #| label: error-comp-mnist
 
-error_plot_mnist <- plot_mse(error_mnist) +
+error_plot_mnist <- plot_rmse(error_mnist) +
   scale_x_continuous(breaks = sort(
     unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
                                        by = 5), 24)]) +

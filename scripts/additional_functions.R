@@ -45,7 +45,7 @@ scale_data_manual <- function(data, type_col) {
 
 # Plot MSE
 
-plot_mse <- function(error_df) {
+plot_rmse <- function(error_df) {
 
   ggplot(error_df,
          aes(x = a1,
