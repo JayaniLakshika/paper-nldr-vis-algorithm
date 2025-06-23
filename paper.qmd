@@ -64,8 +64,8 @@ tbl-cap-location: bottom
 abstract: |
   Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional data (\pD{}) by applying a non-linear transformation. NLDR often exaggerates random patterns, sometimes due to the samples observed. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of \pD{} distributions. The NLDR methods and hyper-parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. To help assess the NLDR and decide on which, if any, is the most reasonable representation of the structure(s) present in the \pD{} data, we have developed an algorithm to show the \gD{} NLDR model in the \pD{} space, viewed with a tour, a movie of linear projections. From this, one can see if the model fits everywhere, or better in some subspaces, or completely mismatches the data. Also, we can see how different methods may have similar summaries or quirks. 
   
-keywords: [high-dimensional data vizualization, non-linear dimension reduction, tour]
-keywords-formatted: [high-dimensional data vizualization, non-linear dimension reduction, tour]
+keywords: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
+keywords-formatted: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
 
 bibliography: paper.bib  
 header-includes: | 
@@ -511,7 +511,7 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
              y = emb2,
              colour = error_cat)) +
   geom_point(alpha=0.5) +
-  interior_annotation(label = "b", cex = 1.2) +
+  interior_annotation(label = "b", cex = 1.5) +
   scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
                                  "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
@@ -522,7 +522,10 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
   theme_bw() +
   theme(
     aspect.ratio = 1,
-    legend.position = "none"
+    legend.position = "none",
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
   )
 
 error_plot_two_curvy_quasi <- ggplot(
@@ -531,7 +534,7 @@ error_plot_two_curvy_quasi <- ggplot(
       y = 0, 
       colour = error_cat)) +
   geom_quasirandom(alpha = 0.5) +
-  interior_annotation(label = "a", cex = 1.2) +
+  interior_annotation(label = "a", cex = 1.5) +
   scale_colour_manual(values = c("#FFFFC8", "#FFFAC0", "#FEF2B3", "#FCE9A3",
                                  "#FADE8F", "#F9D378", "#F8C65D", "#F6B938",
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
@@ -603,7 +606,7 @@ two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlim(c(-0.6, 0.6)) +
   ylim(c(-0.6, 0.6)) +
-  interior_annotation(label = "c", cex = 1.2) +
+  interior_annotation(label = "c", cex = 1.5) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
 
@@ -1003,9 +1006,11 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "Explore the distribution of residuals in \\gD{} and \\fD{}. Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
-#| out-width: 80%
+#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b) and a tour of \\fD{} data space (c). Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
+#| out-width: 100%
 #| fig-pos: H
+#| fig-width: 8
+#| fig-height: 3
 
  error_plot_two_curvy_quasi + error_plot_two_curvy + two_curvy_proj_tsne_first_model1_coloured +
   plot_layout(ncol=3)
