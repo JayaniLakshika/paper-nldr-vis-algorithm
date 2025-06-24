@@ -185,15 +185,15 @@ model_prj1 <- cbind(
   c(-0.05248,-0.05845,0.06057,-0.00352,0.01697,-0.06938,0.01953))
 
 proj_obj1 <- get_projection(projection = model_prj1,
-                            proj_scale = 1,
+                            proj_scale = 5,
                             highd_data = scaled_two_curvy_data,
                             model_highd = scaled_two_curvy_data_model,
                             trimesh_data = tr_from_to_df_two_curvy,
-                            axis_param = list(limits = 0.5,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -0.5,
-                                              axis_pos_y = -0.5,
-                                              threshold = 0.03))
+                            axis_param = list(limits = 0.8,
+                                              axis_scaled = 5,
+                                              axis_pos_x = -0.6,
+                                              axis_pos_y = -0.6,
+                                              threshold = 0.042))
 
 # Changed the axis parametersAdd commentMore actions
 # axis_obj <- gen_axes(
