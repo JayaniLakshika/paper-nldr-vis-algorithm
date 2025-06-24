@@ -20,7 +20,7 @@ use_condaenv("pcamp_env")
 
 #source(here::here("R/nldr_code.R"), local = TRUE)
 
-data <- read_rds(here::here("data/two_nonlinear/two_nonlinear_data.rds"))
+data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
 
 ## Scale the data
 
@@ -39,7 +39,7 @@ tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
 names(tSNE_data) <- c("tSNE1", "tSNE2")
 
-write_rds(tSNE_data, file = paste0("data/two_nonlinear/two_nonlinear_tsne_perplexity_", perplexity, ".rds"))
+write_rds(tSNE_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_", perplexity, ".rds"))
 
 ## tSNE (another choice)
 perplexity <- 62
@@ -53,7 +53,7 @@ tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
 names(tSNE_data) <- c("tSNE1", "tSNE2")
 
-write_rds(tSNE_data, file = paste0("data/two_nonlinear/two_nonlinear_tsne_perplexity_", perplexity, ".rds"))
+write_rds(tSNE_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_", perplexity, ".rds"))
 
 
 ## UMAP
@@ -87,10 +87,10 @@ UMAP_data <- UMAP_fit$layout |>
 names(UMAP_data) <- c("UMAP1", "UMAP2")
 
 ## Run only once
-write_rds(UMAP_data, file = paste0("data/two_nonlinear/two_nonlinear_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
+write_rds(UMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
 
 ## Predict for true model
-true_model_data <- read_rds("data/two_nonlinear/two_nonlinear_true_model.rds")
+true_model_data <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 true_model_data <- true_model_data |>
   select(-ID)
 
@@ -100,7 +100,7 @@ predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
 names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
 
 ## Run only once
-write_rds(predict_UMAP_df, file = "data/two_nonlinear/two_nonlinear_umap_predict_true.rds")
+write_rds(predict_UMAP_df, file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_true.rds")
 
 ## PHATE
 knn <- 5
@@ -110,7 +110,7 @@ PHATE_data <- as_tibble(PHATE_data$embedding)
 
 names(PHATE_data) <- c("PHATE1", "PHATE2")
 
-write_rds(PHATE_data, file = paste0("data/two_nonlinear/two_nonlinear_phate_knn_", knn, ".rds"))
+write_rds(PHATE_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_", knn, ".rds"))
 
 
 ## TriMAP
@@ -137,7 +137,7 @@ TriMAP_data <- reducer$fit_transform(data_matrix) |>
 
 names(TriMAP_data) <- c("TriMAP1", "TriMAP2")
 
-write_rds(TriMAP_data, file = paste0("data/two_nonlinear/two_nonlinear_trimap_n-inliers_", n_inliers, "_n-outliers_", n_outliers, "_n-random_", n_random, ".rds"))
+write_rds(TriMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_", n_inliers, "_n-outliers_", n_outliers, "_n-random_", n_random, ".rds"))
 
 ## PaCMAP
 
@@ -165,5 +165,5 @@ PacMAP_data <- reducer$fit_transform(data_matrix, init = init) |>
 
 names(PacMAP_data) <- c("PaCMAP1", "PaCMAP2")
 
-write_rds(PacMAP_data, file = paste0("data/two_nonlinear/two_nonlinear_pacmap_n-neighbors_", n_neighbors,"_init_", init, "_MN-ratio_", MN_ratio, "_FP-ratio_", FP_ratio, ".rds"))
+write_rds(PacMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_", n_neighbors,"_init_", init, "_MN-ratio_", MN_ratio, "_FP-ratio_", FP_ratio, ".rds"))
 
