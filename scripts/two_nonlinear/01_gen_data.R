@@ -65,7 +65,7 @@ df$x7 <- runif(NROW(df), -0.01, 0.01)
 
 langevitour(df)
 
-write_rds(df, here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
+#write_rds(df, here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
 
 # Compute and store column means and standard deviations
 stats <- df |>
@@ -74,10 +74,10 @@ stats <- df |>
 write_rds(stats, here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data_stats.rds"))
 
 
-df <- df |>
-  mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
-
-langevitour(df)
+# df <- df |>
+#   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
+#
+# langevitour(df)
 
 write_rds(df, here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
 

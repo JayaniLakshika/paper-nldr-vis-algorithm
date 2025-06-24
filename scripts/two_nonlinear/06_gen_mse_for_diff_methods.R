@@ -34,7 +34,7 @@ write_rds(error_two_non_linear_diff_shaped_close_clusters_umap, "data/two_nonlin
 
 ## For tsne
 #tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne89.rds")
-tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
+tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds") |>
   mutate(ID = row_number())
 
 error_two_non_linear_diff_shaped_close_clusters_tsne <- gen_diffbin1_errors(highd_data = data_two_curvy,

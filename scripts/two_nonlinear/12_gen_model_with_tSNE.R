@@ -15,7 +15,7 @@ data_two_curvy <- training_data_two_curvy |>
   select(-ID) |>
   mutate(type = "data")
 
-tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
+tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds") |>
   mutate(ID = row_number()) |>
   rename(c("emb1" = "tSNE1",
            "emb2" = "tSNE2"))

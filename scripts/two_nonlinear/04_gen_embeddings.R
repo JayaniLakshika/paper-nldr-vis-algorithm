@@ -28,7 +28,7 @@ data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close
 #   mutate(across(everything(), ~ (. - mean(.)) / sd(.)))
 
 ## tSNE (default)
-perplexity <- 30
+perplexity <- 47
 
 tSNE_fit <- data |>
   dplyr::select(where(is.numeric)) |>
@@ -91,8 +91,8 @@ write_rds(UMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shape
 
 ## Predict for true model
 true_model_data <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model.rds")
-true_model_data <- true_model_data |>
-  select(-ID)
+# true_model_data <- true_model_data |>
+#   select(-ID)
 
 predict_UMAP_df <- predict(UMAP_fit, true_model_data) |>
   as_tibble()
