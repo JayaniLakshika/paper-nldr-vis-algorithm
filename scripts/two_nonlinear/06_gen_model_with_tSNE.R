@@ -195,7 +195,7 @@ proj_obj1 <- get_projection(projection = model_prj1,
                                               axis_pos_y = -0.6,
                                               threshold = 0.042))
 
-# Changed the axis parametersAdd commentMore actions
+# Changed the axis parameters
 # axis_obj <- gen_axes(
 #   proj = model_prj1 * 2,
 #   limits = 0.9,
@@ -215,19 +215,19 @@ write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1.rds")
 
 ## Second projection
 model_prj2 <- cbind(
-  c(0.07867,0.00382,0.01546,0.08292,-0.03248,0.03090,0.00255),
-  c(-0.02146,0.00982,-0.07538,0.03194,-0.06465,-0.06176,-0.00905))
+  c(0.08605,0.00286,0.01767,0.07878,0.00235,-0.03622,0.00929),
+  c(0.02952,0.00022,0.07916,-0.04595,0.03757,-0.00621,-0.06809))
 
 proj_obj2 <- get_projection(projection = model_prj2,
-                            proj_scale = 1,
+                            proj_scale = 5,
                             highd_data = scaled_two_curvy_data,
                             model_highd = scaled_two_curvy_data_model,
                             trimesh_data = tr_from_to_df_two_curvy,
-                            axis_param = list(limits = 0.35,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -0.35,
-                                              axis_pos_y = -0.35,
-                                              threshold = 0.01))
+                            axis_param = list(limits = 0.5,
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.4,
+                                              axis_pos_y = -0.4,
+                                              threshold = 0.042))
 
 #Changed the axis parametersAdd commentMore actions
 axis_obj <- gen_axes(
