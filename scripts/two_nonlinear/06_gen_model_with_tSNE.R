@@ -31,7 +31,7 @@ algo_obj_two_curvy <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   bin1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 1)
+  benchmark_highdens = 0)
 
 tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_obj$scaled_nldr
 tr_from_to_df_two_curvy <- algo_obj_two_curvy$trimesh_data
