@@ -124,8 +124,14 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(tsne_two_curvy_scaled |>
               select(-ID))
 
+error_breaks <- error_df_two_curvy_abs$sqrt_row_wise_total_error |>
+  quantile(probs = seq(0, 1, 0.05)) |>
+  round(3)
+
+error_breaks <- error_breaks[2:20]
+
 ## Add error type
-breaks <- c(-Inf, 0.003, 0.026, 0.036, 0.045, 0.054, 0.06, 0.07, 0.08, 0.086, 0.09, 0.1, 0.11, 0.13, 0.14, 0.16, 0.17, 0.19, 0.22, 0.27, Inf)
+breaks <- c(-Inf, error_breaks, Inf)
 labels <- paste0("error", sprintf("%02d", 1:(length(breaks) - 1)))
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
