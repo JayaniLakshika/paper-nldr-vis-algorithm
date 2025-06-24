@@ -164,7 +164,7 @@ stats <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_clos
 write_rds(model_data, "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 write_rds(connections_all, "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
 
-data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data_without_std.rds"))
+data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
 
 df <- bind_rows(model_data |> dplyr::mutate(type = "model"),
                 data |> dplyr::mutate(type = "data"))

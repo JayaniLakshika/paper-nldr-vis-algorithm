@@ -2,6 +2,8 @@
 library(quollr)
 library(tidyverse)
 
+conflicts_prefer(dplyr::filter)
+
 source("scripts/additional_functions.R")
 set.seed(20240110)
 
@@ -179,8 +181,8 @@ langevitour::langevitour(data_two_curvy[1:(length(data_two_curvy)-1)],
 ## Model projections
 ## First projection
 model_prj1 <- cbind(
-  c(0.37847,-0.06517,0.04231,0.01655),
-  c(-0.06466,-0.27052,0.22131,-0.15235))
+  c(0.09800,0.01534,0.01887,0.00252,0.01737,-0.06895,-0.00886),
+  c(-0.05248,-0.05845,0.06057,-0.00352,0.01697,-0.06938,0.01953))
 
 proj_obj1 <- get_projection(projection = model_prj1,
                             proj_scale = 1,
@@ -194,27 +196,27 @@ proj_obj1 <- get_projection(projection = model_prj1,
                                               threshold = 0.03))
 
 # Changed the axis parametersAdd commentMore actions
-axis_obj <- gen_axes(
-  proj = model_prj1 * 2,
-  limits = 0.9,
-  axis_pos_x = -0.4,
-  axis_pos_y = -0.4,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.05)
-
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj1[["axes"]] <- axes
-proj_obj1[["circle"]] <- circle
+# axis_obj <- gen_axes(
+#   proj = model_prj1 * 2,
+#   limits = 0.9,
+#   axis_pos_x = -0.4,
+#   axis_pos_y = -0.4,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.05)
+#
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj1[["axes"]] <- axes
+# proj_obj1[["circle"]] <- circle
 proj_obj1[["cluster"]] <- error_df_two_curvy_abs$error_cat
 
 write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1.rds")
 
 ## Second projection
 model_prj2 <- cbind(
-  c(-0.38281,-0.04870,0.00619,-0.02451),
-  c(-0.01303,0.00634,-0.37421,0.09648))
+  c(0.07867,0.00382,0.01546,0.08292,-0.03248,0.03090,0.00255),
+  c(-0.02146,0.00982,-0.07538,0.03194,-0.06465,-0.06176,-0.00905))
 
 proj_obj2 <- get_projection(projection = model_prj2,
                             proj_scale = 1,
@@ -236,11 +238,11 @@ axis_obj <- gen_axes(
   axis_labels = names(scaled_two_curvy_data),
   threshold = 0.02)
 
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj2[["axes"]] <- axes
-proj_obj2[["circle"]] <- circle
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj2[["axes"]] <- axes
+# proj_obj2[["circle"]] <- circle
 
 write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
