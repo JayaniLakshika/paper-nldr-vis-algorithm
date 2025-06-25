@@ -364,6 +364,7 @@ We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow 
 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
+<!--two_nonlinear/06_gen_model_with_tSNE.R-->
 ```{r}
 #| label: fit_model-two-curvy
 
@@ -1074,6 +1075,7 @@ The benchmark value for removing low-density hexagons ranges between $0$ and $1$
 <!-- I'll be honest I've no idea what this section is 
 The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.-->
 
+<!--two_nonlinear/05_gen_rm_lwd_mse.R-->
 ```{r}
 #| label: rm-lwd-bin-error
 
@@ -1208,6 +1210,7 @@ nldr_two_curvy5 <- pacmap_two_curvy |>
   theme(aspect.ratio = 1)
 ```
 
+<!--two_nonlinear/04_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-two_curvy
 
@@ -1279,6 +1282,7 @@ When examining the \gD{} model representations it appears to be flatter or like 
 The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This single projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this, it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. 
 
 <!--Projections-->
+<!--five_gau_clusters/02_gen_model_with_tSNE.R-->
 ```{r}
 #| label: five-gau-proj-tsne-model
 
@@ -1345,6 +1349,7 @@ five_gau_proj_tsne_model2 <- plot_proj(
         legend.position = "none") 
 ```
 
+<!--five_gau_clusters/03_gen_model_with_UMAP.R-->
 ```{r}
 #| label: five-gau-proj-umap-model
 
@@ -1411,6 +1416,7 @@ five_gau_proj_umap_model2 <- plot_proj(
         legend.position = "none")
 ```
 
+<!--five_gau_clusters/04_gen_model_with_PaCMAP.R-->
 ```{r}
 #| label: five-gau-proj-pacmap-model
 
@@ -1497,6 +1503,7 @@ Differences in density can arise by sampling at different rates in different sub
 
 The tSNE behaviour is to squeeze the low density area of the data together into the layout. This is common in other NLDR methods also, which means analysts need to be aware that if their data is not sampled relatively uniformly, apparent closeness in the \gD{} may correspond to sparseness in \pD{}.
 
+<!--one_c_shaped_dens_structure/03_gen_model_with_tSNE.R-->
 ```{r}
 #| label: error-model-one-dens-clust
 
@@ -1962,7 +1969,7 @@ nldr_mnist5 <- pacmap_mnist |>
   theme(aspect.ratio = 1)
 ```
 
-<!--mnist/6_gen_mse_for_diff_methods.R-->
+<!--mnist/04_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-mnist
 
@@ -2024,7 +2031,7 @@ The next step is to investigate the \gD{} layout to understand what information 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 
 <!-- Fit the model and compute error-->
-<!--mnist/9_gen_model_with_tSNE.R-->
+<!--mnist/05_gen_model_with_tSNE.R-->
 ```{r}
 #| label: hexbin-mnist
 
@@ -2120,7 +2127,7 @@ tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_lin
   plot_layout(ncol = 3)
 ```
 
-<!--mnist/5_gen_images.R-->
+<!--mnist/03_gen_images.R-->
 ```{r}
 #| label: img-diff-pos
 
