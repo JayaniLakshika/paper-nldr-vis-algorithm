@@ -185,6 +185,10 @@ set.seed(20240110)
 ```
 
 ```{r}
+clr_choice <- "#0077A3"
+```
+
+```{r}
 #| label: tbl-notation
 #| tbl-cap: "Summary of notation for describing new methodology."
 # Notation used in the paper
@@ -203,6 +207,41 @@ kable(notation_df,
 ```
 
 ## Generating the nonlinear clusters data
+
+```{r}
+proj_obj1_true <- read_rds("data/two_nonlinear/two_nonlinear_true_proj_obj1.rds")
+
+two_curvy_proj_true1 <- plot_proj(
+  proj_obj = proj_obj1_true,
+  point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+  plot_limits = c(-0.75, 0.75),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "a", cex = 1.2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+
+proj_obj2_true <- read_rds("data/two_nonlinear/two_nonlinear_true_proj_obj2.rds")
+
+two_curvy_proj_true2 <- plot_proj(
+  proj_obj = proj_obj2_true,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "b", cex = 1.2) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| fig-width: 6
+#| fig-height: 3
+#| fig-cap: "Two projections of the \\pD{} true model overlaying the data are shown in a, b."
+
+two_curvy_proj_true1 + two_curvy_proj_true2
+```
 
 ## Computing hexagon grid configurations
 

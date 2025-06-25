@@ -279,7 +279,7 @@ write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
 ### True model
 
-## For true modelAdd commentMore actions
+## For true model
 
 projection_scaled <- model_prj1 * 5
 
