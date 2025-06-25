@@ -343,7 +343,7 @@ The paper is organized as follows. @sec-background provides a summary of the lit
 <!-- - Connection between NLDR and MDS-->
 Historically, low-dimensional (\kD{}) representations of high-dimensional (\pD{}) data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) (for an overview see @jolliffe2011). (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
-Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. Both tNSE and UMAP can be considered to produce the \kD{} representation by minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE, TriMAP and PaCMAP are examples of diffusion processes [@coifman2005] spreading to capture geometric shapes, that include both global and local structure.
+Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. Both tNSE and UMAP can be considered to produce the \kD{} representation by minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE are examples of diffusion processes spreading to capture geometric shapes, that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.) TriMAP and PaCMAP 
 
 The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d) which would **contradict** the other representations. These contradictions arise because these methods and parameter choices provide different lenses on the interpoint distances in the data.
 
@@ -352,15 +352,15 @@ However, linear projections can be cluttered, and global patterns can obscure lo
 
 Our proposed solution is to use the tour to examine how the NLDR is warping the space. It follows what @wickham2015 describes as *model-in-the-data-space*. The fitted model should be overlaid on the data, to examine the fit relative the spread of the observations. While this is straightforward, and commonly done when data is \gD{}, it is also possible in \pD{}, for many models, when a tour is used. 
 
-@wickham2015 provides several examples of models overlaid on the data in \pD{}. In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by $(p-1)\text{-}D$ ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the \kD{} plane of the reduced dimension using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in \pD{}.
+@wickham2015 provides several examples of models overlaid on the data in \pD{}. In hierarchical clustering, a representation of the dendrogrom using points and lines can be constructed by augmenting the data with points marking merging of clusters. Showing the movie of linear projections reveals shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering the model can be indicated by $(p-1)\text{-}D$ ellipses. It is possible to see whether the elliptical shapes appropriately matches the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the model (a \kD{} plane of the reduced dimension) using wireframes of transformed cubes. Using a wireframe is the approach we take here, to represent the NLDR model in \pD{}.
 
 ## Method {#sec-method}
 
 ### What is the NLDR model?
 
-At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{}   NLDR layout is the simplified representation. From a statistical perspective we can consider the distances between points in the \kD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, that will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@joreskog1969] and MDS. (Note that, for this thinking the full \pD{}   data needs to be available, not just the interpoint distances.)
+At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{} NLDR layout is the simplified representation. Typically, $k=2$, which is used for the rest of this paper. From a statistical perspective we can consider the distances between points in the \gD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, that will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@joreskog1969] and MDS. (Note that, for this thinking the full \pD{}   data needs to be available, not just the interpoint distances.)
 
-We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times k}$, with hyper-parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
+We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times 2}$, with hyper-parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has less artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
@@ -538,7 +538,7 @@ error_plot_two_curvy_quasi <- ggplot(
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
                                  "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
-  xlab(expression(e[hj])) +
+  xlab(expression(e[hi])) +
   ylab("") +
   theme_bw() +
   theme(axis.text.y = element_blank(),
@@ -649,7 +649,7 @@ nldr_two_curvy + hex_grid_two_curvy +
 
 Because we are working with distances between points, starting with data having a standard scale, e.g. [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1.$ 
 
-#### Computing hexagon grid configuration
+#### Hexagon grid configuration
 
 Although there are several implementations of hexagon binning [@carr1987], and a published paper [@dan2023], surprisingly, none has sufficient detail or components that produce everything needed for this project. So we described the process used here. @fig-hex-param illustrates the notation used. 
 
@@ -811,13 +811,13 @@ By default, the bin centroid is used for describing a hexagon (as done in @fig-N
 
 #### Indicating neighborhood
 
-Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connects centroids. The edges preserve the neighborhood information from the \kD{} representation when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned the triangulation connects centroids. The edges preserve the neighborhood information from the \gD{} representation when the model is lifted into \pD{}. 
 
 ### Rendering the model in \pD{}
 
-The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the \pD{} mean be
+The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the $j^{th}$ component of the \pD{} mean be
 
-$$C_{h}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_i, h = {1, \dots, b; n_h > 0}.$$
+$$C_{hj}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_{hij}, ~~~h = 1, \dots, b;~ j=1, \dots, p; ~ n_h > 0.$$
 
 ```{r}
 #| label: hexbin-regular-two-curvy2
@@ -902,7 +902,7 @@ trimesh_two_curvy_removed1_tsne_with_data +
 ### Measuring the fit {#sec-summary}
  <!-- Fitted values,  Error calculation-->
 
-The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T}(X_1, X_2, X_3, X_4) + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and for this problem are \fD{}. 
+The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T} + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and are \pD{}. 
 
 <!--#### Fitted values-->
 
@@ -911,9 +911,9 @@ Observations are associated with their bin center, $C_{h}^{(p)}$, which are also
 
 The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the root mean squared error (RMSE) as:
 
-$$\sqrt{\frac{1}{n}\sum_{h = 1}^{b}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
+$$\sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
-where $n$ is the number of observations, $b$ is the number of bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hj} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
+where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hi} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
 
 ```{r}
 #| label: error-two-curvy
@@ -1004,7 +1004,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b) and a tour of \\fD{} data space (c). Color indicates error ($e_{hj}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
+#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b) and a tour of \\fD{} data space (c). Color indicates error ($e_{hi}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
 #| out-width: 100%
 #| fig-pos: H
 #| fig-width: 8
@@ -1018,16 +1018,15 @@ axis.text = element_text(size = 15))
 
 <!-- Does this really need an entire subsection? It's only 3 sentences long. -->
 
-A new benefit of this fitted model is that it allows us to now predict a new observation's value in the NLDR, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. This can be written as, let $z(i) = \arg\min_{j = 1, \dots, b} \sqrt{\sum_{v=1}^{p}(x_{iv} - C^{(p)}_{jv})^2}$, then the new observation $i$ falls in the hexagon, $H_h = \{i| z(i) = h\}$ and the corresponding \kD{} bin centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. 
+A new benefit of this fitted model is that it allows us to now predict the NLDR value of a new observation, $x'$, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. 
 
 ### Tuning
 
 The model fitting can be adjusted using these parameters: 
-
 - hexagon bin parameters
     - bottom left bin position $(s_1, \ s_2)$, 
-    - the total number of bins ($b$), 
-- bin density cutoff, to remove low-density hexagons.
+    - the number of bins in the horizontal direction ($b_1$), which controls the number of bins the vertical direction ($b_2$), total number of bins ($b$), and total number of non-empty bins ($m$).
+- bin density cutoff, to possibly remove low-density hexagons.
 
 Default values are provided for each of these, but it is expected that the user will examine the RMSE for a range of choices. Choosing these parameters according to RMSE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.
 
@@ -1039,7 +1038,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the nonlinear cluster data, using three different bin inputs: (a) $b = 240/98 \\text{ } (15, \\text{ }16)$, (b) $b = 720/215 \\text{ } (24, \\text{ }30)$, and (c) $b = 2496/549 \\text{ } (48, \\text{ }52)$. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the RMSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the nonlinear cluster data, using three different bin specifications ($b_1, b_2, b, m$): (a) 15, 16, 240, 98, (b) 24, 30, 720, 215, and (c) 48, 52, 2496, 549. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the RMSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -1052,17 +1051,15 @@ hex_grid_coloured_two_curvy2 +
 
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the RMSE of the fitted model.
 
-#### Measurement of capturing the data shape in \gD{} 
+#### Handling of low density bins
+Bin density is computed as $n_h/n$. To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
 
-<!-- I'll be honest I've no idea what this section is -->
-The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
-
-#### Removal of low density bins
-
-By default, when assessing the choice of $b_1$, the total number of bins is measured by the number of **non-empty** bins. This more accurately reflects the hexagon grid relative the RMSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. Generally, we would urge caution in removing low count bins. 
+By default, when assessing the choice of horizontal bins, $b_1$, the total number of bins is measured by the number of **non-empty** bins ($m$). This more accurately reflects the hexagon grid relative to the RMSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. 
 
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in RMSE as the benchmark value increases (@fig-param-two-curvy (c)). The RMSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 
+<!-- I'll be honest I've no idea what this section is -->
+The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
 ```{r}
 #| label: rm-lwd-bin-error
 
