@@ -247,22 +247,21 @@ $\mathbfit{X}, \mathbfit{x}$ & $p$-dimensional data (population, sample)\\
 $\mathbfit{y}$ & $k$-dimensional layout\\
 $P$ & orthonormal basis, generating a $d\text{-}dimensional$ linear projection of $p$-dimensional data\\
 $T$ & true  model\\
-\addlinespace
 $g$ & functional mapping from \pD{} to \kD{}, especially as prescribed by NLDR\\
 $\mathbfit{\theta}$ & (Hyper-) parameters for NLDR method\\
 $r$ & ranges of the embedding components\\
 $C^{(j)}$ & $j$-dimensional bin centers\\
 $(b_1, b_2)$ & number of bins in each direction\\
-\addlinespace
 $(a_1, a_2)$ & binwidths, distance between centroids in each direction\\
 $(s_1, \ s_2)$ & starting coordinates of the hexagonal grid\\
 $q$ & buffer to ensure hexgrid covers data, proportion of data range, 0-1\\
 $m$ & number of non-empty bins\\
 $b$ & number of  hexagons in the grid\\
-\addlinespace
 $h$ & hexagonal id\\
 $l$ & side length\\
 $A$ & area\\
+$n_h$ & bin count\\
+$w_h$ & standardised bin counts\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -273,6 +272,9 @@ $A$ & area\\
 methodology.}
 
 \end{table}%
+
+\section{Generating the nonlinear clusters
+data}\label{generating-the-nonlinear-clusters-data}
 
 \section{Computing hexagon grid
 configurations}\label{computing-hexagon-grid-configurations}
@@ -302,19 +304,6 @@ s_2 - \frac{a_2}{2} < 0,
 \begin{equation}\phantomsection\label{eq-equation5}{
 s_2 + (b_2 - 1) \times a_2 > r_2.
 }\end{equation}
-
-\begin{figure}[H]
-
-\centering{
-
-\includegraphics[width=0.3\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-hex-param-1.pdf}
-
-}
-
-\caption{\label{fig-hex-param}The components of the hexagon grid
-illustrating notation.}
-
-\end{figure}%
 
 Since \(a_1\) and \(a_2\) are distances,
 
@@ -398,7 +387,7 @@ a_1 = \frac{2r_2(1+q)}{\sqrt{3}(b_2 - 1)}.
 
 Points are assigned to the bin they fall into based on the nearest
 centroid. If a point is equidistant from multiple centroids, it is
-assigned to the centroid with the lowest hexagonal bin ID.
+assigned to the centroid with the smallest bin ID.
 
 \begin{figure}[H]
 
@@ -410,7 +399,7 @@ assigned to the centroid with the lowest hexagonal bin ID.
 
 \caption{\label{fig-assign-data}Binning the data. Points are assigned to
 the nearest centroid. If a point is equidistant from multiple centroids,
-assigned to the lowest centroid.}
+assigned to the centroid with the smallest bin ID.}
 
 \end{figure}%
 
@@ -475,14 +464,16 @@ dubious embedding. It can help in the deciding on optimal
 hyper-parameters. Here we illustrate how our method compares with the
 results from scDEED.
 
-Following the process in \citet{xia2023} again using the Human
-Peripheral Blood Mononuclear Cells (PBMC) data. Note that
-\citet{xia2023} uses a different subset from the PBMC dataset used by
-\citet{chen2024}, which contains \(31,021\) cells including cell type
-labels, and the gene expression levels were in the unit of
-log-transformed UMI count per \(10,000\). They focused on three
-sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell
-types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell.
+Note that \citet{xia2023} uses a different subset from the PBMC dataset
+used by \citet{chen2024}, shown by us in the main paper example, which
+is why this comparison is shown here and not in the main paper. Their
+data contains \(31,021\) cells including cell type labels, and the gene
+expression levels were in the unit of log-transformed UMI count per
+\(10,000\). They focused on three sequencing methods (inDrops, DropSeq,
+and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell,
+CD14+ Monocyte, and B cell. Pre-processing follows the process in
+\citet{xia2023} again using the Human Peripheral Blood Mononuclear Cells
+(PBMC) data.
 
 For illustration purposes, we only selected cells generated with inDrops
 (\(n=5858\) cells) and UMAP and tSNE cell embeddings. Also,
