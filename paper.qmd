@@ -559,7 +559,7 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     proj_obj = proj_obj1, 
     point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
     line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
-    plot_limits = c(-0.6, 0.6), 
+    plot_limits = c(-0.75, 0.75), 
     axis_text_size = 2, 
     is_category = FALSE) +
   interior_annotation(label = "b", cex = 1.2) +
@@ -602,8 +602,8 @@ two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
                                  "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
-  xlim(c(-0.6, 0.6)) +
-  ylim(c(-0.6, 0.6)) +
+  xlim(c(-0.75, 0.75)) +
+  ylim(c(-0.75, 0.75)) +
   interior_annotation(label = "c", cex = 1.5) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
@@ -1023,6 +1023,7 @@ A new benefit of this fitted model is that it allows us to now predict the NLDR 
 ### Tuning
 
 The model fitting can be adjusted using these parameters: 
+
 - hexagon bin parameters
     - bottom left bin position $(s_1, \ s_2)$, 
     - the number of bins in the horizontal direction ($b_1$), which controls the number of bins the vertical direction ($b_2$), total number of bins ($b$), and total number of non-empty bins ($m$).
@@ -1052,14 +1053,27 @@ hex_grid_coloured_two_curvy2 +
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the RMSE of the fitted model.
 
 #### Handling of low density bins
-Bin density is computed as $n_h/n$. To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
+
+Standardised bin counts is computed as $w_h = n_h/n, ~~h=1, \dots m$, and $n$ is the number of observations. Density is computed as $d_h = w_h/A$ where $A$ is the area of the hexagon. As a measure of the denseness of a single grid, we can compute the average bin density, $\bar{d_h}$. This can be used to compare grids. 
+
+These quantities can be used to assess and compare the models resulting from different binwidths:
+
+- RMSE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in RMSE would indicate the lower binwidth is substantially better than the larger one.  
+- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the RMSE calculation, though. RMSE can be examined relative to dropping a fraction of the low density bins.
+- The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less. 
+- Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density is compared against the range of binwidths. 
+
+<!-- 
+To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
 
 By default, when assessing the choice of horizontal bins, $b_1$, the total number of bins is measured by the number of **non-empty** bins ($m$). This more accurately reflects the hexagon grid relative to the RMSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. 
 
 The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in RMSE as the benchmark value increases (@fig-param-two-curvy (c)). The RMSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
+-->
 
-<!-- I'll be honest I've no idea what this section is -->
-The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.
+<!-- I'll be honest I've no idea what this section is 
+The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.-->
+
 ```{r}
 #| label: rm-lwd-bin-error
 
@@ -1139,7 +1153,7 @@ Comparing the RMSE to obtain the best fit is appropraite if the same NLDR method
 #| label: read-two-curvy-clust-nldr
 # Read a variety of different NLDR representations of two_non_linear_diff_shaped_close_clusters
 # and plot them on same aspect ratio
-tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds")
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds")
 
 nldr_two_curvy1 <- tsne_two_curvy |>
   ggplot(aes(x = tSNE1,
@@ -1163,7 +1177,7 @@ nldr_two_curvy2 <- umap_two_curvy |>
   ggplot(aes(x = UMAP1,
              y = UMAP2)) +
   geom_point(alpha=0.1, size=1, colour='#636363') +
-  interior_annotation("b", c(0.08, 0.9)) +
+  interior_annotation("b") +
   theme(aspect.ratio = 1) 
 
 phate_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds")

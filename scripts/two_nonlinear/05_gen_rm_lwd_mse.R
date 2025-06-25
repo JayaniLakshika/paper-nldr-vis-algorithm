@@ -3,11 +3,11 @@ library(readr)
 library(quollr)
 library(dplyr)
 
-data_two_curvy <- read_rds("data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_data.rds")
+data_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds")
 data_two_curvy <- data_two_curvy |>
   mutate(ID = row_number())
 
-tsne_two_curvy <- read_rds(file = "data/two_non_linear_diff_shaped_close_clusters/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
+tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds") |>
   mutate(ID = row_number())
 
 
@@ -143,4 +143,4 @@ error_rm_two_curvy <- bind_rows(
   error_rm_two_curvy3
 )
 
-write_rds(error_rm_two_curvy, here::here("data/two_non_linear_diff_shaped_close_clusters/error_rm_lwd_diff_bin.rds"))
+write_rds(error_rm_two_curvy, here::here("data/two_nonlinear/error_rm_lwd_diff_bin.rds"))

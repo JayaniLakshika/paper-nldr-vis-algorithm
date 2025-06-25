@@ -2,6 +2,8 @@
 library(quollr)
 library(tidyverse)
 
+conflicts_prefer(dplyr::filter)
+
 source("scripts/additional_functions.R")
 set.seed(20240110)
 
@@ -15,7 +17,7 @@ data_two_curvy <- training_data_two_curvy |>
   select(-ID) |>
   mutate(type = "data")
 
-tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_30.rds") |>
+tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds") |>
   mutate(ID = row_number()) |>
   rename(c("emb1" = "tSNE1",
            "emb2" = "tSNE2"))
@@ -29,7 +31,7 @@ algo_obj_two_curvy <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   bin1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 1)
+  benchmark_highdens = 0)
 
 tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_obj$scaled_nldr
 tr_from_to_df_two_curvy <- algo_obj_two_curvy$trimesh_data
@@ -122,8 +124,14 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   bind_cols(tsne_two_curvy_scaled |>
               select(-ID))
 
+error_breaks <- error_df_two_curvy_abs$sqrt_row_wise_total_error |>
+  quantile(probs = seq(0, 1, 0.05)) |>
+  round(3)
+
+error_breaks <- error_breaks[2:20]
+
 ## Add error type
-breaks <- c(-Inf, 0.003, 0.026, 0.036, 0.045, 0.054, 0.06, 0.07, 0.08, 0.086, 0.09, 0.1, 0.11, 0.13, 0.14, 0.16, 0.17, 0.19, 0.22, 0.27, Inf)
+breaks <- c(-Inf, error_breaks, Inf)
 labels <- paste0("error", sprintf("%02d", 1:(length(breaks) - 1)))
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
@@ -134,13 +142,20 @@ error_df_two_curvy_abs <- error_df_two_curvy_abs |>
 
 write_rds(error_df_two_curvy_abs, "data/two_nonlinear/error_df_two_curvy_abs.rds")
 
+## Added true model
+
+true_model_df <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model.rds")
+wireframe_true_model <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model_connections.rds")
+
+true_model_two_curvy <- true_model_df |>
+  mutate(type = "true model")
 
 df_bin_two_curvy <- df_bin_two_curvy |>
   select(-hexID) |>
   mutate(type = "model")
 
 # Apply the scaling
-df_model_data_two_curvy <- bind_rows(data_two_curvy, df_bin_two_curvy)
+df_model_data_two_curvy <- bind_rows(data_two_curvy, true_model_two_curvy, df_bin_two_curvy)
 
 scaled_two_curvy <- scale_data_manual(df_model_data_two_curvy, "type") |>
   as_tibble()
@@ -149,9 +164,15 @@ scaled_two_curvy_data <- scaled_two_curvy |>
   filter(type == "data") |>
   select(-type)
 
+scaled_two_curvy_data_true_model <- scaled_two_curvy |>
+filter(type == "true model") |>
+  select(-type)
+
 scaled_two_curvy_data_model <- scaled_two_curvy |>
   filter(type == "model") |>
   select(-type)
+
+## Visualize data + model
 
 df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
 
@@ -160,6 +181,17 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
                          lineTo = tr_from_to_df_two_curvy$to,
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "model")),
+                         levelColors = c(clr_choice, "#000000"))
+
+
+## Visualize data + true model
+df_model_data_two_curvy_filtered <- bind_rows(true_model_two_curvy, data_two_curvy)
+
+langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
+                         lineFrom = wireframe_true_model$from,
+                         lineTo = wireframe_true_model$to,
+                         group = factor(df_model_data_two_curvy_filtered$type,
+                                        c("data", "true model")),
                          levelColors = c(clr_choice, "#000000"))
 
 ## Model error
@@ -179,70 +211,149 @@ langevitour::langevitour(data_two_curvy[1:(length(data_two_curvy)-1)],
 ## Model projections
 ## First projection
 model_prj1 <- cbind(
-  c(0.37847,-0.06517,0.04231,0.01655),
-  c(-0.06466,-0.27052,0.22131,-0.15235))
+  c(0.09800,0.01534,0.01887,0.00252,0.01737,-0.06895,-0.00886),
+  c(-0.05248,-0.05845,0.06057,-0.00352,0.01697,-0.06938,0.01953))
 
 proj_obj1 <- get_projection(projection = model_prj1,
-                            proj_scale = 1,
+                            proj_scale = 5,
                             highd_data = scaled_two_curvy_data,
                             model_highd = scaled_two_curvy_data_model,
                             trimesh_data = tr_from_to_df_two_curvy,
-                            axis_param = list(limits = 0.5,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -0.5,
-                                              axis_pos_y = -0.5,
-                                              threshold = 0.03))
+                            axis_param = list(limits = 0.8,
+                                              axis_scaled = 5,
+                                              axis_pos_x = -0.6,
+                                              axis_pos_y = -0.6,
+                                              threshold = 0.042))
 
-# Changed the axis parametersAdd commentMore actions
-axis_obj <- gen_axes(
-  proj = model_prj1 * 2,
-  limits = 0.9,
-  axis_pos_x = -0.4,
-  axis_pos_y = -0.4,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.05)
-
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj1[["axes"]] <- axes
-proj_obj1[["circle"]] <- circle
+# Changed the axis parameters
+# axis_obj <- gen_axes(
+#   proj = model_prj1 * 2,
+#   limits = 0.9,
+#   axis_pos_x = -0.4,
+#   axis_pos_y = -0.4,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.05)
+#
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj1[["axes"]] <- axes
+# proj_obj1[["circle"]] <- circle
 proj_obj1[["cluster"]] <- error_df_two_curvy_abs$error_cat
 
 write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1.rds")
 
 ## Second projection
 model_prj2 <- cbind(
-  c(-0.38281,-0.04870,0.00619,-0.02451),
-  c(-0.01303,0.00634,-0.37421,0.09648))
+  c(0.08605,0.00286,0.01767,0.07878,0.00235,-0.03622,0.00929),
+  c(0.02952,0.00022,0.07916,-0.04595,0.03757,-0.00621,-0.06809))
 
 proj_obj2 <- get_projection(projection = model_prj2,
-                            proj_scale = 1,
+                            proj_scale = 5,
                             highd_data = scaled_two_curvy_data,
                             model_highd = scaled_two_curvy_data_model,
                             trimesh_data = tr_from_to_df_two_curvy,
-                            axis_param = list(limits = 0.35,
-                                              axis_scaled = 2,
-                                              axis_pos_x = -0.35,
-                                              axis_pos_y = -0.35,
-                                              threshold = 0.01))
+                            axis_param = list(limits = 0.5,
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.4,
+                                              axis_pos_y = -0.4,
+                                              threshold = 0.042))
 
 #Changed the axis parametersAdd commentMore actions
-axis_obj <- gen_axes(
-  proj = model_prj2 * 2,
-  limits = 0.7,
-  axis_pos_x = -0.35,
-  axis_pos_y = -0.35,
-  axis_labels = names(scaled_two_curvy_data),
-  threshold = 0.02)
+# axis_obj <- gen_axes(
+#   proj = model_prj2 * 2,
+#   limits = 0.7,
+#   axis_pos_x = -0.35,
+#   axis_pos_y = -0.35,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.02)
 
-axes <- axis_obj$axes
-circle <- axis_obj$circle
-
-proj_obj2[["axes"]] <- axes
-proj_obj2[["circle"]] <- circle
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj2[["axes"]] <- axes
+# proj_obj2[["circle"]] <- circle
 
 write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
+
+
+### True model
+
+## For true modelAdd commentMore actions
+
+projection_scaled <- model_prj1 * 5
+
+projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
+
+projected_true_model_df <- projected_true_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+true_model_df_proj <- dplyr::left_join(
+  wireframe_true_model,
+  projected_true_model_df,
+  by = c("from" = "ID"))
+
+names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
+
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
+
+proj_obj1_true <- proj_obj1
+proj_obj1_true[["model_df"]] <- true_model_df_proj
+
+write_rds(proj_obj1_true, "data/two_nonlinear/two_nonlinear_true_proj_obj1.rds")
+
+two_curvy_proj_true1 <- plot_proj(
+  proj_obj = proj_obj1_true,
+  point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "#000000"), # linewidth, alpha
+  plot_limits = c(-0.75, 0.75),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "b", cex = 1.2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+
+
+### Second projection
+
+projection_scaled <- model_prj2 * 5
+
+projected_true_model <- as.matrix(scaled_two_curvy_data_true_model) %*% projection_scaled
+
+projected_true_model_df <- projected_true_model |>
+  tibble::as_tibble(.name_repair = "unique") |>
+  dplyr::rename(c("proj1" = "...1",
+                  "proj2" = "...2")) |>
+  dplyr::mutate(ID = dplyr::row_number())
+
+true_model_df_proj <- dplyr::left_join(
+  wireframe_true_model,
+  projected_true_model_df,
+  by = c("from" = "ID"))
+
+names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
+
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
+
+proj_obj2_true <- proj_obj2
+proj_obj2_true[["model_df"]] <- true_model_df_proj
+
+write_rds(proj_obj2_true, "data/two_nonlinear/two_nonlinear_true_proj_obj2.rds")
+
+two_curvy_proj_true2 <- plot_proj(
+  proj_obj = proj_obj2_true,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "c", cex = 1.2) +
+  theme(aspect.ratio = 1)
 
 
 ## hexbin-regular-two-curvy2
