@@ -918,9 +918,9 @@ where $n$ is the number of observations, $m$ is the number of non-empty bins, $n
 ```{r}
 #| label: error-two-curvy
 
-error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_curvy_umap.rds")
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_curvy_tsne.rds")
 
-mse_two_curvy_b <- ggplot(error_two_curvy_umap, 
+mse_two_curvy_b <- ggplot(error_two_curvy_tsne, 
                      aes(x = a1, 
                          y = RMSE)) +
   geom_vline(xintercept = 0.09,
@@ -934,7 +934,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "RMSE") +
   interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
@@ -947,7 +947,7 @@ mse_two_curvy_b <- ggplot(error_two_curvy_umap,
         axis.text = element_text(size = 15))
 
 
-prop_dens_a1 <- ggplot(error_two_curvy_umap,
+prop_dens_a1 <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
                          y = prop_comp)) +
   geom_vline(xintercept = 0.09,
@@ -962,7 +962,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
   interior_annotation("d", position = c(0.9, 0.9), cex = 2) +
   theme_minimal() +
@@ -974,7 +974,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_umap,
         axis.title = element_text(size = 18),
 axis.text = element_text(size = 15))
 
-a1_m_two_curvy <- ggplot(error_two_curvy_umap,
+a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
                          y = prop_bins)) +
   geom_vline(xintercept = 0.09,
@@ -989,7 +989,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_umap,
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_umap$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = expression("prop. non-empty bins " * bgroup("(", m / b, ")"))) +
   interior_annotation("b", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +

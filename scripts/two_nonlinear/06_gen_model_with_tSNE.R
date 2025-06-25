@@ -2,7 +2,7 @@
 library(quollr)
 library(tidyverse)
 
-conflicts_prefer(dplyr::filter)
+conflicted::conflicts_prefer(dplyr::filter)
 
 source("scripts/additional_functions.R")
 set.seed(20240110)
@@ -404,23 +404,23 @@ write_rds(hex_grid_with_counts_two_curvy3, "data/two_nonlinear/two_nonlinear_hex
 write_rds(tr_from_to_df_two_curvy3, "data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
 
 ### Error
-error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
 
 ## Find the minimum RMSE when have duplicate a1
-error_two_curvy_umap <- error_two_curvy_umap |>
+error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
   filter(bin1 == min(bin1)) |>
   ungroup() |>
   mutate(prop_dens = 1/(b*side_length^2))
 
-base_line_prop_dens <- error_two_curvy_umap |>
+base_line_prop_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>
   pull(prop_dens)
 
-error_two_curvy_umap <- error_two_curvy_umap |>
+error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_comp = prop_dens/base_line_prop_dens)
 
-error_two_curvy_umap <- error_two_curvy_umap |>
+error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_bins = b_non_empty/b)
 
-write_rds(error_two_curvy_umap, "data/two_nonlinear/error_two_curvy_umap.rds")
+write_rds(error_two_curvy_tsne, "data/two_nonlinear/error_two_curvy_tsne.rds")
