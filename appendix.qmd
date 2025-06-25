@@ -709,48 +709,12 @@ For illustration purposes, we only selected cells generated with inDrops ($n=585
 The layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2024, and the layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. The layout a and b contain $46$ and $83$ dubious cells respectively. 
 
 ```{r}
-result_umap <- read_rds(here::here('data/pbmc3k/pbmc_scdeed_umap_results.rds'))
-```
-
-```{r}
-#| eval: false
-result_umap |>
-  kableExtra::kable(format = "latex",
-                    booktabs = TRUE,
-                    longtable = TRUE,
-                    label = "scdeedumap") |>
-  kableExtra::kable_styling(latex_options = "scale_down")
-```
-
-```{r}
-#| label: fig-n_neighbors-dubious_cells
-#| out-width: 50%
-#| fig-pos: H
-#| eval: false
-
-result_umap |>
-  filter(min.dist == 0.5) |>
-  filter(n_neighbors < 240) |>
-  ggplot(aes(
-           x = as.numeric(n_neighbors),
-           y = number_dubious_cells
-         )) +
-    geom_line() +
-    geom_point() +
-    labs(x = "n_neighbors",
-         y = "Number of dubious cells") +
-    theme_minimal()
-```
-
-```{r}
 #| label: read-pbmc-umap-layouts
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
 umap_pbmc <- as_tibble(umap_pbmc)
 names(umap_pbmc) <- c("emb1", "emb2")
-umap_pbmc <- umap_pbmc |>
-  dplyr::mutate(ID = row_number())
 
 nldr1c <- umap_pbmc |>
   ggplot(aes(x = emb1,
@@ -761,8 +725,6 @@ nldr1c <- umap_pbmc |>
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_tsne_perplexity_30.rds")
 tsne_pbmc <- as_tibble(tsne_pbmc)
 names(tsne_pbmc) <- c("emb1", "emb2")
-tsne_pbmc <- tsne_pbmc |>
-  dplyr::mutate(ID = row_number())
 
 nldr2c <- tsne_pbmc |>
   ggplot(aes(x = emb1,
@@ -772,6 +734,8 @@ nldr2c <- tsne_pbmc |>
 
 ```
 
+<!--pbmc3k/11_gen_mse_for_diff_tsne_scDEED.R-->
+<!--pbmc3k/11_gen_mse_for_diff_umap_scDEED.R-->
 ```{r}
 #| label: combine-data-pbmc-umap-tsne
 
@@ -816,32 +780,13 @@ BC
 
 The RMSE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
 
+<!--pbmc3k/15_gen_model_with_UMAP_scDEED.R-->
 ```{r}
 #| label: hexbin-pbmc
-training_data_pbmc <- read_rds("data/pbmc3k/pbmc_pca_50_scdeed.rds")
-training_data_pbmc <- training_data_pbmc[, 1:9] |>
-  mutate(ID = 1:NROW(training_data_pbmc))
 
-names(training_data_pbmc) <- append(paste0("x", 1:9), "ID")
+umap_pbmc_scaled_with_cluster <- read_rds("data/pbmc3k/umap_pbmc_scaled_with_cluster_scDEED.rds")
 
-## Compute hexbin parameters
-num_bins_x_pbmc <- 30
-
-algo_obj_pbmc <- fit_highd_model(
-  highd_data = training_data_pbmc, 
-  nldr_data = umap_pbmc, 
-  bin1 = num_bins_x_pbmc, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-umap_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
-tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
-df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
-df_bin_pbmc <- algo_obj_pbmc$model_highd
-
-umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
-  mutate(cluster = if_else(emb1 <= 0.3, "cluster1", if_else((emb1 >= 0.75) & (emb2 <= 0.25), "cluster3", "cluster2"))) |>
-  mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
+tr_from_to_df_pbmc <- read_rds("data/pbmc3k/tr_from_to_df_pbmc_scDEED.rds")
 
 trimesh_removed_pbmc <- ggplot() + 
   geom_point(
@@ -869,73 +814,11 @@ trimesh_removed_pbmc <- ggplot() +
   )
 ```
 
-```{r}
-#| label: prep-pbmc-umap-model-proj
-
-data_pbmc <- training_data_pbmc |> 
-  select(-ID) |>
-  mutate(type = "data")
-
-df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID) 
-
-# Apply the scaling
-df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
-scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
-  as_tibble()
-
-scaled_pbmc_data <- scaled_pbmc |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_pbmc_data_model <- scaled_pbmc |>
-  filter(type == "model") |>
-  select(-type)
-```
-
-```{r}
-#| label: langevitour-pbmc-umap-author-proj
-#| eval: false
-
-data_pbmc_n <- data_pbmc |>
-  select(-type) |>
-  mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
-
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
-
-langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = tr_from_to_df_pbmc$from,
-                         lineTo = tr_from_to_df_pbmc$to,
-                         group = factor(df_model_data_pbmc_n$type,
-                                        c("cluster1", "cluster2", "cluster3", "model")),
-                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
-```
 
 ```{r}
 #| label: pbmc-umap-model-proj
 
-## First projection
-projection <- cbind(
-  c(0.025588,0.002516,0.002185,0.025284,0.004030,-0.026880,-0.015326,0.014851,0.026260),
-  c(0.026495,-0.024817,0.021623,-0.014036,-0.010220,0.016634,-0.006496,-0.022928,0.016045))
-
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1.23, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 0.05,
-                                 axis_scaled = 17, 
-                                 axis_pos_x = -0.03, 
-                                 axis_pos_y = -0.03, 
-                                 threshold = 0.0044))
-
-proj_obj1[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj1 <- read_rds("data/pbmc3k/proj_obj1_umap_scDEED.rds")
 
 pbmc_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1, 
@@ -946,23 +829,7 @@ pbmc_proj_umap_model1 <- plot_proj(
   interior_annotation(label = "a2", cex = 2) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
-## Second projection
-projection <- cbind(
-  c(0.025013,0.029055,-0.003143,0.001821,-0.006208,0.019174,0.020630,0.021512,0.020281),
-  c(0.004528,0.006465,-0.042452,0.009837,0.010040,-0.023820,0.005236,0.014775,-0.017712))
-
-proj_obj2 <- get_projection(projection = projection, 
-               proj_scale = 1.25, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 0.035, 
-                                 axis_scaled = 17, 
-                                 axis_pos_x = -0.023, 
-                                 axis_pos_y = -0.023, 
-                                 threshold = 0.0027))
-
-proj_obj2[["cluster"]] <- as.character(umap_pbmc_scaled_with_cluster$cluster)
+proj_obj2 <- read_rds("data/pbmc3k/proj_obj2_umap_scDEED.rds")
 
 pbmc_proj_umap_model2 <- plot_proj(
     proj_obj = proj_obj2, 
@@ -975,38 +842,13 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 ```
 
+<!--pbmc3k/16_gen_model_with_tSNE_scDEED.R-->
 ```{r}
 #| label: hexbin-pbmc2
 
-## Compute hexbin parameters
-num_bins_x_pbmc <- 30
+tsne_pbmc_scaled_with_cluster <- read_rds("data/pbmc3k/tsne_pbmc_scaled_with_cluster_scDEED.rds")
 
-algo_obj_pbmc <- fit_highd_model(
-  highd_data = training_data_pbmc, 
-  nldr_data = tsne_pbmc, 
-  bin1 = num_bins_x_pbmc, 
-  q = 0.1, 
-  benchmark_highdens = 5)
-
-tsne_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
-#tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
-df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
-df_bin_pbmc <- algo_obj_pbmc$model_highd
-
-## Removed some bins manually to fit a better model
-df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-  filter(!(hexID %in% c(559, 617, 677)))
-
-tri_object <- tri_bin_centroids(
-  centroids_data = df_bin_centroids_pbmc)
-
-tr_from_to_df_pbmc <- gen_edges(tri_object = tri_object, a1 = algo_obj_pbmc$hb_obj$a1)
-tr_from_to_df_pbmc <- tr_from_to_df_pbmc <- update_trimesh_index(trimesh_data = tr_from_to_df_pbmc)
-
-
-tsne_pbmc_scaled_with_cluster <- tsne_pbmc_scaled |>
-  mutate(cluster = if_else((emb2 <= -emb1 + 0.8) & (emb1 < 0.5), "cluster1", if_else(emb2 >= -2 * emb1 + 1.79, "cluster3", "cluster2"))) |>
-  mutate(cluster = factor(cluster, levels = c("cluster1", "cluster2", "cluster3")))
+tr_from_to_df_pbmc <- read_rds("data/pbmc3k/tr_from_to_df_pbmc_tsne_scDEED.rds")
 
 trimesh_removed_pbmc_best <- ggplot() + 
   geom_point(
@@ -1035,72 +877,9 @@ trimesh_removed_pbmc_best <- ggplot() +
 ```
 
 ```{r}
-#| label: prep-pbmc-tsne-model-proj-best
-
-data_pbmc <- training_data_pbmc |> 
-  select(-ID) |>
-  mutate(type = "data")
-
-df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
-  dplyr::mutate(type = "model") ## Data with summarized mean
-
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID) 
-
-# Apply the scaling
-df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)
-scaled_pbmc <- scale_data_manual(df_model_data_pbmc, "type") |>
-  as_tibble()
-
-scaled_pbmc_data <- scaled_pbmc |>
-  filter(type == "data") |>
-  select(-type)
-
-scaled_pbmc_data_model <- scaled_pbmc |>
-  filter(type == "model") |>
-  select(-type)
-```
-
-```{r}
-#| label: langevitour-pbmc-tsne-author-proj-best
-#| eval: false
-
-data_pbmc_n <- data_pbmc |>
-  select(-type) |>
-  mutate(type = as.character(tsne_pbmc_scaled_with_cluster$cluster))
-
-df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
-
-langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = tr_from_to_df_pbmc$from,
-                         lineTo = tr_from_to_df_pbmc$to,
-                         group = factor(df_model_data_pbmc_n$type,
-                                        c("cluster1", "cluster2", "cluster3", "model")),
-                         levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))
-```
-
-```{r}
 #| label: pbmc-tsne-model-proj-best
 
-## First projection
-projection <- cbind(
-  c(0.025588,0.002516,0.002185,0.025284,0.004030,-0.026880,-0.015326,0.014851,0.026260),
-  c(0.026495,-0.024817,0.021623,-0.014036,-0.010220,0.016634,-0.006496,-0.022928,0.016045))
-
-proj_obj1 <- get_projection(projection = projection, 
-               proj_scale = 1.23, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 0.05,
-                                 axis_scaled = 17, 
-                                 axis_pos_x = -0.03, 
-                                 axis_pos_y = -0.03, 
-                                 threshold = 0.0044))
-
-proj_obj1[["cluster"]] <- as.character(tsne_pbmc_scaled_with_cluster$cluster)
+proj_obj1 <- read_rds("data/pbmc3k/proj_obj1_tsne_scDEED.rds")
 
 pbmc_proj_tsne_model1_best <- plot_proj(
   proj_obj = proj_obj1, 
@@ -1111,23 +890,7 @@ pbmc_proj_tsne_model1_best <- plot_proj(
   interior_annotation(label = "b2", cex = 2) +
   scale_color_manual(values = c("#8dd3c7", "#fdb462", "#bebada"))
 
-## Second projection
-projection <- cbind(
-  c(0.025013,0.029055,-0.003143,0.001821,-0.006208,0.019174,0.020630,0.021512,0.020281),
-  c(0.004528,0.006465,-0.042452,0.009837,0.010040,-0.023820,0.005236,0.014775,-0.017712))
-
-proj_obj2 <- get_projection(projection = projection, 
-               proj_scale = 1.25, 
-               highd_data = scaled_pbmc_data, 
-               model_highd = scaled_pbmc_data_model, 
-               trimesh_data = tr_from_to_df_pbmc, 
-               axis_param = list(limits = 0.035, 
-                                 axis_scaled = 17, 
-                                 axis_pos_x = -0.023, 
-                                 axis_pos_y = -0.023, 
-                                 threshold = 0.0027))
-
-proj_obj2[["cluster"]] <- as.character(tsne_pbmc_scaled_with_cluster$cluster)
+proj_obj2 <- read_rds("data/pbmc3k/proj_obj2_tsne_scDEED.rds")
 
 pbmc_proj_tsne_model2_best <- plot_proj(
   proj_obj = proj_obj2, 
