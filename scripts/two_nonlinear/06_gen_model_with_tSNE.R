@@ -411,7 +411,7 @@ error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
   filter(bin1 == min(bin1)) |>
   ungroup() |>
-  mutate(dens = 1/(b_non_empty*side_length^2)) #m = b_non_empty
+  mutate(dens = 1/(m*side_length^2))
 
 base_line_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>
@@ -421,6 +421,6 @@ error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_comp = dens/base_line_dens)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
-  mutate(prop_bins = b_non_empty/b)
+  mutate(prop_bins = m/b)
 
 write_rds(error_two_curvy_tsne, "data/two_nonlinear/error_two_curvy_tsne.rds")

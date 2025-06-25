@@ -46,7 +46,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
            bin1 = two_curvy_model1$hb_obj$bins[1],
            bin2 = two_curvy_model1$hb_obj$bins[2],
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
+           m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
   error_rm_two_curvy1 <- bind_rows(error_rm_two_curvy1, error_df)
@@ -88,7 +88,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
            bin1 = two_curvy_model2$hb_obj$bins[1],
            bin2 = two_curvy_model2$hb_obj$bins[2],
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
+           m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
   error_rm_two_curvy2 <- bind_rows(error_rm_two_curvy2, error_df)
@@ -130,7 +130,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
            bin1 = two_curvy_model3$hb_obj$bins[1],
            bin2 = two_curvy_model3$hb_obj$bins[2],
            b = bin1 * bin2,
-           b_non_empty = NROW(df_bin_centroids_two_curvy_high_dens),
+           m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
   error_rm_two_curvy3 <- bind_rows(error_rm_two_curvy3, error_df)
