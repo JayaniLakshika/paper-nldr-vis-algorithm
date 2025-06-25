@@ -923,14 +923,14 @@ error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_curvy_tsne.rds")
 mse_two_curvy_b <- ggplot(error_two_curvy_tsne, 
                      aes(x = a1, 
                          y = RMSE)) +
-  geom_vline(xintercept = 0.09,
+  geom_vline(xintercept = 0.03,
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.03, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
@@ -950,20 +950,20 @@ mse_two_curvy_b <- ggplot(error_two_curvy_tsne,
 prop_dens_a1 <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
                          y = prop_comp)) +
-  geom_vline(xintercept = 0.09,
+  geom_vline(xintercept = 0.03,
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.03, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("Relative proportion density")) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("relative ", bar(d[h])))) +
   interior_annotation("d", position = c(0.9, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
@@ -977,14 +977,14 @@ axis.text = element_text(size = 15))
 a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
                          y = prop_bins)) +
-  geom_vline(xintercept = 0.09,
+  geom_vline(xintercept = 0.03,
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
   geom_vline(xintercept = 0.05,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.03, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
@@ -1105,7 +1105,7 @@ mse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
         plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
-        legend.position = "bottom",
+        legend.position = "none",
         legend.title = element_blank(),
         legend.text = element_text(size = 18),
         axis.title = element_text(size = 18),
@@ -1115,7 +1115,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and bin density cutoff. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.09$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative proportion density decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
+#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and bin density cutoff. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative $\\bar{d_h}$ decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
 #| label: fig-param-two-curvy
 #| out-width: 80%
 #| fig-width: 12
@@ -1124,7 +1124,7 @@ axis.text = element_text(size = 15))
 
 mse_two_curvy_b + a1_m_two_curvy +
   mse_two_curvy_lwd + prop_dens_a1 +
-  plot_layout(ncol=2, guides = "collect")
+  plot_layout(ncol=2)
 ```
 
 ### Linked plots

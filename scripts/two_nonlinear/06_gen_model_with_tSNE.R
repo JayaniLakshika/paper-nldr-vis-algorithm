@@ -411,14 +411,14 @@ error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
   filter(bin1 == min(bin1)) |>
   ungroup() |>
-  mutate(prop_dens = 1/(b*side_length^2))
+  mutate(dens = 1/(b_non_empty*side_length^2)) #m = b_non_empty
 
-base_line_prop_dens <- error_two_curvy_tsne |>
+base_line_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>
-  pull(prop_dens)
+  pull(dens)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
-  mutate(prop_comp = prop_dens/base_line_prop_dens)
+  mutate(prop_comp = dens/base_line_dens)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_bins = b_non_empty/b)
