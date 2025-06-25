@@ -1698,6 +1698,7 @@ In this data there are $2622$ single cells and $1000$ gene expressions (variable
 To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that, the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
 
 <!--Fit the best model for author suggestion and compute error-->
+<!--pbmc3k/14_gen_model_with_UMAP.R-->
 ```{r}
 #| label: hexbin-pbmc
 #| 
@@ -1760,6 +1761,7 @@ pbmc_proj_umap_model2 <- plot_proj(
 
 ```
 
+<!--pbmc3k/11_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-pbmc
 
@@ -1821,6 +1823,7 @@ error_plot_pbmc +
 
 <!--best choice-->
 <!--Fit the best model and compute error-->
+<!--pbmc3k/15_gen_model_with_tSNE.R-->
 ```{r}
 #| label: tsne-num-bins-pbmc
 tsne_pbmc_scaled_best_with_cluster <- read_rds("data/pbmc3k/tsne_pbmc_scaled_best_with_cluster.rds")
