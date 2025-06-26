@@ -1542,14 +1542,15 @@ error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected11
       aes(x = sqrt_row_wise_total_error, 
           y = density),
       alpha=0.7, colour = "#800026", size = 3) +
-  xlab(expression(e[hj])) +
+  xlab(expression(paste("residual (",e[hi],")"))) +
   ylab("") +
   interior_annotation("b1",
                       cex = 2) +
   theme_bw() +
   theme(aspect.ratio = 1,
         axis.title = element_text(size = 18),
-        axis.text = element_text(size = 15))
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_blank())
 
 error_df_one_curvy_abs_selected12 <- read_rds("data/one_c_shaped_dens_structure/error_df_one_curvy_abs_selected12.rds")
 
@@ -1563,14 +1564,15 @@ error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12,
       aes(x = sqrt_row_wise_total_error, 
           y = density),
       alpha=0.7, colour = "#800026", size = 3) +
-  xlab(expression(e[hj])) +
+  xlab(expression(paste("residual (",e[hi],")"))) +
   ylab("") +
   interior_annotation("a1",
                       cex = 2) +
   theme_bw() +
   theme(aspect.ratio = 1,
         axis.title = element_text(size = 18),
-        axis.text = element_text(size = 15))
+        axis.text = element_text(size = 15),
+        axis.text.y = element_blank())
 ```
 
 ```{r}
