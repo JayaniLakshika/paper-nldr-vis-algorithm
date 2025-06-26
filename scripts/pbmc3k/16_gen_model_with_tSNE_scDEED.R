@@ -25,7 +25,7 @@ df_bin_pbmc <- algo_obj_pbmc$model_highd
 
 ## Removed some bins manually to fit a better model
 df_bin_centroids_pbmc <- df_bin_centroids_pbmc |>
-  filter(!(hexID %in% c(559, 617, 677)))
+  filter(!(h %in% c(559, 617, 677)))
 
 tri_object <- tri_bin_centroids(
   centroids_data = df_bin_centroids_pbmc)
@@ -48,12 +48,12 @@ data_pbmc <- training_data_pbmc |>
   mutate(type = "data")
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(h %in% df_bin_centroids_pbmc$h) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID)
+## Reorder the rows of df_b according to the h order in df_b_with_center_data
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$h, df_b_pbmc$h),] |>
+  dplyr::select(-h)
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)

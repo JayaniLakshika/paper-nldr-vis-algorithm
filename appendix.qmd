@@ -731,7 +731,7 @@ error_umap_plot_pbmc <-  plot_rmse(error_pbmc) +
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the two layouts with UMAP and tSNE with different hyper-parameter setting (n_neighbors: $30$, min_dist: $0.3$ (red); n_neighbors: $30$ (blue)) on the PBMC data is the better representation using RMSE for varying binwidth ($a_1$). Colour used for the lines and points in the top plot and in the scatterplots represents UMAP and tSNE layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Assessing which of the 2 NLDR layouts on the PBMC3k data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 # Define the layout design
 layout_design <- "
@@ -871,7 +871,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) and the \\gD{} layout selected (@fig-pbmc-mse-umap b) by RMSE plot (@fig-pbmc-mse-umap) from tSNE and UMAP with default hyper-parameters. The PBMC data ($n =  5858$) has three clusters in $9\\text{-}D$, where three clusters are close. Two \\gD{} projection from a tour on $9\\text{-}D$ of the model fit with @fig-pbmc-mse-umap a ($a_1 = 0.04$, $b = 900/179 (30, 30)$) shows three-well separated clusters with big separations. On the other hand, the model fit with @fig-pbmc-mse-umap b ($a_1 = 0.04$, $b = 1110/317 (30, 37)$) shows three-well separated clusters with small separations. Therefore, @fig-pbmc-mse-umap b is more reasonable than @fig-pbmc-mse-umap a. Videos of the langevitour animations are available at <https://youtu.be/0cKX_HG_n0k> and <https://youtu.be/KhJvsRtaX04> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) made with UMAP and the \\gD{} layout selected (@fig-pbmc-mse-umap b) made with tSNE by RMSE plot (@fig-pbmc-mse-umap). The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three separated clusters with two of them are close, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not capture the nonlinear structure of the clusters like the model generated from layout b. This supports the choice that layout b is the better representation of the data, because it shows close clusters. Videos of the langevitour animations are available at <https://youtu.be/ffiB4MGWyn8> and <https://youtu.be/e7XNL18co1c> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
