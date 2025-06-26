@@ -907,7 +907,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster probably because it is in $3\\text{-}D$. Notice also that, in the \\gD{} layout the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doen't severely impact the \\pD{} model representation."
+#| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doen't severely impact the \\pD{} model representation."
 #| fig-width: 8
 #| fig-height: 2
 
@@ -1024,7 +1024,7 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b) and a tour of \\fD{} data space (c). Color indicates error ($e_{hi}$), dark color indicating high error and light indicates low error. Most large errors are distributed in one cluster (bottom one in c) and most small errors are distributed in the other cluster."
+#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b) and a tour of \\fD{} data space (c). Color indicates residual ($e_{hi}$), dark color indicating high value. Most large residuals are distributed in one cluster (bottom one in c) and most small residuals are distributed in the other cluster."
 #| out-width: 100%
 #| fig-pos: H
 #| fig-width: 8
@@ -2187,7 +2187,7 @@ imge_error_sample_inside <- plot_digit_img(
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "The $10\\text{-}D$ model error in \\gD{} layout of the MNIST digit 1 data shows a pattern. Most low model errors are distributed along the big nonlinear cluster, while most large model errors are distributed along the small cluster. The images associated with large model errors shows different patterns of digit 1, some inside (f) the nonlinear structure and others outside (e). Along the nonlinear cluster, the angle of digit 1 changes (b-d)."
+#| fig-cap: "There is a pattern to error of the fit of the model for \\gD{} layout of the MNIST digit 1 data. On the left is the NLDR layout (a), and at right (b-e) are images of samples of observations taken at locations along the big cluster, and the small cluster, showing how the 1's were drawn. Set (f) are images corresponding to large residuals in the big cluster. Along the big cluster, the angle of digit 1 changes (b-d). The small cluster has larger residuals, and the images show that these tend to be European style with a flag at the top, and a base at the bottom. The set in (f) show various poorly written digits. "
 #| fig-pos: H
 #| fig-width: 10
 #| fig-height: 10
