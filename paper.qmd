@@ -949,7 +949,7 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.08, linetype="dotted",
+  geom_vline(xintercept = 0.07, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
@@ -977,7 +977,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.08, linetype="dotted",
+  geom_vline(xintercept = 0.07, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
@@ -1004,7 +1004,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.08, linetype="dotted",
+  geom_vline(xintercept = 0.07, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
@@ -1141,7 +1141,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) RMSE against $a_1$, RMSE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here RMSE steadily increases so there is no clear choice - nevertheless, we have chosen three binwidths, $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted), to compare in the other plots. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins changes RMSE substantially (c). The average bin density ($\\bar{d}$) tends to decrease with $a_1$ (d)."
+#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) RMSE against $a_1$, RMSE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here RMSE steadily increases so there is no clear choice - nevertheless, we have chosen three binwidths, $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted), to compare in the other plots. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins changes RMSE substantially (c). The average bin density ($\\bar{d}$) tends to decrease with $a_1$ (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
