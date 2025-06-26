@@ -499,7 +499,7 @@ emb_df1 <- tibble(emb1 = 0.45, emb2 = 0.47) |>
 assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
   geom_point(data = emb_df1, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
   geom_circle(data = circles, aes(x0 = x, y0 = y, r = r), fill = NA) +
   geom_segment(x = 0.45, y = 0.47, xend = 0.58, yend = 0.3, 
                arrow = arrow(length = unit(0.02, "npc")), color = "#969696") +
@@ -539,7 +539,7 @@ arrow_df <- tibble(
 assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
   geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
   geom_point(data = points_df, aes(x = x, y = y), color = "black", size = 0.7) +
-  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = hexID), size = 5, colour = "#bdbdbd") +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
   geom_segment(data = arrow_df, aes(x = x, y = y, xend = xend, yend = yend), 
                arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") 
 ```
@@ -712,7 +712,7 @@ error_pbmc <- bind_rows(error_pbmc_umap,
 
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
-  filter(bin1 >= 5) |>
+  filter(b1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
   ungroup()
