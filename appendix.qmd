@@ -74,6 +74,9 @@ header-includes: |
   \newcommand\kD{$k\text{-}D$}
   \newcommand\dD{$d\text{-}D$}
   \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
   \newcommand{\To}{\textbf{to}~}
   \usepackage{abstract}
   \renewcommand{\abstractname}{}    % clear the title
@@ -206,7 +209,9 @@ kable(notation_df,
   column_spec(1:2, width = c("3cm", "12cm"))
 ```
 
-## Generating the nonlinear clusters data
+## Generating the 2NC7 data
+
+This data is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(\text{-}3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. Observations lie on a \gD{} manifold in \sD{}. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $X_3 = \text{-}(X_1^3 + X_2)$, and $X_4 \sim U(0, 2)$. It is also curved, but observations lie on a \tD{} manifold in\sD{}. Three more variables, $X_5, X_6, X_7$, that are small amounts of pure noise are added. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 ```{r}
 proj_obj1_true <- read_rds("data/two_nonlinear/two_nonlinear_true_proj_obj1.rds")

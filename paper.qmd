@@ -80,7 +80,9 @@ header-includes: |
   \newcommand\kD{$k\text{-}D$}
   \newcommand\dD{$d\text{-}D$}
   \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
   \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
 ---
 <!-- Looking at Non-Linear Dimension Reductions as Models in the Data Space 
 
@@ -642,14 +644,14 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 ```
 
 
-To illustrate the method, we use $7\text{-}D$ simulated data, which we call the "nonlinear clusters". It is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(\text{-}3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $X_3 = \text{-}(X_1^3 + X_2)$, and $X_4 \sim U(0, 2)$. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
+To illustrate the method, we use \sD{} simulated data, which we call the "2NC7" data. It is has two separated nonlinear clusters, one forming a \gD{} curved shape, and the other a \tD{} curved shape, each consisting of $1000$ observations. The first four variables hold this cluster structure, and the remaining three are purely noise. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 <!-- The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance.  -->
 
 ```{r}
 #| label: fig-NLDR-two-curvy
 #| echo: false
-#| fig-cap: "Key steps for constructing the model on the tSNE layout ($k=2$): (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The two nonlinear clusters data is shown."
+#| fig-cap: "Key steps for constructing the model on the tSNE layout ($k=2$) of 2NC7: (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The 2NC7 data is shown."
 #| fig-width: 12
 #| fig-height: 4
 #| out-width: 100%
@@ -1057,7 +1059,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the nonlinear cluster data, using three different bin specifications ($b_1, b_2, b, m$): (a) 15, 16, 240, 98, (b) 24, 30, 720, 215, and (c) 48, 52, 2496, 549. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the RMSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different bin specifications ($b_1, b_2, b, m$): (a) 15, 16, 240, 98, (b) 24, 30, 720, 215, and (c) 48, 52, 2496, 549. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the RMSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -1277,7 +1279,7 @@ error_plot_two_curvy <-
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the two nonlinear clusters data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the 2NC7 data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-toy-rmse
 #| fig-pos: H
 #| out-width: 100%
