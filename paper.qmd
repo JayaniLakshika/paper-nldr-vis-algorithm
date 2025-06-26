@@ -1132,15 +1132,13 @@ rmse_two_curvy_b + a1_m_two_curvy +
   plot_layout(ncol=2)
 ```
 
-### Linked plots
+### Interactive graphics
 
-Diagnosing the model while locating points in the \gD{} layout and displaying the generated model overlaid on data in the \pD{} is important.
+Matching points in the \gD{} layout with their positions in \pD{} is useful for assessing the fit. This can be used to examine the fitted model in some subspaces in \pD{}, in particular in association with residual plots. 
 
-The \gD{} layout and the langevitour view with the model are linked together via rectangular brushes; when a brush is active, points will be highlighted in the adjacent view. Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. The interface is constructed as a **browsable HTML widget** specifically designed for interactive data analysis.
+The \gD{} layout and the langevitour view with the fitted model overlaid can be linked using a **browsable HTML widget**. A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This capability will be illustrated on the examples, to show how it can help to understand how the NLDR has organised the observations, and learn where it does not do well.
 
-To understand how well the model fits the points whether it fits well, works better in some positions, or fails to match the overall pattern. It is important to link and brush the points with high model error in the \pD{} error plot, \gD{} layout, and the generated model overlay on the data in \pD{}.
-
-## Assessing the best fit, and hence most accurate \gD{} layout {#sec-bestfit} 
+## Choosing the best \gD{} layout {#sec-bestfit} 
 
 @fig-toy-rmse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
