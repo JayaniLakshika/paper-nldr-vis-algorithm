@@ -1237,7 +1237,8 @@ error_two_curvy <- error_two_curvy |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
-  ungroup()
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
 ```
 
 ```{r}
