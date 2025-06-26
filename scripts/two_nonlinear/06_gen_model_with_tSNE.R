@@ -433,7 +433,8 @@ error_two_curvy_tsne <- error_two_curvy_tsne |>
 
 base_line_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>
-  pull(dens)
+  summarise(mean_dens = mean(dens)) |>
+  pull(mean_dens)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_comp = dens/base_line_dens)

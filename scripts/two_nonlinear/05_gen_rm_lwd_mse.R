@@ -26,14 +26,12 @@ df_bin_two_curvy1 <- two_curvy_model1$model_highd
 error_rm_two_curvy1 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.14, by=0.01)
+benchmark_rm_hex_vec <- seq(0, 0.014, by=0.001)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy1 |>
-    arrange(std_counts) |>
-    mutate(cum_std_counts = cumsum(std_counts)) |>
-    filter(cum_std_counts >= benchmark_rm_lwd)
+    dplyr::filter(std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy1 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
@@ -43,7 +41,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_2d = df_bin_centroids_two_curvy_high_dens,
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
-    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model1$hb_obj$a1, 2)),
            bin1 = two_curvy_model1$hb_obj$bins[1],
            bin2 = two_curvy_model1$hb_obj$bins[2],
@@ -70,14 +68,12 @@ df_bin_two_curvy2 <- two_curvy_model2$model_highd
 error_rm_two_curvy2 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.14, by=0.01)
+benchmark_rm_hex_vec <- seq(0, 0.008, by=0.001)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy2 |>
-    arrange(std_counts) |>
-    mutate(cum_std_counts = cumsum(std_counts)) |>
-    filter(cum_std_counts >= benchmark_rm_lwd)
+    dplyr::filter(std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy2 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
@@ -87,7 +83,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_2d = df_bin_centroids_two_curvy_high_dens,
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
-    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model2$hb_obj$a1, 2)),
            bin1 = two_curvy_model2$hb_obj$bins[1],
            bin2 = two_curvy_model2$hb_obj$bins[2],
@@ -114,14 +110,12 @@ df_bin_two_curvy3 <- two_curvy_model3$model_highd
 error_rm_two_curvy3 <- data.frame(matrix(nrow = 0, ncol = 0))
 
 ## To initialize benchmark values to remove low density hexagons
-benchmark_rm_hex_vec <- seq(0, 0.14, by=0.01)
+benchmark_rm_hex_vec <- seq(0, 0.005, by=0.001)
 
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy3 |>
-    arrange(std_counts) |>
-    mutate(cum_std_counts = cumsum(std_counts)) |>
-    filter(cum_std_counts >= benchmark_rm_lwd)
+    dplyr::filter(std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy3 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
@@ -131,7 +125,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     model_2d = df_bin_centroids_two_curvy_high_dens,
     model_highd = df_bin_two_curvy_high_dens,
     highd_data = data_two_curvy) |>
-    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 2),
+    mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model3$hb_obj$a1, 2)),
            bin1 = two_curvy_model3$hb_obj$bins[1],
            bin2 = two_curvy_model3$hb_obj$bins[2],
