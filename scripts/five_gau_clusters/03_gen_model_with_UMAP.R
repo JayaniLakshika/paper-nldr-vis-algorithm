@@ -23,7 +23,7 @@ num_bins_x_gau1 <- 63
 algo_obj_gau1 <- fit_highd_model(
   highd_data = training_data_gau,
   nldr_data = umap_data_gau,
-  bin1 = num_bins_x_gau1,
+  b1 = num_bins_x_gau1,
   q = 0.1,
   benchmark_highdens = 5)
 
@@ -36,12 +36,12 @@ write_rds(umap_gau_scaled, "data/five_gau_clusters/umap_gau_scaled.rds")
 write_rds(tr_from_to_df_gau1, "data/five_gau_clusters/tr_from_to_df_gau1_umap.rds")
 
 df_b <- df_bin_gau1 |>
-  dplyr::filter(hexID %in% df_bin_centroids_gau1$hexID) |>
+  dplyr::filter(h %in% df_bin_centroids_gau1$h) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b <- df_b[match(df_bin_centroids_gau1$hexID, df_b$hexID),] |>
-  dplyr::select(-hexID)
+## Reorder the rows of df_b according to the h order in df_b_with_center_data
+df_b <- df_b[match(df_bin_centroids_gau1$h, df_b$h),] |>
+  dplyr::select(-h)
 
 # Apply the scaling
 df_model_data <- bind_rows(data_gau, df_b)

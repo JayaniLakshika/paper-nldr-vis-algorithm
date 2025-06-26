@@ -25,7 +25,7 @@ num_bins_x_tsne_pbmc <- 22
 algo_obj_pbmc <- fit_highd_model(
   highd_data = training_data_pbmc,
   nldr_data = tsne_pbmc,
-  bin1 = num_bins_x_tsne_pbmc,
+  b1 = num_bins_x_tsne_pbmc,
   q = 0.1,
   benchmark_highdens = 1)
 
@@ -41,12 +41,12 @@ write_rds(tsne_pbmc_scaled_best_with_cluster, "data/pbmc3k/tsne_pbmc_scaled_best
 write_rds(tr_from_to_df_pbmc, "data/pbmc3k/tsne_tr_from_to_df_pbmc.rds")
 
 df_b_pbmc <- df_bin_pbmc |>
-  dplyr::filter(hexID %in% df_bin_centroids_pbmc$hexID) |>
+  dplyr::filter(h %in% df_bin_centroids_pbmc$h) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$hexID, df_b_pbmc$hexID),] |>
-  dplyr::select(-hexID)
+## Reorder the rows of df_b according to the h order in df_b_with_center_data
+df_b_pbmc <- df_b_pbmc[match(df_bin_centroids_pbmc$h, df_b_pbmc$h),] |>
+  dplyr::select(-h)
 
 # Apply the scaling
 df_model_data_pbmc <- bind_rows(data_pbmc, df_b_pbmc)

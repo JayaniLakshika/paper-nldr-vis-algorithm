@@ -35,7 +35,7 @@ num_bins_x_pbmc <- 30
 algo_obj_pbmc <- fit_highd_model(
   highd_data = training_data_pbmc,
   nldr_data = umap_pbmc,
-  bin1 = num_bins_x_pbmc,
+  b1 = num_bins_x_pbmc,
   q = 0.1,
   benchmark_highdens = 5)
 

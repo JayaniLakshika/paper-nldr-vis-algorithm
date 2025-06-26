@@ -26,7 +26,7 @@ num_bins_x_mnist <- 30
 algo_obj_mnist <- fit_highd_model(
   highd_data = training_data_mnist,
   nldr_data = tsne_mnist2,
-  bin1 = num_bins_x_mnist,
+  b1 = num_bins_x_mnist,
   q = 0.1,
   benchmark_highdens = 1)
 
@@ -63,19 +63,19 @@ write_rds(error_df, "data/mnist/mnist_error_df.rds")
 ## Model
 hexID_mnist <- df_bin_centroids_mnist |>
   #dplyr::filter(std_counts > 0) |>
-  dplyr::pull(hexID)
+  dplyr::pull(h)
 
 df_b_mnist <- df_bin_mnist |>
-  dplyr::filter(hexID %in% hexID_mnist) |>
+  dplyr::filter(h %in% hexID_mnist) |>
   dplyr::mutate(type = "model") ## Data with summarized mean
 
-## Reorder the rows of df_b according to the hexID order in df_b_with_center_data
-df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$hexID),]
+## Reorder the rows of df_b according to the h order in df_b_with_center_data
+df_b_mnist <- df_b_mnist[match(hexID_mnist, df_b_mnist$h),]
 
 df_b_mnist_temp <- df_b_mnist
 
 df_b_mnist <- df_b_mnist |>
-  dplyr::select(-hexID)
+  dplyr::select(-h)
 
 # Apply the scaling
 df_model_data_mnist <- bind_rows(data_mnist, df_b_mnist)

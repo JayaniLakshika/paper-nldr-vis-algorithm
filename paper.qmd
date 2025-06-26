@@ -429,7 +429,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
     data = hex_grid_with_counts, 
     aes(x = x, y = y,
       group = hex_poly_id, 
-      fill = std_counts), colour = "grey70", linewidth=0.2) +
+      fill = w_h), colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
              aes(x = emb1, y = emb2),
              colour = clr_choice,
@@ -849,7 +849,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
     data = hex_grid_with_counts_two_curvy2, 
     aes(x = x, y = y, 
         group = hex_poly_id, 
-        fill = std_counts), 
+        fill = w_h), 
         colour = "grey70", 
         linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
@@ -894,7 +894,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
     data = hex_grid_with_counts_two_curvy3, 
     aes(x = x, y = y, 
         group = hex_poly_id, 
-        fill = std_counts), 
+        fill = w_h), 
         colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
            aes(x = emb1, y = emb2),
@@ -1100,7 +1100,7 @@ The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side l
 #| label: rm-lwd-bin-error
 
 error_rm_two_curvy <- read_rds("data/two_nonlinear/error_rm_lwd_diff_bin.rds") |>
-  mutate(bin1  = as.factor(bin1))
+  mutate(b1  = as.factor(b1))
 
 rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
                      aes(x = benchmark_rm_lwd, 
@@ -1255,7 +1255,7 @@ error_two_curvy <- bind_rows(error_two_curvy_umap,
 
 error_two_curvy <- error_two_curvy |>
   mutate(a1 = round(a1, 2)) |>
-  filter(bin1 >= 5) |>
+  filter(b1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
   ungroup() |>
@@ -1817,7 +1817,7 @@ error_pbmc <- bind_rows(error_pbmc_umap,
 
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
-  filter(bin1 >= 5) |>
+  filter(b1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
   ungroup()
@@ -2014,7 +2014,7 @@ error_mnist <- bind_rows(error_mnist_umap,
 
 error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
-  filter(bin1 >= 5) |>
+  filter(b1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
   ungroup() |>

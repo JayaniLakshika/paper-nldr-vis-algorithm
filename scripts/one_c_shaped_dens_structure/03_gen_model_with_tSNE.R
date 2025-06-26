@@ -20,7 +20,7 @@ num_bins_x_one_c_shaped <- 20
 algo_obj_dens_clust <- fit_highd_model(
   highd_data = one_c_shaped_data,
   nldr_data = tsne_one_c_shaped,
-  bin1 = num_bins_x_one_c_shaped,
+  b1 = num_bins_x_one_c_shaped,
   q = 0.1,
   benchmark_highdens = 1)
 
@@ -85,7 +85,7 @@ data_c_shaped <- one_c_shaped_data |>
   mutate(type = "data")
 
 df_bin_dens_clust <- df_bin_dens_clust |>
-  select(-hexID) |>
+  select(-h) |>
   mutate(type = "model")
 
 df_model_data <- bind_rows(data_c_shaped, df_bin_dens_clust)

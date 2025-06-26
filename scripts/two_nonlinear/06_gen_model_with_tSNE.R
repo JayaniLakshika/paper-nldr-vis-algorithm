@@ -29,7 +29,7 @@ num_bins_x_two_curvy <- 24
 algo_obj_two_curvy <- fit_highd_model(
   highd_data = training_data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = num_bins_x_two_curvy,
+  b1 = num_bins_x_two_curvy,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -47,7 +47,7 @@ write_rds(df_bin_centroids_two_curvy, "data/two_nonlinear/df_bin_centroids_two_c
 ## hexagon binning to have regular hexagons
 hb_obj_notation <- hex_binning(
   nldr_obj = algo_obj_two_curvy$nldr_obj,
-  bin1 = 7,
+  b1 = 7,
   q = 0.1)
 
 a1_temp <- hb_obj_notation$a1
@@ -62,7 +62,7 @@ hex_grid_temp40 <- hex_grid_temp |>
   filter(hex_poly_id == 40)
 
 start_pt <- all_centroids_df_temp |>
-  filter(hexID == 1)
+  filter(h == 1)
 d_rect <- tibble(x1min = 0,
                  x1max = 1,
                  x2min = 0,
@@ -99,10 +99,10 @@ write_rds(l, "data/two_nonlinear/l_data.rds")
 write_rds(rect_adj, "data/two_nonlinear/rect_adj.rds")
 
 
-hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "hexID"))
+hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "h"))
 
 hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids_two_curvy$hexID)
+  filter(hex_poly_id %in% df_bin_centroids_two_curvy$h)
 
 bin_width <- algo_obj_two_curvy$hb_obj$a1
 
@@ -151,7 +151,7 @@ true_model_two_curvy <- true_model_df |>
   mutate(type = "true model")
 
 df_bin_two_curvy <- df_bin_two_curvy |>
-  select(-hexID) |>
+  select(-h) |>
   mutate(type = "model")
 
 # Apply the scaling
@@ -363,7 +363,7 @@ num_bins_x_two_curvy <- 15
 algo_obj_two_curvy2 <- fit_highd_model(
   highd_data = training_data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = num_bins_x_two_curvy,
+  b1 = num_bins_x_two_curvy,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -374,7 +374,7 @@ df_bin_two_curvy2 <- algo_obj_two_curvy2$model_highd
 hex_grid_two_curvy2 <- algo_obj_two_curvy2$hb_obj$hex_poly
 counts_df_two_curvy2 <- algo_obj_two_curvy2$hb_obj$std_cts
 
-hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("hex_poly_id" = "hexID"))
+hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("hex_poly_id" = "h"))
 
 write_rds(hex_grid_with_counts_two_curvy2, "data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy2.rds")
 write_rds(tr_from_to_df_two_curvy2, "data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy2.rds")
@@ -387,7 +387,7 @@ num_bins_x_two_curvy <- 35
 algo_obj_two_curvy3 <- fit_highd_model(
   highd_data = training_data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = num_bins_x_two_curvy,
+  b1 = num_bins_x_two_curvy,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -398,7 +398,7 @@ df_bin_two_curvy3 <- algo_obj_two_curvy3$model_highd
 hex_grid_two_curvy3 <- algo_obj_two_curvy3$hb_obj$hex_poly
 counts_df_two_curvy3 <- algo_obj_two_curvy3$hb_obj$std_cts
 
-hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("hex_poly_id" = "hexID"))
+hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("hex_poly_id" = "h"))
 
 write_rds(hex_grid_with_counts_two_curvy3, "data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy3.rds")
 write_rds(tr_from_to_df_two_curvy3, "data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
@@ -411,7 +411,7 @@ num_bins_x_two_curvy <- 3
 algo_obj_two_curvy4 <- fit_highd_model(
   highd_data = training_data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = num_bins_x_two_curvy,
+  b1 = num_bins_x_two_curvy,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -427,17 +427,15 @@ error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_s
 ## Find the minimum RMSE when have duplicate a1
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
-  filter(bin1 == min(bin1)) |>
-  ungroup() |>
-  mutate(dens = 1/(m*side_length^2))
+  filter(b1 == min(b1)) |>
+  ungroup()
 
 base_line_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>
-  summarise(mean_dens = mean(dens)) |>
-  pull(mean_dens)
+  pull(d_bar)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
-  mutate(prop_comp = dens/base_line_dens)
+  mutate(prop_comp = d_bar/base_line_dens)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_bins = m/b)

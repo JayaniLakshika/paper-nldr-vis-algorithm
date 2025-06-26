@@ -16,7 +16,7 @@ tsne_two_curvy <- read_rds(file = "data/two_nonlinear/two_non_linear_diff_shaped
 two_curvy_model1 <- fit_highd_model(
   highd_data = data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = 15,
+  b1 = 15,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -31,10 +31,10 @@ benchmark_rm_hex_vec <- seq(0, 0.014, by=0.001)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy1 |>
-    dplyr::filter(std_counts >= benchmark_rm_lwd)
+    dplyr::filter(w_h >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy1 |>
-    filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
+    filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
   ## Compute error
   error_df <- glance(
@@ -43,9 +43,9 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model1$hb_obj$a1, 2)),
-           bin1 = two_curvy_model1$hb_obj$bins[1],
+           b1 = two_curvy_model1$hb_obj$bins[1],
            bin2 = two_curvy_model1$hb_obj$bins[2],
-           b = bin1 * bin2,
+           b = b1 * bin2,
            m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
@@ -58,7 +58,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model2 <- fit_highd_model(
   highd_data = data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = 24,
+  b1 = 24,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -73,10 +73,10 @@ benchmark_rm_hex_vec <- seq(0, 0.008, by=0.001)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy2 |>
-    dplyr::filter(std_counts >= benchmark_rm_lwd)
+    dplyr::filter(w_h >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy2 |>
-    filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
+    filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
   ## Compute error
   error_df <- glance(
@@ -85,9 +85,9 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model2$hb_obj$a1, 2)),
-           bin1 = two_curvy_model2$hb_obj$bins[1],
+           b1 = two_curvy_model2$hb_obj$bins[1],
            bin2 = two_curvy_model2$hb_obj$bins[2],
-           b = bin1 * bin2,
+           b = b1 * bin2,
            m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
@@ -100,7 +100,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model3 <- fit_highd_model(
   highd_data = data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = 35,
+  b1 = 35,
   q = 0.1,
   benchmark_highdens = 0)
 
@@ -115,10 +115,10 @@ benchmark_rm_hex_vec <- seq(0, 0.005, by=0.001)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy3 |>
-    dplyr::filter(std_counts >= benchmark_rm_lwd)
+    dplyr::filter(w_h >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy3 |>
-    filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
+    filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
   ## Compute error
   error_df <- glance(
@@ -127,9 +127,9 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model3$hb_obj$a1, 2)),
-           bin1 = two_curvy_model3$hb_obj$bins[1],
+           b1 = two_curvy_model3$hb_obj$bins[1],
            bin2 = two_curvy_model3$hb_obj$bins[2],
-           b = bin1 * bin2,
+           b = b1 * bin2,
            m = NROW(df_bin_centroids_two_curvy_high_dens),
            mean_counts = sum(df_bin_centroids_two_curvy_high_dens$bin_counts)/NROW(df_bin_centroids_two_curvy_high_dens))
 
