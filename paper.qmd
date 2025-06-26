@@ -965,7 +965,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_tsne,
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("ave bin density (", bar(d), ")"))) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("relative ave bin density (", bar(d), ")"))) +
   interior_annotation("d", position = c(0.9, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
@@ -1063,7 +1063,7 @@ These quantities can be used to assess and compare the models resulting from dif
 - RMSE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in RMSE would indicate the lower binwidth is substantially better than the larger one (@fig-param-two-curvy a).
 - The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less (@fig-param-two-curvy b). 
 - Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the RMSE calculation, though. RMSE can be examined relative to dropping a fraction of the low density bins (@fig-param-two-curvy c).
-- Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d). 
+- Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d), relative to that of the hexgrid with the smallest binwidth. 
 
 
 <!-- 
