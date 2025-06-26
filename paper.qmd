@@ -62,7 +62,7 @@ author:
     url: https://thiyanga.netlify.app/
 tbl-cap-location: bottom
 abstract: |
-  Non-linear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional data (\pD{}) by applying a non-linear transformation. NLDR often exaggerates random patterns. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of \pD{} distributions. The NLDR methods and hyper-parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. To help assess the NLDR and decide on which, if any, is the most reasonable representation of the structure(s) present in the \pD{} data, we have developed an algorithm to show the \gD{} NLDR model in the \pD{} space, viewed with a tour, a movie of linear projections. From this, one can see if the model fits everywhere, or better in some subspaces, or completely mismatches the data. Also, we can see how different methods may have similar summaries or quirks. 
+  Nonlinear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional data (\pD{}) by applying a nonlinear transformation. NLDR often exaggerates random patterns. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of \pD{} distributions. The NLDR methods and hyper-parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. To help assess the NLDR and decide on which, if any, is the most reasonable representation of the structure(s) present in the \pD{} data, we have developed an algorithm to show the \gD{} NLDR model in the \pD{} space, viewed with a tour, a movie of linear projections. From this, one can see if the model fits everywhere, or better in some subspaces, or completely mismatches the data. Also, we can see how different methods may have similar summaries or quirks. 
   
 keywords: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
 keywords-formatted: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
@@ -84,7 +84,7 @@ header-includes: |
   \newcommand\fD{$4\text{-}D$}
   \newcommand\sD{$7\text{-}D$}
 ---
-<!-- Looking at Non-Linear Dimension Reductions as Models in the Data Space 
+<!-- Looking at nonlinear Dimension Reductions as Models in the Data Space 
 
 Quantitative Visual Tools to Honestly Select Nonlinear Dimension Reductions
 
@@ -219,7 +219,7 @@ Check-list before submission
 
 ## Introduction
 
-Non-linear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
+Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
 
 ```{r}
 #| label: read-pbmc-nldr
