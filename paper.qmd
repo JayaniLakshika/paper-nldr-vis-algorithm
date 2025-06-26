@@ -937,6 +937,7 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   labs(x = expression(paste("binwidth (", a[1], ")")), y = "RMSE") +
+  ylim(c(0, 0.75)) +
   interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
@@ -964,7 +965,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_tsne,
   geom_point(size = 1) +
   # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("relative ", bar(d[h])))) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression(paste("ave bin density (", bar(d), ")"))) +
   interior_annotation("d", position = c(0.9, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
@@ -1030,7 +1031,7 @@ The model fitting can be adjusted using these parameters:
     - the number of bins in the horizontal direction ($b_1$), which controls the number of bins the vertical direction ($b_2$), total number of bins ($b$), and total number of non-empty bins ($m$).
 - bin density cutoff, to possibly remove low-density hexagons.
 
-Default values are provided for each of these, but it is expected that the user will examine the RMSE for a range of choices. Choosing these parameters according to RMSE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.
+Default values are provided for each of these, but deciding on the best model fit is assisted by examining the RMSE for a range of choices. <!--Choosing these parameters according to RMSE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.-->
 
 #### Hexagon bin parameters
 
@@ -1055,14 +1056,15 @@ The default number of bins $b=b_1\times b_2$ is computed based on the sample siz
 
 #### Handling of low density bins
 
-Standardised bin counts is computed as $w_h = n_h/n, ~~h=1, \dots m$, and $n$ is the number of observations. Density is computed as $d_h = w_h/A$ where $A$ is the area of the hexagon. As a measure of the denseness of a single grid, we can compute the average bin density, $\bar{d_h}$. This can be used to compare grids. 
+Standardised bin counts is computed as $w_h = n_h/n, ~~h=1, \dots m$, and $n$ is the number of observations. Density is computed as $d_h = w_h/A$ where $A$ is the area of the hexagon. As a measure of the denseness of a single grid, we can compute the average bin density, $\bar{d}$. This can be used to compare the model fit for different grids. 
 
 These quantities can be used to assess and compare the models resulting from different binwidths:
 
-- RMSE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in RMSE would indicate the lower binwidth is substantially better than the larger one.  
-- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the RMSE calculation, though. RMSE can be examined relative to dropping a fraction of the low density bins.
-- The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less. 
-- Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density is compared against the range of binwidths. 
+- RMSE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in RMSE would indicate the lower binwidth is substantially better than the larger one (@fig-param-two-curvy a).
+- The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less (@fig-param-two-curvy b). 
+- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the RMSE calculation, though. RMSE can be examined relative to dropping a fraction of the low density bins (@fig-param-two-curvy c).
+- Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d). 
+
 
 <!-- 
 To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
@@ -1096,10 +1098,11 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 4, 7, 11, 17, 21)]) +
   scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77"),
                      labels = parse_format()) +
-  scale_linetype_manual(values = c("dashed", "solid", "dotted"),
+  scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
-  xlab("bin density cutoff") +
+  xlab(expression(paste("std bin count (", w[h], ")"))) +
   ylab("RMSE") +
+  ylim(c(0, 0.75)) +
   interior_annotation("c", position = c(0.07, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
@@ -1117,9 +1120,9 @@ axis.text = element_text(size = 15))
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help assess best hexagon bin parameters (a, b, d) and thresholds to remove low-density bins (c). Both (a) and (c) show RMSE, against binwidth ($a_1$) and bin density cutoff. A good benchmark value for these parameters is when the RMSE drops and then flattens out. Three binwidth choices were made: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted) to investigate. As the binwidth increases, the proportion of non-empty bins also increases (b). The relative $\\bar{d_h}$ decreases and levels off (d). Binwidth $0.05$ is chosen as the initial best binwidth for further analysis. There is no need to remove the low-density hexagons because as shown in (b), there is no considerable drop in RMSE."
+#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) RMSE against $a_1$, RMSE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here RMSE steadily increases so there is no clear choice. For comparison in the other displays we have chosen $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted). Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins (up to bins with 20% of observations) doesn't change RMSE substantially (c). The average bin density ($\\bar{d}$) tends to decrease with $a_1$ (d)."
 #| label: fig-param-two-curvy
-#| out-width: 80%
+#| out-width: 100%
 #| fig-width: 12
 #| fig-height: 10
 #| fig-pos: H
