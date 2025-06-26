@@ -382,7 +382,7 @@ write_rds(tr_from_to_df_two_curvy2, "data/two_nonlinear/two_nonlinear_tr_from_to
 
 ## hexbin-regular-two-curvy3
 
-num_bins_x_two_curvy <- 48
+num_bins_x_two_curvy <- 35
 
 algo_obj_two_curvy3 <- fit_highd_model(
   highd_data = training_data_two_curvy,

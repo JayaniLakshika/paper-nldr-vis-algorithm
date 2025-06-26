@@ -104,7 +104,7 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 two_curvy_model3 <- fit_highd_model(
   highd_data = data_two_curvy,
   nldr_data = tsne_two_curvy,
-  bin1 = 48,
+  bin1 = 35,
   q = 0.1,
   benchmark_highdens = 0)
 
