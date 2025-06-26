@@ -1,5 +1,5 @@
 ---
-title: "Beyond Subjectivity: New Visual Tools to Choose the Best Nonlinear Dimension Reduction Layout"
+title: "Beyond Subjectivity: New Visual Tools to Choose a Nonlinear Dimension Reduction"
 format: 
     jasa-pdf:
         keep-tex: true
@@ -82,7 +82,20 @@ header-includes: |
   \newcommand\gD{$2\text{-}D$}
   \newcommand\fD{$4\text{-}D$}
 ---
-<!-- Looking at Non-Linear Dimension Reductions as Models in the Data Space -->
+<!-- Looking at Non-Linear Dimension Reductions as Models in the Data Space 
+
+Quantitative Visual Tools to Honestly Select Nonlinear Dimension Reductions
+
+Stop Lying to Me: Visual Evidence for Honest Dimension Reduction
+
+When Looks Deceive: Quantifying the Honesty of Nonlinear Layouts
+
+Not Just Pretty Pictures: Quantitative Visual Evaluation of Nonlinear DR Methods
+
+Beauty Isn’t Truth: Choosing Nonlinear Embeddings that Stay True to the Data
+
+Truth in the Tangle: Choosing Nonlinear Reductions with Quantitative Visual Evidence
+-->
 
 ```{r include=FALSE}
 # Set up chunk for for knitr
@@ -1208,7 +1221,7 @@ nldr_two_curvy5 <- pacmap_two_curvy |>
   ggplot(aes(x = PaCMAP1,
              y = PaCMAP2))+
   geom_point(alpha=0.1, size=1, colour='#e41a1c') +
-  interior_annotation("e", c(0.08, 0.9)) +
+  interior_annotation("e") +
   theme(aspect.ratio = 1)
 ```
 
@@ -1238,7 +1251,8 @@ error_two_curvy <- error_two_curvy |>
   filter(bin1 >= 5) |>
   group_by(method, a1) |>
   filter(RMSE == min(RMSE)) |>
-  ungroup()
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
 ```
 
 ```{r}
