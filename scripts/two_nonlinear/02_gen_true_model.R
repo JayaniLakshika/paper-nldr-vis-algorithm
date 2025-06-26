@@ -77,7 +77,7 @@ n_x4 <- 5   # Number of grid points for x4
 # Generate evenly spaced sequences for x1, x2, x4
 x1_seq <- seq(0, 2, length.out = n_x1)
 x2_seq <- seq(0, 3, length.out = n_x2)
-x4_seq <- seq(-0.5, 0.5, length.out = n_x4)
+x4_seq <- seq(0, 1, length.out = n_x4)
 
 # Create a grid of (x1, x2, x4)
 grid_data2 <- expand.grid(x1 = x1_seq, x2 = x2_seq, x4 = x4_seq)
@@ -149,9 +149,10 @@ grid_data2 <- sweep(grid_data2, 2, offset, "+")
 model_data <- bind_rows(grid_data1 |> dplyr::select(x1, x2, x3, x4),
                         grid_data2 |> dplyr::select(x1, x2, x3, x4))
 
-model_data$x5 <- runif(NROW(model_data), -0.02, 0.02)
-model_data$x6 <- runif(NROW(model_data), -0.1, 0.1)
-model_data$x7 <- runif(NROW(model_data), -0.01, 0.01)
+model_data <- model_data |>
+  dplyr::mutate(x5 = mean(runif(NROW(model_data), -0.02, 0.02)),
+                x6 = mean(runif(NROW(model_data), -0.1, 0.1)),
+                x7 = mean(runif(NROW(model_data), -0.01, 0.01)))
 
 connections_all <- bind_rows(edges1, edges2)
 
