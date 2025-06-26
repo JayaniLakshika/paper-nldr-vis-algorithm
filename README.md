@@ -1,6 +1,6 @@
-# Looking at Non-Linear Dimension Reductions as Models in the Data Space
+# Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction
 
-This repo contains the materials to fully reproduce the paper titled "Looking at Non-Linear Dimension Reductions as Models in the Data Space".
+This repo contains the materials to fully reproduce the paper titled "Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction".
 
 ## Description
 
