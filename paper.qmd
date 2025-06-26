@@ -1994,7 +1994,7 @@ nldr_mnist5 <- pacmap_mnist |>
   theme(aspect.ratio = 1)
 ```
 
-<!--mnist/04_gen_mse_for_diff_methods.R-->
+<!--mnist/03_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-mnist
 
@@ -2056,7 +2056,7 @@ The next step is to investigate the \gD{} layout to understand what information 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 
 <!-- Fit the model and compute error-->
-<!--mnist/05_gen_model_with_tSNE.R-->
+<!--mnist/04_gen_model_with_tSNE.R-->
 ```{r}
 #| label: hexbin-mnist
 
@@ -2152,7 +2152,6 @@ tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_lin
   plot_layout(ncol = 3)
 ```
 
-<!--mnist/03_gen_images.R-->
 ```{r}
 #| label: img-diff-pos
 
@@ -2161,28 +2160,28 @@ tsne_plot_mnist_clust + mnist_proj_tsne_model1_link + mnist_proj_tsne_model2_lin
 img_right_top <- read_rds("data/mnist/mnist_img_right_top.rds")
 
 right_top_img <- plot_digit_img(
-  img_right_top, palette = "Blues 2", title_text = "b")
+  img_right_top, color_on = "#375cb1", title_text = "b")
 
 img_middle <- read_rds("data/mnist/mnist_img_middle.rds")
 
 middle_img <- plot_digit_img(
-  img_middle, palette = "Greens 3", title_text = "c")
+  img_middle, color_on = "#008000", title_text = "c")
 
 img_right_bottom <- read_rds("data/mnist/mnist_img_right_bottom.rds")
 
 right_bottom_img <- plot_digit_img(
-  img_right_bottom, palette = "Purples 2", title_text = "d")
+  img_right_bottom, color_on = "#4c389a", title_text = "d")
 
 img_error_outside <- read_rds("data/mnist/mnist_img_error_outside.rds")
 
 imge_error_sample_outside <- plot_digit_img(
-  img_error_outside, palette = "Grays", title_text = "e")
+  img_error_outside, color_on = "#000000", title_text = "e")
 
 ##### inside
 img_error_inside <- read_rds("data/mnist/mnist_img_error_inside.rds")
 
 imge_error_sample_inside <- plot_digit_img(
-  img_error_inside, palette = "Oranges", title_text = "f")
+  img_error_inside, color_on = "#ff7f00", title_text = "f")
 
 ```
 

@@ -37,7 +37,7 @@ scale_data_manual <- function(data, type_col) {
   }
 
   # Combine the scaled data with the 'type' column and return as a tibble
-  data_scaled <- as_tibble(data_scaled) %>%
+  data_scaled <- as_tibble(data_scaled) |>
     mutate(!!type_col := data[[type_col]])
 
   return(data_scaled)
@@ -77,26 +77,49 @@ standardize = function(x){
 
 # Plot digits in MNIST
 
-plot_digit_img <- function(digit_df, palette, title_text, ncol = 5) {
+plot_digit_img <- function(
+    digit_df,
+    title_text,
+    ncol = 5,
+    threshold = 100, # Added as a parameter
+    color_off = "white", # Added as a parameter
+    color_on = "darkblue" # Added as a parameter
+) {
 
-  # Add a label column only to the first instance
-  digit_df <- digit_df |>
-    mutate(label = ifelse(instance == unique(instance)[1], title_text, NA))
+  # --- Data Processing: Binarize and prepare for plotting ---
+  digit_df_processed <- digit_df |>
+    # Add a label column only to the first instance if title_text is provided
+    # (The original code had `mutate(label = ifelse(instance == unique(instance)[1], title_text, NA))`)
+    # If digit_df already has a 'label' column, you might want to adjust this.
+    # For now, I'll keep your original label logic.
+    mutate(label = ifelse(instance == unique(instance)[1], title_text, NA_character_)) |>
 
-  ggplot(data = digit_df, aes(x, y, fill = value)) +
+    # Binarize the 'value' column based on the threshold
+    mutate(
+      binary_value = ifelse(value <= threshold, 0, 1),
+      # Convert to factor for discrete manual scaling and controlled order
+      binary_value = factor(binary_value, levels = c(0, 1))
+    )
+
+  ggplot(data = digit_df_processed, aes(x = x, y = y, fill = binary_value)) +
     geom_tile() +
-    geom_text(data = digit_df |> filter(!is.na(label)),
+    geom_text(data = digit_df_processed |> filter(!is.na(label)),
               aes(label = label),
-              x = min(digit_df$x), y = max(digit_df$y), inherit.aes = FALSE,
+              x = min(digit_df_processed$x, na.rm = TRUE), # Use na.rm=TRUE for robustness
+              y = max(digit_df_processed$y, na.rm = TRUE), # Use na.rm=TRUE for robustness
+              inherit.aes = FALSE,
               hjust = -0.3, vjust = 1.3, size = 7, color = "grey70") +
     facet_wrap(~ instance, ncol = ncol) +
     coord_fixed() +
-    scale_fill_continuous_sequential(palette = palette) +
-    theme(strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          legend.position = "none",
-          plot.margin = margin(0, 0, 0, 0))
-
+    scale_fill_manual(values = c("0" = color_off, "1" = color_on)) +
+    theme(
+      strip.background = element_blank(),
+      strip.text.x = element_blank(),
+      legend.position = "none",
+      plot.margin = margin(0, 0, 0, 0),
+      panel.background = element_rect(fill = color_off, colour = NA),
+      plot.background = element_rect(fill = color_off, colour = NA)
+    )
 }
 
 # Solve quadratic function
