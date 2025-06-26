@@ -31,7 +31,8 @@ benchmark_rm_hex_vec <- seq(0, 0.20, by=0.01)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy1 |>
-    filter(std_counts > benchmark_rm_lwd)
+    mutate(cum_std_counts = cumsum(std_counts)) |>
+    filter(cum_std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy1 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
@@ -73,7 +74,8 @@ benchmark_rm_hex_vec <- seq(0, 0.20, by=0.01)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy2 |>
-    filter(std_counts > benchmark_rm_lwd)
+    mutate(cum_std_counts = cumsum(std_counts)) |>
+    filter(cum_std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy2 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)
@@ -115,7 +117,8 @@ benchmark_rm_hex_vec <- seq(0, 0.20, by=0.01)
 for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
 
   df_bin_centroids_two_curvy_high_dens <- df_bin_centroids_two_curvy3 |>
-    filter(std_counts > benchmark_rm_lwd)
+    mutate(cum_std_counts = cumsum(std_counts)) |>
+    filter(cum_std_counts >= benchmark_rm_lwd)
 
   df_bin_two_curvy_high_dens <- df_bin_two_curvy3 |>
     filter(hexID %in% df_bin_centroids_two_curvy_high_dens$hexID)

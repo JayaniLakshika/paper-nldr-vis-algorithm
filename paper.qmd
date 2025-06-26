@@ -1109,26 +1109,29 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   geom_line(
     linewidth = 0.5
     ) + 
-  scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 4, 7, 11, 17, 21)]) +
+  scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 4, 7, 11, 15, 17, 21)]) +
   scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77"),
                      labels = parse_format()) +
   scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
   xlab(expression(paste("std bin count (", w[h], ")"))) +
   ylab("RMSE") +
+  xlim(c(0, 0.14)) +
   ylim(c(0, 0.75)) +
   interior_annotation("c", position = c(0.07, 0.9), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        plot.title = element_text(size = 20, 
+                                  hjust = 0.5, 
+                                  vjust = -0.5),
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
         legend.position = "none",
         legend.title = element_blank(),
         legend.text = element_text(size = 18),
         axis.title = element_text(size = 18),
-axis.text = element_text(size = 15))
+        axis.text = element_text(size = 15))
 ```
 
 
