@@ -1298,7 +1298,7 @@ With the drawing of the model in the data, several interesting differences betwe
 
 ### Some methods appear to order points in the layout
 
-When examining the \gD{} model representations it appears to be flatter or like a pancake with some methods, especially PaCMAP, when the data is structure is higher than two dimensional. A simple example of this can be seen with data simulated to contain five \fD{} Gaussian clusters. Each cluster is essentially a ball in \fD{}, so there is no \gD{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out \fD{}.
+The \gD{} model representations generated from some NLDR methods, especially PaCMAP, are unreasonably flat or like a pancake. A simple example of this can be seen with data simulated to contain five \fD{} Gaussian clusters. Each cluster is essentially a ball in \fD{}, so there is no \gD{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out \fD{}.
 
 @fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
 
@@ -1703,7 +1703,7 @@ five_c_shaped_proj_tsne_model1_selected <- ggplot() +
 #| fig-height: 10
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Exploring the effect of density on the NLDR layout using a C-shaped structure with different density at each end. The top part of the triangular shape, shown with linked brushing, identify high model error corresponding to the sparse end of the structure (a1-a3). On the other hand, one of the dense corners of the structure shows low model error and is highlighted in the right part of the triangular shape (b1-b3). The tSNE layouts (a2, b2) are colored according to selected points. a2, a3 and b2, b3 present the results from linked plots that brushed the \\fD{} error points in \\gD{} and \\fD{}. It helps in identifying the high \\fD{} model errors that occur due to the sparse end."
+#| fig-cap: "Exploring the effect of density on the NLDR layout using a \\gD{} curved sheet in \\fD{} with different density at each end. Three plots are linked: density plot of residuals (a1, b1), NLDR layout (a2, b2), projection of \\fD{} model and data (a3, b3). The brown points indicate the selected set, which are different in each row. In (a2), the top part of the triangular shape is selected which corresponds to higher residuals (a1) and the sparse end of the structure (a3). In (b2) one of other corners is highlighted, which can be seen to correspond to low residuals (b1) and one side of the dense end of the data (b3). While the tSNE layout represents the dense end of the sheet correctly as two corners in the layout, it contracts the sparse end of the sheet into a single corner. "
 
 error_plot_one_curvy_hist + plot_tsne_dens + 
   five_c_shaped_proj_tsne_model1 +
