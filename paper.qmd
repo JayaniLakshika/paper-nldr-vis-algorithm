@@ -3,7 +3,6 @@ title: "Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear D
 format: 
     jasa-pdf:
         keep-tex: true
-    jasa-html: default
 author:
   - name: Jayani P. Gamage
     affiliations:
@@ -84,6 +83,7 @@ header-includes: |
   \newcommand\fD{$4\text{-}D$}
   \newcommand\sD{$7\text{-}D$}
 ---
+
 <!-- Looking at nonlinear Dimension Reductions as Models in the Data Space 
 
 Quantitative Visual Tools to Honestly Select Nonlinear Dimension Reductions
@@ -219,7 +219,7 @@ Check-list before submission
 
 ## Introduction
 
-Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction Using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
+Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
 
 ```{r}
 #| label: read-pbmc-nldr
@@ -361,7 +361,7 @@ The paper is organized as follows. @sec-background provides a summary of the lit
 <!-- - Connection between NLDR and MDS-->
 Historically, low-dimensional (\kD{}) representations of high-dimensional (\pD{}) data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) (for an overview see @jolliffe2011). (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
-Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. Both tNSE and UMAP can be considered to produce the \kD{} representation by minimizing the divergence between two distributions, where the distributions are modeling the inter-point distances. PHATE are examples of diffusion processes spreading to capture geometric shapes, that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.) TriMAP and PaCMAP 
+Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. The methods tNSE, UMAP, TriMAP and PaCMAP can be considered to produce the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is an example of a diffusion process spreading to capture geometric shapes, that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.)  
 
 The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d) which would **contradict** the other representations. These contradictions arise because these methods and parameter choices provide different lenses on the interpoint distances in the data.
 
@@ -2211,7 +2211,7 @@ Additional exploration of metrics to summarize the fit could be a new direction 
 
 This new method also reveals some interesting curiosities about NLDR procedures. The fitted model appears as a "pancake" in some data where clusters are regularly shaped and high-dimensional, for some methods but not others, which is odd. One can imagine that if algorithms are initiated using principal components then some ordering of points along the major axes might generate this pattern. Alternatively, if local distances dominate the algorithm then is might be possible to see this pattern with well-separated regular clusters. We also demonstrated that there is a tendency for NLDR algorithms to be confused by different density in the data space, and some patterns in the layout are due to density differences rather than nonlinear associations between variables. 
 
-Most NLDR methods only provide a \gD{} but if a \kD{} ($k>2$) layout is provided the approach developed here could be extended. Binning into cubes could be done in $3\text{-}D$ or higher, relatively easily, and used as a the basis for a wireframe of the fitted model. @barber1996 (and the associated software @stephane2023) has an algorithm for a convex hull in \pD{}m which serves as an inspiration. A simpler approach using $k$-means clustering to provide centroids could also be possible, but the complication would be to determine how to connect the centroids into an appropriate wireframe.
+Most NLDR methods only provide a \gD{} but if a \kD{} ($k>2$) layout is provided the approach developed here could be extended. Binning into cubes could be done in $3\text{-}D$ or higher, relatively easily, and used as a the basis for a wireframe of the fitted model. @barber1996 (and the associated software @stephane2023) has an algorithm for a convex hull in \pD{} which serves as an inspiration. A simpler approach using $k$-means clustering to provide centroids could also be possible, but the complication would be to determine how to connect the centroids into an appropriate wireframe.
 
 The new methodology is accompanied by an R package called quollr, so that it is readily usable and broadly accessible. The package has methods to fit the model, compute diagnostics and also visualize the results, with interactivity. We have primarily used the langevitour software [@harisson2024] to view the model in the data space, but other tour software such as tourr [@wickham2011] and detourr [@hart2022] could be also used.
 
