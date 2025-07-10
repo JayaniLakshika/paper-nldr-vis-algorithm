@@ -2,6 +2,12 @@
 
 This repo contains the materials to fully reproduce the paper titled "Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction".
 
+## Citation
+
+Please cite the paper as:
+
+Gamage, J. P., Cook, D., Harrison, P., Lydeamore, M., & Talagala, T. S. (2025). Stop lying to me: New visual tools to choose the most honest nonlinear dimension reduction. arXiv. [https://arxiv.org/abs/2506.22051](https://arxiv.org/abs/2506.22051)
+
 ## Description
 
 - [`data`](data): The data sets used in the examples and empirical applications.
