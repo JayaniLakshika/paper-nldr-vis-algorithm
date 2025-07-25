@@ -14,6 +14,10 @@ names(training_data_pbmc) <- paste0("x", 1:50)
 training_data_pbmc <- training_data_pbmc[, 1:9] |>
   mutate(ID = 1:NROW(training_data_pbmc))
 
+data_pbmc <- training_data_pbmc |>
+  select(-ID) |>
+  mutate(type = "data")
+
 ## NLDR
 tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
 
@@ -33,6 +37,8 @@ tsne_pbmc_scaled_best <- algo_obj_pbmc$nldr_obj$scaled_nldr
 tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
 df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
 df_bin_pbmc <- algo_obj_pbmc$model_highd
+
+umap_pbmc_scaled_with_cluster <- read_rds("data/pbmc3k/umap_pbmc_scaled_with_cluster.rds")
 
 tsne_pbmc_scaled_best_with_cluster <- tsne_pbmc_scaled_best |>
   mutate(cluster = umap_pbmc_scaled_with_cluster$cluster)
@@ -61,7 +67,13 @@ scaled_pbmc_data_model <- scaled_pbmc |>
   filter(type == "model") |>
   select(-type)
 
+data_pbmc_n <- data_pbmc |>
+  select(-type) |>
+  mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
+
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
+
+write_rds(df_model_data_pbmc_n, "data/pbmc3k/df_model_data_pbmc_n.rds")
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = tr_from_to_df_pbmc$from,
