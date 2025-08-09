@@ -30,6 +30,8 @@ umap_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
 tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
 df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
 df_bin_pbmc <- algo_obj_pbmc$model_highd
+hex_grid <- algo_obj_pbmc$hb_obj$hex_poly
+counts_df <- algo_obj_pbmc$hb_obj$std_cts
 
 umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
   mutate(cluster = if_else(UMAP1 <= 0.25, "cluster1", if_else(UMAP1 >= 0.625, "cluster2", "cluster3"))) |>
@@ -37,6 +39,18 @@ umap_pbmc_scaled_with_cluster <- umap_pbmc_scaled |>
 
 write_rds(umap_pbmc_scaled_with_cluster, "data/pbmc3k/umap_pbmc_scaled_with_cluster.rds")
 write_rds(tr_from_to_df_pbmc, "data/pbmc3k/umap_tr_from_to_df_pbmc.rds")
+
+hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("h" = "h"))
+
+hex_grid_nonempty <- hex_grid |>
+  filter(h %in% df_bin_centroids_pbmc$h)
+
+bin_width <- algo_obj_pbmc$hb_obj$a1
+
+write_rds(df_bin_centroids_pbmc, "data/pbmc3k/df_bin_centroids_pbmc_umap.rds")
+write_rds(hex_grid_with_counts, "data/pbmc3k/hex_grid_with_counts.rds")
+write_rds(hex_grid_nonempty, "data/pbmc3k/hex_grid_nonempty.rds")
+
 
 data_pbmc <- training_data_pbmc |>
   select(-ID) |>
@@ -71,6 +85,8 @@ data_pbmc_n <- data_pbmc |>
   mutate(type = as.character(umap_pbmc_scaled_with_cluster$cluster))
 
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
+
+write_rds(df_model_data_pbmc_n, "data/pbmc3k/df_model_data_pbmc_n_umap.rds")
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
                          lineFrom = tr_from_to_df_pbmc$from,

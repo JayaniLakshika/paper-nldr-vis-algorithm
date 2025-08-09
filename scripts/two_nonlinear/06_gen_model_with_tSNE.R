@@ -59,7 +59,7 @@ all_centroids_df_temp <- hb_obj_notation$centroids
 hex_grid_temp <- hb_obj_notation$hex_poly
 
 hex_grid_temp40 <- hex_grid_temp |>
-  filter(hex_poly_id == 40)
+  filter(h == 40)
 
 start_pt <- all_centroids_df_temp |>
   filter(h == 1)
@@ -99,10 +99,10 @@ write_rds(l, "data/two_nonlinear/l_data.rds")
 write_rds(rect_adj, "data/two_nonlinear/rect_adj.rds")
 
 
-hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("hex_poly_id" = "h"))
+hex_grid_with_counts <- left_join(hex_grid, counts_df, by = c("h" = "h"))
 
 hex_grid_nonempty <- hex_grid |>
-  filter(hex_poly_id %in% df_bin_centroids_two_curvy$h)
+  filter(h %in% df_bin_centroids_two_curvy$h)
 
 bin_width <- algo_obj_two_curvy$hb_obj$a1
 
@@ -176,6 +176,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 
 df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
 
+write_rds(df_model_data_two_curvy_filtered, "data/two_nonlinear/df_model_data_two_curvy_filtered.rds")
+
 langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
                          lineFrom = tr_from_to_df_two_curvy$from,
                          lineTo = tr_from_to_df_two_curvy$to,
@@ -193,6 +195,9 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "true model")),
                          levelColors = c(clr_choice, "#000000"))
+
+write_rds(df_model_data_two_curvy_filtered, "data/two_nonlinear/df_true_model_data_two_curvy_filtered.rds")
+
 
 ## Model error
 langevitour::langevitour(data_two_curvy[1:(length(data_two_curvy)-1)],
