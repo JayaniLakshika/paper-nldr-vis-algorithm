@@ -361,7 +361,7 @@ The paper is organized as follows. @sec-background provides a summary of the lit
 <!-- - Connection between NLDR and MDS-->
 Historically, low-dimensional (\kD{}) representations of high-dimensional (\pD{}) data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) (for an overview see @jolliffe2011). (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differences distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
-Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. The methods tNSE, UMAP, TriMAP and PaCMAP can be considered to produce the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is an example of a diffusion process spreading to capture geometric shapes, that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.)  
+Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP and PaCMAP. The methods tNSE, UMAP, TriMAP and PaCMAP can be considered for producing the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is an example of a diffusion process spreading to capture geometric shapes, that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.)  
 
 The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d) which would **contradict** the other representations. These contradictions arise because these methods and parameter choices provide different lenses on the interpoint distances in the data.
 
@@ -416,7 +416,7 @@ hex_grid_two_curvy <- ggplot(
   data = hex_grid_with_counts, 
   aes(x = x, y = y)) +
   geom_polygon(colour = "grey70", 
-               aes(group = hex_poly_id), 
+               aes(group = h), 
                fill = "#ffffff") +
   geom_point(data = tsne_two_curvy_scaled, 
              aes(x = emb1, y = emb2), 
@@ -428,7 +428,7 @@ hex_grid_coloured_two_curvy1 <- ggplot() +
   geom_polygon(
     data = hex_grid_with_counts, 
     aes(x = x, y = y,
-      group = hex_poly_id, 
+      group = h, 
       fill = w_h), colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
              aes(x = emb1, y = emb2),
@@ -450,7 +450,7 @@ hex_grid_nonempty_two_curvy <- ggplot(
   data = hex_grid_nonempty, 
   aes(x = x, y = y)) +
   geom_polygon(colour = "grey70", 
-               aes(group = hex_poly_id), 
+               aes(group = h), 
                fill = "#ffffff") +
   geom_point(data = df_bin_centroids_two_curvy, 
              aes(x = c_x, y = c_y), 
@@ -644,7 +644,7 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 ```
 
 
-To illustrate the method, we use \sD{} simulated data, which we call the "2NC7" data. It is has two separated nonlinear clusters, one forming a \gD{} curved shape, and the other a \tD{} curved shape, each consisting of $1000$ observations. The first four variables hold this cluster structure, and the remaining three are purely noise. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
+To illustrate the method, we use \sD{} simulated data, which we call the "2NC7" data. It has two separated nonlinear clusters, one forming a \gD{} curved shape, and the other a \tD{} curved shape, each consisting of $1000$ observations. The first four variables hold this cluster structure, and the remaining three are purely noise. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
 
 <!-- The remaining variables $X_4, X_5, X_6, X_7$ are all uniform error, with small variance.  -->
 
@@ -712,7 +712,7 @@ hex_param_vis <- ggplot() +
     geom_polygon(data = hex_grid_temp, 
                         aes(x = x, 
                             y = y, 
-                            group = hex_poly_id),
+                            group = h),
                  fill = "white", 
                  colour = "#bdbdbd") +
     geom_point(data = all_centroids_df_temp, aes(
@@ -848,7 +848,7 @@ hex_grid_coloured_two_curvy2 <- ggplot() +
   geom_polygon(
     data = hex_grid_with_counts_two_curvy2, 
     aes(x = x, y = y, 
-        group = hex_poly_id, 
+        group = h, 
         fill = w_h), 
         colour = "grey70", 
         linewidth=0.2) +
@@ -893,7 +893,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
   geom_polygon(
     data = hex_grid_with_counts_two_curvy3, 
     aes(x = x, y = y, 
-        group = hex_poly_id, 
+        group = h, 
         fill = w_h), 
         colour = "grey70", linewidth=0.2) +
   geom_point(data = tsne_two_curvy_scaled,
@@ -907,7 +907,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doen't severely impact the \\pD{} model representation."
+#| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doesn't severely impact the \\pD{} model representation."
 #| fig-width: 8
 #| fig-height: 2
 
@@ -1171,7 +1171,7 @@ To compare and assess a range of representations an analyst needs:
 - a range of model fits made by varying bin size and low density bin removal.
 - calculated RMSE for each layout, when it is transformed into the \pD{} space. 
 
-Comparing the RMSE to obtain the best fit is appropraite if the same NLDR method is used. However, because the RMSE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower RMSE indicates a better NLDR representation.
+Comparing the RMSE to obtain the best fit is appropriate if the same NLDR method is used. However, because the RMSE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower RMSE indicates a better NLDR representation.
 
 ```{r}
 #| label: read-two-curvy-clust-nldr

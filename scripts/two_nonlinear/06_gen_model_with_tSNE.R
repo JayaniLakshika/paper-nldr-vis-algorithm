@@ -379,7 +379,7 @@ df_bin_two_curvy2 <- algo_obj_two_curvy2$model_highd
 hex_grid_two_curvy2 <- algo_obj_two_curvy2$hb_obj$hex_poly
 counts_df_two_curvy2 <- algo_obj_two_curvy2$hb_obj$std_cts
 
-hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("hex_poly_id" = "h"))
+hex_grid_with_counts_two_curvy2 <- left_join(hex_grid_two_curvy2, counts_df_two_curvy2, by = c("h" = "h"))
 
 write_rds(hex_grid_with_counts_two_curvy2, "data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy2.rds")
 write_rds(tr_from_to_df_two_curvy2, "data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy2.rds")
@@ -403,7 +403,7 @@ df_bin_two_curvy3 <- algo_obj_two_curvy3$model_highd
 hex_grid_two_curvy3 <- algo_obj_two_curvy3$hb_obj$hex_poly
 counts_df_two_curvy3 <- algo_obj_two_curvy3$hb_obj$std_cts
 
-hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("hex_poly_id" = "h"))
+hex_grid_with_counts_two_curvy3 <- left_join(hex_grid_two_curvy3, counts_df_two_curvy3, by = c("h" = "h"))
 
 write_rds(hex_grid_with_counts_two_curvy3, "data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy3.rds")
 write_rds(tr_from_to_df_two_curvy3, "data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
