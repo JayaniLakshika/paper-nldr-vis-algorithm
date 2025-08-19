@@ -33,6 +33,64 @@ This manuscript proposes an algorithm to evaluate nonlinear dimension reduction 
 
 # Reviewer 2
 
+## Summary
+
+The manuscript proposes a novel, mostly graphical diagnostic to evaluate nonlinear dimension reduction (NLDR) layouts by effectively “lifting” the 2-D embedding back into the original high-dimensional space and inspecting the fit visually via tours (i.e., sequences of 2D-linear projections of the original high-D space). The goal is to help analysts discern which 2-D projection is the most “honest” (faithful) representation of the true structure in the data. The paper’s contributions are:
+
+1. an algorithm that overlays a geometric model on an NLDR layout using hexagonal binning and Delaunay triangulation in the embedding, then maps this model into the original large-D data space for visual assessment; 
+
+2. a new goodness-of-fit metric, the RMSE in original space, computed as the root mean squared distance between each point and its bin centroid in high-D (Eq 2) (3) interactive visualization tools (implemented in published software) to compare/investigate different NLDRs
+
+It is mostly well written, adresses an important problem with critical real-world relevance, and provides a very well done, extensively documented R implementation. However, this reviewer is skeptical about the suitability of the newly proposed GOF metric to choose the most “reasonable” or “faithful” NLDR, finds the empirical evaluation of it to be severely lacking without comparison to alternative measures from the literature, and would request some restructuring and shortening of the paper. 
+
+## Strengths 
+
+### Relevance, Accessibility, and Intuitiveness 
+
+The way this method visualizes the spatial distortions induced by NLDR seems uniquely acces sible to me, and, coupled with the modern interactive/animated visualizations implemented for it, seems likely to become a very useful tool to investigate and understand high-D data structures while avoiding over-reliance on / misinterpretation of misleading 2D patterns so prevalent in many areas at the moment (e.g. Izarry ( 2024), Chari & Pachter (2023)).
+
+### Background Material & Examples 
+
+The paper is fully fleshed out with illuminating examples, and I commend the authors for the effort they put into documenting their package and providing very informative videos etc of the method in action. 
+
+### Reproducibility and Code Availability 
+
+The paper is exemplary in this regard - the underlying software is a CRAN compliant R package, and the Github repository itself allows to recompile the entire paper and appendix with all figures etc from scratch. 
+
+## Major Issues 
+
+### No Standard Embedding Quality Metrics or Comparisons 
+
+My primary concern is the absence of established quantitative metrics 
+
+1. to evaluate to what extent the newly proposed “RMSE” metric corresponds to established notion of embedding faithfulness and
+
+2. to validate the different embeddings under consideration. 
+
+The paper’s only evaluation of “honesty” is done via the proposed custom “RMSE” in high dimensional space (defined in Section 3.4) and visual heuristics, but it does not report any conventional measures like trustworthiness/continuity scores, $k$-Neighborhood preservation rates (as derived from the co-ranking matrix - e.g. $R_{NX}$-curves for different neighborhood sizes $k$, c.f. (Lee et al, 2015), (Lueks et al, 2011)), or Shepard diagrams of original space vs. embedding space distances. This is a significant omission because NLDR almost always faces a trade-off between optimizing preservation of local structures vs preservation of global structures, which these metrics are (mostly) designed to resolve / analyze. For example, the authors could have computed such measures of trustworthiness for each NLDR layout to see if the one with lowest “RMSE” indeed had the highest (local and or global) neighborhood structure preservation but no such analysis was provided. The manuscript doesn’t even mention or discuss these metrics, which is not acceptable in a study focused on faithful representation, in my opinion.
+
+Questions a revised version should aim to resolve: 
+
+1. does “RMSE” measure local or global structure preservation (or a mixture of both)? From the definition, it seems to be focused on how well small neighborhoods in embed ding space (the bins)) correspond to small neighborhoods in high-D space, with, IIUC, particularly high values if there are lots of “hard intrusions” (i.e., points that are embed ded in the same 2D bin despite being far apart in high-D space)? 
+
+2. how strongly are “RMSE” values correlated to other established measures of (local or global) structure preservation? and (how) are these correlations affected by the binning hyperparameters? 
+
+3. are the NLDRs selected by lowest “RMSE” the ones that would also be selected by other, more established measures of embedding faithfulness whose characteristics are well understood? at the very least, such measures should be provided, compared and discussed for all the embeddings under consideration in the case studies. 
+
+The reliance of “RMSE” on euclidean distances in high-D space also seems limiting: 
+
+1. at least for coarser bins and/or highly non-linear data structures, geodesic distances along the data manifold à la ISOMAP are likely to measure a more relevant kind of dissimilarity 
+
+2. a definition based on a more general notion of distance would make this applicable to in vestigating 2D embeddings of data types for which the euclidean distance of their numeri cal data representations is not a suitable/applicable measure of dissimilarity (e.g. images, text). 
+
+### Insufficient Validation of the Proposed Diagnostic (RMSE) Across Methods 
+
+Related to the above points - the paper has no theoretical or empirical demonstration that minimizing this “RMSE” aligns with minimizing other distortion measures like stress or max imizing neighborhoood preservation (as measured by the co-ranking matrix). Furthermore, the claim that RMSE can be used to compare different NLDR methods on equal footing de serves scrutiny. Different methods optimize different criteria; it’s plausible that one method might (tends to) achieve lower “RMSE” simply by construction, especially if my reading that it mostly rewards embedings that manage to avoid hard intrusions is correct. Overall, much more critical validation of the RMSE diagnostic is needed to convince readers that “honesty” as defined here aligns with meaningful goodness-of-fit in embedding. 
+
+### Limitations of the Evaluation (Simulation Study Design): 
+
+The manuscript includes a simulation to illustrate the approach (the “2NC7” dataset with two nonlinear clusters in 7-D) and two real-data applications (single-cell RNA-seq and an image dataset of handwritten digits). While these examples are appropriate, the scope of simulation scenarios is narrow, and the analysis lacks any notion of variability. The simulation seems to be a single realization of a specific two-cluster scenario. The authors did not explore, for instance, varying the overlap between clusters, adding more clusters or different manifold shapes, or introducing different noise levels. Ideally, the authors would systematically vary factors like: number of clusters or pattern types, intrinsic dimensionality of structures, sample size, etc., and show that their approach reliably selects the truth (or at least, the most interpretable view) in each case, and how well alternative measures would do so. Because only one run is shown, there is also no information how stable the RMSE curves in Figures 8 and 13 are across replications. I encourage the authors to perform more systematic, replicated simulations, report measures of variability for their performance evaluations, compare against relevant alternatives, and take much more care not to overstate their conclusions beyond the tested scenarios (e.g. the claim that it “identify bad representations so they can be avoided” is based on a very limited set of examples). 
+
 ## Minor Issues
 
 1. First part of the title seems inappropriate for a scientific paper to me, as does the implied (and not substantiated, IMO) claim that the proposal is (primarily) useful to reliably select one of many NLDRs (as opposed to primarily useful for visually investigating details about a specific 2D NLDR).
