@@ -135,6 +135,9 @@ reducer <- trimap$TRIMAP(n_dims = as.integer(2),
 TriMAP_data <- reducer$fit_transform(data_matrix) |>
   as_tibble()
 
+## Compute Global score
+reducer$global_score(data_matrix, reducer$fit_transform(data_matrix))
+
 names(TriMAP_data) <- c("TriMAP1", "TriMAP2")
 
 write_rds(TriMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_", n_inliers, "_n-outliers_", n_outliers, "_n-random_", n_random, ".rds"))
