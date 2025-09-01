@@ -81,3 +81,124 @@ print(rta)
 cta <- centroid_triplet_accuracy(X_high, X_low, labels)
 print(cta)
 
+
+# --- KNN Accuracy with LOOCV ---
+knn_accuracy <- function(X_low, labels, k_values = 1:20) {
+  # X_low: n x d matrix/data.frame of low-dimensional embedding
+  # labels: factor or vector of class labels
+  # k_values: range of k to tune
+
+  # Ensure labels are factors
+  labels <- as.factor(labels)
+
+  n <- nrow(X_low)
+  acc_results <- numeric(length(k_values))
+
+  for (i in seq_along(k_values)) {
+    k <- k_values[i]
+
+    # Leave-one-out cross-validation
+    preds <- sapply(1:n, function(j) {
+      train_idx <- setdiff(1:n, j)
+      test_idx <- j
+
+      # Fit KNN on training set
+      pred <- class::knn(train = X_low[train_idx, , drop = FALSE],
+                         test  = X_low[test_idx, , drop = FALSE],
+                         cl    = labels[train_idx],
+                         k     = k)
+      as.character(pred)
+    })
+
+    acc_results[i] <- mean(preds == as.character(labels))
+  }
+
+  # Pick best k
+  best_idx <- which.max(acc_results)
+
+  return(list(
+    best_k = k_values[best_idx],
+    best_accuracy = acc_results[best_idx],
+    accuracy_by_k = data.frame(k = k_values, accuracy = acc_results)
+  ))
+}
+
+set.seed(123)
+
+# Fake embedding: 3 clusters in 2D
+X_low <- rbind(
+  matrix(rnorm(50*2, mean=0), ncol=2),
+  matrix(rnorm(50*2, mean=3), ncol=2),
+  matrix(rnorm(50*2, mean=-3), ncol=2)
+)
+labels <- rep(1:3, each=50)
+
+# Run KNN Accuracy
+res <- knn_accuracy(X_low, labels, k_values = 1:10)
+
+print(res$best_k)
+print(res$best_accuracy)
+print(res$accuracy_by_k)
+
+library(kernlab)
+library(caret)
+
+# --- SVM Accuracy with RBF kernel and 5-fold CV ---
+svm_accuracy <- function(X_low, labels, folds = 5, sigma = 1, C = 1) {
+  # X_low: n x d matrix or data.frame of low-dimensional embedding
+  # labels: factor or vector of class labels
+  # folds: number of CV folds
+  # sigma: RBF kernel parameter (gamma = 1/(2*sigma^2))
+  # C: regularization parameter
+
+  labels <- as.factor(labels)
+  n <- nrow(X_low)
+
+  # Define CV folds
+  set.seed(123)
+  fold_ids <- sample(rep(1:folds, length.out = n))
+
+  acc <- numeric(folds)
+
+  for (f in 1:folds) {
+    train_idx <- which(fold_ids != f)
+    test_idx  <- which(fold_ids == f)
+
+    # Train SVM with RBF kernel
+    svm_model <- ksvm(as.matrix(X_low[train_idx, ]),
+                      labels[train_idx],
+                      kernel = "rbfdot",
+                      kpar = list(sigma = sigma),
+                      C = C,
+                      scaled = FALSE)
+
+    preds <- predict(svm_model, as.matrix(X_low[test_idx, ]))
+
+    acc[f] <- mean(preds == labels[test_idx])
+  }
+
+  return(list(
+    mean_accuracy = mean(acc),
+    sd_accuracy   = sd(acc),
+    fold_accuracies = acc
+  ))
+}
+
+set.seed(42)
+
+# Fake data: 3 clusters in 2D
+X_low <- rbind(
+  matrix(rnorm(50*2, mean=0), ncol=2),
+  matrix(rnorm(50*2, mean=3), ncol=2),
+  matrix(rnorm(50*2, mean=-3), ncol=2)
+)
+labels <- rep(1:3, each=50)
+
+# Run SVM accuracy
+res <- svm_accuracy(X_low, labels, folds = 5, sigma = 0.5, C = 1)
+
+print(res$mean_accuracy)
+print(res$sd_accuracy)
+print(res$fold_accuracies)
+
+
