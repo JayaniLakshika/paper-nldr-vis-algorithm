@@ -109,10 +109,7 @@ more flexible manner that is less impacted by the density of the data. Specifica
 et al., 2011). Thereafter, we trained linear SVM models (using sklearn.svm.LinearSVC) on the non-linearly transformed features. We denote this metric as SVM Accuracy.*
 
 *To measure the preservation of global structure, that is the relative positioning of neighborhoods, we sample observations and compute the Random Triplet Accuracy,
-which is the percentage of triplets whose relative distance in the high- and low-dimensional spaces maintain their relative order. For numerical tractability, we use a sample of triplets rather than considering all triplets. Due to randomness, we apply this metric for five times and report the mean value and standard deviation. Note that random triplet accuracy does not require labels, so we can evaluate it on unlabeled datasets. In the same spirit, but
-at a lower resolution, for labeled datasets, we also measure global structure preservation by computing the centroids of each class in the high- and low-dimensional spaces, and
-construct triplets using the relative distances between centroids in the high-dimensional space. We report the percentage of preserved centroid triplets, denoted as Centroid Triplet
-Accuracy.*
+which is the percentage of triplets whose relative distance in the high- and low-dimensional spaces maintain their relative order. For numerical tractability, we use a sample of triplets rather than considering all triplets. Due to randomness, we apply this metric for five times and report the mean value and standard deviation. Note that random triplet accuracy does not require labels, so we can evaluate it on unlabeled datasets. In the same spirit, but at a lower resolution, for labeled datasets, we also measure global structure preservation by computing the centroids of each class in the high- and low-dimensional spaces, and construct triplets using the relative distances between centroids in the high-dimensional space. We report the percentage of preserved centroid triplets, denoted as Centroid Triplet Accuracy.*
 
 *We first validate the efficacy of the GS measure by drawing a comparison to the recently proposed Pearson Correlation
 Coefficient (PCC) (Freedman et al., 2007). To calculate PCC, we consider random subsets of size 10,000 from different
