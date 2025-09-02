@@ -33,6 +33,10 @@ This manuscript proposes an algorithm to evaluate nonlinear dimension reduction 
 
 2. In Figure 7, as RMSE steadily increases with the binwidth, it's not clear why the three binwidths 0.03, 0.05, and 0.07 are chosen. In addition, we shouldn't use a single simulated dataset to determine the default hyperparameters without any real analysis.
 
+*Thank you for raising this important point. We agree that in Figure 7, the steady increase of RMSE with binwidth makes it less obvious why specific values of $a_1$ were selected. Our intent was not to claim that these three binwidths (0.03, 0.05, and 0.07) are universally optimal, but rather to use them as illustrative examples for exploring trade-offs between RMSE, bin density, and the proportion of non-empty bins. We chose these values because they represent a range of small-to-moderate binwidths that highlight changes across the diagnostic plots.*
+
+*We also agree with your concern that hyperparameters should not be set based on a single simulated dataset. To clarify, our goal here was to demonstrate the process of tuning rather than to prescribe default hyperparameters.* 
+
 3. For several figures that contains results from multiple NLDR algorithms, it would be nice to add the information of which algorithm/ what hyperparameter values for each of the subfigure. Many readers may have tried several NLDR algorithms themselves, and they will benefit from those figures to gain insights about behaviors of different NLDRs. Also it's nice to mention which data is used to generate each figure (e.g., in Figure 7).
 
 *Thank you for this helpful suggestion. We agree that including the NLDR algorithm names, hyperparameter settings, and dataset details in the figure panels will improve clarity and make the results more reproducible and interpretable for readers. We have revised the manuscript accordingly:*
