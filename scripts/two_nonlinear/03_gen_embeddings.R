@@ -108,7 +108,7 @@ write_rds(predict_UMAP_df, file = "data/two_nonlinear/two_non_linear_diff_shaped
 ## PHATE
 knn <- 5
 
-PHATE_data <- phate(data, knn = knn)
+PHATE_data <- phate(data, knn = knn, verbose = TRUE)
 PHATE_data <- as_tibble(PHATE_data$embedding)
 
 names(PHATE_data) <- c("PHATE1", "PHATE2")
@@ -132,14 +132,13 @@ n_random <- as.integer(3)
 reducer <- trimap$TRIMAP(n_dims = as.integer(2),
                          n_inliers = n_inliers,
                          n_outliers = n_outliers,
-                         n_random = n_random)
+                         n_random = n_random,
+                         verbose = TRUE,
+                         return_seq = TRUE)
 
 # Perform dimensionality Reduction
 TriMAP_data <- reducer$fit_transform(data_matrix) |>
   as_tibble()
-
-## Compute Global score
-reducer$global_score(data_matrix, reducer$fit_transform(data_matrix))
 
 names(TriMAP_data) <- c("TriMAP1", "TriMAP2")
 
@@ -162,7 +161,9 @@ init <- "random"
 reducer <- pacmap$PaCMAP(n_components = as.integer(2),
                          n_neighbors = n_neighbors,
                          MN_ratio = MN_ratio,
-                         FP_ratio = FP_ratio)
+                         FP_ratio = FP_ratio,
+                         verbose = TRUE,
+                         intermediate = TRUE)
 
 
 # Perform dimensionality Reduction
