@@ -35,6 +35,9 @@ tSNE_fit <- data |>
   Rtsne::Rtsne(perplexity = perplexity,
                pca = FALSE)
 
+## Loss function value
+tail(tSNE_fit$itercosts, 1)
+
 tSNE_data <- tSNE_fit$Y |>
   tibble::as_tibble(.name_repair = "unique")
 names(tSNE_data) <- c("tSNE1", "tSNE2")
