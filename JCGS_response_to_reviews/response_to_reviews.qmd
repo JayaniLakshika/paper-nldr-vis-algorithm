@@ -123,11 +123,11 @@ The reliance of “RMSE” on euclidean distances in high-D space also seems lim
 
 1. at least for coarser bins and/or highly non-linear data structures, geodesic distances along the data manifold à la ISOMAP are likely to measure a more relevant kind of dissimilarity 
 
-2. a definition based on a more general notion of distance would make this applicable to in vestigating 2D embeddings of data types for which the euclidean distance of their numeri cal data representations is not a suitable/applicable measure of dissimilarity (e.g. images, text). 
+2. a definition based on a more general notion of distance would make this applicable to investigating 2D embeddings of data types for which the euclidean distance of their numerical data representations is not a suitable/applicable measure of dissimilarity (e.g. images, text). 
 
 ### Insufficient Validation of the Proposed Diagnostic (RMSE) Across Methods 
 
-Related to the above points - the paper has no theoretical or empirical demonstration that minimizing this “RMSE” aligns with minimizing other distortion measures like stress or max imizing neighborhoood preservation (as measured by the co-ranking matrix). Furthermore, the claim that RMSE can be used to compare different NLDR methods on equal footing de serves scrutiny. Different methods optimize different criteria; it’s plausible that one method might (tends to) achieve lower “RMSE” simply by construction, especially if my reading that it mostly rewards embedings that manage to avoid hard intrusions is correct. Overall, much more critical validation of the RMSE diagnostic is needed to convince readers that “honesty” as defined here aligns with meaningful goodness-of-fit in embedding. 
+Related to the above points - the paper has no theoretical or empirical demonstration that minimizing this “RMSE” aligns with minimizing other distortion measures like stress or maximizing neighborhoood preservation (as measured by the co-ranking matrix). Furthermore, the claim that RMSE can be used to compare different NLDR methods on equal footing de serves scrutiny. Different methods optimize different criteria; it’s plausible that one method might (tends to) achieve lower “RMSE” simply by construction, especially if my reading that it mostly rewards embeddings that manage to avoid hard intrusions is correct. Overall, much more critical validation of the RMSE diagnostic is needed to convince readers that “honesty” as defined here aligns with meaningful goodness-of-fit in embedding. 
 
 ### Limitations of the Evaluation (Simulation Study Design): 
 
@@ -160,3 +160,8 @@ I find this whole section to be vastly overselling the proposal – it ignores a
 Revised version should be much more carefully proofread: “appropraite”, “doen’t”, “it is has two separated nonlinear clusters”, “the methods tNSE”
 
 *We appreciate your careful attention to detail and for pointing out the typographical and grammatical errors. We have carefully proofread the entire manuscript and corrected the issues you identified (e.g., “appropraite” → “appropriate,” “doen’t” → “doesn’t,” “hastwo” → “has two,” “tNSE” → “tSNE”), along with several other minor typographical inconsistencies. The revised version has been thoroughly checked to ensure clarity and correctness.*
+
+## Loss function values
+
+*tSNE optimizes a Kullback–Leibler divergence between high- and low-dimensional pairwise similarities; however, computing the full loss exactly is feasible but expensive, and standard implementations often use approximations for efficiency. UMAP minimizes a cross-entropy loss over a fuzzy simplicial set, but the true loss cannot be fully tracked because stochastic gradient descent with limited negative sampling approximates the repulsive forces, making the exact loss both computationally prohibitive and noisy. PHATE does not explicitly calculate a conventional loss function; its embedding is derived from diffusion potential distances and MDS, so there is no meaningful per-epoch loss to report. TriMAP optimizes a loss based on triplet constraints, but the loss is generally only evaluated over sampled triplets rather than all possible triplets, meaning the full loss is not computed. PaCMAP, in contrast, reports an actual loss function during optimization, using a fixed set of negative samples for repulsion, making it possible to monitor per-epoch loss values reliably, though this estimate may be biased relative to the theoretical full pairwise objective.*
+
