@@ -119,24 +119,6 @@ Questions a revised version should aim to resolve:
 
 3. are the NLDRs selected by lowest “RMSE” the ones that would also be selected by other, more established measures of embedding faithfulness whose characteristics are well understood? at the very least, such measures should be provided, compared and discussed for all the embeddings under consideration in the case studies.
 
-*The quality of the preservation of local structure is measured in two ways. First by applying leave-one-out cross validation using the K-Nearest Neighbors (KNN) classifier. This has become a standard evaluation method for DR. The intuition behind this method is that labels tend to be similar in small neighborhoods and therefore the classification accuracy based on neighborhoods would remain close to that in the high-dimensional space. Moreover,
-one would expect the prediction accuracy of KNN to deteriorate if the DR method does not preserve neighborhoods. For each dataset and algorithm, we performed hyper-parameter tuning for the number of neighbors k. We denote this metric as KNN Accuracy.*
-
-*In addition, we measure the accuracy of nonlinear support vector machine (SVM) models with a radial basis function (RBF) kernel using 5-fold cross validation. Similarly to KNN, the SVM accuracy measures the cohesiveness of neighborhoods, but this is done in a potentially
-more flexible manner that is less impacted by the density of the data. Specifically, for each DR method we partition the embedding into 5 folds, each time using 4 folds as the training data for the SVM model and using the remaining fold for the evaluation of accuracy. To further reduce the running time, we used the Nystr¨om method, which approximates the kernel matrix by a low rank matrix, using sklearn.kernel approximation.Nystroem (Pedregosa
-et al., 2011). Thereafter, we trained linear SVM models (using sklearn.svm.LinearSVC) on the non-linearly transformed features. We denote this metric as SVM Accuracy.*
-
-*To measure the preservation of global structure, that is the relative positioning of neighborhoods, we sample observations and compute the Random Triplet Accuracy,
-which is the percentage of triplets whose relative distance in the high- and low-dimensional spaces maintain their relative order. For numerical tractability, we use a sample of triplets rather than considering all triplets. Due to randomness, we apply this metric for five times and report the mean value and standard deviation. Note that random triplet accuracy does not require labels, so we can evaluate it on unlabeled datasets. In the same spirit, but at a lower resolution, for labeled datasets, we also measure global structure preservation by computing the centroids of each class in the high- and low-dimensional spaces, and construct triplets using the relative distances between centroids in the high-dimensional space. We report the percentage of preserved centroid triplets, denoted as Centroid Triplet Accuracy.*
-
-*We first validate the efficacy of the GS measure by drawing a comparison to the recently proposed Pearson Correlation
-Coefficient (PCC) (Freedman et al., 2007). To calculate PCC, we consider random subsets of size 10,000 from different
-datasets and perform k-means clustering in the high-dimensional space with k = 100. Next, we perform the clustering in the low-dimensional embedding on the same subset of points and calculate the score between the distance matrices of the cluster centers in the high-dimension and low-dimension using the Mantel test. We repeat the process 100 times using different sub-samples of the data.*
-
-*In the remainder of the TriMAP paper, we use GS as the global performance measure. Due to the high computational
-complexity for calculating the trustworthiness-continuity and AUC scores for large data sets, we use nearest-neighbors
-accuracy as the local measure of performance henceforth.*
-
 The reliance of “RMSE” on euclidean distances in high-D space also seems limiting: 
 
 1. at least for coarser bins and/or highly non-linear data structures, geodesic distances along the data manifold à la ISOMAP are likely to measure a more relevant kind of dissimilarity 
