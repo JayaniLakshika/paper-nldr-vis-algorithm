@@ -165,3 +165,121 @@ Revised version should be much more carefully proofread: “appropraite”, “d
 
 *tSNE optimizes a Kullback–Leibler divergence between high- and low-dimensional pairwise similarities; however, computing the full loss exactly is feasible but expensive, and standard implementations often use approximations for efficiency. UMAP minimizes a cross-entropy loss over a fuzzy simplicial set, but the true loss cannot be fully tracked because stochastic gradient descent with limited negative sampling approximates the repulsive forces, making the exact loss both computationally prohibitive and noisy. PHATE does not explicitly calculate a conventional loss function; its embedding is derived from diffusion potential distances and MDS, so there is no meaningful per-epoch loss to report. TriMAP optimizes a loss based on triplet constraints, but the loss is generally only evaluated over sampled triplets rather than all possible triplets, meaning the full loss is not computed. PaCMAP, in contrast, reports an actual loss function during optimization, using a fixed set of negative samples for repulsion, making it possible to monitor per-epoch loss values reliably, though this estimate may be biased relative to the theoretical full pairwise objective.*
 
+## Metrics
+
+### **1. $k$-Neighborhood Preservation Rates / $R_{NX}$-curves**
+
+**Purpose:** Measures how well local neighborhood structures are preserved by a dimensionality reduction method.
+
+**Setup:**
+
+* You have high-dimensional data $X = \{x_1, \dots, x_n\}$ and a lower-dimensional embedding $Y = \{y_1, \dots, y_n\}$.
+* For each point $x_i$, define its set of $k$ nearest neighbors in high-dimensional space as $N_k(x_i)$.
+* Similarly, define $N_k(y_i)$ in the embedding space.
+
+**Neighborhood preservation for a single point:**
+
+$$
+R_{NX}^{(i)}(k) = \frac{|N_k(x_i) \cap N_k(y_i)|}{k}
+$$
+
+* Counts the fraction of neighbors in the high-D space that are still neighbors in the embedding.
+
+**Overall $k$-Neighborhood preservation rate:**
+
+$$
+R_{NX}(k) = \frac{1}{n} \sum_{i=1}^{n} R_{NX}^{(i)}(k)
+$$
+
+* This gives a single number per neighborhood size $k$.
+* Plotting $R_{NX}(k)$ against $k$ gives the **$R_{NX}$-curve**, showing local-to-global structure preservation.
+
+**Reference:** Lee et al., 2015; Lueks et al., 2011.
+
+**Interpretation:**
+
+* $R_{NX}(k) = 1$ → perfect preservation of $k$-neighborhoods.
+* $R_{NX}(k) \approx 0$ → neighborhoods are poorly preserved.
+
+### **2. Shepard Diagrams**
+
+**Purpose:** Evaluates how well distances between points in high-dimensional space are preserved in the embedding.
+
+**Setup:**
+
+* For all pairs of points $x_i, x_j$, compute high-dimensional distances $d_X(i,j)$.
+* In the embedding, compute distances $d_Y(i,j)$.
+
+**Shepard diagram:**
+
+* Plot each pair $(d_X(i,j), d_Y(i,j))$ as a point in 2D.
+* Often a smooth curve is added to visualize the trend.
+
+**Interpretation:**
+
+* Points lying close to the diagonal $d_Y = d_X$ → good preservation of distances.
+* Large deviations → distortion.
+* Can quantify with **stress** or **Pearson/Spearman correlation** between $d_X$ and $d_Y$.
+
+**Applications:**
+
+* Visualizes global distortions.
+* Complements $k$-neighborhood preservation (local structure).
+
+## **3. KNN Accuracy**
+
+### **Intuition:**
+
+If an embedding preserves local neighborhoods well, then points close together in high-dimensional space should remain close in the low-dimensional embedding. A simple way to check this is to see how well a **K-Nearest Neighbors classifier** can predict labels in the embedding space.
+
+### **Mathematical Definition:**
+
+1. Let $Y = \{y_1, \dots, y_n\}$ be the low-dimensional embedding of high-dimensional data $X = \{x_1, \dots, x_n\}$.
+2. Let $L = \{l_1, \dots, l_n\}$ be the true labels for each observation.
+3. For each point $y_i$, find its $k$ nearest neighbors $\text{NN}_k(y_i)$ in the embedding space.
+4. Predict $y_i$’s label as the **majority vote** among neighbors:
+
+$$
+\hat{l}_i = \text{mode}(\{l_j : j \in \text{NN}_k(y_i)\})
+$$
+
+5. KNN accuracy is:
+
+$$
+\text{KNN Accuracy} = \frac{1}{n} \sum_{i=1}^{n} \mathbf{1}\{\hat{l}_i = l_i\}
+$$
+
+* $\mathbf{1}\{\cdot\}$ is the indicator function.
+
+**Notes:**
+
+* This is a **leave-one-out cross-validation (LOO-CV)**.
+* For larger datasets, you can use **k-fold CV** to reduce runtime.
+
+## **4. SVM Accuracy (Local Evaluation)**
+
+### **Intuition:**
+
+SVM Accuracy measures local structure preservation in a **more flexible way**. It uses a kernel (e.g., RBF) to capture nonlinear separations in the embedding space. If the embedding preserves neighborhoods, an SVM trained on some points should correctly classify held-out points.
+
+### **Mathematical Definition:**
+
+1. Let $Y$ be the embedding and $L$ the labels.
+2. Partition $Y$ into $K$ folds: $Y = Y_1 \cup \dots \cup Y_K$.
+3. For each fold $k$:
+
+   * Train an SVM on $Y \setminus Y_k$ (all other folds).
+   * Predict labels on $Y_k$.
+4. SVM Accuracy is the overall proportion of correct predictions:
+
+$$
+\text{SVM Accuracy} = \frac{1}{n} \sum_{i=1}^{n} \mathbf{1}\{\hat{l}_i = l_i\}
+$$
+
+* Often an **RBF kernel** is used:
+
+$$
+K(y_i, y_j) = \exp(-\gamma \|y_i - y_j\|^2)
+$$
+
+* To speed up large datasets, one can approximate the kernel with **Nyström method** (low-rank approximation).
