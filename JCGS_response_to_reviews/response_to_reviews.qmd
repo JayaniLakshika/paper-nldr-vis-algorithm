@@ -283,3 +283,37 @@ K(y_i, y_j) = \exp(-\gamma \|y_i - y_j\|^2)
 $$
 
 * To speed up large datasets, one can approximate the kernel with **Nyström method** (low-rank approximation).
+
+## Suggested metric by us
+
+For each bin $h$ with $n_h$ points:
+
+$$
+SS_h = \sum_{i=1}^{n_h} \sum_{j=1}^{p} \big(x_{hij} - C^{(p)}_{hj}\big)^2
+$$
+
+* $x_{hij}$ = $j^{th}$ variable of the $i^{th}$ point in bin $h$
+* $C^{(p)}_{hj}$ = $j^{th}$ coordinate of the bin center $C_h$
+* $p$ = number of dimensions
+
+The **total within-bin sum of squares** is:
+
+$$
+WBSS = \sum_{h=1}^{m} SS_h
+$$
+
+* Measures **how spread out points are around their assigned bin center**.
+* Smaller WBSS → points are tightly clustered within bins → embedding preserves local structure better **within the bin**.
+
+### Strengths
+
+* Directly reflects the **fidelity of the embedding to your “bin model”**.
+* Easy to compute in high-dimensional space.
+* Conceptually similar to your RMSE.
+
+### Limitations
+
+* **Does not capture neighborhood preservation across bins**, i.e., whether neighbors in high-dimensional space remain neighbors in low-dimensional space.
+* **Does not reflect global structure preservation**.
+
+
