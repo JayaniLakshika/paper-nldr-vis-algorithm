@@ -15,8 +15,8 @@ my_instance <- py$MyClass()
 
 score_result <- my_instance$global_score(as.matrix(data), as.matrix(tsne_two_curvy1))
 score_result
-# results <- py$evaluate_output(X = as.matrix(data), X_new = as.matrix(tsne_two_curvy1), y = sample(0:4, 2000, replace = TRUE), name = "my_run", baseline = FALSE, labelled = TRUE)
-# results
+results <- py$evaluate_output(X = as.matrix(data), X_new = as.matrix(tsne_two_curvy1), y = NULL, name = "my_run", baseline = FALSE, labelled = FALSE)
+results
 
 ## R_NX
 library(FNN)
