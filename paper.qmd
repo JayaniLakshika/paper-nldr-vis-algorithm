@@ -2240,6 +2240,24 @@ kable(links_df,
   column_spec(1:2, width = c("1.5cm", "14cm"))
 ```
 
+```{r}
+#| label: tbl-fig-param
+#| tbl-pos: H
+#| tbl-cap: "Figure of NLDR layouts and the generated NLDR method and hyper-parameters."
+
+fig_param_df <- read_csv("misc/fig_nldr_param.csv")
+
+# Create the table
+kable(fig_param_df, 
+      format = "latex", 
+      booktabs = TRUE, escape = FALSE, linesep = "") |>
+  kable_styling(position = "center", 
+                full_width = FALSE, 
+                font_size = 12) |>
+  row_spec(0, bold = TRUE) |>
+  column_spec(1:2, width = c("1.5cm", "2cm", "10cm"))
+```
+
 ## Acknowledgments
 
 These `R` packages were used for the work: `tidyverse` [@hadley2019], `Rtsne` [@jesse2015], `umap` [@tomasz2023], `patchwork` [@thomas2024], `colorspace` [@achim2020], `langevitour` [@harisson2024], `conflicted` [@hadley2023], `reticulate` [@kevin2024], `kableExtra` [@hao2024]. These `python` packages were used for the work: `trimap` [@amid2019] and `pacmap` [@yingfan2021]. The article was created with `R` packages `quarto` [@jjallaire2024]. 
