@@ -143,10 +143,15 @@ evaluate_embedding <- function(name, lowd, highd) {
 results_all <- purrr::map2_dfr(names(embeddings), embeddings, ~evaluate_embedding(.x, .y, highd_data))
 results_all
 
+write_rds(results_all, "data/two_nonlinear/nldr_eval_metrics.rds")
+
+
 RNX_curves <- purrr::imap_dfr(embeddings, function(lowd, name) {
   R_NX(as.matrix(highd_data), as.matrix(lowd), max_k = 30) |> mutate(method = name)
 }) |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE_p47", "UMAP", "tSNE_p62")))
+
+write_rds(RNX_curves, "data/two_nonlinear/RNX_curves.rds")
 
 ggplot(RNX_curves, aes(x = K, y = R_NX, color = method)) +
   geom_line(linewidth = 1.2) +
@@ -164,6 +169,9 @@ shepard_all <- purrr::map2_dfr(
   ~Shepard_diagram(as.matrix(highd_data), as.matrix(.y)) |>
     mutate(Method = .x)
 )
+
+write_rds(shepard_all, "data/two_nonlinear/shepard_all.rds")
+
 
 ggplot(shepard_all, aes(x = dX, y = dY)) +
   geom_point(alpha = 0.25, size = 0.6) +
