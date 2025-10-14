@@ -147,7 +147,7 @@ write_rds(results_all, "data/two_nonlinear/nldr_eval_metrics.rds")
 
 
 RNX_curves <- purrr::imap_dfr(embeddings, function(lowd, name) {
-  R_NX(as.matrix(highd_data), as.matrix(lowd), max_k = 30) |> mutate(method = name)
+  R_NX(as.matrix(highd_data), as.matrix(lowd), max_k = 1998) |> mutate(method = name)
 }) |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE_p47", "UMAP", "tSNE_p62")))
 
@@ -155,6 +155,7 @@ write_rds(RNX_curves, "data/two_nonlinear/RNX_curves.rds")
 
 ggplot(RNX_curves, aes(x = K, y = R_NX, color = method)) +
   geom_line(linewidth = 1.2) +
+  scale_x_log10() +
   scale_color_manual(
     values=c('#e41a1c','#ff7f00','#4daf4a',
              "#a65628",'#636363', '#984ea3')) +
