@@ -390,5 +390,6 @@ So, the **Global Score** acts as a *normalized measure of how well the embedding
 eval_results <- read_rds(here::here("data/two_nonlinear/nldr_eval_metrics.rds"))
 
 eval_results |>
+  mutate(across(where(is.numeric), ~ round(.x, 2))) |>
   kableExtra::kable()
 ```
