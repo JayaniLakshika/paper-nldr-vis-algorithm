@@ -189,3 +189,26 @@ ggplot(shepard_all, aes(x = dX, y = dY)) +
     panel.grid.minor = element_blank()
   )
 
+library(GGally)
+
+ggparcoord(
+  data = results_all,
+  columns = 2:5,           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(
+    values=c('#e41a1c','#ff7f00','#4daf4a',
+             "#a65628",'#636363', '#984ea3')) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Parallel Coordinate Plot of NLDR Evaluation Metrics",
+    y = "Scaled Metric Value",
+    x = "Evaluation Metric"
+  ) +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+
