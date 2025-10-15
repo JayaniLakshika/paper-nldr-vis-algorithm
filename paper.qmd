@@ -696,6 +696,7 @@ $${#eq-bin2}
 
 ```{r}
 #| label: code-illustration
+#| eval: false
 # Code to draw illustration for notation
 ## hexagon binning to have regular hexagons
 
@@ -817,6 +818,7 @@ hex_param_vis <- ggplot() +
 #| fig-cap: "The components of the hexagon grid illustrating notation."
 #| out-width: 30%
 #| fig-pos: H
+#| eval: false
  
 hex_param_vis
 ```
@@ -2219,7 +2221,7 @@ The new methodology is accompanied by an R package called quollr, so that it is 
 
 All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
 
-The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. Direct links to videos for viewing online are available in @tbl-links.
+The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. The figure, NLDR method, and corresponding hyperparameters are summarized in @tbl-fig-param. Direct links to videos for viewing online are available in @tbl-links. 
 
 ```{r}
 #| label: tbl-links
@@ -2243,7 +2245,7 @@ kable(links_df,
 ```{r}
 #| label: tbl-fig-param
 #| tbl-pos: H
-#| tbl-cap: "NLDR methods and hyper-parameters used for each layout."
+#| tbl-cap: "NLDR methods and hyper-parameters used for each figure."
 
 fig_param_df <- read_csv("misc/fig_nldr_param.csv")
 
