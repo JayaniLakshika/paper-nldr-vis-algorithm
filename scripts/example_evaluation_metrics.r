@@ -124,7 +124,7 @@ evaluate_embedding <- function(name, lowd, highd) {
   )$rte
 
   # R_NX AUC
-  RNX_df <- R_NX(highd, lowd, max_k = 50)
+  RNX_df <- R_NX(highd, lowd, max_k = 1998)
   RNX_AUC <- R_NX_AUC(RNX_df)
 
   # Shepard correlation (Spearman)
@@ -141,6 +141,19 @@ evaluate_embedding <- function(name, lowd, highd) {
 }
 
 results_all <- purrr::map2_dfr(names(embeddings), embeddings, ~evaluate_embedding(.x, .y, highd_data))
+results_all <- results_all |>
+  rename(c("GS" = "Global_Score",
+           "RTA" = "Random_Triplet_Accuracy",
+           "AUC(R_NX)" = "R_NX_AUC",
+           "r" = "Shepard_Correlation"))
+
+results_all <- results_all |>
+  mutate(Method = if_else(Method == "tSNE_p47", "tSNE",
+                          if_else(Method == "tSNE_p62", "tSNE2", Method)))
+
+results_all <- results_all |>
+  mutate(RGS = 1 - GS) #to reverse GS
+
 results_all
 
 write_rds(results_all, "data/two_nonlinear/nldr_eval_metrics.rds")

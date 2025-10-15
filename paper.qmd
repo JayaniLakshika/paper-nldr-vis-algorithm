@@ -163,6 +163,7 @@ library(kableExtra)
 library(conflicted)
 library(ggbeeswarm)
 library(scales)
+library(GGally)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -1255,6 +1256,10 @@ error_two_curvy <- bind_rows(error_two_curvy_umap,
                          error_two_curvy_pacmap,
                          error_two_curvy_tsne2)
 
+error_two_curvy_filtered <- error_two_curvy |> 
+  dplyr::filter(b1 == 24) |>
+  dplyr::select(method, RMSE)
+
 error_two_curvy <- error_two_curvy |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -1292,6 +1297,42 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
                                     nldr_two_curvy4, nldr_two_curvy5,
                                     nldr_two_curvy6, ncol = 2, 
                                     widths = c(50, 50))
+```
+
+```{r}
+nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method"))
+
+comp_metrics <- ggparcoord(
+  data = nldr_metrics,
+  columns = 3:7,           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(
+    values=c('#e41a1c','#ff7f00','#4daf4a',
+             "#a65628",'#636363', '#984ea3')) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "scaled metric value",
+    x = "evaluation metric"
+  ) +
+  theme(
+    legend.position = "none",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+#| label: fig-comp-metric
+#| fig-pos: H
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+comp_metrics
 ```
 
 ## Curiosities about NLDR results discovered by examining the model in the data space {#sec-curiosities}
