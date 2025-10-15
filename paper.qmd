@@ -1037,6 +1037,10 @@ axis.text = element_text(size = 15))
   plot_layout(ncol=3)
 ```
 
+#### Other evaluation metrics
+
+Several additional existing metrics have been used to assess the quality of the NLDR layout. A widely used approach is neighborhood preservation, quantified by the average K-ary neighborhood agreement between \pD{} and \kD{} spaces. This is summarized by the RNX curve, which rescales neighborhood preservation over different neighborhood sizes, and its area under the curve (AUC(R_NX)) provides a scalar summary of overall embedding quality across scales. Additional local and global measures include KNN Accuracy, which evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy, which assesses neighborhood cohesion with a nonlinear decision boundary. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids. The Shepard diagram and its associated Spearman correlation (r) between \pD{} and \kD{} pairwise distances also provide an interpretable diagnostic for assessing the monotonic relationship. Finally, the Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline, which minimizes reconstruction error. Since PCA serves as the optimal linear method, we report RGS = 1 − GS in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use AUC(R_NX), RTA, r, and RGS for comparison with our proposed measure.
+
 ### Prediction into \gD{}
 
 <!-- Does this really need an entire subsection? It's only 3 sentences long. -->
@@ -1329,8 +1333,8 @@ comp_metrics <- ggparcoord(
 #| label: fig-comp-metric
 #| fig-pos: H
 #| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
+#| fig-height: 10
+#| fig-width: 10
 
 comp_metrics
 ```
