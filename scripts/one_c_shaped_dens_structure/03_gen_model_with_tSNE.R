@@ -22,18 +22,17 @@ algo_obj_dens_clust <- fit_highd_model(
   nldr_data = tsne_one_c_shaped,
   b1 = num_bins_x_one_c_shaped,
   q = 0.1,
-  benchmark_highdens = 1)
+  hd_thresh = 1)
 
-tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_obj$scaled_nldr
+tsne_one_c_shaped_scaled <- algo_obj_dens_clust$nldr_scaled_obj$scaled_nldr
 tr_from_to_df_dens_clust <- algo_obj_dens_clust$trimesh_data
 df_bin_centroids_dens_clust <- algo_obj_dens_clust$model_2d
 df_bin_dens_clust <- algo_obj_dens_clust$model_highd
 
 ## Compute error
 error_df_one_curvy_abs <- augment(
-  highd_data = one_c_shaped_data,
-  model_2d = df_bin_centroids_dens_clust,
-  model_highd = df_bin_dens_clust)
+  x = algo_obj_dens_clust,
+  highd_data = one_c_shaped_data)
 
 df_bin_dens_clust_temp <- df_bin_dens_clust
 

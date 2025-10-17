@@ -18,7 +18,7 @@ two_curvy_model1 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = 15,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh = 0)
 
 df_bin_centroids_two_curvy1 <- two_curvy_model1$model_2d
 df_bin_two_curvy1 <- two_curvy_model1$model_highd
@@ -36,10 +36,12 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
   df_bin_two_curvy_high_dens <- df_bin_two_curvy1 |>
     filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
+  two_curvy_model1$model_2d <- df_bin_centroids_two_curvy_high_dens
+  two_curvy_model1$model_highd <- df_bin_two_curvy_high_dens
+
   ## Compute error
   error_df <- glance(
-    model_2d = df_bin_centroids_two_curvy_high_dens,
-    model_highd = df_bin_two_curvy_high_dens,
+    x = two_curvy_model1,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model1$hb_obj$a1, 2)),
@@ -60,7 +62,7 @@ two_curvy_model2 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = 24,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh = 0)
 
 df_bin_centroids_two_curvy2 <- two_curvy_model2$model_2d
 df_bin_two_curvy2 <- two_curvy_model2$model_highd
@@ -78,10 +80,12 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
   df_bin_two_curvy_high_dens <- df_bin_two_curvy2 |>
     filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
+  two_curvy_model2$model_2d <- df_bin_centroids_two_curvy_high_dens
+  two_curvy_model2$model_highd <- df_bin_two_curvy_high_dens
+
   ## Compute error
   error_df <- glance(
-    model_2d = df_bin_centroids_two_curvy_high_dens,
-    model_highd = df_bin_two_curvy_high_dens,
+    x = two_curvy_model2,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model2$hb_obj$a1, 2)),
@@ -102,7 +106,7 @@ two_curvy_model3 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = 35,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh = 0)
 
 df_bin_centroids_two_curvy3 <- two_curvy_model3$model_2d
 df_bin_two_curvy3 <- two_curvy_model3$model_highd
@@ -120,10 +124,12 @@ for (benchmark_rm_lwd in benchmark_rm_hex_vec) {
   df_bin_two_curvy_high_dens <- df_bin_two_curvy3 |>
     filter(h %in% df_bin_centroids_two_curvy_high_dens$h)
 
+  two_curvy_model3$model_2d <- df_bin_centroids_two_curvy_high_dens
+  two_curvy_model3$model_highd <- df_bin_two_curvy_high_dens
+
   ## Compute error
   error_df <- glance(
-    model_2d = df_bin_centroids_two_curvy_high_dens,
-    model_highd = df_bin_two_curvy_high_dens,
+    x = two_curvy_model3,
     highd_data = data_two_curvy) |>
     mutate(benchmark_rm_lwd = round(benchmark_rm_lwd, 3),
            a1 = paste0("a[1] == ", round(two_curvy_model3$hb_obj$a1, 2)),

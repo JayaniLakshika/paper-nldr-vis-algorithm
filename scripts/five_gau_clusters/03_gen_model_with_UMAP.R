@@ -25,9 +25,9 @@ algo_obj_gau1 <- fit_highd_model(
   nldr_data = umap_data_gau,
   b1 = num_bins_x_gau1,
   q = 0.1,
-  benchmark_highdens = 5)
+  hd_thresh = 5)
 
-umap_gau_scaled <- algo_obj_gau1$nldr_obj$scaled_nldr
+umap_gau_scaled <- algo_obj_gau1$nldr_scaled_obj$scaled_nldr
 tr_from_to_df_gau1 <- algo_obj_gau1$trimesh_data
 df_bin_centroids_gau1 <- algo_obj_gau1$model_2d
 df_bin_gau1 <- algo_obj_gau1$model_highd

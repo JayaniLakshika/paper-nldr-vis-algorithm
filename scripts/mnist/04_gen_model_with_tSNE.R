@@ -28,9 +28,9 @@ algo_obj_mnist <- fit_highd_model(
   nldr_data = tsne_mnist2,
   b1 = num_bins_x_mnist,
   q = 0.1,
-  benchmark_highdens = 1)
+  hd_thresh = 1)
 
-tsne_minst_scaled <- algo_obj_mnist$nldr_obj$scaled_nldr
+tsne_minst_scaled <- algo_obj_mnist$nldr_scaled_obj$scaled_nldr
 tr_from_to_df_mnist <- algo_obj_mnist$trimesh_data
 df_bin_centroids_mnist <- algo_obj_mnist$model_2d
 df_bin_mnist <- algo_obj_mnist$model_highd
@@ -42,9 +42,8 @@ write_rds(tsne_minst_scaled, "data/mnist/mnist_tsne_minst_scaled.rds")
 
 ## Compute error
 error_df <- augment(
-  highd_data = training_data_mnist,
-  model_2d = df_bin_centroids_mnist,
-  model_highd = df_bin_mnist)
+  x = algo_obj_mnist,
+  highd_data = training_data_mnist)
 
 ## To join embedding
 error_df <- error_df |>

@@ -16,9 +16,9 @@ algo_obj_pbmc <- fit_highd_model(
   nldr_data = tsne_pbmc,
   b1 = num_bins_x_pbmc,
   q = 0.1,
-  benchmark_highdens = 5)
+  hd_thresh = 5)
 
-tsne_pbmc_scaled <- algo_obj_pbmc$nldr_obj$scaled_nldr
+tsne_pbmc_scaled <- algo_obj_pbmc$nldr_scaled_obj$scaled_nldr
 #tr_from_to_df_pbmc <- algo_obj_pbmc$trimesh_data
 df_bin_centroids_pbmc <- algo_obj_pbmc$model_2d
 df_bin_pbmc <- algo_obj_pbmc$model_highd

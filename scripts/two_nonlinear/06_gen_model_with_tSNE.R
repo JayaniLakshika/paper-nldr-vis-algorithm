@@ -113,9 +113,8 @@ write_rds(tr_from_to_df_two_curvy, "data/two_nonlinear/tr_from_to_df_two_curvy.r
 
 ## Compute error
 error_df_two_curvy_abs <- augment(
-  highd_data = training_data_two_curvy,
-  model_2d = df_bin_centroids_two_curvy,
-  model_highd = df_bin_two_curvy)
+  x = algo_obj_two_curvy,
+  highd_data = training_data_two_curvy)
 
 error_df_two_curvy_abs <- error_df_two_curvy_abs |>
   mutate(sqrt_row_wise_total_error = sqrt(row_wise_total_error))
@@ -370,7 +369,7 @@ algo_obj_two_curvy2 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh = 0)
 
 tr_from_to_df_two_curvy2 <- algo_obj_two_curvy2$trimesh_data
 df_bin_centroids_two_curvy2 <- algo_obj_two_curvy2$model_2d
@@ -394,7 +393,7 @@ algo_obj_two_curvy3 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh  = 0)
 
 tr_from_to_df_two_curvy3 <- algo_obj_two_curvy3$trimesh_data
 df_bin_centroids_two_curvy3 <- algo_obj_two_curvy3$model_2d
@@ -418,7 +417,7 @@ algo_obj_two_curvy4 <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh  = 0)
 
 hex_grid_two_curvy4 <- algo_obj_two_curvy4$hb_obj$hex_poly
 centroids4 <- algo_obj_two_curvy4$hb_obj$centroids
