@@ -1330,6 +1330,10 @@ comp_metrics <- ggparcoord(
   )
 ```
 
+While traditional metrics such as AUC(R_NX), RTA, and Shepard correlation assess how well local or global structures are preserved within the embedding, they can be influenced by parameter choices and density variations. In contrast, RMSE provides an interpretable, quantitative link between \pD{} and \gD{} that reflects how well the observed nonlinear structure is captured by the embedding. Therefore, RMSE should be viewed as a complementary diagnostic—used alongside measures like RGS, RNX curves, and Shepard diagrams—to evaluate both the overall quality and faithfulness of the representation. Together, these metrics allow analysts to distinguish visually appealing but misleading layouts from those that genuinely preserve the high-dimensional relationships.
+
+@fig-comp-metric illustrates how these different evaluation metrics behave across methods. The lines correspond to various NLDR representations, and each axis shows a normalized score for one evaluation criterion. Consistent patterns across multiple metrics indicate robustness, while strong divergence highlights trade-offs between preserving local structure (e.g., AUC(R_NX)) and global geometry (e.g., RGS). This multi-metric view underscores that no single score fully captures embedding quality, but together they reveal which method provides the most balanced and truthful representation of the high-dimensional data.
+
 ```{r}
 #| label: fig-comp-metric
 #| fig-pos: H
@@ -1357,6 +1361,7 @@ The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show
 ```{r}
 #| label: five-gau-proj-tsne-model
 
+data_with_clust <- read_rds("data/five_gau_clusters/data_five_gau_with_clusts.rds")
 tsne_gau_scaled <- read_rds("data/five_gau_clusters/tsne_gau_scaled.rds")
 tr_from_to_df_gau1 <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1.rds")
 
@@ -1365,9 +1370,9 @@ trimesh_removed_gau_tsne <- ggplot() +
     data = tsne_gau_scaled,
     aes(
       x = tSNE1,
-      y = tSNE2
+      y = tSNE2,
+      colour = data_with_clust$cluster
     ),
-    colour = clr_choice,
     alpha = 0.1) + 
   geom_segment(
     data = tr_from_to_df_gau1,
@@ -1378,6 +1383,7 @@ trimesh_removed_gau_tsne <- ggplot() +
       yend = y_to),
     colour = "#000000",
     linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("a1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -1391,18 +1397,20 @@ trimesh_removed_gau_tsne <- ggplot() +
 #| label: five-gau-tsne-projs
 ## First projection
 proj_obj1 <- read_rds("data/five_gau_clusters/tsne_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
 
 five_gau_proj_tsne_model1 <- plot_proj(
   proj_obj = proj_obj1,
-  point_param = c(1.5, 0.05, clr_choice),
+  point_param = c(1.5, 0.05),
   line_param = c(0.8, 0.4, "#000000"),
   plot_limits = c(-0.89, 0.89),
   axis_text_size = 5,
-  is_category = FALSE
+  is_category = TRUE
 ) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("a2", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 2) 
 
 ## Second projection
 
@@ -1432,9 +1440,9 @@ trimesh_removed_gau_umap <- ggplot() +
     data = umap_gau_scaled,
     aes(
       x = UMAP1,
-      y = UMAP2
+      y = UMAP2,
+      colour = data_with_clust$cluster
     ),
-    colour = clr_choice,
     alpha = 0.05) + 
   geom_segment(
     data = tr_from_to_df_gau1_umap,
@@ -1446,6 +1454,7 @@ trimesh_removed_gau_umap <- ggplot() +
     colour = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("b1", 
                       position = c(0.95, 0.95),
                       cex = 2) +
@@ -1459,18 +1468,20 @@ trimesh_removed_gau_umap <- ggplot() +
 
 ## First projection
 proj_obj1 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
 
 five_gau_proj_umap_model1 <- plot_proj(
   proj_obj = proj_obj1,
-  point_param = c(1.5, 0.05, clr_choice),
+  point_param = c(1.5, 0.05),
   line_param = c(0.8, 0.4, "#000000"),
   plot_limits = c(-0.89, 0.89),
   axis_text_size = 5,
-  is_category = FALSE
+  is_category = TRUE
 ) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("b2", 
                       position = c(0.08, 0.9),
-                      cex = 2)
+                      cex = 2) 
 
 ## Second projection
 proj_obj2 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj2.rds")
@@ -1499,8 +1510,8 @@ trimesh_removed_gau_pacmap <- ggplot() +
     data = pacmap_gau_scaled,
     aes(
       x = PaCMAP1,
-      y = PaCMAP2),
-      colour = clr_choice,
+      y = PaCMAP2,
+      colour = data_with_clust$cluster),
     alpha = 0.1) +
   geom_segment(
     data = tr_from_to_df_gau1_pacmap,
@@ -1512,6 +1523,7 @@ trimesh_removed_gau_pacmap <- ggplot() +
     colour = "#000000",
     #alpha = 0.4,
     linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("c1", 
                       position = c(0.08, 0.95),
                       cex = 2) +
@@ -1524,15 +1536,17 @@ trimesh_removed_gau_pacmap <- ggplot() +
 #| label: five-gau-pacmap-projs
 ## First projection
 proj_obj1 <- read_rds("data/five_gau_clusters/pacmap_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
 
 five_gau_proj_pacmap_model1 <- plot_proj(
   proj_obj = proj_obj1,
-  point_param = c(1.5, 0.05, clr_choice),
+  point_param = c(1.5, 0.05),
   line_param = c(0.8, 0.4, "#000000"),
   plot_limits = c(-0.89, 0.89),
   axis_text_size = 5,
-  is_category = FALSE
+  is_category = TRUE
 ) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
   interior_annotation("c2",
                       position = c(0.08, 0.9),
                       cex = 2)
