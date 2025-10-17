@@ -290,106 +290,106 @@ l <- read_rds("data/two_nonlinear/l_data.rds")
 rect_adj <- read_rds("data/two_nonlinear/rect_adj.rds")
 
 hex_param_vis <- ggplot() + 
-    geom_polygon(data = hex_grid_temp, 
-                        aes(x = x, 
-                            y = y, 
-                            group = hex_poly_id),
-                 fill = "white", 
-                 colour = "#bdbdbd") +
-    geom_point(data = all_centroids_df_temp, aes(
-      x = c_x, 
-      y = c_y), 
-      colour = "#31a354", size = 0.9) +
-    geom_point(data = start_pt, aes(x = c_x, 
-                                    y = c_y), 
-               colour = "black") + 
-    geom_rect(data=d_rect, 
-              aes(xmin = x1min - rect_adj$x1,# - rect_adj$s1, 
-                  xmax = x1max - rect_adj$x1,# - rect_adj$s1, 
-                  ymin = x2min - rect_adj$x2,# - rect_adj$s2, 
-                  ymax = x2max - rect_adj$x2),# - rect_adj$s2), 
-              fill = "white", 
-              colour = "black", 
-              alpha = 0, 
-              linewidth = 0.7) +
-    geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
-                                y=x2min - rect_adj$x2)) + 
-    geom_point(data=d_rect, aes(x=x1max - rect_adj$x1, 
-                                y=x2min - rect_adj$x2)) + 
-    geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
-                                y=x2max - rect_adj$x2)) + 
-    annotate("text", x=d_rect$x1min - rect_adj$x1, 
-                     y=d_rect$x2min - rect_adj$x2,
-                     label = "(0,0)", 
-             hjust=-0.1, vjust=-0.3, size = 8) + 
-    annotate("text", x=d_rect$x1max - rect_adj$x1, 
-                     y=d_rect$x2min - rect_adj$x2,
-                     label = "(0,1)", 
-             hjust=1.1, vjust=-0.3, size = 8) + 
-    annotate("text", x=d_rect$x1min - rect_adj$x1, 
-                     y=d_rect$x2max - rect_adj$x2,
-                     label = expression(group("(", 
-                        list(0, y[2][max]),")")), 
-            hjust=-0.1, vjust=1.2, size = 8) + 
-    geom_segment(data=d_rect, aes(
-      x = x1min  - rect_adj$x1, # 0 - 0.03, 
-      y = -0.31, 
-      xend = x1max - rect_adj$x1, #1 - 0.03, 
-      yend = -0.31), #-0.35),
-      arrow = arrow(length = unit(0.03, "npc"),
-                               ends = "both"), 
-                 colour = "black")+
-    annotate("text", x=0.5, y=-0.36, 
-             label = expression(r[1]), colour = "black", size = 8) +
-    geom_segment(data=d_rect, aes(
-      x = -0.25, 
-      y = x2min - rect_adj$x2, #0 - 0.05, 
-      xend = -0.25, 
-      yend = x2max - rect_adj$x2), #r2 - 0.05),
-      arrow = arrow(length = unit(0.03, "npc"),
-                       ends = "both"), 
-                 colour = "black")+ 
-    annotate("text", x=-0.3, y=0.4, 
-             label = expression(r[2]), colour = "black", size = 8) +
-    geom_segment(data = a1, aes(
-      x = x, #-0.1 + 0.2087578, 
-      y = y, #-0.15, 
-      xend = xend, #-0.1 + 0.2087578*2, 
-      yend = yend), #-0.15),
-      arrow = arrow(length = unit(0.03, "npc"),
-        ends = "both"), 
-        colour = "black")+ # a1 = 0.2087578
-    annotate("text", 
-             x=(a1$x+a1$xend)/2, 
-             y=a1$y, 
-             label = expression(a[1]), 
-             colour = "black",
-             vjust = 1.2, size = 8) +
-    geom_segment(data = a2, aes(
-      x = x, #-0.15, 
-      y = y, #-0.1*r2 + 0.1807896*2, 
-      xend = xend, #-0.15, 
-      yend = yend), #-0.1*r2 + 0.1807896*3),
-      arrow = arrow(length = unit(0.03, "npc"),
-                               ends = "both"), 
-      colour = "black") + # a2 = 0.1807896
-    annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
-             label = expression(a[2]), 
-             colour = "black", hjust=-0.2, size = 8) +
-    annotate("text", x=-0.18, y=-0.24, 
-      label = expression(group("(", list(s[1], s[2]), ")")),
-      colour = "black", size = 8) +
+  geom_polygon(data = hex_grid_temp, 
+               aes(x = x, 
+                   y = y, 
+                   group = h),
+               fill = "white", 
+               colour = "#bdbdbd") +
+  geom_point(data = all_centroids_df_temp, aes(
+    x = c_x, 
+    y = c_y), 
+    colour = "#31a354", size = 0.9) +
+  geom_point(data = start_pt, aes(x = c_x, 
+                                  y = c_y), 
+             colour = "black") + 
+  geom_rect(data=d_rect, 
+            aes(xmin = x1min - rect_adj$x1,# - rect_adj$s1, 
+                xmax = x1max - rect_adj$x1,# - rect_adj$s1, 
+                ymin = x2min - rect_adj$x2,# - rect_adj$s2, 
+                ymax = x2max - rect_adj$x2),# - rect_adj$s2), 
+            fill = "white", 
+            colour = "black", 
+            alpha = 0, 
+            linewidth = 0.7) +
+  geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                              y=x2min - rect_adj$x2)) + 
+  geom_point(data=d_rect, aes(x=x1max - rect_adj$x1, 
+                              y=x2min - rect_adj$x2)) + 
+  geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                              y=x2max - rect_adj$x2)) + 
+  annotate("text", x=d_rect$x1min - rect_adj$x1, 
+           y=d_rect$x2min - rect_adj$x2,
+           label = "(0,0)", 
+           hjust=-0.1, vjust=-0.3, size = 8) + 
+  annotate("text", x=d_rect$x1max - rect_adj$x1, 
+           y=d_rect$x2min - rect_adj$x2,
+           label = "(0,1)", 
+           hjust=1.1, vjust=-0.3, size = 8) + 
+  annotate("text", x=d_rect$x1min - rect_adj$x1, 
+           y=d_rect$x2max - rect_adj$x2,
+           label = "'(0,'*y[2][max]*')'", 
+           parse = TRUE,
+           hjust=-0.1, vjust=1.2, size = 8) + 
+  geom_segment(data=d_rect, aes(
+    x = x1min  - rect_adj$x1, # 0 - 0.03, 
+    y = -0.31, 
+    xend = x1max - rect_adj$x1, #1 - 0.03, 
+    yend = -0.31), #-0.35),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+
+  annotate("text", x=0.5, y=-0.38, 
+           label = "r[1]", parse = TRUE, colour = "black", size = 8) +
+  geom_segment(data=d_rect, aes(
+    x = -0.25, 
+    y = x2min - rect_adj$x2, #0 - 0.05, 
+    xend = -0.25, 
+    yend = x2max - rect_adj$x2), #r2 - 0.05),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+ 
+  annotate("text", x=-0.3, y=0.4, 
+           label = "r[2]", parse = TRUE, colour = "black", size = 8) +
+  geom_segment(data = a1, aes(
+    x = x, #-0.1 + 0.2087578, 
+    y = y, #-0.15, 
+    xend = xend, #-0.1 + 0.2087578*2, 
+    yend = yend), #-0.15),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+ # a1 = 0.2087578
+  annotate("text", 
+           x=(a1$x+a1$xend)/2, 
+           y=a1$y, 
+           label = "a[1]", parse = TRUE, 
+           colour = "black",
+           vjust = 1.2, size = 8) +
+  geom_segment(data = a2, aes(
+    x = x, #-0.15, 
+    y = y, #-0.1*r2 + 0.1807896*2, 
+    xend = xend, #-0.15, 
+    yend = yend), #-0.1*r2 + 0.1807896*3),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black") + # a2 = 0.1807896
+  annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
+           label = "a[2]", parse = TRUE,
+           colour = "black", hjust=-0.2, size = 8) +
+  annotate("text", x=-0.18, y=-0.24, 
+           label = "'('*s[1]*','*s[2]*')'", parse = TRUE,
+           colour = "black", size = 8) +
   geom_segment(data = l, aes(
-      x = x, #-0.15, 
-      y = y, #-0.1*r2 + 0.1807896*2, 
-      xend = xend, #-0.15, 
-      yend = yend), #-0.1*r2 + 0.1807896*3),
-      arrow = arrow(length = unit(0.03, "npc"),
-                               ends = "both"), 
-      colour = "black") + 
-    annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
-             label = expression(l), 
-             colour = "black", hjust=-0.2, size = 8) +
+    x = x, #-0.15, 
+    y = y, #-0.1*r2 + 0.1807896*2, 
+    xend = xend, #-0.15, 
+    yend = yend), #-0.1*r2 + 0.1807896*3),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black") + 
+  annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
+           label = "l", parse = TRUE,
+           colour = "black", hjust=-0.2, size = 8) +
   coord_equal()
 ```
 
@@ -497,7 +497,7 @@ emb_df1 <- tibble(emb1 = 0.45, emb2 = 0.47) |>
   add_row(emb1 = 0.54, emb2 = 0.56)
 
 assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = h)) +
   geom_point(data = emb_df1, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
   geom_circle(data = circles, aes(x0 = x, y0 = y, r = r), fill = NA) +
@@ -509,7 +509,7 @@ assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) +
 
 ```{r}
 hex_data <- hex_grid |> 
-  dplyr::filter(hex_poly_id == 8)
+  dplyr::filter(h == 8)
 
 # Create all pairs of rows
 pairs <- expand_grid(row1 = 1:nrow(hex_data), row2 = 1:nrow(hex_data)) |>
@@ -519,12 +519,12 @@ pairs <- expand_grid(row1 = 1:nrow(hex_data), row2 = 1:nrow(hex_data)) |>
 middle_points <- pairs |>
   rowwise() |>
   mutate(
-    hex_poly_id = hex_data$hex_poly_id[row1],
+    h = hex_data$h[row1],
     x = (hex_data$x[row1] + hex_data$x[row2]) / 2,
     y = (hex_data$y[row1] + hex_data$y[row2]) / 2
   ) |>
   ungroup() |>
-  select(hex_poly_id, x, y) |>
+  select(h, x, y) |>
   filter(row_number() %in% c(1, 5, 6, 10, 13, 15))
 
 points_df <- bind_rows(hex_data, middle_points)
@@ -537,7 +537,7 @@ arrow_df <- tibble(
 )
 
 assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
-  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = hex_poly_id)) +
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = h)) +
   geom_point(data = points_df, aes(x = x, y = y), color = "black", size = 0.7) +
   geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
   geom_segment(data = arrow_df, aes(x = x, y = y, xend = xend, yend = yend), 
@@ -597,15 +597,18 @@ triangle_plot <- ggplot() +
       yend = yend
     )
   ) + 
-  annotate("text", x=-1.5, y= 1.5, 
-           label = expression(frac(a[2] - a[1], 2)), 
-           color = "black", hjust=-0.2, size = 8) + 
-  annotate("text", x=1.5, y= -0.5, 
-           label = expression(frac(a[1], 2)), 
-           color = "black", hjust=-0.2, size = 8) + 
-  annotate("text", x=2.5, y= 1.5, 
-           label = expression(l), 
-           color = "black", hjust=-0.2, size = 8)
+  annotate("text", x = -1.5, y = 1.5,
+         label = "frac(a[2]-a[1], 2)",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8) +
+annotate("text", x = 1.5, y = -0.5,
+         label = "a[1]/2",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8) +
+annotate("text", x = 2.5, y = 1.5,
+         label = "l",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8)
 ```
 
 ```{r}
@@ -722,7 +725,7 @@ error_pbmc <- error_pbmc |>
 #| label: error-comp-pbmc-umap
 
 error_umap_plot_pbmc <-  plot_rmse(error_pbmc) +
-  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19, 20)]) +
+  scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19, 20, 21)]) +
   scale_color_manual(values=c('#377eb8', '#e41a1c'))
 ```
 
