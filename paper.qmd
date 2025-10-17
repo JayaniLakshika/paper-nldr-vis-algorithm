@@ -1047,6 +1047,8 @@ Several additional existing metrics have been used to assess the quality of the 
 
 A new benefit of this fitted model is that it allows us to now predict the NLDR value of a new observation, $x'$, for any method. The steps are to determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and predict it to be the centroid of this bin in \gD{}, $C^{(2)}_{h}$. 
 
+It is important to note that similar out-of-sample extensions have been explored in existing methods. For example, PCA and autoencoders [@hinton2006] naturally support reverse mappings that enable reconstruction of the original data from the reduced space. Likewise, methods such as UMAP provide a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023], and parametric tSNE [@van2009] learns an explicit mapping using neural networks. However, many NLDR methods (e.g., standard tSNE) are primarily designed for visualization and exploration rather than reconstruction, making out-of-sample prediction challenging.
+
 ### Tuning
 
 The model fitting can be adjusted using these parameters: 
