@@ -31,9 +31,9 @@ algo_obj_two_curvy <- fit_highd_model(
   nldr_data = tsne_two_curvy,
   b1 = num_bins_x_two_curvy,
   q = 0.1,
-  benchmark_highdens = 0)
+  hd_thresh = 0)
 
-tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_obj$scaled_nldr
+tsne_two_curvy_scaled <- algo_obj_two_curvy$nldr_scaled_obj$scaled_nldr
 tr_from_to_df_two_curvy <- algo_obj_two_curvy$trimesh_data
 df_bin_centroids_two_curvy <- algo_obj_two_curvy$model_2d
 df_bin_two_curvy <- algo_obj_two_curvy$model_highd
@@ -46,7 +46,7 @@ write_rds(df_bin_centroids_two_curvy, "data/two_nonlinear/df_bin_centroids_two_c
 # Code to draw illustration for notation
 ## hexagon binning to have regular hexagons
 hb_obj_notation <- hex_binning(
-  nldr_obj = algo_obj_two_curvy$nldr_obj,
+  nldr_scaled_obj = algo_obj_two_curvy$nldr_scaled_obj,
   b1 = 7,
   q = 0.1)
 
@@ -66,7 +66,7 @@ start_pt <- all_centroids_df_temp |>
 d_rect <- tibble(x1min = 0,
                  x1max = 1,
                  x2min = 0,
-                 x2max = diff(algo_obj_two_curvy$nldr_obj$lim2)/diff(algo_obj_two_curvy$nldr_obj$lim1))
+                 x2max = diff(algo_obj_two_curvy$nldr_scaled_obj$lim2)/diff(algo_obj_two_curvy$nldr_scaled_obj$lim1))
 
 # To move the rectangle to ignore the overlap with the centroids
 # rect_adj <- tibble(x1 = 0.03, x2 = 0.03)
