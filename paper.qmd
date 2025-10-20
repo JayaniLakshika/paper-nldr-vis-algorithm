@@ -1038,7 +1038,7 @@ axis.text = element_text(size = 15))
 
 #### Other evaluation metrics
 
-Several additional existing metrics have been used to assess the quality of the NLDR layout. A widely used approach is neighborhood preservation, quantified by the average K-ary neighborhood agreement between \pD{} and \kD{} spaces [@john2015]. This is summarized by the RNX curve, which rescales neighborhood preservation over different neighborhood sizes, and its area under the curve (AUC(R_NX)) provides a scalar summary of overall embedding quality across scales. Additional local and global measures include KNN Accuracy, which evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy, which assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids [@yingfan2021]. The Shepard diagram [@shepard1962] and its associated Spearman correlation (r) [@spearman1961] between \pD{} and \kD{} pairwise distances also provide an interpretable diagnostic for assessing the monotonic relationship. Finally, the Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline, which minimizes reconstruction error [@amid2019]. Since PCA serves as the optimal linear method, we report RGS = 1 − GS in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use AUC(R_NX), RTA, r, and RGS for comparison with our proposed measure.
+Several additional existing metrics have been used to assess the quality of the NLDR layout. A widely used approach is neighborhood preservation, quantified by the average K-ary neighborhood agreement between \pD{} and \kD{} spaces [@john2015]. This is summarized by the RNX curve, which rescales neighborhood preservation over different neighborhood sizes, and its area under the curve (AUC(R_NX)) provides a scalar summary of overall embedding quality across scales. Additional local and global measures include KNN Accuracy, which evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy, which assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids [@yingfan2021]. The Shepard diagram [@shepard1962] and its associated Spearman correlation (sc) [@spearman1961] between \pD{} and \kD{} pairwise distances also provide an interpretable diagnostic for assessing the monotonic relationship. Finally, the Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline, which minimizes reconstruction error [@amid2019]. Since PCA serves as the optimal linear method, we report RGS = 1 − GS in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use AUC(R_NX), RTA, r, and RGS for comparison with our proposed measure.
 
 ### Prediction into \gD{}
 
@@ -1307,7 +1307,8 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
 ```{r}
 nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
 
-nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method"))
+nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
+  rename("sc" = "r")
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,
@@ -1324,18 +1325,20 @@ comp_metrics <- ggparcoord(
     x = "evaluation metric"
   ) +
   theme(
+    aspect.ratio = 0.5,
     legend.position = "none",
     legend.title = element_blank(),
     panel.grid.minor = element_blank()
   )
 ```
 
-While traditional metrics such as AUC(R_NX), RTA, and r assess how well local or global structures are preserved, they can be influenced by hyper-parameter choices. In contrast, RMSE provides an interpretable, quantitative link between \pD{} and \gD{} that reflects how well the observed nonlinear structure is captured by the embedding. Therefore, RMSE should be viewed as a complementary diagnostic used alongside measures like RGS, RNX curves, and Shepard diagrams to evaluate both the overall quality and faithfulness of the representation. Together, these metrics allow analysts to distinguish visually appealing but misleading layouts from those that genuinely preserve the high-dimensional structure.
+While traditional metrics such as AUC(R_NX), RTA, and sc assess how well local or global structures are preserved, they can be influenced by hyper-parameter choices. In contrast, RMSE provides an interpretable, quantitative link between \pD{} and \gD{} that reflects how well the observed nonlinear structure is captured by the embedding. Therefore, RMSE should be viewed as a complementary diagnostic used alongside measures like RGS, RNX curves, and Shepard diagrams to evaluate both the overall quality and faithfulness of the representation. Together, these metrics allow analysts to distinguish visually appealing but misleading layouts from those that genuinely preserve the high-dimensional structure.
 
 @fig-comp-metric illustrates how these different evaluation metrics behave across methods. The lines correspond to various NLDR representations, and each axis shows a normalized score for one evaluation criterion. Consistent patterns across multiple metrics indicate robustness, while strong divergence highlights trade-offs between preserving local structure (e.g., AUC(R_NX)) and global geometry (e.g., RGS). This multi-metric view underscores that no single metric fully captures accuracy of NLDR layouts, but together they reveal which method provides the most balanced and truthful representation of the high-dimensional data.
 
 ```{r}
 #| label: fig-comp-metric
+#| fig-cap: "Comparison of scaled evaluation metrics across NLDR representations. Each line represents a different layout evaluated using multiple metrics RTA, AUC(R_NX), sc, RGS, and RMSE. The variability across metrics highlights that no single measure universally captures embedding quality, underscoring the importance of considering multiple diagnostics when assessing representation faithfulness."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
@@ -2267,7 +2270,7 @@ final_layout
 
 We have developed an approach to help assess and compare NLDR layouts, generated by different methods and hyper-parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and RMSE. Different layouts can be compared using the RMSE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
 
-Existing metrics for evaluating NLDR layout, such as AUC(R_NX), RTA, r, and RGS, provide valuable but distinct numerical insights into the preservation of structure present in \pD{} data. Visualizing the model-in-the-data space offers a more comprehensive and interpretable diagnostic, allowing analysts to see the model fits everywhere, or better in some subspaces, or completely mismatches the data. This approach links the numerical summary with a visual understanding of how well the layout fits the data, helping analysts more easily decide whether the representation is reliable. 
+Existing metrics for evaluating NLDR layout, such as AUC(R_NX), RTA, sc, and RGS, provide valuable but distinct numerical insights into the preservation of structure present in \pD{} data. Visualizing the model-in-the-data space offers a more comprehensive and interpretable diagnostic, allowing analysts to see the model fits everywhere, or better in some subspaces, or completely mismatches the data. This approach links the numerical summary with a visual understanding of how well the layout fits the data, helping analysts more easily decide whether the representation is reliable. 
 
 Two examples illustrating usage are provided: the PBMC3k data where the NLDR is summarizing clustering in \pD{} and hand-written digits illustrating how NLDR represents an intrinsically lower dimensional nonlinear manifold. We examined a typical published usage of UMAP with the PBMC3k dataset (Chen, 2024). As is typical of UMAP layout with default settings, the separation between clusters is grossly exaggerated. The layout even suggests separation where there is none. <!--This is common when layouts are chosen subjectively -- often a preference for the "prettiest".--> Our approach provides a way to objectively choose the layout and hopefully avoids the use of misleading layouts in the future. In the hand-written digits we illustrate how our model fit statistics show that a flat disc layout is superior to the curved shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
 
