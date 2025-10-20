@@ -143,6 +143,7 @@ library(colorspace)
 library(kableExtra)
 library(conflicted)
 library(ggforce)
+library(GGally)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -887,3 +888,133 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
+## Compare evaluation metrics
+
+```{r}
+#| label: combine-data-pbmc
+
+error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
+error_pbmc_umap2 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")
+error_pbmc_umap3 <- read_rds("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")
+error_pbmc_tsne <- read_rds("data/pbmc3k/error_pbmc_tsne_5.rds")
+error_pbmc_tsne2 <- read_rds("data/pbmc3k/error_pbmc_tsne_30.rds")
+error_pbmc_phate <- read_rds("data/pbmc3k/error_pbmc_phate_5.rds")
+error_pbmc_trimap <- read_rds("data/pbmc3k/error_pbmc_trimap_12_4_3.rds")
+error_pbmc_pacmap <- read_rds("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds")
+
+error_pbmc <- bind_rows(error_pbmc_umap, 
+                        error_pbmc_umap2,
+                        error_pbmc_umap3,
+                        error_pbmc_tsne,
+                        error_pbmc_tsne2,
+                        error_pbmc_phate,
+                        error_pbmc_trimap,
+                        error_pbmc_pacmap)
+
+error_pbmc <- error_pbmc |> 
+  dplyr::filter(b1 == 22) |>
+  dplyr::select(method, RMSE) |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+```
+
+
+```{r}
+nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
+  rename("sc" = "r")
+
+comp_metrics_pbmc <- ggparcoord(
+  data = nldr_metrics,
+  columns = 3:7,           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(
+    values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "scaled metric value",
+    x = "evaluation metric"
+  ) +
+  theme(
+    aspect.ratio = 0.5,
+    legend.position = "none",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+#| label: fig-comp-metric-pbmc
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA shows a somewhat similar ordering across methods."
+#| fig-pos: H
+#| out-width: 100%
+#| fig-height: 10
+#| fig-width: 10
+
+comp_metrics_pbmc
+```
+
+```{r}
+#| label: combine-data-mnist
+
+error_mnist_umap <- read_rds("data/mnist/error_mnist_umap.rds")
+error_mnist_tsne <- read_rds("data/mnist/error_mnist_tsne.rds")
+error_mnist_tsne2 <- read_rds("data/mnist/error_mnist_tsne2.rds")
+error_mnist_phate <- read_rds("data/mnist/error_mnist_phate.rds")
+error_mnist_trimap <- read_rds("data/mnist/error_mnist_trimap.rds")
+error_mnist_pacmap <- read_rds("data/mnist/error_mnist_pacmap.rds")
+
+error_mnist <- bind_rows(error_mnist_umap, 
+                        error_mnist_tsne,
+                        error_mnist_tsne2,
+                        error_mnist_phate,
+                        error_mnist_trimap,
+                        error_mnist_pacmap)
+
+error_mnist <- error_mnist |> 
+  dplyr::filter(b1 == 30) |>
+  dplyr::select(method, RMSE) |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+```
+
+```{r}
+nldr_metrics <- read_rds("data/mnist/nldr_eval_metrics.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
+  rename("sc" = "r")
+
+comp_metrics_mnist <- ggparcoord(
+  data = nldr_metrics,
+  columns = 3:7,           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(
+    values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  theme_minimal(base_size = 14) +
+  labs(
+    y = "scaled metric value",
+    x = "evaluation metric"
+  ) +
+  theme(
+    aspect.ratio = 0.5,
+    legend.position = "none",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank()
+  )
+```
+
+```{r}
+#| label: fig-comp-metric-mnist
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA shows a somewhat similar ordering across methods."
+#| fig-pos: H
+#| out-width: 100%
+#| fig-height: 10
+#| fig-width: 10
+
+comp_metrics_mnist
+```

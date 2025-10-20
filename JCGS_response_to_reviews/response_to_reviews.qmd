@@ -1,6 +1,11 @@
 ---
 title: "Response to Reviews: JCGS-25-420"
-author: Jayani P. Gamage, Dianne Cook, Paul Harrison, Michael Lydeamore
+author:
+  - Jayani P. Gamage
+  - Dianne Cook
+  - Paul Harrison
+  - Michael Lydeamore
+  - Thiyanga S. Talagala
 format: pdf
 date: "`r Sys.Date()`"
 header-includes: | 
@@ -140,11 +145,11 @@ The reliance of “RMSE” on euclidean distances in high-D space also seems lim
 
 *We thank the reviewer for this detailed and constructive feedback. We agree that the paper would benefit from a clearer positioning of the proposed RMSE diagnostic relative to established embedding quality measures, and from an explicit discussion of its relationship to local and global structure preservation.*
 
-#### 1. Correspondence of RMSE to Established Metrics
+#### 1. Correspondence of RMSE to Existing Metrics
 
 *We acknowledge that measures such as trustworthiness, continuity, co-ranking–based R<sub>NX</sub> curves, and Shepard diagrams are widely used to assess embedding faithfulness. Our intention with the proposed RMSE measure is not to replace these metrics, but to complement them by providing a diagnostic that directly links the fitted model in the high-dimensional space to its representation in the low-dimensional embedding. RMSE evaluates how accurately a predictive model fitted in high dimensions can be reconstructed in the embedding space, thereby capturing a form of predictive consistency between the two spaces.*
 
-*In the revised manuscript, we have added a paragraph explicitly acknowledging these standard metrics and discussing how our diagnostic differs from and complements them. Specifically, we clarify that RMSE reflects both local and global fidelity depending on the bin resolution and the spatial structure of the embedding, and that it can be interpreted as quantifying the degree to which the embedding preserves meaningful variance in the data rather than arbitrary spatial proximity.*
+*In the revised manuscript, we have added a paragraph explicitly acknowledging these standard metrics and discussing how our diagnostic differs from and complements them. Specifically, we clarify that RMSE reflects both local and global preservation depending on the bin resolution and the spatial structure of the embedding, and that it can be interpreted as quantifying the degree to which the embedding preserves meaningful variance in the data rather than arbitrary spatial proximity.*
 
 #### 2. On the Scope of Empirical Validation
 
@@ -216,7 +221,7 @@ The manuscript includes a simulation to illustrate the approach (the “2NC7” 
 
 8. Section 5 should be moved into an appendix to shorten the paper somewhat. Figure in Section 5.1. could benefit from coloring the clusters in different colors so global structure preservation is also somewhat legible from the figures for the NLDRs (e.g. “is orange cluster between green and blue as in high-D or do they switch positions”). Section 5.2 might also have benefited from a corresponding ISOMAP or similar embedding of this data suitable for truthfully (isometrically!) unrolling the high-D manifold, and then showcasing that such a successful “unrolling” can be discerned from the way the projections look? tSNE just isn’t isometric, so the distortions visible here are entirely expected, IMO?
 
-*We thank the reviewer for these helpful suggestions. We have carefully considered moving Section 5 to the appendix; however, we believe it is important to keep it in the main text because it demonstrates the interpretive value of our proposed method. The examples in Section 5 illustrate how examining the model in the data space reveals structural distortions introduced by NLDR methods—an essential contribution of our approach that directly supports the paper’s central argument. Moving it to the appendix would significantly reduce the clarity of this methodological insight for readers.*
+*We thank the reviewer for these helpful suggestions. We have carefully considered moving Section 5 to the appendix; however, we believe it is important to keep it in the main text because it demonstrates the interpretive value of our proposed method. The examples in Section 5 illustrate how examining the model in the data space reveals structural distortions introduced by NLDR methods an essential contribution of our approach that directly supports the paper’s central argument. Moving it to the appendix would significantly reduce the clarity of this methodological insight for readers.*
 
 *To address the reviewer’s second suggestion, we have updated Figure 5.1 to color the clusters distinctly. This enhancement makes the global relationships between clusters more visible and allows the reader to better assess the preservation (or loss) of structure across NLDR methods.*
 
