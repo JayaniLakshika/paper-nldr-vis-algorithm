@@ -131,11 +131,17 @@ The paper’s only evaluation of “honesty” is done via the proposed custom �
 
 Questions a revised version should aim to resolve: 
 
-1. does “RMSE” measure local or global structure preservation (or a mixture of both)? From the definition, it seems to be focused on how well small neighborhoods in embed ding space (the bins)) correspond to small neighborhoods in high-D space, with, IIUC, particularly high values if there are lots of “hard intrusions” (i.e., points that are embed ded in the same 2D bin despite being far apart in high-D space)? 
+1. does “RMSE” measure local or global structure preservation (or a mixture of both)? From the definition, it seems to be focused on how well small neighborhoods in embed ding space (the bins)) correspond to small neighborhoods in high-D space, with, IIUC, particularly high values if there are lots of “hard intrusions” (i.e., points that are embedded in the same 2D bin despite being far apart in high-D space)? 
+
+*We thank the reviewer for this insightful question. The RMSE metric is intended to complement existing measures rather than replace them, and its sensitivity depends on both the bin resolution and the spatial distribution of the NLDR layout. When fine-grained bins are used, RMSE primarily captures the preservation of local neighborhoods, reflecting how well small groups of points in the NLDR layout correspond to their high-dimensional counterparts. For coarser bins, the metric incorporates more global structure, effectively averaging over larger regions of the NLDR layout.*
 
 2. how strongly are “RMSE” values correlated to other established measures of (local or global) structure preservation? and (how) are these correlations affected by the binning hyperparameters? 
 
 3. are the NLDRs selected by lowest “RMSE” the ones that would also be selected by other, more established measures of embedding faithfulness whose characteristics are well understood? at the very least, such measures should be provided, compared and discussed for all the embeddings under consideration in the case studies.
+
+*We thank the reviewer for this insightful question. RMSE is intended as a diagnostic tool rather than a definitive selection metric. Its primary purpose is to provide an interpretable measure of how well high-dimensional structure is captured in the NLDR layout. Traditional measures such as AUC(R_NX), RTA, RGS, and sc evaluate local or global structure preservation, but their values can vary substantially depending on method settings. In contrast, RMSE offers a more connection between the high-dimensional data space and the fitted model in the embedding space, highlighting how faithfully an NLDR method captures the underlying data structure.*
+
+*In the revised manuscript (Section 4), we include a parallel coordinate plot for the 2NC7 data comparing RMSE and existing metrics. The appendix contains parallel coordinate plots for the PBMC3k and MNIST digit 1 datasets. These figures show that RMSE offers a different way of looking at how well the NLDR layouts works, while the other metrics capture related but with different settings.*
 
 The reliance of “RMSE” on euclidean distances in high-D space also seems limiting: 
 
@@ -143,23 +149,7 @@ The reliance of “RMSE” on euclidean distances in high-D space also seems lim
 
 2. a definition based on a more general notion of distance would make this applicable to investigating 2D embeddings of data types for which the euclidean distance of their numerical data representations is not a suitable/applicable measure of dissimilarity (e.g. images, text). 
 
-*We thank the reviewer for this detailed and constructive feedback. We agree that the paper would benefit from a clearer positioning of the proposed RMSE diagnostic relative to established embedding quality measures, and from an explicit discussion of its relationship to local and global structure preservation.*
-
-#### 1. Correspondence of RMSE to Existing Metrics
-
-*We acknowledge that measures such as trustworthiness, continuity, co-ranking–based R<sub>NX</sub> curves, and Shepard diagrams are widely used to assess embedding faithfulness. Our intention with the proposed RMSE measure is not to replace these metrics, but to complement them by providing a diagnostic that directly links the fitted model in the high-dimensional space to its representation in the low-dimensional embedding. RMSE evaluates how accurately a predictive model fitted in high dimensions can be reconstructed in the embedding space, thereby capturing a form of predictive consistency between the two spaces.*
-
-*In the revised manuscript, we have added a paragraph explicitly acknowledging these standard metrics and discussing how our diagnostic differs from and complements them. Specifically, we clarify that RMSE reflects both local and global preservation depending on the bin resolution and the spatial structure of the embedding, and that it can be interpreted as quantifying the degree to which the embedding preserves meaningful variance in the data rather than arbitrary spatial proximity.*
-
-#### 2. On the Scope of Empirical Validation
-
-*We fully agree that a systematic comparison between RMSE and existing metrics (e.g., trustworthiness, R<sub>NX</sub>, or Shepard correlations) would further strengthen the validation of the diagnostic. Given the exploratory and methodological focus of this paper, our current goal is to demonstrate how RMSE can be used as an interpretive and diagnostic tool rather than to establish it as a definitive quality metric.*
-
-*We have therefore added text to clarify that comprehensive benchmarking against other measures represents an important next step. We outline this explicitly in the discussion as future work, where we plan to evaluate the correlation between RMSE and established structure-preserving metrics under different binning hyperparameters and across a range of NLDR methods.*
-
-#### 3. On the Role of Euclidean Distance
-
-*We appreciate the reviewer’s insightful point regarding the use of Euclidean distance in defining RMSE. We agree that for highly nonlinear manifolds, or data modalities such as images or text, geodesic or domain-specific distances could be more appropriate. We have revised the text to acknowledge this limitation and have added a note suggesting that future extensions could incorporate geodesic or kernel-based distances within the same framework. This would allow the diagnostic to generalize beyond strictly Euclidean settings.*
+*We thank the reviewer for raising this important point. While Euclidean distance may not be ideal for highly nonlinear manifolds or complex data shapes, it can still provide a meaningful summary when the high-dimensional means used in RMSE are suitably positioned. In such cases, Euclidean distances effectively capture variation from the fitted model, allowing RMSE to quantify how well the NLDR layout preserves the structure of the high-dimensional data.*
 
 ### Insufficient Validation of the Proposed Diagnostic (RMSE) Across Methods 
 
@@ -167,25 +157,13 @@ Related to the above points - the paper has no theoretical or empirical demonstr
 
 *We appreciate this thoughtful comment highlighting the need for more rigorous validation of the RMSE diagnostic across NLDR methods. We agree that different NLDR algorithms optimize different objectives and that a single quantitative diagnostic should not be interpreted as a universal criterion of embedding quality. Our intent is not to claim that RMSE replaces established distortion or neighborhood preservation measures, but rather to propose it as a complementary diagnostic that provides a direct and interpretable link between the high-dimensional model and its low-dimensional representation.*
 
-*To clarify this point, we have revised the text to explicitly state that RMSE is not intended to be minimized across all methods in a comparative sense, but instead used as a diagnostic to evaluate the faithfulness of the mapping between the fitted model in the high-dimensional space and the observed embedding. We also acknowledge that empirical validation against stress and co-ranking–based measures would be a valuable avenue for future work, and we have added a statement in the discussion noting this as a natural next step.*
+*To clarify this point, we have revised the text to explicitly state that RMSE is not intended to be minimized across all methods in a comparative sense, but instead used as a diagnostic to evaluate the faithfulness of the mapping between the fitted model in the high-dimensional space and the observed embedding. We also acknowledge that empirical validation against stress and co-ranking based measures would be a valuable avenue for future work, and we have added a statement in the discussion noting this as a natural next step.*
 
 ### Limitations of the Evaluation (Simulation Study Design): 
 
 The manuscript includes a simulation to illustrate the approach (the “2NC7” dataset with two nonlinear clusters in 7-D) and two real-data applications (single-cell RNA-seq and an image dataset of handwritten digits). While these examples are appropriate, the scope of simulation scenarios is narrow, and the analysis lacks any notion of variability. The simulation seems to be a single realization of a specific two-cluster scenario. The authors did not explore, for instance, varying the overlap between clusters, adding more clusters or different manifold shapes, or introducing different noise levels. Ideally, the authors would systematically vary factors like: number of clusters or pattern types, intrinsic dimensionality of structures, sample size, etc., and show that their approach reliably selects the truth (or at least, the most interpretable view) in each case, and how well alternative measures would do so. Because only one run is shown, there is also no information how stable the RMSE curves in Figures 8 and 13 are across replications. I encourage the authors to perform more systematic, replicated simulations, report measures of variability for their performance evaluations, compare against relevant alternatives, and take much more care not to overstate their conclusions beyond the tested scenarios (e.g. the claim that it “identify bad representations so they can be avoided” is based on a very limited set of examples). 
 
-*We thank the reviewer for this valuable and constructive feedback. We agree that the current simulation study represents a limited scenario and that a broader evaluation—varying factors such as cluster separation, noise level, number of clusters, and intrinsic dimensionality—would provide a more comprehensive validation of the diagnostic. Our intention in this paper, however, was to introduce and illustrate the proposed framework rather than to provide a full-scale performance benchmark.*
-
-*The 2NC7 dataset was designed to demonstrate a controlled nonlinear structure where the “truth” in high-dimensional space is known. This allows a clear visualization of how the diagnostic operates in a well-understood geometric setting and how it identifies misrepresentations of the underlying structure. We acknowledge that this single setting does not capture all possible complexities of nonlinear manifolds.*
-
-*In response to the reviewer’s suggestions, we have made the following revisions:*
-
-- *Clarified the purpose of the simulation study: The text now explicitly states that the simulation serves as an illustrative example to demonstrate how the diagnostic behaves under a known ground truth, not as an exhaustive evaluation of its generality.*
-
-- *Added discussion of variability and stability: We note that the RMSE diagnostic can exhibit variability across realizations due to stochasticity in NLDR methods, and that its stability across replications should be further studied. We now emphasize that this is an important direction for future work.*
-
-- *Outlined future simulation extensions: The Discussion section has been expanded to describe plans for more systematic simulation experiments, including scenarios with varying cluster separations, manifold shapes, dimensionalities, and noise levels, to assess both robustness and interpretability under different conditions.*
-
-*We have also moderated statements that might overstate the scope of our conclusions. The revised text now emphasizes that the current results demonstrate the potential of the RMSE diagnostic to identify misleading representations, and that broader validation across multiple scenarios will be the focus of subsequent work.*
+*We thank the reviewer for this constructive feedback and agree that the current simulation study represents a limited scenario. A broader evaluation varying factors such as cluster separation, noise level, number of clusters, and intrinsic dimensionality would provide stronger validation of the diagnostic. Our goal in this paper, however, was to introduce and illustrate the framework rather than conduct a full-scale benchmarking study. The 2NC7 dataset was designed to demonstrate the diagnostic’s behavior in a controlled nonlinear setting with a known ground truth, enabling clear interpretation of how it identifies misrepresentations.*
 
 ## Minor Issues
 
