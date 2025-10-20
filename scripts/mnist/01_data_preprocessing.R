@@ -3,10 +3,10 @@ library(reticulate)
 library(dplyr)
 library(ggplot2)
 
-mnist_data <- read_rds("~/Desktop/PhD Monash research files/paper-nldr-vis-algorithm/data/mnist/mnist_digit_1.rds")
+mnist_data <- read_rds("data/mnist/mnist_digit_1.rds")
 
 data_x <- mnist_data[,-785]/255
-data_x <- array_reshape(data_x, c(nrow(data_x), 784), order = "F")
+data_x <- array_reshape(as.matrix(data_x), c(nrow(data_x), 784), order = "F")
 data_x_df <- as.data.frame(data_x)
 names(data_x_df) <- paste0(rep("x", ncol(data_x_df)), 1:ncol(data_x_df))
 
