@@ -68,14 +68,14 @@ names(highd_data) <- paste0("x", 1:50)
 highd_data <- highd_data[, 1:9]
 
 embeddings <- list(
-  UMAP_5_min_dist_0.8     = read_rds(here("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds")),
-  UMAP_30_min_dist_0.3     = read_rds(here("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")),
-  UMAP_5_min_dist_0.01     = read_rds(here("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds")),
-  tsne_5     = read_rds(here("data/pbmc3k/error_pbmc_tsne_5.rds")),
-  tsne_30     = read_rds(here("data/pbmc3k/error_pbmc_tsne_30.rds")),
-  phate_5     = read_rds(here("data/pbmc3k/error_pbmc_phate_5.rds")),
-  trimap_12_4_3    = read_rds(here("data/pbmc3k/error_pbmc_trimap_12_4_3.rds")),
-  pacmap    = read_rds(here("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds"))
+  UMAP_5_min_dist_0.8     = read_rds(here("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")),
+  UMAP_30_min_dist_0.3     = read_rds(here("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")),
+  UMAP_5_min_dist_0.01     = read_rds(here("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")),
+  tsne_5     = read_rds(here("data/pbmc3k/pbmc_tsne_5.rds")),
+  tsne_30     = read_rds(here("data/pbmc3k/pbmc_tsne_30.rds")),
+  phate_5     = read_rds(here("data/pbmc3k/pbmc_phate_5.rds")),
+  trimap_12_4_3    = read_rds(here("data/pbmc3k/pbmc_trimap_12_4_3.rds")),
+  pacmap    = read_rds(here("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds"))
 )
 
 evaluate_embedding <- function(name, lowd, highd) {

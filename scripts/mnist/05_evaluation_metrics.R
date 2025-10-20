@@ -89,7 +89,7 @@ evaluate_embedding <- function(name, lowd, highd) {
   )$rte
 
   # R_NX AUC
-  RNX_df <- R_NX(highd, lowd, max_k = 7875)
+  RNX_df <- R_NX(highd, lowd, max_k = 2875) #7875
   RNX_AUC <- R_NX_AUC(RNX_df)
 
   # Shepard correlation (Spearman)
@@ -121,7 +121,7 @@ write_rds(results_all, "data/mnist/nldr_eval_metrics.rds")
 
 
 RNX_curves <- purrr::imap_dfr(embeddings, function(lowd, name) {
-  R_NX(as.matrix(highd_data), as.matrix(lowd), max_k = 7875) |> mutate(method = name)
+  R_NX(as.matrix(highd_data), as.matrix(lowd), max_k = 2875) |> mutate(method = name)
 }) |>
   mutate(method = factor(method, levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
