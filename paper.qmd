@@ -1310,7 +1310,8 @@ error_plot_two_curvy + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_cur
 nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
-  rename("sc" = "r")
+  rename("sc" = "r") |>
+  mutate(sc = 1 - sc)
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,

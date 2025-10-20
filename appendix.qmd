@@ -888,7 +888,9 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
-## Compare evaluation metrics
+## Compare RMSE with existing evaluation metrics
+
+@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare RMSE with commonly used evaluation metrics such as RTA, AUC(R_NX), sc, and RGS across multiple NLDR layouts. These visual comparisons highlight that RMSE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
 #| label: combine-data-pbmc
@@ -923,7 +925,8 @@ error_pbmc <- error_pbmc |>
 nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
-  rename("sc" = "r")
+  rename("sc" = "r") |>
+  mutate(sc = 1 - sc)
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
@@ -948,7 +951,7 @@ comp_metrics_pbmc <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-pbmc
-#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA shows a somewhat similar ordering across methods."
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a layout evaluated using RTA, AUC(R_NX), sc, RGS, and RMSE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the green layout, rated worst by AUC(R_NX) and RGS, is seen as the best by RMSE and sc, while the brown layout, rated best by AUC(R_NX), is seen as the worst by RMSE showing that RMSE captures a different view of how well the data structure is represented."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
@@ -985,7 +988,8 @@ error_mnist <- error_mnist |>
 nldr_metrics <- read_rds("data/mnist/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
-  rename("sc" = "r")
+  rename("sc" = "r") |>
+  mutate(sc = 1 - sc)
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
@@ -1010,7 +1014,7 @@ comp_metrics_mnist <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-mnist
-#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA shows a somewhat similar ordering across methods."
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, AUC(R_NX), sc, RGS, and RMSE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by AUC(R_NX), sc, and RGS, is seen as the worst by RMSE, while the green layout, rated best by RTA, is seen as the best by RMSE as well."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
