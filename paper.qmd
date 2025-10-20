@@ -1285,8 +1285,9 @@ error_plot_two_curvy <-
         unique(error_two_curvy$a1)), 
         by = 5)]) +
   scale_color_manual(
-    values=c('#e41a1c','#ff7f00','#4daf4a', 
-             "#a65628",'#636363', '#984ea3')) +
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
   theme(aspect.ratio = 1.5)
 ```
 
@@ -1317,8 +1318,9 @@ comp_metrics <- ggparcoord(
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
   scale_color_manual(
-    values=c('#e41a1c','#ff7f00','#4daf4a',
-             "#a65628",'#636363', '#984ea3')) +
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
   theme_minimal(base_size = 14) +
   labs(
     y = "scaled metric value",
@@ -1334,11 +1336,11 @@ comp_metrics <- ggparcoord(
 
 Traditional metrics like AUC(R_NX), RTA, and sc focus on how well local or global structures are preserved, but their results can vary a lot depending on the method’s settings. In contrast, RMSE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.
 
-@fig-comp-metric compares how these evaluation metrics behave across methods. Each line represents a different NLDR layout, and each axis shows a normalized score for one evaluation criterion. The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like RMSE. While RMSE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA metric shows a somewhat similar ordering across methods.
+@fig-comp-metric compares how these evaluation metrics behave across methods. Each line represents a different NLDR layout, and each axis shows a normalized score for one evaluation criterion. The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like RMSE. While RMSE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and sc metrics show a somewhat similar ordering across methods.
 
 ```{r}
 #| label: fig-comp-metric
-#| fig-cap: "Comparison of scaled evaluation metrics across NLDR representations. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA shows a somewhat similar ordering across methods."
+#| fig-cap: "Comparison of scaled evaluation metrics across NLDR representations. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA, and sc show a somewhat similar ordering across methods."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
