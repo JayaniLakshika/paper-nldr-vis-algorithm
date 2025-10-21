@@ -2293,6 +2293,24 @@ All the materials to reproduce the paper can be found at [https://github.com/Jay
 The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. The figure, NLDR method, and corresponding hyperparameters are summarized in @tbl-fig-param. Direct links to videos for viewing online are available in @tbl-links. 
 
 ```{r}
+#| label: tbl-fig-param
+#| tbl-pos: H
+#| tbl-cap: "NLDR methods and hyper-parameters used for each figure."
+
+fig_param_df <- read_csv("misc/fig_nldr_param.csv")
+
+# Create the table
+kable(fig_param_df, 
+      format = "latex", 
+      booktabs = TRUE, escape = FALSE, linesep = "") |>
+  kable_styling(position = "center", 
+                full_width = FALSE, 
+                font_size = 12) |>
+  row_spec(0, bold = TRUE) |>
+  column_spec(1:2, width = c("1.5cm", "2cm", "10cm"))
+```
+
+```{r}
 #| label: tbl-links
 #| tbl-pos: H
 #| tbl-cap: "Videos of the langevitour animations and the linked plots."
@@ -2309,24 +2327,6 @@ kable(links_df,
                 font_size = 12) |>
   row_spec(0, bold = TRUE) |>
   column_spec(1:2, width = c("1.5cm", "14cm"))
-```
-
-```{r}
-#| label: tbl-fig-param
-#| tbl-pos: H
-#| tbl-cap: "NLDR methods and hyper-parameters used for each figure."
-
-fig_param_df <- read_csv("misc/fig_nldr_param.csv")
-
-# Create the table
-kable(fig_param_df, 
-      format = "latex", 
-      booktabs = TRUE, escape = FALSE, linesep = "") |>
-  kable_styling(position = "center", 
-                full_width = FALSE, 
-                font_size = 12) |>
-  row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("1.5cm", "2cm", "10cm"))
 ```
 
 ## Acknowledgments
