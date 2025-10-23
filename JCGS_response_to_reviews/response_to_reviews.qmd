@@ -33,9 +33,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 ```
 
-We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. 
-
-Note that the original reviewer comments are in normal and *our response is in italic* text. 
+We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. The original reviewer comment is in normal font and *our response is in italic text*. 
 
 <!-- Text in the paper corresponding to the changes as a response to reviewers' comments are highlighted in red. We have also made a lot of minor changes smoothing the language and fixing small issues in the paper which are not highlighted. -->
 
@@ -57,11 +55,7 @@ This manuscript proposes an algorithm to evaluate nonlinear dimension reduction 
 
 1. The main concern is whether the proposed algorithm can properly evaluate the NLDR's performance. Using the RMSE plot with different binwidth values (e.g., in Figure 8 and Figure 11) to evaluate NLDR's performance is problematic for not considering the density within each cluster. For NLDR results that have denser clusters, for example layout a,c,g,h in Figure 11, a smaller binwidth needs be used to achieve the same average count in each bin, which will cause their lines in Figure 11 to be more upper left. However, denser clusters are not worse NLDR results.
 
-*Thank you for this thoughtful comment. We agree that the density of clusters can influence the HBE curves, and that denser clusters are not inherently indicative of poorer NLDR results. The purpose of our diagnostic was not to penalize density per se, but to provide a way to compare the stability of neighborhood structures across different binwidths. In practice, a representation with highly dense clusters will indeed tend to have lower HBE at small binwidths, shifting its curve to the upper-left of the plot. This is a reflection of how tightly the representation packs points together rather than a judgment of quality on its own.*
-
-*To address this concern, we have revised the text to clarify that HBE should not be interpreted in isolation. Instead, it should be considered in conjunction with other diagnostics, such as the proportion of non-empty bins and visual separation of clusters. We emphasize that our framework is intended to highlight trade-offs across multiple metrics rather than to define a single absolute ranking.*
-
-*We also note in the revision that dense clusters are not inherently “worse” outcomes—rather, they may reflect meaningful biological or structural features of the data. The diagnostic is designed to make these differences visible so that users can interpret them in the context of their application.*
+*Thank you for this thoughtful comment. This is a problem when comparing the HBE curves for different layouts because the same binwidth could be correspond to very different average count. This is something that we have discussed at length in developing the methods, and decided that using binwidth as the horizontal variable is more faithful comparison than using average count. We have revised the text in the paper to make this clear, and to note that the software allows for plotting against average count instead of binwidth. The other diagnostics proportion of non-empty bins, relative average bin density and standardised bin count should also be considered in deciding the best fit.*
 
 2. In Figure 7, as RMSE steadily increases with the binwidth, it's not clear why the three binwidths 0.03, 0.05, and 0.07 are chosen. In addition, we shouldn't use a single simulated dataset to determine the default hyperparameters without any real analysis.
 

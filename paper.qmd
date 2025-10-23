@@ -63,8 +63,8 @@ tbl-cap-location: bottom
 abstract: |
   Nonlinear dimension reduction (NLDR) techniques such as tSNE, and UMAP provide a low-dimensional representation of high-dimensional data (\pD{}) by applying a nonlinear transformation. NLDR often exaggerates random patterns. But NLDR views have an important role in data analysis because, if done well, they provide a concise visual (and conceptual) summary of \pD{} distributions. The NLDR methods and hyper-parameter choices can create wildly different representations, making it difficult to decide which is best, or whether any or all are accurate or misleading. To help assess the NLDR and decide on which, if any, is the most reasonable representation of the structure(s) present in the \pD{} data, we have developed an algorithm to show the \gD{} NLDR model in the \pD{} space, viewed with a tour, a movie of linear projections. From this, one can see if the model fits everywhere, or better in some subspaces, or completely mismatches the data. Also, we can see how different methods may have similar summaries or quirks. 
   
-keywords: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
-keywords-formatted: [high-dimensional data, data visualization, tour, statistical graphics, exploratory data analysis, unsupervised learning]
+keywords: [high-dimensional data, dimension reduction, data visualization, statistical graphics, tour, unsupervised learning]
+keywords-formatted: [high-dimensional data, dimension reduction, data visualization, statistical graphics, unsupervised learning]
 
 bibliography: paper.bib  
 header-includes: | 
@@ -923,20 +923,20 @@ trimesh_two_curvy_removed1_tsne_with_data +
 
 
 ### Measuring the fit {#sec-summary}
+
+<!-- Existing approaches -->
+
+All NLDR methods internally optimize a quantity to produce a layout for any particular parameter set. These are not always made available in the model output, and may not be universally comparable between parameter choices and methods. 
+
+Several common metrics are often used to assess the quality of any NLDR layout. The $RNX$ curve quantifies the neighborhood agreement between \pD{} and \kD{} spaces, by computing the area under the curve ($AUC(R_NX)$) across a range of neighborhood scales [@john2015]. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids [@yingfan2021]. The Shepard diagram [@shepard1962] and its associated Spearman correlation [@spearman1961] between \pD{} and \kD{} distances. The Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline [@amid2019]. KNN Accuracy evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Because these two require a response variable, they can't be applied for our purposes. <!-- Since PCA serves as the optimal linear method, we report $RGS = 1 − GS$ in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use AUC(R_NX), RTA, sc, and RGS for comparison with our proposed measure.-->
+
  <!-- Fitted values,  Error calculation-->
 
-The model here is similar to a confirmatory factor analysis model [@brown2015], $\widehat{T} + \Epsilon$. The difference between the fitted model and observed values would be considered to be residuals, and are \pD{}. 
-
-<!--#### Fitted values-->
-
-Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. These can also be denoted as $\widehat{X}$. 
-<!--#### Error-->
-
-The error is computed by taking the squared \pD{} Euclidean distance, of points from their bin centroid, which we will call hexbin error (HBE):
+None of the above measures is particularly well-suited to assessing our model fit, as we will show later. Thus, we need to different approach to measuring model fit. Because the model here is similar to a confirmatory factor analysis model (see a general explanation in @brown2015), $\widehat{T} + \Epsilon$, our approach is similar to the ones used in this area. it is based on "residuals" computed as the difference between the fitted model and observed values in \pD{}. Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. In factor analysis language, these fitted values might also be denoted as $\widehat{X}$. The error is computed by taking the squared \pD{} Euclidean distance, of points from their bin centroid, which we will call hexbin error (HBE):
 
 $$ HBE = \sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
-where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hi} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
+where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hi} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation. @fig-p-d-error-in-2d-two-curvy shows plots of $e$ as a density (a), coloring the points in the NLDR layout (b) and the points in a tour (c).
 
 ```{r}
 #| label: error-two-curvy
@@ -1038,9 +1038,8 @@ axis.text = element_text(size = 15))
   plot_layout(ncol=3)
 ```
 
-#### Other evaluation metrics
+<!-- #### Other evaluation metrics -->
 
-Several additional existing metrics have been used to assess the quality of the NLDR layout. A widely used approach is neighborhood preservation, quantified by the average K-ary neighborhood agreement between \pD{} and \kD{} spaces [@john2015]. This is summarized by the RNX curve, which rescales neighborhood preservation over different neighborhood sizes, and its area under the curve (AUC(R_NX)) provides a scalar summary of overall embedding quality across scales. Additional local and global measures include KNN Accuracy, which evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy, which assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids [@yingfan2021]. The Shepard diagram [@shepard1962] and its associated Spearman correlation (sp) [@spearman1961] between \pD{} and \kD{} pairwise distances also provide an interpretable diagnostic for assessing the monotonic relationship; we use $sc = 1−sp$ to better capture non-linear relationships. Finally, the Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline, which minimizes reconstruction error [@amid2019]. Since PCA serves as the optimal linear method, we report $RGS = 1 − GS$ in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use AUC(R_NX), RTA, sc, and RGS for comparison with our proposed measure.
 
 ### Prediction into \gD{}
 
@@ -1061,7 +1060,7 @@ The model fitting can be adjusted using these parameters:
 
 Default values are provided for each of these, but deciding on the best model fit is assisted by examining the HBE for a range of choices. <!--Choosing these parameters according to HBE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.-->
 
-#### Hexagon bin parameters
+<!-- #### Hexagon bin parameters -->
 
 The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts which is seen in @fig-bins-two-curvy. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$. Generally, a more uniform distribution among these possibilities would indicate that the bins are reliably capturing the underlying distribution of observations. 
 
@@ -1082,7 +1081,7 @@ hex_grid_coloured_two_curvy2 +
 
 The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are recommended, where the dependence on $r_2$ reflects the preservation of aspect ratio in the NLDR layout. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the HBE of the fitted model.
 
-#### Handling of low density bins
+<!-- #### Handling of low density bins-->
 
 Standardised bin counts is computed as $w_h = n_h/n, ~~h=1, \dots m$, and $n$ is the number of observations. Density is computed as $d_h = w_h/A$ where $A$ is the area of the hexagon. As a measure of the denseness of a single grid, we can compute the average bin density, $\bar{d}$. This can be used to compare the model fit for different grids. 
 
@@ -1128,7 +1127,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
                      labels = parse_format()) +
   scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
-  xlab(expression(paste("std bin count (", w[h], ")"))) +
+  xlab(expression(paste("low density bin removal based on ", w[h]))) +
   ylab("HBE") +
   #xlim(c(0, 0.14)) +
   ylim(c(0, 0.75)) +
@@ -1151,7 +1150,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) HBE against $a_1$, HBE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here HBE steadily increases so there is no clear choice - nevertheless, we have chosen three binwidths, $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted), to compare in the other plots. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins changes HBE substantially (c). The relative average bin density tends to increase with $a_1$ (d)."
+#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$ , (b) proportion of non-empty bins vs $a_1$, (c) HBE vs $w_h$ cutoff used for removing low count bins, (d) relative average bin density vs $a_1$. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (c). The relative average bin density tends to increase with $a_1$ (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
