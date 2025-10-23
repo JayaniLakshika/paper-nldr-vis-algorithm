@@ -1,5 +1,5 @@
 ---
-title: "Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction"
+title: "Choosing Better NLDR Layouts by Evaluating the Model in the High-dimensional Data Space"
 format: 
     jasa-pdf:
         keep-tex: true
@@ -932,9 +932,9 @@ The model here is similar to a confirmatory factor analysis model [@brown2015], 
 Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. These can also be denoted as $\widehat{X}$. 
 <!--#### Error-->
 
-The error is computed by taking the squared \pD{} Euclidean distance, corresponding to computing the root mean squared error (RMSE) as:
+The error is computed by taking the squared \pD{} Euclidean distance, of points from their bin centroid, which we will call hexbin error (HBE):
 
-$$\sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
+$$ HBE = \sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
 where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hi} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation.
 
@@ -958,7 +958,7 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
   scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = "RMSE") +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = "HBE") +
   ylim(c(0, 0.75)) +
   interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
@@ -1059,7 +1059,7 @@ The model fitting can be adjusted using these parameters:
     - the number of bins in the horizontal direction ($b_1$), which controls the number of bins the vertical direction ($b_2$), total number of bins ($b$), and total number of non-empty bins ($m$).
 - bin density cutoff, to possibly remove low-density hexagons.
 
-Default values are provided for each of these, but deciding on the best model fit is assisted by examining the RMSE for a range of choices. <!--Choosing these parameters according to RMSE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.-->
+Default values are provided for each of these, but deciding on the best model fit is assisted by examining the HBE for a range of choices. <!--Choosing these parameters according to HBE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.-->
 
 #### Hexagon bin parameters
 
@@ -1069,7 +1069,7 @@ The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different bin specifications ($b_1, b_2, b, m$): (a) 15, 18, 270, 98, (b) 24, 29, 696, 209, and (c) 35, 42, 1470, 386. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the RMSE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different bin specifications ($b_1, b_2, b, m$): (a) 15, 18, 270, 98, (b) 24, 29, 696, 209, and (c) 35, 42, 1470, 386. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins. Using the HBE of the model fit in $7\\text{-}D$ helps decide on a useful choice of number of bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -1080,7 +1080,7 @@ hex_grid_coloured_two_curvy2 +
   theme(legend.position='none', plot.tag = element_text(size = 12))
 ``` 
 
-The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the RMSE of the fitted model.
+The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are allowed. @fig-param-two-curvy (a) shows the effect of different choices of $b_1$ on the HBE of the fitted model.
 
 #### Handling of low density bins
 
@@ -1088,18 +1088,18 @@ Standardised bin counts is computed as $w_h = n_h/n, ~~h=1, \dots m$, and $n$ is
 
 These quantities can be used to assess and compare the models resulting from different binwidths:
 
-- RMSE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in RMSE would indicate the lower binwidth is substantially better than the larger one (@fig-param-two-curvy a).
+- HBE should decrease when binwidth decreases, as the binning gets closer to observations being in their own bin. But a big drop in HBE would indicate the lower binwidth is substantially better than the larger one (@fig-param-two-curvy a).
 - The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less (@fig-param-two-curvy b). 
-- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the RMSE calculation, though. RMSE can be examined relative to dropping a fraction of the low density bins (@fig-param-two-curvy c).
+- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the HBE calculation, though. HBE can be examined relative to dropping a fraction of the low density bins (@fig-param-two-curvy c).
 - Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d), relative to that of the hexgrid with the smallest binwidth. 
 
 
 <!-- 
 To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
 
-By default, when assessing the choice of horizontal bins, $b_1$, the total number of bins is measured by the number of **non-empty** bins ($m$). This more accurately reflects the hexagon grid relative to the RMSE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. 
+By default, when assessing the choice of horizontal bins, $b_1$, the total number of bins is measured by the number of **non-empty** bins ($m$). This more accurately reflects the hexagon grid relative to the HBE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. 
 
-The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in RMSE as the benchmark value increases (@fig-param-two-curvy (c)). The RMSE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
+The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in HBE as the benchmark value increases (@fig-param-two-curvy (c)). The HBE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
 -->
 
 <!-- I'll be honest I've no idea what this section is 
@@ -1129,7 +1129,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
   scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
   xlab(expression(paste("std bin count (", w[h], ")"))) +
-  ylab("RMSE") +
+  ylab("HBE") +
   #xlim(c(0, 0.14)) +
   ylim(c(0, 0.75)) +
   interior_annotation("c", position = c(0.07, 0.9), cex = 2) +
@@ -1151,7 +1151,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) RMSE against $a_1$, RMSE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here RMSE steadily increases so there is no clear choice - nevertheless, we have chosen three binwidths, $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted), to compare in the other plots. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins changes RMSE substantially (c). The relative average bin density tends to increase with $a_1$ (d)."
+#| fig-cap: "Various plots to help tune the model fit, using the binwidth $a_1$ and low density bin removal. In (a) HBE against $a_1$, HBE is going to increase as $a_1$ increases, but just before a big increase is a good choice. Here HBE steadily increases so there is no clear choice - nevertheless, we have chosen three binwidths, $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted), to compare in the other plots. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing low count bins changes HBE substantially (c). The relative average bin density tends to increase with $a_1$ (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
@@ -1179,9 +1179,9 @@ To compare and assess a range of representations an analyst needs:
 
 - a selection of NLDR representations made with a range of parameter choices and possibly different methods (tSNE, UMAP, ...).
 - a range of model fits made by varying bin size and low density bin removal.
-- calculated RMSE for each layout, when it is transformed into the \pD{} space. 
+- calculated HBE for each layout, when it is transformed into the \pD{} space. 
 
-Comparing the RMSE to obtain the best fit is appropriate if the same NLDR method is used. However, because the RMSE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower RMSE indicates a better NLDR representation.
+Comparing the HBE to obtain the best fit is appropriate if the same NLDR method is used. However, because the HBE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower HBE indicates a better NLDR representation.
 
 ```{r}
 #| label: read-two-curvy-clust-nldr
@@ -1294,7 +1294,7 @@ error_plot_two_curvy <-
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the 2NC7 data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the 2NC7 data is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
 #| label: fig-toy-rmse
 #| fig-pos: H
 #| out-width: 100%
@@ -1338,13 +1338,13 @@ comp_metrics <- ggparcoord(
   )
 ```
 
-Traditional metrics like AUC(R_NX), RTA, and sc focus on how well local or global structures are preserved, but their results can vary a lot depending on the method’s settings. In contrast, RMSE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.
+Traditional metrics like AUC(R_NX), RTA, and sc focus on how well local or global structures are preserved, but their results can vary a lot depending on the method’s settings. In contrast, HBE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.
 
-@fig-comp-metric compares how these evaluation metrics behave across methods. Each line represents a different NLDR layout, and each axis shows a normalized score for one evaluation criterion. The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like RMSE. While RMSE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and sc metrics show a somewhat similar ordering across methods.
+@fig-comp-metric compares how these evaluation metrics behave across methods. Each line represents a different NLDR layout, and each axis shows a normalized score for one evaluation criterion. The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and sc metrics show a somewhat similar ordering across methods.
 
 ```{r}
 #| label: fig-comp-metric
-#| fig-cap: "Comparison of scaled evaluation metrics across  6 NLDR layouts on the 2NC7 data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and RMSE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like RMSE. RTA, and sc show a somewhat similar ordering across methods."
+#| fig-cap: "Comparison of scaled evaluation metrics across  6 NLDR layouts on the 2NC7 data. Each line represents a different NLDR layout evaluated using multiple normalized metrics: RTA, AUC(R_NX), sc, RGS, and HBE. The variation across metrics shows that each captures different aspects of structure preservation, and none behave exactly like HBE. RTA, and sc show a somewhat similar ordering across methods."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
@@ -1796,7 +1796,7 @@ This is a benchmark single-cell RNA-Seq data set collected on Human Peripheral B
 
 In this data there are $2622$ single cells and $1000$ gene expressions (variables). Following the same pre-processing as @chen2024, different NLDR techniques were performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods, and different hyper-parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout that was published in @chen2024. This layout suggests that the data has three very well separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b or c or d or e or f or g or h. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
 
-@fig-pbmc-rmse shows RMSE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were generated using tSNE and UMAP with various hyper-parameter settings, while PHATE, PaCMAP, and TriMAP were applied using their default settings. Lines are color coded to match the color of the layouts shown on the right. Lower RMSE indicates the better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low RMSE across all binwidths. It can be seen that layout f is sub-optimal with universally higher RMSE. Layout a, the published one, is better but it is not as good as layouts b, d, or e. With some imagination layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better RMSE when the $a_1$ is small, but layout e beats it at larger values. Thus we could argue that layout e is the most accurate representation of the cluster structure, of these eight.
+@fig-pbmc-rmse shows HBE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were generated using tSNE and UMAP with various hyper-parameter settings, while PHATE, PaCMAP, and TriMAP were applied using their default settings. Lines are color coded to match the color of the layouts shown on the right. Lower HBE indicates the better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low HBE across all binwidths. It can be seen that layout f is sub-optimal with universally higher HBE. Layout a, the published one, is better but it is not as good as layouts b, d, or e. With some imagination layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better HBE when the $a_1$ is small, but layout e beats it at larger values. Thus we could argue that layout e is the most accurate representation of the cluster structure, of these eight.
 
 To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) correspond to the published layout and the bottom row (e1, e2, e3) correspond to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters is a reasonable interpretation of the structure, but layout e more accurately reflects the separation between them, which is small.
 
@@ -1908,7 +1908,7 @@ error_plot_pbmc <- plot_rmse(error_pbmc) +
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is chosen as the best."
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of best is between layouts b and e, that have small separations between oddly shaped clusters. Layout e is chosen as the best."
 #| label: fig-pbmc-rmse
 #| fig-pos: H
 #| out-width: 100%
@@ -1988,7 +1988,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (a) made with UMAP and the \\gD{} layout selected by RMSE plot (e) made by tSNE. The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three very separated clusters, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not spread out fully into the point cloud like the model generated from layout e. This supports the choice that layout e is the better representation of the data, because it does not exaggerate separation between clusters."
+#| fig-cap: "Compare the published \\gD{} layout (a) made with UMAP and the \\gD{} layout selected by HBE plot (e) made by tSNE. The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three very separated clusters, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not spread out fully into the point cloud like the model generated from layout e. This supports the choice that layout e is the better representation of the data, because it does not exaggerate separation between clusters."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -2109,7 +2109,7 @@ error_plot_mnist <- plot_rmse(error_mnist) +
 
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts of the MNIST digit 1 data is the better representation using RMSE for varying binwidth ($a_1$). Colour is used for the lines and points in the left plot to match the scatterplots of the NLDR layouts (a-f). Layout c is universally poor. Layouts a, f that show a big cluster and a small circular cluster are universally optimal. Layout a performs well at tiny binwidth (where most points are in their own bin) and not as well as f with larger binwidth, thus layout f is the best choice."
+#| fig-cap: "Assessing which of the 6 NLDR layouts of the MNIST digit 1 data is the better representation using HBE for varying binwidth ($a_1$). Colour is used for the lines and points in the left plot to match the scatterplots of the NLDR layouts (a-f). Layout c is universally poor. Layouts a, f that show a big cluster and a small circular cluster are universally optimal. Layout a performs well at tiny binwidth (where most points are in their own bin) and not as well as f with larger binwidth, thus layout f is the best choice."
 #| label: fig-mnist-rmse
 #| fig-pos: H
 #| out-width: 92%
@@ -2120,7 +2120,7 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
 
 @fig-mnist-rmse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e) with default hyper-parameter setting and two tSNE runs, one with default hyper-parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. 
 
-The layout plots are colored to match the lines in the RMSE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
+The layout plots are colored to match the lines in the HBE vs binwidth ($a_1$) plot. Layouts a, b and f fit the data better than c, d, e, and layout f appears to be the bets fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
 
 The next step is to investigate the \gD{} layout to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape we can see that the "1"s are drawn with from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarize the variation in way "1"s are drawn.
 
@@ -2274,7 +2274,7 @@ final_layout
 
 ## Discussion {#sec-discussion}
 
-We have developed an approach to help assess and compare NLDR layouts, generated by different methods and hyper-parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and RMSE. Different layouts can be compared using the RMSE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
+We have developed an approach to help assess and compare NLDR layouts, generated by different methods and hyper-parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and HBE. Different layouts can be compared using the HBE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
 
 Existing metrics for evaluating NLDR layout, such as AUC(R_NX), RTA, sc, and RGS, provide valuable but distinct numerical insights into the preservation of structure present in \pD{} data. Visualizing the model-in-the-data space offers a more comprehensive and interpretable diagnostic, allowing analysts to see the model fits everywhere, or better in some subspaces, or completely mismatches the data. This approach links the numerical summary with a visual understanding of how well the layout fits the data, helping analysts more easily decide whether the representation is reliable. 
 
