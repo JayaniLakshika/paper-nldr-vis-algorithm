@@ -73,23 +73,10 @@ This manuscript proposes an algorithm to evaluate nonlinear dimension reduction 
 
 4. In section 3.6.1, it says "Values of b1 between 2 and b1=sqrt(n/r2) are allowed", why the choice of b1 should consider r2?
 
-*These are the reasons:*
+*The aspect ratio of the NLDR layout is typically preferred to be conserved when plotting, and hence when we bin the data. r2 reflects this aspect ratio, because r1 is fixed at 1, for ease of calculations. The range of recommended values for b1 is adapted from the Diaconis-Freedman Rule, where the upper limit takes aspect ratio into account. It is just a recommendation. Practically, 2 is too few bins, and the upper bound is possibly too many. We have revised the text to make this clearer.*
 
-- *$b_1$ controls the number of bins along the x-axis (the first NLDR dimension).*
 
-- *In a hexagonal grid, the spacing along the y-axis (second dimension) is not independent. It’s linked to the x-direction because hexagons “stack” with vertical offsets.*
 
-- *The vertical extent is determined by the hexagon height, which in turn depends on the chosen bin width along the x-direction.*
-
-*So, to ensure the grid actually fits within the data range in both directions, the allowable values of $b_1$ are constrained by $r_2$, the range of the second dimension. If $b_1$ is too large, the hexagons become too narrow/tall, and the grid will not cover the vertical range properly.*
-
-*That’s why the condition is written as:*
-
-$$
-2 \leq b_1 \leq \sqrt{\tfrac{n}{r_2}}
-$$
-
-*tying the number of x-bins ($b_1$) to the vertical range of the data ($r_2$).*
 
 # Reviewer 2
 
