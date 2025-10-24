@@ -986,7 +986,7 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
   geom_point(size = 1) +
 #  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   ylim(c(0, 0.75)) +
-  labs(x = "relative ave bin density", y = "HBE") +
+  labs(x = "relative average bin density", y = "HBE") +
   #ylim(c(0, 0.75)) +
   interior_annotation("b", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
@@ -1112,12 +1112,12 @@ hex_grid_coloured_two_curvy2 +
 
 <!-- #### Handling of low density bins-->
 
-It is worthwhile to consider what are desirable aspects of a hexbin result, that maps to summarising the \pD{} fit well. The binning should capture the underlying data distribution closely, but simply as possible. An ideal binning might be indicated by a more uniform distribution of bin counts, or having few relatively empty bins. To help with this assessment these quantities are also computed. @fig-param-two-curvy shows some choices of plots of these quantities for a single NLDR layout, with three choices of $a_1$ indicated. Some expectations and reasoning for these plots is:
+It is worthwhile to consider what are desirable aspects of a hexbin result, that maps to summarising the \pD{} fit well. The binning should capture the underlying data distribution closely, with minimum number of necessary bins. An ideal binning might be indicated by a more uniform distribution of bin counts, or having few relatively empty bins. To help with this assessment average standardized bin count ($\bar{w} = \sum{w_h}/m$), average density ($\bar{d} = \sum{d_h}/m$) and proportion of non-empty bins ($m/b$), are also computed. @fig-param-two-curvy shows some choices of plots of these quantities for a single NLDR layout, with three choices of $a_1$ indicated. Some expectations and reasoning for these plots is:
 
-- HBE will increase as $a_1$ increases, so good choices will be just before a big increase. In @fig-param-two-curvy a HBE changes fairly steadily so there is no easy choice to make.
-- HBE can also be examined against average standardised bin count or average density (@fig-param-two-curvy b). This is similar to the comparison with $a_1$ but to use when comparing different NLDR layouts. Different layouts might produce different density of points, which will not be captured well by $a_1$.
-- The proportion of non-empty bins is interesting to examine across different binwidths. A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less (@fig-param-two-curvy c). 
-- Bins with no observations or a small number might be dropped from the model. This will create the wireframe not extending into sparse areas, or allowing for holes in the data to be better captured. Note that, all observations are used for the HBE calculation, though. HBE can be examined relative to dropping a fraction of the low density bins (@fig-param-two-curvy d).
+- HBE will increase as $a_1$ increases, so good choices will be just before a big increase. In plot a, HBE changes fairly steadily so there is no easy choice to make.
+- HBE can also be examined against average standardised bin count or average density (plot b). This is similar to the comparison with $a_1$ but to use when comparing different NLDR layouts. Different layouts might produce different density of points, which will not be captured well by a comparison of HBE vs $a_1$.
+- The proportion of non-empty bins is interesting to examine across different binwidths (plot c). A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less. As binwidth gets smaller, $m/b$ should roughly get bigger.
+- Bins with a small number of observations might be removed to sharpen the wireframe model. This can have adverse effects, though - failing to extend the wireframe into sparse areas, or resulting in holes in the wireframe. Plot d shows the relationship between HBE (computed for all observations despite some bin removal) and the density cutoff used to remove bins. For all three chosen bin widths a small number of bins can be removed without affecting HBE.
 <!-- - Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d), relative to that of the hexgrid with the smallest binwidth. -->
 
 
@@ -1155,7 +1155,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
                      labels = parse_format()) +
   scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
-  xlab(expression(paste("low density bin removal based on ", w[h]))) +
+  xlab(expression(paste("low density bin cutoff based on ", d[h]))) +
   ylab("HBE") +
   #xlim(c(0, 0.14)) +
   ylim(c(0, 0.75)) +
@@ -1192,9 +1192,9 @@ rmse_two_curvy_b + rmse_two_curvy_relcount + a1_m_two_curvy +
 
 ### Interactive graphics
 
-Matching points in the \gD{} layout with their positions in \pD{} is useful for assessing the fit. This can be used to examine the fitted model in some subspaces in \pD{}, in particular in association with residual plots. 
+Matching points in the \gD{} layout with their positions in \pD{} is useful when tuning the fit. This can be used to examine the fitted model in some subspaces in \pD{}, in particular in association with residual plots. 
 
-The \gD{} layout and the langevitour view with the fitted model overlaid can be linked using a **browsable HTML widget**. A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This capability will be illustrated on the examples, to show how it can help to understand how the NLDR has organised the observations, and learn where it does not do well.
+The \gD{} layout and the langevitour view with the fitted model overlaid can be linked using a **browsable HTML widget**. A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This approach will be illustrated on the examples, to show how it can help to understand how the NLDR has organised the observations, and learn where it does not do well.
 
 ## Choosing the best \gD{} layout {#sec-bestfit} 
 
