@@ -1316,7 +1316,8 @@ error_plot_two_curvy <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 1.5)
+  theme(aspect.ratio = 1.5) +
+  ylab("HBE")
 ```
 
 ```{r}
@@ -1508,7 +1509,8 @@ error_pbmc <- error_pbmc |>
 
 error_plot_pbmc <- plot_rmse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
-  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) 
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
 
 ```
 
@@ -1708,7 +1710,8 @@ error_plot_mnist <- plot_rmse(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=1.5)
+  theme(aspect.ratio=1.5) +
+  ylab("HBE")
 
 ```
 

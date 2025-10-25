@@ -1211,7 +1211,8 @@ error_pbmc <- error_pbmc |>
 
 error_umap_plot_pbmc <-  plot_rmse(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19, 20, 21)]) +
-  scale_color_manual(values=c('#377eb8', '#e41a1c'))
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
+  ylab("HBE")
 ```
 
 ```{r}
