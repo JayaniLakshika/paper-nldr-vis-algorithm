@@ -448,21 +448,21 @@ script & nldr\_code.R & Wrapper functions for running multiple NLDR methods (UMA
 \midrule
 two\_nonlinear & 01\_gen\_data.R & Generates the 2NC7 dataset.\\
 two\_nonlinear & 02\_gen\_true\_model.R & Creates the true structure of 2NC7 data.\\
-two\_nonlinear & 03\_gen\_embeddings.R & Computes multiple NLDR embeddings (UMAP, t-SNE, PHATE, etc.) for the 2NC7 data.\\
-two\_nonlinear & 04\_gen\_mse\_for\_diff\_methods.R & NA\\
-two\_nonlinear & 05\_gen\_rm\_lwd\_mse.R & NA\\
-two\_nonlinear & 06\_gen\_model\_with\_tSNE.R & NA\\
-two\_nonlinear & 07\_example\_evaluation\_metrics.R & NA\\
-two\_nonlinear & 08\_gen\_model\_with\_PHATE.R & NA\\
+two\_nonlinear & 03\_gen\_embeddings.R & Computes multiple NLDR embeddings for the 2NC7 data.\\
+two\_nonlinear & 04\_gen\_mse\_for\_diff\_methods.R & Computes HBE with varying bin widths ($a_1$) for all NLDR embeddings.\\
+two\_nonlinear & 05\_gen\_rm\_lwd\_mse.R & Computes HBE with varying low density bin cutoff for all three binwidth ($a_1$) choices.\\
+two\_nonlinear & 06\_gen\_model\_with\_tSNE.R & Fits the model for the layout a.\\
+two\_nonlinear & 07\_example\_evaluation\_metrics.R & Calculates evaluation metrics for all NLDR layouts.\\
+two\_nonlinear & 08\_gen\_model\_with\_PHATE.R & Fits the model for the layout c.\\
 \midrule
-five\_gau\_clusters & 01\_five\_gaussian\_cluster\_data\_emb.R & NA\\
-five\_gau\_clusters & 02\_gen\_model\_with\_tSNE.R & NA\\
-five\_gau\_clusters & 03\_gen\_model\_with\_UMAP.R & NA\\
-five\_gau\_clusters & 04\_gen\_model\_with\_PaCMAP.R & NA\\
+five\_gau\_clusters & 01\_five\_gaussian\_cluster\_data\_emb.R & Generates data and multiple NLDR embeddings.\\
+five\_gau\_clusters & 02\_gen\_model\_with\_tSNE.R & Fits the model for the layout a.\\
+five\_gau\_clusters & 03\_gen\_model\_with\_UMAP.R & Fits the model for the layout b.\\
+five\_gau\_clusters & 04\_gen\_model\_with\_PaCMAP.R & Fits the model for the layout c.\\
 \midrule
-one\_c\_shaped\_dens\_structure & 01\_gen\_data.R & NA\\
-one\_c\_shaped\_dens\_structure & 02\_gen\_embeddings\_uni\_dens.R & NA\\
-one\_c\_shaped\_dens\_structure & 03\_gen\_model\_with\_tSNE.R & NA\\
+one\_c\_shaped\_dens\_structure & 01\_gen\_data.R & Generates the $2\text{-}D$ curved sheet dataset.\\
+one\_c\_shaped\_dens\_structure & 02\_gen\_embeddings\_uni\_dens.R & Generates multiple NLDR embeddings.\\
+one\_c\_shaped\_dens\_structure & 03\_gen\_model\_with\_tSNE.R & Fits the model for the tSNE layout.\\
 \midrule
 pbmc3k & 01\_obtain\_pca\_author.R & NA\\
 pbmc3k & 02\_obtain\_umap\_authors.R & NA\\
@@ -483,12 +483,12 @@ pbmc3k & 16\_gen\_model\_with\_tSNE\_scDEED.R & NA\\
 pbmc3k & 17\_evaluation\_metrics.R & NA\\
 pbmc3k & 18\_evaluation\_metrics\_scDEED.R & NA\\
 \midrule
-mnist & 01\_data\_preprocessing.R & Computes first $10$ principal components and save data.\\
-mnist & 02\_gen\_diff\_embeddings.R & Generates multiple NLDR embeddings.\\
-mnist & 03\_gen\_mse\_for\_diff\_methods.R & Computes HBE with varying bin widths ($a_1$) for all NLDR embeddings.\\
-mnist & 04\_gen\_model\_with\_tSNE.R & Fits the model for the layout a.\\
-mnist & 05\_evaluation\_metrics.R & Calculates evaluation metrics for all NLDR layouts.\\
-mnist & 06\_link\_brush\_layout\_e.R & Creates interactive linked brushing with layout e.\\*
+mnist & 01\_data\_preprocessing.R & NA\\
+mnist & 02\_gen\_diff\_embeddings.R & NA\\
+mnist & 03\_gen\_mse\_for\_diff\_methods.R & NA\\
+mnist & 04\_gen\_model\_with\_tSNE.R & NA\\
+mnist & 05\_evaluation\_metrics.R & NA\\
+mnist & 06\_link\_brush\_layout\_e.R & NA\\*
 
 
 \caption{\label{tbl-script-desc}R and Python script files used to
