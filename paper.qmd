@@ -224,7 +224,7 @@ Check-list before submission
 
 Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. 
 
-However, the representation generated can vary dramatically from method to method, choice of hyper-parameter or even random seed, as illustrate by @fig-NLDR-variety. The specific method and hyper-parameters used to produce each layout (see Appendix) is not essential for the discussion. The dilemma for the analyst is which representation to use. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. Various academics have expressed concerns with current practices and procedures for choosing (e.g.  @Irizarry2024UMAPPlots, @ChariPachter2023). The research described here provides new numerical and visual tools to aid with this decision. 
+However, the representation generated can vary dramatically from method to method, choice of hyper-parameter or even random seed, as illustrate by @fig-NLDR-variety. The specific method and hyper-parameters used to produce each layout (see Appendix) is not essential for the discussion. The dilemma for the analyst is which representation to use. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. Various academics have expressed concerns with current practices and procedures for choosing (e.g.  @irizarry2024, @chari2023). The research described here provides new numerical and visual tools to aid with this decision. 
 
 ```{r}
 #| label: read-pbmc-nldr
@@ -1317,7 +1317,7 @@ error_plot_two_curvy <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 1.5) +
+  theme(aspect.ratio = 0.685) +
   ylab("HBE")
 
 
@@ -1327,7 +1327,7 @@ error_plot_two_curvy_dh <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 1.5) +
+  theme(aspect.ratio = 0.685) +
   ylab("HBE")
 ```
 
@@ -1339,18 +1339,19 @@ error_plot_two_curvy_dh <-
 #| fig-height: 6
 #| fig-width: 6
 
-design <- "
-AACC
-AACC
-BBCC
-BBCC
-"
+# Stack the first two plots
+left_column <- error_plot_two_curvy / error_plot_two_curvy_dh
 
-error_plot_two_curvy/error_plot_two_curvy_dh + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3, 
-                                    nldr_two_curvy4, nldr_two_curvy5,
-                                    nldr_two_curvy6, ncol = 2, 
-                                    widths = c(50, 50)) +
-  plot_layout(design = design)
+# Combine the remaining plots into the other columns (wrap into 2 columns)
+right_columns <- wrap_plots(
+  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
+  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
+  ncol = 2
+)
+
+# Combine left and right
+final_plot_two_curvy <- left_column | right_columns
+final_plot_two_curvy
 ```
 
 <!--two_nonlinear/07_example_evaluation_metrics.R-->
@@ -1402,7 +1403,7 @@ When the metrics disagree is causes confusion for the analyst, and thus provides
 
 ```{r}
 #| label: fig-comp-metric
-#| fig-cap: "Comparison of scaled evaluation metrics (RTA, ARNX, SC, RGS, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot. Color of the line indicates NLDR layout. ARNX and RGS are reversed so that lower is best like the other metrics. There is some general agreement, and small disagreements, with ARNX being most different. All agree that layout f is good, and almost all that d is bad. Interestingly, there is disagreement on layout a, which is almost the same as layout f."
+#| fig-cap: "Comparison of scaled evaluation metrics (RTA, ARNX, SC, GS, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot. Color of the line indicates NLDR layout. ARNX and RGS are reversed so that lower is best like the other metrics. There is some general agreement, and small disagreements, with ARNX being most different. All agree that layout f is good, and almost all that d is bad. Interestingly, there is disagreement on layout a, which is almost the same as layout f."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 6
@@ -1741,14 +1742,14 @@ error_plot_mnist <- plot_rmse(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=1.5) +
+  theme(aspect.ratio=0.685) +
   ylab("HBE")
 
 error_plot_mnist_dh <- plot_rmse_dh(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=1.5) +
+  theme(aspect.ratio=0.685) +
   ylab("HBE")
 
 ```
@@ -1760,17 +1761,19 @@ error_plot_mnist_dh <- plot_rmse_dh(error_mnist) +
 #| fig-pos: H
 #| out-width: 92%
 
-design <- "
-AACC
-AACC
-BBCC
-BBCC
-"
+# Stack the first two plots
+left_column <- error_plot_mnist / error_plot_mnist_dh
 
-error_plot_mnist/error_plot_mnist_dh + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
-                                    nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2, 
-                                    widths = c(50, 50)) +
-  plot_layout(design = design)
+# Combine the remaining plots into the other columns (wrap into 2 columns)
+right_columns <- wrap_plots(
+  nldr_mnist1, nldr_mnist2, nldr_mnist3,
+  nldr_mnist4, nldr_mnist5, nldr_mnist6,
+  ncol = 2
+)
+
+# Combine left and right
+final_plot_mnist <- left_column | right_columns
+final_plot_mnist
 ```
 
 @fig-mnist-rmse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e) with default hyper-parameter setting and two tSNE runs, one with default hyper-parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. 
