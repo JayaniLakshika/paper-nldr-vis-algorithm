@@ -1339,10 +1339,18 @@ error_plot_two_curvy_dh <-
 #| fig-height: 6
 #| fig-width: 6
 
-wrap_plots(error_plot_two_curvy, error_plot_two_curvy_dh, nrow = 2, heights = c(50, 50)) + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3, 
+design <- "
+AACC
+AACC
+BBCC
+BBCC
+"
+
+error_plot_two_curvy/error_plot_two_curvy_dh + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3, 
                                     nldr_two_curvy4, nldr_two_curvy5,
                                     nldr_two_curvy6, ncol = 2, 
-                                    widths = c(50, 50))
+                                    widths = c(50, 50)) +
+  plot_layout(design = design)
 ```
 
 <!--two_nonlinear/07_example_evaluation_metrics.R-->
@@ -1539,12 +1547,16 @@ error_plot_pbmc_dh <- plot_rmse_dh(error_pbmc) +
 #| fig-pos: H
 #| out-width: 100%
 
+# Stack error plots in one column
+error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_dh
+
 design <- "
-AABB
-AABB
-AABB
+AACC
+AACC
+BBCC
+BBCC
 "
-error_plot_pbmc + 
+error_plots_pbmc + 
   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
   plot_layout(design = design)
@@ -1748,8 +1760,17 @@ error_plot_mnist_dh <- plot_rmse_dh(error_mnist) +
 #| fig-pos: H
 #| out-width: 92%
 
-error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
-                                    nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+design <- "
+AACC
+AACC
+BBCC
+BBCC
+"
+
+error_plot_mnist/error_plot_mnist_dh + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+                                    nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2, 
+                                    widths = c(50, 50)) +
+  plot_layout(design = design)
 ```
 
 @fig-mnist-rmse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e) with default hyper-parameter setting and two tSNE runs, one with default hyper-parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different having a linear shape, and a single very large outlier. Both a and f have a small clump of points perhaps slightly disconnected from the other points, in the lower to middle right. 
