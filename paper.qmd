@@ -926,7 +926,7 @@ trimesh_two_curvy_removed1_tsne_with_data +
 
 All NLDR methods internally optimize a quantity to produce a layout for any particular hyper-parameter set. These are not always made available in the model output, and may not be universally comparable between hyper-parameter choices and methods. 
 
-Several common metrics are often used to assess the quality of any NLDR layout, based on preservation of global and local structure of the data. The $RNX$ curve quantifies the neighborhood agreement between \pD{} and \kD{} spaces, by computing the area under the curve ($ARNX$) across a range of neighborhood scales [@john2015]. A high value indicates better preservation of a balance of global and local structure. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy quantify global structure preservation by comparing relative distances among sampled points or class centroids [@yingfan2021]. High values indicate preservation of local structure. The Shepard diagram [@shepard1962] and its associated Spearman correlation (SC) [@spearman1961] between \pD{} and \kD{} distances. High values indicate preservation of global structure. The Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline [@amid2019]. Higher values indicate better preservation of global structure. <!-- KNN Accuracy evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Because these two require a response variable XXX not correct!), they can't be applied for our purposes.--> <!-- Since PCA serves as the optimal linear method, we report $RGS = 1 − GS$ in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use ARNX, RTA, sc, and RGS for comparison with our proposed measure.-->
+Several common metrics are often used to assess the quality of any NLDR layout, based on preservation of global and local structure of the data. The $RNX$ curve quantifies the neighborhood agreement between \pD{} and \kD{} spaces, by computing the area under the curve ($ARNX$) across a range of neighborhood scales [@john2015]. A high value indicates better preservation of a balance of global and local structure. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy compare the order of \gD{} and \pD{} distances of random triplets of points [@yingfan2021]. High values indicate preservation of the geometry, suggesting both local and global structure preservation. The Shepard diagram [@shepard1962] and its associated Spearman correlation (SC) [@spearman1961] between \pD{} and \kD{} distances. High values indicate preservation of global structure. The Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline [@amid2019]. Higher values indicate better preservation of global structure. <!-- KNN Accuracy evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Because these two require a response variable XXX not correct!), they can't be applied for our purposes.--> <!-- Since PCA serves as the optimal linear method, we report $RGS = 1 − GS$ in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use ARNX, RTA, sc, and RGS for comparison with our proposed measure.-->
 
  <!-- Fitted values,  Error calculation-->
 
@@ -1279,8 +1279,34 @@ error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff
 error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
 error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
+error_two_curvy_dens <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_dens <- error_two_curvy_dens |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(RMSE == min(RMSE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+
 error_two_curvy_tsne2 <- error_two_curvy_tsne2 |>
-  mutate(method = "tSNE2")
+  mutate(method = "tSNE2") |> 
+  filter(b1 <= 45)
+
+error_two_curvy_tsne <- error_two_curvy_tsne |> filter(b1 <= 44) #sqrt(2000/1.02)
+
+error_two_curvy_umap <- error_two_curvy_umap |> filter(b1 <= 60)
+
+error_two_curvy_phate <- error_two_curvy_phate |> filter(b1 <= 46)
+
+error_two_curvy_trimap <- error_two_curvy_trimap |> filter(b1 <= 72)
+
+error_two_curvy_pacmap <- error_two_curvy_pacmap |> filter(b1 <= 48)
 
 error_two_curvy <- bind_rows(error_two_curvy_umap, 
                          error_two_curvy_tsne,
@@ -1321,7 +1347,7 @@ error_plot_two_curvy <-
 
 
 error_plot_two_curvy_dh <-
-  plot_rmse_dh(error_two_curvy) +
+  plot_rmse_dh(error_two_curvy_dens) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
@@ -1394,9 +1420,9 @@ comp_metrics <- ggparcoord(
 
 There is some agreement between the metrics. All, except ARNX agree that layout d is worst. All agree that layout f is best or very close to best. Layout a is best according to HBE and ARNX but considered to be much less optimal by RTA, SC and GS. Layout c is considered favorably by RTA, SC and GS but to be very poor by ARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout. 
 
-Ironically, RTA, GS and SC should be interpreted as the higher the value the better the layout, but here they agree with HBE and ARNX when used in reverse! The problem with SC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout produces a Shepard plot with two clusters of distances which will produce a high correlation value. Similar reasoning may explain why RTA and GS behave similarly. They may perform better when the structure being summarised is a single cluster of data lying on a nonlinear manifold.
+Ironically, RTA, GS and SC should be interpreted as "the higher the better", but here they agree with HBE and ARNX when interpreted in reverse! The problem with SC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout produces a Shepard plot with two clusters of distances which will produce a high correlation value. Similar reasoning would explain why RTA and GS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in \pD{}.
 
-When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout, even though it may be sub-optimal. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions.
+When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions.
 
 <!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
 

@@ -40,6 +40,8 @@ df_bin_two_curvy <- algo_obj_two_curvy$model_highd
 hex_grid <- algo_obj_two_curvy$hb_obj$hex_poly
 counts_df <- algo_obj_two_curvy$hb_obj$std_cts
 
+diff(algo_obj_two_curvy$nldr_scaled_obj$lim2)/diff(algo_obj_two_curvy$nldr_scaled_obj$lim1) #1.023
+
 write_rds(tsne_two_curvy_scaled, "data/two_nonlinear/tsne_two_curvy_scaled.rds")
 write_rds(df_bin_centroids_two_curvy, "data/two_nonlinear/df_bin_centroids_two_curvy.rds")
 
