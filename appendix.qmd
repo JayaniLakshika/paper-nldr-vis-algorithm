@@ -1482,7 +1482,9 @@ nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
-  mutate(sc = 1 - sc)
+  #mutate(sc = 1 - sc) |>
+  mutate(RGS = 1-RGS, `ARNX` = 1 - `AUC(R_NX)`) |>
+  rename(SC = sc)
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
@@ -1613,7 +1615,9 @@ nldr_metrics <- read_rds("data/mnist/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
-  mutate(sc = 1 - sc)
+  #mutate(sc = 1 - sc) |>
+  mutate(RGS = 1-RGS, `ARNX` = 1 - `AUC(R_NX)`) |>
+  rename(SC = sc)
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
