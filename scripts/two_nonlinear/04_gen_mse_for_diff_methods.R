@@ -25,7 +25,8 @@ umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/t
 
 error_two_non_linear_diff_shaped_close_clusters_umap <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = umap_two_non_linear_diff_shaped_close_clusters,
-                                                                            hd_thresh = 0) |>
+                                                                            hd_thresh = 0,
+                                                                            bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "UMAP")
 
@@ -40,7 +41,8 @@ tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/t
 
 error_two_non_linear_diff_shaped_close_clusters_tsne <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = tsne_two_non_linear_diff_shaped_close_clusters,
-                                                                            hd_thresh = 0) |>
+                                                                            hd_thresh = 0,
+                                                                            bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "tSNE")
 
@@ -54,7 +56,8 @@ tsne_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/t
 
 error_two_non_linear_diff_shaped_close_clusters_tsne <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = tsne_two_non_linear_diff_shaped_close_clusters,
-                                                                            hd_thresh = 0) |>
+                                                                            hd_thresh = 0,
+                                                                            bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "tSNE2")
 
@@ -69,7 +72,8 @@ phate_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/
 
 error_two_non_linear_diff_shaped_close_clusters_phate <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = phate_two_non_linear_diff_shaped_close_clusters,
-                                                                            hd_thresh = 0) |>
+                                                                            hd_thresh = 0,
+                                                                            bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "PHATE")
 
@@ -83,7 +87,8 @@ trimap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear
 
 error_two_non_linear_diff_shaped_close_clusters_trimap <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                              nldr_data = trimap_two_non_linear_diff_shaped_close_clusters,
-                                                                             hd_thresh = 0) |>
+                                                                             hd_thresh = 0,
+                                                                             bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "TriMAP")
 
@@ -97,7 +102,8 @@ pacmap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear
 
 error_two_non_linear_diff_shaped_close_clusters_pacmap <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                               nldr_data = pacmap_two_non_linear_diff_shaped_close_clusters,
-                                                                              hd_thresh = 0) |>
+                                                                              hd_thresh = 0,
+                                                                              bin1_vec = 2:72) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "PaCMAP")
 
