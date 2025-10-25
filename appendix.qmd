@@ -1218,7 +1218,7 @@ error_umap_plot_pbmc <-  plot_rmse(error_pbmc) +
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the 2 NLDR layouts on the PBMC3k data is the better representation using RMSE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Assessing which of the 2 NLDR layouts on the PBMC3k data is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
 
 # Define the layout design
 layout_design <- "
@@ -1231,7 +1231,7 @@ BC
   plot_layout(design = layout_design)
 ```
 
-The RMSE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
+The HBE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
 
 <!--pbmc3k/15_gen_model_with_UMAP_scDEED.R-->
 ```{r}
@@ -1358,7 +1358,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) made with UMAP and the \\gD{} layout selected (@fig-pbmc-mse-umap b) made with tSNE by RMSE plot (@fig-pbmc-mse-umap). The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three separated clusters with two of them are close, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not capture the nonlinear structure of the clusters like the model generated from layout b. This supports the choice that layout b is the better representation of the data, because it shows close clusters. Videos of the langevitour animations are available at <https://youtu.be/ffiB4MGWyn8> and <https://youtu.be/e7XNL18co1c> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) made with UMAP and the \\gD{} layout selected (@fig-pbmc-mse-umap b) made with tSNE by HBE plot (@fig-pbmc-mse-umap). The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three separated clusters with two of them are close, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not capture the nonlinear structure of the clusters like the model generated from layout b. This supports the choice that layout b is the better representation of the data, because it shows close clusters. Videos of the langevitour animations are available at <https://youtu.be/ffiB4MGWyn8> and <https://youtu.be/e7XNL18co1c> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -1372,9 +1372,9 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
-## Compare RMSE with existing evaluation metrics
+## Compare HBE with existing evaluation metrics
 
-@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare RMSE with commonly used evaluation metrics such as RTA, ARNX, sc, and RGS across multiple NLDR layouts. These visual comparisons highlight that RMSE behaves differently from these existing metrics due to the different settings involved.
+@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as RTA, ARNX, sc, and RGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
 #| label: combine-data-pbmc
@@ -1435,7 +1435,7 @@ comp_metrics_pbmc <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-pbmc
-#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and RMSE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the green layout, rated worst by ARNX and RGS, is seen as the best by RMSE and sc, while the brown layout, rated best by ARNX, is seen as the worst by RMSE showing that RMSE captures a different view of how well the data structure is represented."
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the green layout, rated worst by ARNX and RGS, is seen as the best by HBE and sc, while the brown layout, rated best by ARNX, is seen as the worst by HBE showing that HBE captures a different view of how well the data structure is represented."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
@@ -1498,7 +1498,7 @@ comp_metrics_mnist <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-mnist
-#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and RMSE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by RMSE, while the green layout, rated best by RTA, is seen as the best by RMSE as well."
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by HBE, while the green layout, rated best by RTA, is seen as the best by HBE as well."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 10
