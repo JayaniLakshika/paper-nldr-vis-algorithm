@@ -1576,7 +1576,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
   rename("sc" = "r") |>
   #mutate(sc = 1 - sc) |>
   mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = RMSE)
+  rename(SC = sc, HBE = RMSE) |>
+  mutate(Method = factor(Method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
@@ -1711,7 +1713,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
   rename("sc" = "r") |>
   #mutate(sc = 1 - sc) |>
   mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = RMSE)
+  rename(SC = sc, HBE = RMSE) |>
+  mutate(Method = factor(Method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
@@ -1720,7 +1724,8 @@ comp_metrics_mnist <- ggparcoord(
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
   scale_color_manual(
-    values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
   theme_minimal() +
   labs(
     y = "scaled metric value",
