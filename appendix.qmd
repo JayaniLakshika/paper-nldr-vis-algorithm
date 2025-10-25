@@ -1175,7 +1175,7 @@ error_plot_one_curvy_hist + plot_tsne_dens +
 ```
 
 
-## Single-cell gene expression: comparison with results of scDEED recommendations
+## PBMC3k: comparison with results of scDEED recommendations
 
 <!-- ### Comparison with results of scDEED recommendations -->
 
@@ -1196,9 +1196,9 @@ As we were writing this paper @xia2023 appeared proposing a new method called sc
 
 Note that @xia2023 uses a different PBMC dataset than that used by @chen2024, shown by us in the main paper example, which is why this comparison is shown here and not in the main paper. Their data contains $31,021$ cells including cell type labels, and the gene expression levels were in the unit of log-transformed UMI count per $10,000$. They focused on three sequencing methods (inDrops, DropSeq, and SeqWell) and four common cell types Cytotoxic T cell, CD4+T cell, CD14+ Monocyte, and B cell. Pre-processing follows the process in @xia2023 again using the Human Peripheral Blood Mononuclear Cells (PBMC) data. 
 
-For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells). Also, @xia2023 used first $9$ principal components to generate the UMAP and tSNE with default hyper-parameters. The objective is to assess the optimized layout by scDEED, and if it does not accurately represent the three clusters with small separations of the PBMC dataset, then select a reasonable \gD{} layout.
+For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells). Also, @xia2023 used first $9$ principal components to generate the UMAP and tSNE with default hyper-parameters. The objective is to what scDEED suggests is the best layout with what HBE would choose. Layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2024, and layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. <!--Layouts a and b contain $46$ and $83$ dubious cells respectively.--> The HBE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data. This is also supported by examining the models in the data space as shown in @fig-model-pbmc-author-proj.
 
-The layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2024, and the layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. The layout a and b contain $46$ and $83$ dubious cells respectively. 
+
 
 ```{r}
 #| label: read-pbmc-umap-layouts
@@ -1262,7 +1262,7 @@ error_umap_plot_pbmc <-  plot_rmse(error_pbmc) +
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Assessing which of the 2 NLDR layouts on the PBMC3k data is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layouts (a, b). Of the two, layout b is optimal across all binwidths making it the best choice."
+#| fig-cap: "Comparing the published layout (a) with what would be suggested to be optimal by scDEED (b), using HBE vs $a_1$, on a subset of PBMC3k data. Color represents NLDR layouts. HBE would corroborate that the scDEED optimised layout is better than what was originally published."
 
 # Define the layout design
 layout_design <- "
@@ -1274,8 +1274,6 @@ BC
 (error_umap_plot_pbmc + nldr1c + nldr2c) +
   plot_layout(design = layout_design)
 ```
-
-The HBE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data.
 
 <!--pbmc3k/15_gen_model_with_UMAP_scD.R-->
 ```{r}
@@ -1402,7 +1400,7 @@ pbmc_proj_tsne_model2_best <- plot_proj(
 
 ```{r}
 #| echo: false
-#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) made with UMAP and the \\gD{} layout selected (@fig-pbmc-mse-umap b) made with tSNE by HBE plot (@fig-pbmc-mse-umap). The two plots on the right show  projections from a tour, with the models overlaid. The published layout a suggested three separated clusters with two of them are close, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not capture the nonlinear structure of the clusters like the model generated from layout b. This supports the choice that layout b is the better representation of the data, because it shows close clusters. Videos of the langevitour animations are available at <https://youtu.be/ffiB4MGWyn8> and <https://youtu.be/e7XNL18co1c> respectively."
+#| fig-cap: "Compare the published \\gD{} layout (@fig-pbmc-mse-umap a) made with UMAP and the \\gD{} layout made with tSNE selected as optimal by scDEED and also HBE (@fig-pbmc-mse-umap b)(@fig-pbmc-mse-umap). The two plots on the right show projections from a tour, with the models overlaid. The published layout a suggested three separated clusters with two of them are close, but this is not present in the data. While there may be three clusters they are not well-separated. The difference in model fit also indicates this: the published layout a does not capture the nonlinear structure of the clusters like the model generated from layout b. This supports the choice that layout b is the better representation of the data, because it shows close clusters. Videos of the langevitour animations are available at <https://youtu.be/ffiB4MGWyn8> and <https://youtu.be/e7XNL18co1c> respectively."
 #| label: fig-model-pbmc-author-proj
 #| fig-pos: H
 #| fig-width: 10
@@ -1427,7 +1425,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "m
 
 comp_metrics_pbmc_scdeed <- ggparcoord(
   data = nldr_metrics,
-  columns = c(5,8,3,2,7),           # numeric columns to plot
+  columns = c(8,3,5,2,7), #c(5,8,3,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
@@ -1582,7 +1580,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
-  columns = c(5,3,8,2,7),           # numeric columns to plot
+  columns = c(8,3,5,2,7), #c(5,3,8,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
@@ -1717,7 +1715,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
-  columns = c(5,8,2,3,7),           # numeric columns to plot
+  columns = c(8,3,5,2,7), #c(5,8,2,3,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +

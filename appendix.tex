@@ -826,8 +826,8 @@ animation is available at \url{https://youtu.be/-KsQH0rII2A}.}
 
 \end{figure}%
 
-\section{Single-cell gene expression: comparison with results of scDEED
-recommendations}\label{single-cell-gene-expression-comparison-with-results-of-scdeed-recommendations}
+\section{PBMC3k: comparison with results of scDEED
+recommendations}\label{pbmc3k-comparison-with-results-of-scdeed-recommendations}
 
 As we were writing this paper \citet{xia2023} appeared proposing a new
 method called scDEED helping to assess the validity of a \gD{}
@@ -852,15 +852,16 @@ CD14+ Monocyte, and B cell. Pre-processing follows the process in
 For illustration purposes, we only selected cells generated with inDrops
 (\(n=5858\) cells). Also, \citet{xia2023} used first \(9\) principal
 components to generate the UMAP and tSNE with default hyper-parameters.
-The objective is to assess the optimized layout by scDEED, and if it
-does not accurately represent the three clusters with small separations
-of the PBMC dataset, then select a reasonable \gD{} layout.
-
-The layout a (Figure~\ref{fig-pbmc-mse-umap}) is generated from the
-hyper-parameters suggested by \citet{chen2024}, and the layout b
+The objective is to what scDEED suggests is the best layout with what
+HBE would choose. Layout a (Figure~\ref{fig-pbmc-mse-umap}) is generated
+from the hyper-parameters suggested by \citet{chen2024}, and layout b
 (Figure~\ref{fig-pbmc-mse-umap}) is with suggested hyper-parameters by
-scDEED to be more accurate. The layout a and b contain \(46\) and \(83\)
-dubious cells respectively.
+scDEED to be more accurate. The HBE vs binwidth (\(a_1\)) plot
+(Figure~\ref{fig-pbmc-mse-umap}) illustrates that our approach would
+suggest that scDEED is correct here, that layout b is more accurately
+reflecting the cluster structure in the PBMC data. This is also
+supported by examining the models in the data space as shown in
+Figure~\ref{fig-model-pbmc-author-proj}.
 
 \begin{figure}[H]
 
@@ -870,18 +871,13 @@ dubious cells respectively.
 
 }
 
-\caption{\label{fig-pbmc-mse-umap}Assessing which of the 2 NLDR layouts
-on the PBMC3k data is the better representation using HBE for varying
-binwidth (\(a_1\)). Color used for the lines and points in the left plot
-and in the scatterplots represents NLDR layouts (a, b). Of the two,
-layout b is optimal across all binwidths making it the best choice.}
+\caption{\label{fig-pbmc-mse-umap}Comparing the published layout (a)
+with what would be suggested to be optimal by scDEED (b), using HBE vs
+\(a_1\), on a subset of PBMC3k data. Color represents NLDR layouts. HBE
+would corroborate that the scDEED optimised layout is better than what
+was originally published.}
 
 \end{figure}%
-
-The HBE vs binwidth (\(a_1\)) plot (Figure~\ref{fig-pbmc-mse-umap})
-illustrates that our approach would suggest that scDEED is correct here,
-that layout b is more accurately reflecting the cluster structure in the
-PBMC data.
 
 \begin{figure}[H]
 
@@ -893,17 +889,18 @@ PBMC data.
 
 \caption{\label{fig-model-pbmc-author-proj}Compare the published \gD{}
 layout (Figure~\ref{fig-pbmc-mse-umap} a) made with UMAP and the \gD{}
-layout selected (Figure~\ref{fig-pbmc-mse-umap} b) made with tSNE by HBE
-plot (Figure~\ref{fig-pbmc-mse-umap}). The two plots on the right show
-projections from a tour, with the models overlaid. The published layout
-a suggested three separated clusters with two of them are close, but
-this is not present in the data. While there may be three clusters they
-are not well-separated. The difference in model fit also indicates this:
-the published layout a does not capture the nonlinear structure of the
-clusters like the model generated from layout b. This supports the
-choice that layout b is the better representation of the data, because
-it shows close clusters. Videos of the langevitour animations are
-available at \url{https://youtu.be/ffiB4MGWyn8} and
+layout made with tSNE selected as optimal by scDEED and also HBE
+(Figure~\ref{fig-pbmc-mse-umap} b)(Figure~\ref{fig-pbmc-mse-umap}). The
+two plots on the right show projections from a tour, with the models
+overlaid. The published layout a suggested three separated clusters with
+two of them are close, but this is not present in the data. While there
+may be three clusters they are not well-separated. The difference in
+model fit also indicates this: the published layout a does not capture
+the nonlinear structure of the clusters like the model generated from
+layout b. This supports the choice that layout b is the better
+representation of the data, because it shows close clusters. Videos of
+the langevitour animations are available at
+\url{https://youtu.be/ffiB4MGWyn8} and
 \url{https://youtu.be/e7XNL18co1c} respectively.}
 
 \end{figure}%
