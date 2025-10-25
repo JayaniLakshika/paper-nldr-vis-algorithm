@@ -1280,6 +1280,21 @@ error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff
 error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
 error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
+error_two_curvy_dens <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_dens <- error_two_curvy_dens |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(RMSE == min(RMSE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+
 error_two_curvy_tsne2 <- error_two_curvy_tsne2 |>
   mutate(method = "tSNE2") |> 
   filter(b1 <= 45)
@@ -1333,7 +1348,7 @@ error_plot_two_curvy <-
 
 
 error_plot_two_curvy_dh <-
-  plot_rmse_dh(error_two_curvy) +
+  plot_rmse_dh(error_two_curvy_dens) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
