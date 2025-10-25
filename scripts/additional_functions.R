@@ -69,6 +69,30 @@ plot_rmse <- function(error_df) {
 
 }
 
+plot_rmse_dh <- function(error_df) {
+
+  ggplot(error_df,
+         aes(x = d_bar,
+             y = RMSE,
+             colour = method)) +
+    geom_point(size = 0.8) +
+    geom_line(linewidth = 0.3) +
+    ylab("RMSE") +
+    xlab(expression(paste("bin density (", d[h], ")"))) +
+    theme_minimal() +
+    theme(panel.border = element_rect(fill = 'transparent'),
+          plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+          axis.ticks.x = element_line(),
+          axis.ticks.y = element_line(),
+          legend.position = "none",
+          axis.text.x = element_text(size = 7),
+          axis.text.y = element_text(size = 7),
+          axis.title.x = element_text(size = 7),
+          axis.title.y = element_text(size = 7),
+          plot.margin = margin(0, 0, 0, 0))
+
+}
+
 # creating Standardization function
 standardize = function(x){
   z <- (x - mean(x)) / sd(x)
