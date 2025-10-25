@@ -62,14 +62,14 @@ Shepard_diagram <- function(X, Y, sample_pairs = 5000) {
   tibble(dX = dX, dY = dY)
 }
 
-highd_data <- read_rds("data/pbmc3k/pbmc_pca_50.rds")
+highd_data <- read_rds("data/pbmc3k/pbmc_pca_50_scdeed.rds")
 names(highd_data) <- paste0("x", 1:50)
 
 highd_data <- highd_data[, 1:9]
 
 embeddings <- list(
-  UMAP_30_min_dist_0.3     = read_rds(here("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")),
-  tsne_perplexity_30     = read_rds(here("data/pbmc3k/pbmc_scdeed_tsne_perplexity_30.rds"))
+  UMAP_30_min_dist_0.3     = read_rds(here("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")) |> as_tibble() |> rename(c("emb1" = "umap_1", "emb2" = "umap_2")),
+  tsne_perplexity_30     = read_rds(here("data/pbmc3k/pbmc_scdeed_tsne_perplexity_30.rds")) |> as_tibble() |> rename(c("emb1" = "tSNE_1", "emb2" = "tSNE_2"))
 )
 
 evaluate_embedding <- function(name, lowd, highd) {
@@ -107,7 +107,7 @@ results_all <- purrr::map2_dfr(names(embeddings), embeddings, ~evaluate_embeddin
 results_all <- results_all |>
   rename(c("GS" = "Global_Score",
            "RTA" = "Random_Triplet_Accuracy",
-           " AUC(R_NX)" = "R_NX_AUC",
+           "AUC(R_NX)" = "R_NX_AUC",
            "r" = "Shepard_Correlation"))
 
 results_all <- results_all |>
