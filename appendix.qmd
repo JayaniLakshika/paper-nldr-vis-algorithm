@@ -1413,6 +1413,8 @@ comp_metrics_pbmc_scdeed <- ggparcoord(
 #| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by HBE, while the green layout, rated best by RTA, is seen as the best by HBE as well."
 #| fig-pos: H
 #| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
 
 # Define the layout design
 layout_design <- "
@@ -1567,6 +1569,8 @@ comp_metrics_pbmc <- ggparcoord(
 #| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the green layout, rated worst by ARNX and RGS, is seen as the best by HBE and sc, while the brown layout, rated best by ARNX, is seen as the worst by HBE showing that HBE captures a different view of how well the data structure is represented."
 #| fig-pos: H
 #| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
 
 design <- "
 AABB
@@ -1700,6 +1704,8 @@ comp_metrics_mnist <- ggparcoord(
 #| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by HBE, while the green layout, rated best by RTA, is seen as the best by HBE as well."
 #| fig-pos: H
 #| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
 
 comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
