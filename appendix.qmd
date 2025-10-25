@@ -702,6 +702,440 @@ $$
 
 where $l > 0$.
 
+## Curiosities about NLDR results discovered by examining the model in the data space {#sec-curiosities}
+
+With the drawing of the model in the data, several interesting differences between NLDR methods can be observed.
+
+### Some methods appear to order points in the layout
+
+The \gD{} model representations generated from some NLDR methods, especially PaCMAP, are unreasonably flat or like a pancake. A simple example of this can be seen with data simulated to contain five \fD{} Gaussian clusters. Each cluster is essentially a ball in \fD{}, so there is no \gD{} representation, rather the model in each cluster should resemble a crumpled sheet of paper that fills out \fD{}.
+
+@fig-five-gau-projs a1, b1, c1 show the \gD{} layouts for (a) tSNE, (b) UMAP, and (c) PaCMAP, respectively. The default hyper-parameters for each method are used. In each layout we can see an accurate representation where all five clusters are visible, although with varying degrees of separation.
+
+The models are fitted to each these layouts. @fig-five-gau-projs a2, b2, c2 show the fitted models in a projection of the \fD{} space, taken from a tour. These clusters are fully \fD{} in nature, so we would expect the model to be a *crumpled sheet* that stretches in all four dimensions. This is what is mostly observed for tSNE and UMAP. The curious detail is that the model for PaCMAP is closer to a *pancake* in shape in every cluster! This single projection only shows this in three of the five clusters but if we examine a different projection the other clusters exhibit the pancake also. While we don't know what exactly causes this, it is likely due to some ordering of points in the \gD{} PaCMAP layout that induces the flat model. One could imagine that if the method used principal components on all the data, that it might induce some ordering that would produce the flat model. If this were the reason, the pancaking would be the same in all clusters, but it is not: The pancake is visible in some clusters in some projections but in other clusters it is visible in different projections. It might be due to some ordering by nearest neighbors in a cluster. The PaCMAP documentation doesn't provide any helpful clues. That this happens, though, makes the PaCMAP layout inadequate for representing the high-dimensional data. 
+
+<!--Projections-->
+<!--five_gau_clusters/02_gen_model_with_tSNE.R-->
+```{r}
+#| label: five-gau-proj-tsne-model
+
+data_with_clust <- read_rds("data/five_gau_clusters/data_five_gau_with_clusts.rds")
+tsne_gau_scaled <- read_rds("data/five_gau_clusters/tsne_gau_scaled.rds")
+tr_from_to_df_gau1 <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1.rds")
+
+trimesh_removed_gau_tsne <- ggplot() + 
+  geom_point(
+    data = tsne_gau_scaled,
+    aes(
+      x = tSNE1,
+      y = tSNE2,
+      colour = data_with_clust$cluster
+    ),
+    alpha = 0.1) + 
+  geom_segment(
+    data = tr_from_to_df_gau1,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    colour = "#000000",
+    linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("a1", 
+                      position = c(0.08, 0.95),
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
+
+```
+
+```{r}
+#| label: five-gau-tsne-projs
+## First projection
+proj_obj1 <- read_rds("data/five_gau_clusters/tsne_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
+
+five_gau_proj_tsne_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = TRUE
+) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("a2", 
+                      position = c(0.08, 0.9),
+                      cex = 2) 
+
+## Second projection
+
+proj_obj2 <- read_rds("data/five_gau_clusters/tsne_gau_proj_obj2.rds")
+
+five_gau_proj_tsne_model2 <- plot_proj(
+  proj_obj = proj_obj2,
+  point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
+  line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
+  plot_limits = c(-1.3, 1.3), 
+  axis_text_size = 4, 
+  is_category = FALSE) +
+  interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none") 
+```
+
+<!--five_gau_clusters/03_gen_model_with_UMAP.R-->
+```{r}
+#| label: five-gau-proj-umap-model
+
+umap_gau_scaled <- read_rds("data/five_gau_clusters/umap_gau_scaled.rds")
+tr_from_to_df_gau1_umap <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1_umap.rds")
+
+trimesh_removed_gau_umap <- ggplot() + 
+  geom_point(
+    data = umap_gau_scaled,
+    aes(
+      x = UMAP1,
+      y = UMAP2,
+      colour = data_with_clust$cluster
+    ),
+    alpha = 0.05) + 
+  geom_segment(
+    data = tr_from_to_df_gau1_umap,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    colour = "#000000",
+    #alpha = 0.4,
+    linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("b1", 
+                      position = c(0.95, 0.95),
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
+```
+
+```{r}
+#| label: five-gau-umap-projs
+
+## First projection
+proj_obj1 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
+
+five_gau_proj_umap_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = TRUE
+) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("b2", 
+                      position = c(0.08, 0.9),
+                      cex = 2) 
+
+## Second projection
+proj_obj2 <- read_rds("data/five_gau_clusters/umap_gau_proj_obj2.rds")
+
+five_gau_proj_umap_model2 <- plot_proj(
+  proj_obj = proj_obj2,
+  point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
+  line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
+  plot_limits = c(-1.3, 1.3), 
+  axis_text_size = 4, 
+  is_category = FALSE) +
+  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+```
+
+<!--five_gau_clusters/04_gen_model_with_PaCMAP.R-->
+```{r}
+#| label: five-gau-proj-pacmap-model
+
+pacmap_gau_scaled <- read_rds("data/five_gau_clusters/pacmap_gau_scaled.rds")
+tr_from_to_df_gau1_pacmap <- read_rds("data/five_gau_clusters/tr_from_to_df_gau1_pacmap.rds")
+  
+trimesh_removed_gau_pacmap <- ggplot() + 
+  geom_point(
+    data = pacmap_gau_scaled,
+    aes(
+      x = PaCMAP1,
+      y = PaCMAP2,
+      colour = data_with_clust$cluster),
+    alpha = 0.1) +
+  geom_segment(
+    data = tr_from_to_df_gau1_pacmap,
+    aes(
+      x = x_from,
+      y = y_from,
+      xend = x_to,
+      yend = y_to),
+    colour = "#000000",
+    #alpha = 0.4,
+    linewidth = 0.5) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("c1", 
+                      position = c(0.08, 0.95),
+                      cex = 2) +
+  theme(
+    aspect.ratio = 1
+  )
+```
+
+```{r}
+#| label: five-gau-pacmap-projs
+## First projection
+proj_obj1 <- read_rds("data/five_gau_clusters/pacmap_gau_proj_obj1.rds")
+proj_obj1[["cluster"]] <- data_with_clust$cluster
+
+five_gau_proj_pacmap_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(1.5, 0.05),
+  line_param = c(0.8, 0.4, "#000000"),
+  plot_limits = c(-0.89, 0.89),
+  axis_text_size = 5,
+  is_category = TRUE
+) +
+  scale_color_manual(values = c('#66c2a5','#fc8d62','#8da0cb','#e78ac3','#a6d854')) +
+  interior_annotation("c2",
+                      position = c(0.08, 0.9),
+                      cex = 2)
+
+## Second projection
+proj_obj2 <- read_rds("data/five_gau_clusters/pacmap_gau_proj_obj2.rds")
+
+five_gau_proj_pacmap_model2 <- plot_proj(
+  proj_obj = proj_obj2,
+  point_param = c(1.5, 0.05, clr_choice), # size, alpha, color
+  line_param = c(0.8, 0.4, "#000000"), # linewidth, alpha
+  plot_limits = c(-1.3, 1.3), 
+  axis_text_size = 4, 
+  is_category = FALSE) +
+  interior_annotation(label = "c3", position = c(0.08, 0.9), cex = 2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+
+```
+
+```{r}
+#| label: fig-five-gau-projs
+#| fig-height: 10
+#| fig-width: 15
+#| fig-pos: H
+#| fig-cap: "NLDR's organise points in the \\gD{} layout in different ways, possibly misleadingly, illustrated using three layouts: (a) tSNE, (b) UMAP, (c) PaCMAP. The data has five Gaussian clusters in \\fD{}. The bottom row of plots shows a \\gD{} projection from a tour on \\fD{} revealing the differences generated by the layouts on the model fits.  We would expect the model fit to be like that in (a2) where it is distinctly is separate for each cluster but like a hairball in each. This would indicate the distinct clusters, each being fully \\fD{}. With (c2), the curiousity is that the model is a \\gD{} pancake shape in \\fD{}, indicating that there is some ordering of points done by PaCMAP, posisbly along some principal component axes."
+
+trimesh_removed_gau_tsne + trimesh_removed_gau_umap + trimesh_removed_gau_pacmap +
+five_gau_proj_tsne_model1 + five_gau_proj_umap_model1 + five_gau_proj_pacmap_model1 + 
+  plot_layout(guides = "collect", nrow = 2) &
+  theme(legend.position='none')
+```
+
+### Sparseness creates a contracted \gD{} layout {#sec-effect-dens}
+
+Differences in density can arise by sampling at different rates in different subspaces of \pD{}. For example, the data shown in @fig-one-dens_clust-error all lies on a \gD{} curved sheet in \fD{}, but one end of the sheet is sampled densely and the other very sparsely. It was simulated to illustrate the effect of the density difference on layout generated by an NLDR, illustrated using the tSNE results, but it happens with all methods. 
+
+@fig-one-dens_clust-error (a2, b2) shows a \gD{} layout for tSNE created using the default hyper-parameters. One would expect to see a rectangular shape if the curved sheet is flattened, but the layout is triangular. The other two displays show the residuals as a dot density plot (a1, b1), and a \gD{} projection of the data and the model from \fD{} (a3, b3). Using linked brushing between the plots, we can highlight points in the tSNE layout, and examine where they fall in the original \fD{}. The darker (maroon) points indicate points that have been highlighted by linking. In row a, the points at the top of the triangle are highlighted, and we can see these correspond to higher residuals, and also to all points at the low density end of the curved sheet. In row b, points at the lower left side of the triangle are highlighted which corresponds to smaller residuals and one corner of the sheet at the high density end of the curved sheet. 
+
+The tSNE behaviour is to squeeze the low density area of the data together into the layout. This is common in other NLDR methods also, which means analysts need to be aware that if their data is not sampled relatively uniformly, apparent closeness in the \gD{} may correspond to sparseness in \pD{}.
+
+<!--one_c_shaped_dens_structure/03_gen_model_with_tSNE.R-->
+```{r}
+#| label: error-model-one-dens-clust
+
+error_df_one_curvy_abs_selected11 <- read_rds("data/one_c_shaped_dens_structure/error_df_one_curvy_abs_selected11.rds")
+
+error_df_one_curvy_abs_deselected11 <- read_rds("data/one_c_shaped_dens_structure/error_df_one_curvy_abs_deselected11.rds")
+
+error_plot_one_curvy_hist_selected <- ggplot(error_df_one_curvy_abs_deselected11, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density)) +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected11, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density),
+      alpha=0.7, colour = "#800026", size = 3) +
+  xlab(expression(paste("residual (",e[hi],")"))) +
+  ylab("") +
+  interior_annotation("b1",
+                      cex = 2) +
+  theme_bw() +
+  theme(aspect.ratio = 1,
+        axis.title = element_text(size = 18),
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_blank())
+
+error_df_one_curvy_abs_selected12 <- read_rds("data/one_c_shaped_dens_structure/error_df_one_curvy_abs_selected12.rds")
+
+error_df_one_curvy_abs_deselected12 <- read_rds("data/one_c_shaped_dens_structure/error_df_one_curvy_abs_deselected12.rds")
+
+error_plot_one_curvy_hist <- ggplot(error_df_one_curvy_abs_deselected12, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density)) +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected12, 
+      aes(x = sqrt_row_wise_total_error, 
+          y = density),
+      alpha=0.7, colour = "#800026", size = 3) +
+  xlab(expression(paste("residual (",e[hi],")"))) +
+  ylab("") +
+  interior_annotation("a1",
+                      cex = 2) +
+  theme_bw() +
+  theme(aspect.ratio = 1,
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15),
+        axis.text.y = element_blank())
+```
+
+```{r}
+#| label: link-model-one-dens-clust
+
+plot_tsne_dens <- error_df_one_curvy_abs_deselected12 |>
+  ggplot(aes(x = emb1,
+             y = emb2)) +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected12,
+             aes(x = emb1, y = emb2),
+             alpha=0.7, colour = "#800026", size = 3) +
+  theme(aspect.ratio = 1) +
+  interior_annotation("a2",
+                      position = c(0.08, 0.9),
+                      cex = 2)
+
+plot_tsne_dens_selected <- error_df_one_curvy_abs_deselected11 |>
+  ggplot(aes(x = emb1,
+             y = emb2)) +
+  geom_point(alpha=0.7, colour = "#d9d9d9") +
+  geom_point(data = error_df_one_curvy_abs_selected11,
+             aes(x = emb1, y = emb2),
+             alpha=0.7, colour = "#800026", size = 3) +
+  theme(aspect.ratio = 1) +
+  interior_annotation("b2",
+                      position = c(0.08, 0.9),
+                      cex = 2)
+```
+
+```{r}
+#| label: proj-one-dens-clust
+
+## First projection
+
+projected_df <- read_rds("data/one_c_shaped_dens_structure/projected_df1.rds")
+model_df <- read_rds("data/one_c_shaped_dens_structure/model_df1.rds")
+axes <- read_rds("data/one_c_shaped_dens_structure/axes1.rds")
+circle <- read_rds("data/one_c_shaped_dens_structure/circle1.rds")
+
+five_c_shaped_proj_tsne_model1 <- ggplot() +
+      geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2,
+          colour = factor(cluster, levels = c("deselected", "selected")),
+          size = factor(cluster, levels = c("deselected", "selected"))),
+        alpha = 0.5) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        colour = "#000000",
+        linewidth = 0.8,
+        alpha = 0.4) +
+      geom_segment(
+          data=axes,
+          aes(x=x1, y=y1, xend=x2, yend=y2),
+          colour="grey70") +
+        geom_text(
+          data=axes,
+          aes(x=x2, y=y2),
+          label=rownames(axes),
+          colour="grey50",
+          size = 4.5) +
+        geom_path(
+          data=circle,
+          aes(x=c1, y=c2), colour="grey70") +
+        xlim(c(-0.35, 0.35)) +
+        ylim(c(-0.35, 0.35)) +
+        interior_annotation(label = "a3", position = c(0.08, 0.9), cex = 2) +
+        scale_color_manual(values = c('#d9d9d9', '#800026')) +
+        scale_size_manual(values = c('deselected' = 1.5, 'selected' = 3)) +
+        theme(aspect.ratio = 1,
+              legend.position = "none")
+
+projected_df <- read_rds("data/one_c_shaped_dens_structure/projected_df2.rds")
+model_df <- read_rds("data/one_c_shaped_dens_structure/model_df2.rds")
+axes <- read_rds("data/one_c_shaped_dens_structure/axes2.rds")
+circle <- read_rds("data/one_c_shaped_dens_structure/circle2.rds")
+
+five_c_shaped_proj_tsne_model1_selected <- ggplot() +
+      geom_point(
+        data = projected_df,
+        aes(
+          x = proj1,
+          y = proj2,
+          colour = factor(cluster, levels = c("deselected", "selected")),
+          size = factor(cluster, levels = c("deselected", "selected"))),
+        alpha = 0.5) +
+      geom_segment(
+        data = model_df,
+        aes(
+          x = proj1_from,
+          y = proj2_from,
+          xend = proj1_to,
+          yend = proj2_to),
+        colour = "#000000",
+        linewidth = 0.8,
+        alpha = 0.4) +
+      geom_segment(
+          data=axes,
+          aes(x=x1, y=y1, xend=x2, yend=y2),
+          colour="grey70") +
+        geom_text(
+          data=axes,
+          aes(x=x2, y=y2),
+          label=rownames(axes),
+          colour="grey50",
+          size = 4.5) +
+        geom_path(
+          data=circle,
+          aes(x=c1, y=c2), colour="grey70") +
+        xlim(c(-0.35, 0.35)) +
+        ylim(c(-0.35, 0.35)) +
+  interior_annotation(label = "b3", position = c(0.08, 0.9), cex = 2) +
+  scale_color_manual(values = c('#d9d9d9', '#800026')) +
+  scale_size_manual(values = c('deselected' = 1.5, 'selected' = 3)) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+```
+
+```{r}
+#| label: fig-one-dens_clust-error
+#| fig-width: 15
+#| fig-height: 10
+#| fig-pos: H
+#| out-width: 100%
+#| fig-cap: "Exploring the effect of density on the NLDR layout using a \\gD{} curved sheet in \\fD{} with different density at each end. Three plots are linked: density plot of residuals (a1, b1), NLDR layout (a2, b2), projection of \\fD{} model and data (a3, b3). The brown points indicate the selected set, which are different in each row. In (a2), the top part of the triangular shape is selected which corresponds to higher residuals (a1) and the sparse end of the structure (a3). In (b2) one of other corners is highlighted, which can be seen to correspond to low residuals (b1) and one side of the dense end of the data (b3). While the tSNE layout represents the dense end of the sheet correctly as two corners in the layout, it contracts the sparse end of the sheet into a single corner. "
+
+error_plot_one_curvy_hist + plot_tsne_dens + 
+  five_c_shaped_proj_tsne_model1 +
+  error_plot_one_curvy_hist_selected + plot_tsne_dens_selected +
+  five_c_shaped_proj_tsne_model1_selected +
+    plot_layout(guides = "collect", nrow = 2) &
+    theme(legend.position='none')
+```
+
+
 ## Single-cell gene expression: comparison with results of scDEED recommendations
 
 <!-- ### Comparison with results of scDEED recommendations -->
