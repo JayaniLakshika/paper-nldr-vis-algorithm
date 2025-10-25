@@ -30,7 +30,7 @@ df_exe <- comb_all_data_model_error(highd_data = data_mnist,
 
 edge_data <- scurve_model_obj$trimesh_data
 
-show_error_link_plots(point_data = df_exe, edge_data = edge_data)
+show_error_link_plots(point_data = df_exe, edge_data = edge_data, point_colours = c("red", "#FF7755"))
 
 ## Let's dig more
 ## Image ID's related to the outlier points: 3619, 3554, 4678, 3899, 3486, 5975, 501, 1012, 2260, 3352, 5747, 27779
