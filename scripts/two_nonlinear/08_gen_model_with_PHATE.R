@@ -75,8 +75,8 @@ scaled_two_curvy_data_model <- scaled_two_curvy |>
 df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
 
 langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
-                         lineFrom = tr_from_to_df_two_curvy$from,
-                         lineTo = tr_from_to_df_two_curvy$to,
+                         lineFrom = tr_from_to_df_two_curvy$from_reindexed,
+                         lineTo = tr_from_to_df_two_curvy$to_reindexed,
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "model")),
                          levelColors = c(clr_choice, "#000000"))
