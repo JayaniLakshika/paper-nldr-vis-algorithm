@@ -1341,12 +1341,12 @@ nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
 nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
   #mutate(sc = 1 - sc) |>
-  mutate(RGS = 1-RGS, `ARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
   rename(SC = sc)
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5:7),           # numeric columns to plot
+  columns = c(8,3,5,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
