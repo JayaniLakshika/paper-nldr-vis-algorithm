@@ -985,7 +985,7 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
   geom_point(size = 1) +
 #  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
   ylim(c(0, 0.75)) +
-  labs(x = "relative average bin density", y = "HBE") +
+  labs(x = "average bin density", y = "HBE") +
   #ylim(c(0, 0.75)) +
   interior_annotation("b", position = c(0.9, 0.1), cex = 2) +
   theme_minimal() +
@@ -1177,7 +1177,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$ , (b) proportion of non-empty bins vs $a_1$, (c) HBE vs $w_h$ cutoff used for removing low count bins, (d) relative average bin density vs $a_1$. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (b). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (c). The relative average bin density tends to increase with $a_1$ (d)."
+#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{d}_h$, (c) proportion of non-empty bins vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
@@ -1201,11 +1201,12 @@ The \gD{} layout and the langevitour view with the fitted model overlaid can be 
 
 A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually often the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
-To compare and assess a range of representations an analyst needs:
+To decide on a layout an analyst needs:
 
 - a selection of NLDR representations made with a range of hyper-parameter choices and possibly different methods (tSNE, UMAP, ...).
 - a range of model fits made by varying bin size and low density bin removal.
 - calculated HBE for each layout, when it is transformed into the \pD{} space. 
+- and the ability to examine the fit in the data space.
 
 Comparing the HBE to obtain the best fit is appropriate if the same NLDR method is used. However, because the HBE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower HBE indicates a better NLDR representation.
 
@@ -1342,7 +1343,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Metho
   rename("sc" = "r") |>
   #mutate(sc = 1 - sc) |>
   mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc)
+  rename(SC = sc, HBE = RMSE)
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,
@@ -1369,11 +1370,15 @@ comp_metrics <- ggparcoord(
   )
 ```
 
-XXX For HBE what binwidth was used? Is what I said correct.
-
 <!-- Current metrics like ARNX, RTA, and SC focus on how well local or global structures are preserved, but their suggestions best layout can be very different. In contrast, HBE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.-->
 
-@fig-comp-metric compares the metrics ARNX, RTA, SC, RGS, along with HBE computed on $a_1=0.05$ for the six layouts shown in @fig-toy-rmse. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. The metrics ARNX and RGS (XXX which direction are these normally read? when is lowest best? when is highest? all need ot be lowest is best to match HBE) have been reversed so that they most align with HBE, and the lower the value the better the layout. There is some agreement between the metrics. All, except ARNX agree that layout d is worst. All agree that layout f is best or very close to best. Layout a is best according to HBE and ARNX but considered to be much less optimal by RTA, SC and RGS. Layout c is considered favorably by RTA, SC and RGS but to be very poor by ARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout. When they disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout, even though it may be sub-optimal. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions.
+@fig-comp-metric compares the metrics ARNX, RTA, SC, GS, along with HBE computed on $a_1=0.05$ for the six layouts shown in @fig-toy-rmse. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. The metric ARNX has been reversed so that it aligns with HBE - the lower the value the better the layout. 
+
+There is some agreement between the metrics. All, except ARNX agree that layout d is worst. All agree that layout f is best or very close to best. Layout a is best according to HBE and ARNX but considered to be much less optimal by RTA, SC and GS. Layout c is considered favorably by RTA, SC and GS but to be very poor by ARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout. 
+
+Ironically, RTA, GS and SC should be interpreted as the higher the value the better the layout, but here they agree with HBE and ARNX when used in reverse! The problem with SC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout produces a Shepard plot with two clusters of distances which will produce a high correlation value. Similar reasoning may explain why RTA and GS behave similarly. They may perform better when the structure being summarised is a single cluster of data lying on a nonlinear manifold.
+
+When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout, even though it may be sub-optimal. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions.
 
 <!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
 
@@ -1884,7 +1889,7 @@ final_layout
 
 We have developed an approach to help assess and compare NLDR layouts, generated by different methods and hyper-parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals and HBE. Different layouts can be compared using the HBE, and provides quantitative and objective methods for deciding on the most suitable NLDR layout to represent the \pD{} data. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks such as using training and testing samples.
 
-Existing metrics for evaluating NLDR layout, such as ARNX, RTA, sc, and RGS, provide valuable but distinct numerical insights into the preservation of structure present in \pD{} data. Visualizing the model-in-the-data space offers a more comprehensive and interpretable diagnostic, allowing analysts to see the model fits everywhere, or better in some subspaces, or completely mismatches the data. This approach links the numerical summary with a visual understanding of how well the layout fits the data, helping analysts more easily decide whether the representation is reliable. 
+This work can be applied with existing metrics for evaluating NLDR layout, such as ARNX, RTA, sc, and RGS. It provides an additional evaluation metric, and allows any layout to viewed the in the \pD{} data space. This latter aspect can help to disentangle conflicting suggestions by the different metrics.
 
 Two examples illustrating usage are provided: the PBMC3k data where the NLDR is summarizing clustering in \pD{} and hand-written digits illustrating how NLDR represents an intrinsically lower dimensional nonlinear manifold. We examined a typical published usage of UMAP with the PBMC3k dataset (Chen, 2024). As is typical of UMAP layout with default settings, the separation between clusters is grossly exaggerated. The layout even suggests separation where there is none. <!--This is common when layouts are chosen subjectively -- often a preference for the "prettiest".--> Our approach provides a way to objectively choose the layout and hopefully avoids the use of misleading layouts in the future. In the hand-written digits we illustrate how our model fit statistics show that a flat disc layout is superior to the curved shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
 
