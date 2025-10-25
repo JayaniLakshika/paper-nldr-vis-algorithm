@@ -1198,6 +1198,10 @@ error_pbmc_tsne <- read_rds("data/pbmc3k/error_scdeed_pbmc_tsne_perplexity_30.rd
 error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_tsne)
 
+error_pbmc_scdeed <- error_pbmc |> 
+  dplyr::filter(b1 == 30) |>
+  dplyr::select(method, RMSE)
+
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -1372,6 +1376,55 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   plot_layout(nrow=2, byrow=FALSE) &
   theme(legend.position='none')
 ```
+
+```{r}
+nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics_scdeed.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  #mutate(sc = 1 - sc) |>
+  mutate(RGS = 1-RGS, `ARNX` = 1 - `AUC(R_NX)`) |>
+  rename(SC = sc)
+
+comp_metrics_pbmc_scdeed <- ggparcoord(
+  data = nldr_metrics,
+  columns = 3:7,           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
+  theme_minimal() +
+  labs(
+    y = "scaled metric value",
+    x = ""
+  ) +
+  theme(
+    aspect.ratio = 0.8,
+    legend.position = "none",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_blank(),
+    panel.border = element_rect(color="black", fill=NA)
+  )
+```
+
+```{r}
+#| label: fig-comp-metric-pbmc-scdeed
+#| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by HBE, while the green layout, rated best by RTA, is seen as the best by HBE as well."
+#| fig-pos: H
+#| out-width: 100%
+
+# Define the layout design
+layout_design <- "
+AA
+BC
+"
+
+# Combine the plots using the layout
+(comp_metrics_pbmc_scdeed + nldr1c + nldr2c) +
+  plot_layout(design = layout_design)
+```
+
 
 ## Compare HBE with existing evaluation metrics
 
