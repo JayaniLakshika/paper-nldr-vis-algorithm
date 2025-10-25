@@ -1582,7 +1582,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5,2,7),           # numeric columns to plot
+  columns = c(5,3,8,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
@@ -1717,7 +1717,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5,2,7),           # numeric columns to plot
+  columns = c(5,8,2,3,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
