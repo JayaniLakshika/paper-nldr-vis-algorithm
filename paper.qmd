@@ -1281,9 +1281,18 @@ error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff
 error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
 error_two_curvy_tsne2 <- error_two_curvy_tsne2 |>
-  mutate(method = "tSNE2")
+  mutate(method = "tSNE2") |> 
+  filter(b1 <= 45)
 
 error_two_curvy_tsne <- error_two_curvy_tsne |> filter(b1 <= 44) #sqrt(2000/1.02)
+
+error_two_curvy_umap <- error_two_curvy_umap |> filter(b1 <= 60)
+
+error_two_curvy_phate <- error_two_curvy_phate |> filter(b1 <= 46)
+
+error_two_curvy_trimap <- error_two_curvy_trimap |> filter(b1 <= 72)
+
+error_two_curvy_pacmap <- error_two_curvy_pacmap |> filter(b1 <= 48)
 
 error_two_curvy <- bind_rows(error_two_curvy_umap, 
                          error_two_curvy_tsne,
