@@ -1317,7 +1317,7 @@ error_plot_two_curvy <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.8) +
+  theme(aspect.ratio = 0.685) +
   ylab("HBE")
 
 
@@ -1327,7 +1327,7 @@ error_plot_two_curvy_dh <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.8) +
+  theme(aspect.ratio = 0.685) +
   ylab("HBE")
 ```
 
@@ -1340,19 +1340,17 @@ error_plot_two_curvy_dh <-
 #| fig-width: 6
 
 # Stack the first two plots
-left_column <- error_plot_two_curvy / error_plot_two_curvy_dh +
-  plot_layout(heights = c(1, 1))
+left_column <- error_plot_two_curvy / error_plot_two_curvy_dh
 
 # Combine the remaining plots into the other columns (wrap into 2 columns)
 right_columns <- wrap_plots(
   nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
   nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
   ncol = 2
-) + plot_layout(heights = c(1, 1, 1))
+)
 
 # Combine left and right
-final_plot_two_curvy <- left_column | right_columns 
-
+final_plot_two_curvy <- left_column | right_columns
 final_plot_two_curvy
 ```
 
@@ -1744,14 +1742,14 @@ error_plot_mnist <- plot_rmse(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=0.8) +
+  theme(aspect.ratio=0.685) +
   ylab("HBE")
 
 error_plot_mnist_dh <- plot_rmse_dh(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=0.8) +
+  theme(aspect.ratio=0.685) +
   ylab("HBE")
 
 ```
