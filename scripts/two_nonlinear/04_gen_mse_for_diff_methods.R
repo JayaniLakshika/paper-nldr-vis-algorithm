@@ -26,7 +26,7 @@ umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/t
 error_two_non_linear_diff_shaped_close_clusters_umap <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = umap_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
-                                                                            bin1_vec = 2:72) |>
+                                                                            bin1_vec = 2:120) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "UMAP")
 
