@@ -1346,7 +1346,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Metho
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,
-  columns = c(4,3,5:7),           # numeric columns to plot
+  columns = c(8,3,5:7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
