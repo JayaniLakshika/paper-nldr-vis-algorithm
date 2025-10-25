@@ -442,13 +442,13 @@ methodology.}
 \endfoot
 \bottomrule
 \endlastfoot
-NA & additional\_functions.R & NA\\
-NA & evaluation.py & NA\\
-NA & nldr\_code.R & NA\\
+script & additional\_functions.R & Helper functions to render the main paper.\\
+script & evaluation.py & Python script implementing additional evaluation metrics such as RTA and GS.\\
+script & nldr\_code.R & Wrapper functions for running multiple NLDR methods (UMAP, tSNE, PHATE, PaCMAP, TriMAP) with different parameters.\\
 \midrule
-two\_nonlinear & 01\_gen\_data.R & NA\\
-two\_nonlinear & 02\_gen\_true\_model.R & NA\\
-two\_nonlinear & 03\_gen\_embeddings.R & NA\\
+two\_nonlinear & 01\_gen\_data.R & Generates the 2NC7 dataset.\\
+two\_nonlinear & 02\_gen\_true\_model.R & Creates the true structure of 2NC7 data.\\
+two\_nonlinear & 03\_gen\_embeddings.R & Computes multiple NLDR embeddings (UMAP, t-SNE, PHATE, etc.) for the 2NC7 data.\\
 two\_nonlinear & 04\_gen\_mse\_for\_diff\_methods.R & NA\\
 two\_nonlinear & 05\_gen\_rm\_lwd\_mse.R & NA\\
 two\_nonlinear & 06\_gen\_model\_with\_tSNE.R & NA\\
@@ -483,12 +483,12 @@ pbmc3k & 16\_gen\_model\_with\_tSNE\_scDEED.R & NA\\
 pbmc3k & 17\_evaluation\_metrics.R & NA\\
 pbmc3k & 18\_evaluation\_metrics\_scDEED.R & NA\\
 \midrule
-mnist & 01\_data\_preprocessing.R & NA\\
-mnist & 02\_gen\_diff\_embeddings.R & NA\\
-mnist & 03\_gen\_mse\_for\_diff\_methods.R & NA\\
-mnist & 04\_gen\_model\_with\_tSNE.R & NA\\
-mnist & 05\_evaluation\_metrics.R & NA\\
-mnist & 06\_link\_brush\_layout\_e.R & NA\\*
+mnist & 01\_data\_preprocessing.R & Computes first $10$ principal components and save data.\\
+mnist & 02\_gen\_diff\_embeddings.R & Generates multiple NLDR embeddings.\\
+mnist & 03\_gen\_mse\_for\_diff\_methods.R & Computes HBE with varying bin widths ($a_1$) for all NLDR embeddings.\\
+mnist & 04\_gen\_model\_with\_tSNE.R & Fits the model for the layout a.\\
+mnist & 05\_evaluation\_metrics.R & Calculates evaluation metrics for all NLDR layouts.\\
+mnist & 06\_link\_brush\_layout\_e.R & Creates interactive linked brushing with layout e.\\*
 
 
 \caption{\label{tbl-script-desc}R and Python script files used to

@@ -1,10 +1,10 @@
 Folder,Script,Description
-,additional\_functions.R,
-,evaluation.py,
-,nldr\_code.R,
-two\_nonlinear,01\_gen\_data.R,
-two\_nonlinear,02\_gen\_true\_model.R,
-two\_nonlinear,03\_gen\_embeddings.R,
+script,additional\_functions.R,Helper functions to render the main paper.
+script,evaluation.py,Python script implementing additional evaluation metrics such as RTA and GS.
+script,nldr\_code.R,"Wrapper functions for running multiple NLDR methods (UMAP, tSNE, PHATE, PaCMAP, TriMAP) with different parameters."
+two\_nonlinear,01\_gen\_data.R,Generates the 2NC7 dataset.
+two\_nonlinear,02\_gen\_true\_model.R,Creates the true structure of 2NC7 data.
+two\_nonlinear,03\_gen\_embeddings.R,"Computes multiple NLDR embeddings (UMAP, t-SNE, PHATE, etc.) for the 2NC7 data."
 two\_nonlinear,04\_gen\_mse\_for\_diff\_methods.R,
 two\_nonlinear,05\_gen\_rm\_lwd\_mse.R,
 two\_nonlinear,06\_gen\_model\_with\_tSNE.R,
@@ -35,9 +35,9 @@ pbmc3k,15\_gen\_model\_with\_UMAP\_scDEED.R,
 pbmc3k,16\_gen\_model\_with\_tSNE\_scDEED.R,
 pbmc3k,17\_evaluation\_metrics.R,
 pbmc3k,18\_evaluation\_metrics\_scDEED.R,
-mnist,01\_data\_preprocessing.R,
-mnist,02\_gen\_diff\_embeddings.R,
-mnist,03\_gen\_mse\_for\_diff\_methods.R,
-mnist,04\_gen\_model\_with\_tSNE.R,
-mnist,05\_evaluation\_metrics.R,
-mnist,06\_link\_brush\_layout\_e.R,
+mnist,01\_data\_preprocessing.R,Computes first $10$ principal components and save data.
+mnist,02\_gen\_diff\_embeddings.R,Generates multiple NLDR embeddings.
+mnist,03\_gen\_mse\_for\_diff\_methods.R,Computes HBE with varying bin widths ($a_1$) for all NLDR embeddings.
+mnist,04\_gen\_model\_with\_tSNE.R,Fits the model for the layout a.
+mnist,05\_evaluation\_metrics.R,Calculates evaluation metrics for all NLDR layouts.
+mnist,06\_link\_brush\_layout\_e.R,Creates interactive linked brushing with layout e.
