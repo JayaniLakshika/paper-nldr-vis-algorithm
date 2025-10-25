@@ -222,7 +222,9 @@ Check-list before submission
 
 ## Introduction
 
-Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. However, the representation generated can vary dramatically from method to method, and with different choices of parameters or random seeds made using the same method (@fig-NLDR-variety). 
+Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction using triplets (TriMAP) [@amid2019], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. 
+
+However, the representation generated can vary dramatically from method to method, choice of hyper-parameter or even random seed, as illustrate by @fig-NLDR-variety. The specific method and hyper-parameters used to produce each layout (see Appendix) is not essential for the discussion. The **dilemma for the analyst is which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new numerical and visual tools to aid with this decision. 
 
 ```{r}
 #| label: read-pbmc-nldr
@@ -344,20 +346,17 @@ nldr8c <- pacmap_pbmc |>
 ```{r}
 #| label: fig-NLDR-variety
 #| echo: false
-#| fig-cap: "Eight different NLDR representations of the same data. Different methods and different parameter choices are used. Researchers may have seen any of these in their analysis of this data, depending on their choice of method, or typical parameter choice. Would they make different decisions downstream in the analysis depending on which version seen? Which is the most accurate representation of the structure in high dimensions?"
+#| fig-cap: "Eight different NLDR representations of the same data, produced by tSNE, UMAP, PHATE, TriMAP and PaCMAP with a variety of hyper-parameter choices. The variety in layouts makes it difficult to choose which best represents the data distribution."
 #| fig-width: 8
 #| fig-height: 4
-#| out-width: 100%
-#| fig-pos: H
+#| out-width: 80%
 # (a) UMAP (n_neighbors = 30, min_dist = 0.3), (b) UMAP (n_neighbors = 5, min_dist = 0.01), (c) UMAP (n_neighbors = 15, min_dist = 0.99), (f) tSNE (perplexity = 5), (g) tSNE (perplexity = 30), (l) TriMAP (n_inliers = 12, n_outliers = 4, n_random = 3), (q) PaCMAP (n_neighbors = 30, init = random, MN_ratio = 0.9, FP_ratio = 5)
 nldr1 + nldr2 + nldr3 + nldr4 +
   nldr5 + nldr6 + nldr7 + nldr8 +
   plot_layout(ncol = 4)
 ```
 
-The dilemma for the analyst is then, **which representation to use**. The choice might result in different procedures used in the downstream analysis, or different inferential conclusions. The research described here provides new visual tools to aid with this decision. 
-
-The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics. Curiosities and unexpected patterns discovered in NLDR results by examining the model in the data space are discussed in @sec-curiosities. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. Links to the langevitour animation videos showing the \gD{} projections are provided in @tbl-links.
+The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including simulated data examples. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics. Curiosities and unexpected patterns discovered in NLDR results by examining the model in the data space are discussed in @sec-curiosities. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
 
 ## Background {#sec-background}
 
@@ -2330,46 +2329,10 @@ The new methodology is accompanied by an R package called quollr, so that it is 
 
 ## Supplementary Materials {#sec-supplementary}
 
-All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes more details about the hexagonal binning algorithm and a comparison to the results of the newly reported scDEED [@xia2023] statistic.
+All the materials to reproduce the paper can be found at [https://github.com/JayaniLakshika/paper-nldr-vis-algorithm](https://github.com/JayaniLakshika/paper-nldr-vis-algorithm). The Appendix includes many more details.
 
-The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. The figure, NLDR method, and corresponding hyperparameters are summarized in @tbl-fig-param. Direct links to videos for viewing online are available in @tbl-links. 
+The R package `quollr`, available on CRAN and at [https://jayanilakshika.github.io/quollr/](https://jayanilakshika.github.io/quollr/), provides software accompaying this paper to fit the wireframe model representation, compute diagnostics, visualize the model in the data with langevitour and link multiple plots interactively. 
 
-```{r}
-#| label: tbl-fig-param
-#| tbl-pos: H
-#| tbl-cap: "NLDR methods and hyper-parameters used for each figure."
-
-fig_param_df <- read_csv("misc/fig_nldr_param.csv")
-
-# Create the table
-kable(fig_param_df, 
-      format = "latex", 
-      booktabs = TRUE, escape = FALSE, linesep = "") |>
-  kable_styling(position = "center", 
-                full_width = FALSE, 
-                font_size = 12) |>
-  row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("1.5cm", "2cm", "10cm"))
-```
-
-```{r}
-#| label: tbl-links
-#| tbl-pos: H
-#| tbl-cap: "Videos of the langevitour animations and the linked plots."
-# Video links in the paper
-
-links_df <- read_csv("misc/video_links.csv")
-
-# Create the table
-kable(links_df, 
-      format = "latex", 
-      booktabs = TRUE, escape = FALSE, linesep = "") |>
-  kable_styling(position = "center", 
-                full_width = FALSE, 
-                font_size = 12) |>
-  row_spec(0, bold = TRUE) |>
-  column_spec(1:2, width = c("1.5cm", "14cm"))
-```
 
 ## Acknowledgments
 

@@ -65,14 +65,11 @@ This manuscript proposes an algorithm to evaluate nonlinear dimension reduction 
 
 3. For several figures that contains results from multiple NLDR algorithms, it would be nice to add the information of which algorithm/ what hyperparameter values for each of the subfigure. Many readers may have tried several NLDR algorithms themselves, and they will benefit from those figures to gain insights about behaviors of different NLDRs. Also it's nice to mention which data is used to generate each figure (e.g., in Figure 7).
 
-*Thank you for this helpful suggestion. To improve the clarity and reproducibility of our results, we have now included a table summarizing the Figure, NLDR method, and the corresponding hyper-parameters used for each. We believe this addition makes it easier for readers to interpret the visual results and to replicate or compare NLDR behavior across different parameter settings.*
+*Agreed. We have provided a table of the method and hyper-parameters used for every layout shown in the paper, in the appendix.*
 
 4. In section 3.6.1, it says "Values of b1 between 2 and b1=sqrt(n/r2) are allowed", why the choice of b1 should consider r2?
 
 *The aspect ratio of the NLDR layout is typically preferred to be conserved when plotting, and hence when we bin the data. r2 reflects this aspect ratio, because r1 is fixed at 1, for ease of calculations. The range of recommended values for b1 is adapted from the Diaconis-Freedman Rule, where the upper limit takes aspect ratio into account. It is just a recommendation. Practically, 2 is too few bins, and the upper bound is possibly too many. We have revised the text to make this clearer.*
-
-
-
 
 # Reviewer 2
 
