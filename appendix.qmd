@@ -1378,6 +1378,77 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 @fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as RTA, ARNX, sc, and RGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
+#| label: read-pbmc-nldr
+# Read a variety of different NLDR representations of PBMC
+# and plot them on same aspect ratio
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds")
+
+nldr1c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a", c(0.08, 0.9))
+
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds")
+
+nldr2c <- umap_pbmc |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
+  interior_annotation("b", c(0.08, 0.9))
+
+
+umap_pbmc <- read_rds("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds")
+
+nldr3c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("c")
+
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_5.rds")
+
+nldr4c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("d") 
+
+tsne_pbmc <- read_rds("data/pbmc3k/pbmc_tsne_30.rds")
+
+nldr5c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("e", c(0.08, 0.9)) 
+
+phate_pbmc <- read_rds("data/pbmc3k/pbmc_phate_5.rds")
+
+nldr6c <- phate_pbmc |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("f") 
+
+trimap_pbmc <- read_rds("data/pbmc3k/pbmc_trimap_12_4_3.rds")
+
+nldr7c <- trimap_pbmc |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("g") 
+
+pacmap_pbmc <- read_rds("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds")
+
+nldr8c <- pacmap_pbmc |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  interior_annotation("h") 
+```
+
+
+```{r}
 #| label: combine-data-pbmc
 
 error_pbmc_umap <- read_rds("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds")
@@ -1421,16 +1492,18 @@ comp_metrics_pbmc <- ggparcoord(
 ) +
   scale_color_manual(
     values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   labs(
     y = "scaled metric value",
-    x = "evaluation metric"
+    x = ""
   ) +
   theme(
-    aspect.ratio = 0.5,
+    aspect.ratio = 2,
     legend.position = "none",
     legend.title = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_blank(),
+    panel.border = element_rect(color="black", fill=NA)
   )
 ```
 
@@ -1439,10 +1512,76 @@ comp_metrics_pbmc <- ggparcoord(
 #| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the PBMC3k data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the green layout, rated worst by ARNX and RGS, is seen as the best by HBE and sc, while the brown layout, rated best by ARNX, is seen as the worst by HBE showing that HBE captures a different view of how well the data structure is represented."
 #| fig-pos: H
 #| out-width: 100%
-#| fig-height: 10
-#| fig-width: 10
 
-comp_metrics_pbmc
+design <- "
+AABB
+AABB
+AABB
+"
+comp_metrics_pbmc + 
+  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+  plot_layout(design = design)
+```
+
+
+```{r}
+#| label: read-mnist-nldr
+# Read a variety of different NLDR representations of mnist
+# and plot them on same aspect ratio
+tsne_mnist <- read_rds("data/mnist/mnist_tsne30.rds")
+
+nldr_mnist1 <- tsne_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("a", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
+
+tsne_mnist2 <- read_rds("data/mnist/mnist_tsne89.rds")
+
+nldr_mnist6 <- tsne_mnist2 |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
+  interior_annotation("f", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
+
+umap_mnist <- read_rds("data/mnist/mnist_umap.rds")
+
+nldr_mnist2 <- umap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1)
+
+phate_mnist <- read_rds("data/mnist/mnist_phate.rds")
+
+nldr_mnist3 <- phate_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("c", c(0.94, 0.92)) +
+  theme(aspect.ratio = 1)
+
+trimap_mnist <- read_rds("data/mnist/mnist_trimap.rds")
+
+nldr_mnist4 <- trimap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("d", position = c(0.86, 0.92)) +
+  theme(aspect.ratio = 1)
+
+pacmap_mnist <- read_rds("data/mnist/mnist_pacmap.rds")
+
+nldr_mnist5 <- pacmap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
 ```
 
 ```{r}
@@ -1484,16 +1623,18 @@ comp_metrics_mnist <- ggparcoord(
 ) +
   scale_color_manual(
     values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
-  theme_minimal(base_size = 14) +
+  theme_minimal() +
   labs(
     y = "scaled metric value",
-    x = "evaluation metric"
+    x = ""
   ) +
   theme(
-    aspect.ratio = 0.5,
+    aspect.ratio = 1.5,
     legend.position = "none",
     legend.title = element_blank(),
-    panel.grid.minor = element_blank()
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_blank(),
+    panel.border = element_rect(color="black", fill=NA)
   )
 ```
 
@@ -1502,8 +1643,7 @@ comp_metrics_mnist <- ggparcoord(
 #| fig-cap: "Comparison of evaluation metrics across eight NLDR layouts for the MNIST digit 1 data. Each line represents a layout evaluated using RTA, ARNX, sc, RGS, and HBE. The metrics show different patterns, meaning no single measure tells the full story of embedding quality. Interestingly, the brown layout, rated the best by ARNX, sc, and RGS, is seen as the worst by HBE, while the green layout, rated best by RTA, is seen as the best by HBE as well."
 #| fig-pos: H
 #| out-width: 100%
-#| fig-height: 10
-#| fig-width: 10
 
-comp_metrics_mnist
+comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+                                    nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
