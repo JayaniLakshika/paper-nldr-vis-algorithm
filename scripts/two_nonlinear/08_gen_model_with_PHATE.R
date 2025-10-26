@@ -109,19 +109,19 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   theme(aspect.ratio = 1)
 
 #Changed the axis parametersAdd commentMore actions
-# axis_obj <- gen_axes(
-#   proj = model_prj2 * 2,
-#   limits = 0.7,
-#   axis_pos_x = -0.35,
-#   axis_pos_y = -0.35,
-#   axis_labels = names(scaled_two_curvy_data),
-#   threshold = 0.02)
+axis_obj <- gen_axes(
+  proj = model_prj1 * 5,
+  limits = 0.4,
+  axis_pos_x = -0.33,
+  axis_pos_y = -0.33,
+  axis_labels = names(scaled_two_curvy_data),
+  threshold = 0.026)
 
-# axes <- axis_obj$axes
-# circle <- axis_obj$circle
-#
-# proj_obj2[["axes"]] <- axes
-# proj_obj2[["circle"]] <- circle
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
+proj_obj1[["axes"]] <- axes
+proj_obj1[["circle"]] <- circle
 
 write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1_phate.rds")
 
@@ -195,19 +195,19 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   theme(aspect.ratio = 1)
 
 #Changed the axis parametersAdd commentMore actions
-# axis_obj <- gen_axes(
-#   proj = model_prj2 * 2,
-#   limits = 0.7,
-#   axis_pos_x = -0.35,
-#   axis_pos_y = -0.35,
-#   axis_labels = names(scaled_two_curvy_data),
-#   threshold = 0.02)
+axis_obj <- gen_axes(
+  proj = model_prj3 * 5,
+  limits = 0.6,
+  axis_pos_x = -0.5,
+  axis_pos_y = -0.5,
+  axis_labels = names(scaled_two_curvy_data),
+  threshold = 0.01)
 
-# axes <- axis_obj$axes
-# circle <- axis_obj$circle
-#
-# proj_obj2[["axes"]] <- axes
-# proj_obj2[["circle"]] <- circle
+axes <- axis_obj$axes
+circle <- axis_obj$circle
+
+proj_obj3[["axes"]] <- axes
+proj_obj3[["circle"]] <- circle
 
 write_rds(proj_obj3, "data/two_nonlinear/two_nonlinear_proj_obj3_phate.rds")
 
