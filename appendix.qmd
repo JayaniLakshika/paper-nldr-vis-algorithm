@@ -1586,7 +1586,7 @@ comp_metrics_pbmc <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-pbmc
-#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.06$) for the eight NLDR layouts computed on the PBMC3k data using a parallel coordinate plot. Color of the line indicates NLDR layout. ARNX is reversed so that lower is best. RTA, SC, and GS should also be reversed, but they align well with ARNX and HBE without doing so. There is general agreement across metrics, with some variation in ranking. All metrics identify layout f as poor, and layouts a, c, g, and h as suboptimal due to excessive cluster separation. Layout d performs well only at very fine binwidths but deteriorates as binwidth increases. The best overall agreement is between layouts b and e, with layout e ultimately chosen as the most reasonable representation."
+#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to an NLDR layout. ARNX is reversed so that lower values indicate better performance. Overall, the metrics show general agreement, with minor differences in ranking. All metrics except SC suggest that layouts d and e outperform layout b. ARNX, GS, and HBE consistently identify layout d as the best, with layout e also performing well"
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 6
