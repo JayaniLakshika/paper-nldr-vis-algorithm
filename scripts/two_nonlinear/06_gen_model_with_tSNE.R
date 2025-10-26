@@ -282,7 +282,141 @@ proj_obj2 <- get_projection(projection = model_prj2,
 
 write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
+###############################################################################
 
+## First projection
+model_prj1 <- cbind(
+  c(0.05658,-0.02838,0.09220,-0.00465,0.03832,-0.02331,0.02753),
+  c(-0.07764,-0.03424,0.00651,-0.07305,0.03800,-0.03488,0.00766))
+
+proj_obj1 <- get_projection(projection = model_prj1,
+                            proj_scale = 5,
+                            highd_data = scaled_two_curvy_data,
+                            model_highd = scaled_two_curvy_data_model,
+                            trimesh_data = tr_from_to_df_two_curvy,
+                            axis_param = list(limits = 0.5,
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.4,
+                                              axis_pos_y = -0.4,
+                                              threshold = 0.042))
+
+two_curvy_proj_tsne_all_model1 <- plot_proj(
+  proj_obj = proj_obj1,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "c", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+#Changed the axis parametersAdd commentMore actions
+# axis_obj <- gen_axes(
+#   proj = model_prj2 * 2,
+#   limits = 0.7,
+#   axis_pos_x = -0.35,
+#   axis_pos_y = -0.35,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.02)
+
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj2[["axes"]] <- axes
+# proj_obj2[["circle"]] <- circle
+
+write_rds(proj_obj1, "data/two_nonlinear/two_nonlinear_proj_obj1_tsne.rds")
+
+## Second projection
+model_prj2 <- cbind(
+  c(0.03817,0.01561,0.04894,-0.04416,0.05023,0.00536,-0.08186),
+  c(-0.04386,-0.05266,0.01757,-0.02885,-0.01841,-0.09298,-0.02181))
+
+proj_obj2 <- get_projection(projection = model_prj2,
+                            proj_scale = 5,
+                            highd_data = scaled_two_curvy_data,
+                            model_highd = scaled_two_curvy_data_model,
+                            trimesh_data = tr_from_to_df_two_curvy,
+                            axis_param = list(limits = 0.5,
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.4,
+                                              axis_pos_y = -0.4,
+                                              threshold = 0.042))
+
+two_curvy_proj_tsne_all_model1 <- plot_proj(
+  proj_obj = proj_obj2,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "c", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+#Changed the axis parametersAdd commentMore actions
+# axis_obj <- gen_axes(
+#   proj = model_prj2 * 2,
+#   limits = 0.7,
+#   axis_pos_x = -0.35,
+#   axis_pos_y = -0.35,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.02)
+
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj2[["axes"]] <- axes
+# proj_obj2[["circle"]] <- circle
+
+write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2_tsne.rds")
+
+## Third projection
+model_prj3 <- cbind(
+  c(0.12223,-0.00018,-0.00163,-0.00991,0.01255,0.00812,-0.00582),
+  c(0.00086,0.11932,-0.02268,0.00159,-0.01516,0.01600,0.00748))
+
+proj_obj3 <- get_projection(projection = model_prj3,
+                            proj_scale = 5,
+                            highd_data = scaled_two_curvy_data,
+                            model_highd = scaled_two_curvy_data_model,
+                            trimesh_data = tr_from_to_df_two_curvy,
+                            axis_param = list(limits = 0.5,
+                                              axis_scaled = 6,
+                                              axis_pos_x = -0.4,
+                                              axis_pos_y = -0.4,
+                                              threshold = 0.042))
+
+two_curvy_proj_tsne_all_model1 <- plot_proj(
+  proj_obj = proj_obj3,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 2,
+  is_category = FALSE) +
+  interior_annotation(label = "c", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+#Changed the axis parametersAdd commentMore actions
+# axis_obj <- gen_axes(
+#   proj = model_prj2 * 2,
+#   limits = 0.7,
+#   axis_pos_x = -0.35,
+#   axis_pos_y = -0.35,
+#   axis_labels = names(scaled_two_curvy_data),
+#   threshold = 0.02)
+
+# axes <- axis_obj$axes
+# circle <- axis_obj$circle
+#
+# proj_obj2[["axes"]] <- axes
+# proj_obj2[["circle"]] <- circle
+
+write_rds(proj_obj3, "data/two_nonlinear/two_nonlinear_proj_obj3_tsne.rds")
+
+
+
+
+###############################################################################
 ### True model
 
 ## For true model
