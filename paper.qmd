@@ -1287,9 +1287,10 @@ error_two_curvy_dens <- bind_rows(error_two_curvy_umap,
                          error_two_curvy_tsne2)
 
 error_two_curvy_dens <- error_two_curvy_dens |>
-  mutate(a1 = round(a1, 2)) |>
+  mutate(d_bar = round(d_bar, 3)) |>
+  #mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
-  group_by(method, a1) |>
+  group_by(method, d_bar) |>
   filter(RMSE == min(RMSE)) |>
   ungroup() |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
@@ -1525,9 +1526,9 @@ two_curvy_proj3_phate <- plot_proj(
 
 ```{r}
 #| label: fit-tsne-phate
-#| fig-cap: ""
-#| fig-width: 9
-#| fig-height: 6
+#| fig-cap: "Comparison of fitted models for layouts a and c. Three $2\\text{-}D$ projections are shown with fitted model overlaying the 2NC7 data. Layout a (top row) preserves the true nonlinear structure. In contrast, layout c (bottom row) squeezes the model and fails to capture the full width of the underlying shapes. By visualizing the model-in-data space is important to identify these quirks and layout a provides a more faithful representation than layout c."
+#| fig-width: 6
+#| fig-height: 4
 
 two_curvy_proj1_tsne + two_curvy_proj2_tsne + two_curvy_proj3_tsne + two_curvy_proj1_phate + two_curvy_proj2_phate + two_curvy_proj3_phate +
   plot_layout(ncol = 3)
