@@ -857,6 +857,16 @@ reflecting the cluster structure in the PBMC data. This is also
 supported by examining the models in the data space as shown in
 Figure~\ref{fig-model-pbmc-author-proj}.
 
+Figure~\ref{fig-pbmc-mse-umap} compares the metrics ARNX, RTA, SC, GS,
+along with HBE computed on \(a_1=0.04\) for the six layouts shown in
+Figure~\ref{fig-pbmc-mse-umap}. This is a parallel coordinate plot where
+the y-axis shows a normalized score to ensure the metrics are on the
+same scale. Each line corresponds to one layout. The metric ARNX has
+been reversed so that it aligns with HBE - the lower the value the
+better the layout. Most metrics (ARNX, RTA, GS, and HBE) consistently
+indicate that the optimised layout (b) provides a better representation,
+while SC slightly favors the published layout.
+
 \begin{figure}[H]
 
 \centering{
@@ -870,7 +880,7 @@ with what would be suggested to be optimal by scDEED (b), using HBE vs
 \(a_1\), on a subset of PBMC3k data. Color represents NLDR layouts. HBE
 would corroborate that the scDEED optimised layout is better than what
 was originally published. Comparison of scaled evaluation metrics (ARNX,
-RTA, SC, GS, and HBE using \(a_1=0.06\)) for two NLDR layouts of the
+RTA, SC, GS, and HBE using \(a_1=0.04\)) for two NLDR layouts of the
 PBMC3k data the originally published layout (a) and the scDEED optimised
 layout (b). Each line represents a layout, with color matching the
 corresponding scatterplots. Most metrics (ARNX, RTA, GS, and HBE)
@@ -923,18 +933,17 @@ different settings involved.
 }
 
 \caption{\label{fig-comp-metric-pbmc}Comparison of scaled evaluation
-metrics (ARNX, RTA, SC, GS, and HBE using \(a_1=0.05\)) for six NLDR
-layouts computed on the MNIST digit 1 data using a parallel coordinate
-plot. Each line represents a layout (a--f), with colors corresponding to
-the scatterplots shown on the right. The metrics display different
-ranking patterns, indicating that no single measure fully captures
-embedding quality. ARNX, SC, and GS tend to agree, while RTA and HBE
-highlight different aspects of structure preservation. Layout c is
-consistently poor across all metrics, while layouts a and f are
-generally rated highest. Interestingly, ARNX and GS identify layout a as
-best, whereas HBE and RTA prefer layout f --- consistent with its stable
-performance across binwidths, suggesting that layout f provides the most
-faithful representation of the data.}
+metrics (ARNX, RTA, SC, GS, and HBE using \(a_1=0.06\)) for the eight
+NLDR layouts computed on the PBMC3k data using a parallel coordinate
+plot. Color of the line indicates NLDR layout. ARNX is reversed so that
+lower is best. RTA, SC, and GS should also be reversed, but they align
+well with ARNX and HBE without doing so. There is general agreement
+across metrics, with some variation in ranking. All metrics identify
+layout f as poor, and layouts a, c, g, and h as suboptimal due to
+excessive cluster separation. Layout d performs well only at very fine
+binwidths but deteriorates as binwidth increases. The best overall
+agreement is between layouts b and e, with layout e ultimately chosen as
+the most reasonable representation.}
 
 \end{figure}%
 
@@ -946,13 +955,19 @@ faithful representation of the data.}
 
 }
 
-\caption{\label{fig-comp-metric-mnist}Comparison of evaluation metrics
-across eight NLDR layouts for the MNIST digit 1 data. Each line
-represents a layout evaluated using RTA, ARNX, sc, GS, and HBE. The
-metrics show different patterns, meaning no single measure tells the
-full story of embedding quality. Interestingly, the brown layout, rated
-the best by ARNX, sc, and GS, is seen as the worst by HBE, while the
-green layout, rated best by RTA, is seen as the best by HBE as well.}
+\caption{\label{fig-comp-metric-mnist}Comparison of scaled evaluation
+metrics (ARNX, RTA, SC, GS, and HBE using \(a_1=0.04\)) for six NLDR
+layouts computed on the MNIST digit 1 data using a parallel coordinate
+plot. Each line represents a layout (a--f), with colors corresponding to
+the scatterplots shown on the right. The metrics display different
+ranking patterns, indicating that no single measure fully captures
+embedding quality. ARNX, SC, and GS tend to agree, while RTA and HBE
+highlight different aspects of structure preservation. Layout c is
+consistently poor across all metrics, while layouts a and f are
+generally rated highest. Interestingly, ARNX and GS identify layout a as
+best, whereas HBE and RTA prefer layout f --- consistent with its stable
+performance across binwidths, suggesting that layout f provides the most
+faithful representation of the data.}
 
 \end{figure}%
 
