@@ -1568,7 +1568,7 @@ comp_metrics_pbmc <- ggparcoord(
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
   scale_color_manual(
-    values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+    values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
   theme_minimal() +
   labs(
     y = "scaled metric value",
@@ -1705,8 +1705,8 @@ comp_metrics_mnist <- ggparcoord(
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
   scale_color_manual(
-    values=c('#a65628', '#984ea3', '#999999', 
-             '#377eb8', '#ff7f00', '#e41a1c')) +
+    values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
+             "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
   theme_minimal() +
   labs(
     y = "scaled metric value",
