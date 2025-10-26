@@ -1198,8 +1198,6 @@ Note that @xia2023 uses a different PBMC dataset than that used by @chen2024, sh
 
 For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells). Also, @xia2023 used first $9$ principal components to generate the UMAP and tSNE with default hyper-parameters. The objective is to what scDEED suggests is the best layout with what HBE would choose. Layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2024, and layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. <!--Layouts a and b contain $46$ and $83$ dubious cells respectively.--> The HBE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data. This is also supported by examining the models in the data space as shown in @fig-model-pbmc-author-proj.
 
-
-
 ```{r}
 #| label: read-pbmc-umap-layouts
 # Read a variety of different NLDR representations of PBMC
@@ -1259,20 +1257,52 @@ error_umap_plot_pbmc <-  plot_hbe(error_pbmc) +
 ```
 
 ```{r}
+nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics_scdeed.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  #mutate(sc = 1 - sc) |>
+  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
+  rename(SC = sc, HBE = HBE)
+
+comp_metrics_pbmc_scdeed <- ggparcoord(
+  data = nldr_metrics,
+  columns = c(8,3,5,2,7), #c(5,8,3,2,7),           # numeric columns to plot
+  groupColumn = 1,         # color by method
+  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+) +
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
+  theme_minimal() +
+  labs(
+    y = "scaled metric value",
+    x = ""
+  ) +
+  theme(
+    aspect.ratio = 0.2,
+    legend.position = "none",
+    legend.title = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_blank(),
+    panel.border = element_rect(color="black", fill=NA)
+  )
+```
+
+```{r}
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Comparing the published layout (a) with what would be suggested to be optimal by scDEED (b), using HBE vs $a_1$, on a subset of PBMC3k data. Color represents NLDR layouts. HBE would corroborate that the scDEED optimised layout is better than what was originally published."
+#| fig-cap: "Comparing the published layout (a) with what would be suggested to be optimal by scDEED (b), using HBE vs $a_1$, on a subset of PBMC3k data. Color represents NLDR layouts. HBE would corroborate that the scDEED optimised layout is better than what was originally published. Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.06$) for two NLDR layouts of the PBMC3k data the originally published layout (a) and the scDEED optimised layout (b). Each line represents a layout, with color matching the corresponding scatterplots. Most metrics (ARNX, RTA, GS, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while SC slightly favors the published layout. "
+#| fig-width: 6
+#| fig-height: 4
 
-# Define the layout design
-layout_design <- "
-AA
-BC
-"
+# Second row: horizontal stack
+bottom_row <- nldr1c + nldr2c + 
+  plot_layout(ncol = 2, widths = c(50, 50))
 
-# Combine the plots using the layout
-(error_umap_plot_pbmc + nldr1c + nldr2c) +
-  plot_layout(design = layout_design)
+# Combine top and bottom rows vertically
+final_plot <- (error_umap_plot_pbmc | bottom_row) /comp_metrics_pbmc_scdeed + plot_layout(heights = c(0.7, 1))
+
+final_plot
 ```
 
 <!--pbmc3k/15_gen_model_with_UMAP_scD.R-->
@@ -1413,57 +1443,6 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   plot_layout(nrow=2, byrow=FALSE) &
   theme(legend.position='none')
 ```
-
-```{r}
-nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics_scdeed.rds")
-
-nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "method")) |>
-  rename("sc" = "r") |>
-  #mutate(sc = 1 - sc) |>
-  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = HBE)
-
-comp_metrics_pbmc_scdeed <- ggparcoord(
-  data = nldr_metrics,
-  columns = c(8,3,5,2,7), #c(5,8,3,2,7),           # numeric columns to plot
-  groupColumn = 1,         # color by method
-  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
-) +
-  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
-  theme_minimal() +
-  labs(
-    y = "scaled metric value",
-    x = ""
-  ) +
-  theme(
-    aspect.ratio = 0.8,
-    legend.position = "none",
-    legend.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.y = element_blank(),
-    panel.border = element_rect(color="black", fill=NA)
-  )
-```
-
-```{r}
-#| label: fig-comp-metric-pbmc-scdeed
-#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.05$) for two NLDR layouts of the PBMC3k data—the originally published layout (a) and the scDEED-optimised layout (b). Each line represents a layout, with color matching the corresponding scatterplots. Most metrics (ARNX, RTA, GS, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while SC slightly favors the published layout. Overall, the results align with HBE, supporting that the scDEED-optimised layout offers an improved embedding quality."
-#| fig-pos: H
-#| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
-
-# Define the layout design
-layout_design <- "
-AA
-BC
-"
-
-# Combine the plots using the layout
-(comp_metrics_pbmc_scdeed + nldr1c + nldr2c) +
-  plot_layout(design = layout_design)
-```
-
 
 ## Compare HBE with existing evaluation metrics
 
