@@ -1435,6 +1435,102 @@ When the metrics disagree is causes confusion for the analyst, and thus provides
 
 <!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
 
+```{r}
+#| label: projs-tsne
+## First projection
+
+proj_obj1 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj1_phate.rds")
+
+two_curvy_proj1_tsne <- plot_proj(
+  proj_obj = proj_obj1, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a1", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Second projection
+proj_obj2 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj2_phate.rds")
+
+two_curvy_proj2_tsne <- plot_proj(
+  proj_obj = proj_obj2, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a2", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Third projection
+proj_obj3 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj3_phate.rds")
+
+two_curvy_proj3_tsne <- plot_proj(
+  proj_obj = proj_obj3, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a3", cex = 1.2) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| label: projs-phate
+## First projection
+
+proj_obj1 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj1_phate.rds")
+
+two_curvy_proj1_phate <- plot_proj(
+  proj_obj = proj_obj1, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c1", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Second projection
+proj_obj2 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj2_phate.rds")
+
+two_curvy_proj2_phate <- plot_proj(
+  proj_obj = proj_obj2, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c2", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Third projection
+proj_obj3 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj3_phate.rds")
+
+two_curvy_proj3_phate <- plot_proj(
+  proj_obj = proj_obj3, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c3", cex = 1.2) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| label: fit-tsne-phate
+#| fig-cap: ""
+#| fig-width: 8
+#| fig-height: 4
+
+two_curvy_proj1_tsne + two_curvy_proj2_tsne + two_curvy_proj3_tsne + two_curvy_proj1_phate + two_curvy_proj2_phate + two_curvy_proj3_phate +
+  plot_layout(ncol = 3)
+```
+
 ## Applications {#sec-applications}
 
 To illustrate the approach we use two examples: PBMC3k data (single cell gene expression) where an NLDR layout is used to represent cluster structure present in the \pD{} data, and MNIST hand-written digits where NLDR is used to represent essentially a low-dimensional nonlinear manifold in \pD{}.
