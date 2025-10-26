@@ -60,8 +60,8 @@ scaled_gau_data_model <- scaled_gau |>
 df_model_data_n <- bind_rows(df_b, data_gau)
 
 langevitour::langevitour(df_model_data_n[1:(length(df_model_data_n)-1)],
-                         lineFrom = tr_from_to_df_gau1$from,
-                         lineTo = tr_from_to_df_gau1$to,
+                         lineFrom = tr_from_to_df_gau1$from_reindexed,
+                         lineTo = tr_from_to_df_gau1$to_reindexed,
                          group = factor(df_model_data_n$type,
                                         c("data", "model")),
                          levelColors = c(clr_choice, "#000000"),

@@ -180,8 +180,8 @@ df_model_data_two_curvy_filtered <- bind_rows(df_bin_two_curvy, data_two_curvy)
 write_rds(df_model_data_two_curvy_filtered, "data/two_nonlinear/df_model_data_two_curvy_filtered.rds")
 
 langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
-                         lineFrom = tr_from_to_df_two_curvy$from,
-                         lineTo = tr_from_to_df_two_curvy$to,
+                         lineFrom = tr_from_to_df_two_curvy$from_reindexed,
+                         lineTo = tr_from_to_df_two_curvy$to_reindexed,
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "model")),
                          levelColors = c(clr_choice, "#000000"))
@@ -191,8 +191,8 @@ langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_dat
 df_model_data_two_curvy_filtered <- bind_rows(true_model_two_curvy, data_two_curvy)
 
 langevitour::langevitour(df_model_data_two_curvy_filtered[1:(length(df_model_data_two_curvy_filtered)-1)],
-                         lineFrom = wireframe_true_model$from,
-                         lineTo = wireframe_true_model$to,
+                         lineFrom = wireframe_true_model$from_reindexed,
+                         lineTo = wireframe_true_model$to_reindexed,
                          group = factor(df_model_data_two_curvy_filtered$type,
                                         c("data", "true model")),
                          levelColors = c(clr_choice, "#000000"))
@@ -434,11 +434,11 @@ projected_true_model_df <- projected_true_model |>
 true_model_df_proj <- dplyr::left_join(
   wireframe_true_model,
   projected_true_model_df,
-  by = c("from" = "ID"))
+  by = c("from_reindexed" = "ID"))
 
 names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
 
-true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to_reindexed" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
 proj_obj1_true <- proj_obj1
@@ -473,11 +473,11 @@ projected_true_model_df <- projected_true_model |>
 true_model_df_proj <- dplyr::left_join(
   wireframe_true_model,
   projected_true_model_df,
-  by = c("from" = "ID"))
+  by = c("from_reindexed" = "ID"))
 
 names(true_model_df_proj)[3:NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_from")
 
-true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to" = "ID"))
+true_model_df_proj <- dplyr::left_join(true_model_df_proj, projected_true_model_df, by = c("to_reindexed" = "ID"))
 names(true_model_df_proj)[(2 + NCOL(projected_true_model_df)):NCOL(true_model_df_proj)] <- paste0(names(projected_true_model_df)[-NCOL(projected_true_model_df)], "_to")
 
 proj_obj2_true <- proj_obj2
@@ -564,7 +564,7 @@ write_rds(centroids4, "data/two_nonlinear/two_nonlinear_all_centroids_two_curvy4
 ### Error
 error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
 
-## Find the minimum RMSE when have duplicate a1
+## Find the minimum HBE when have duplicate a1
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
   filter(b1 == min(b1)) |>

@@ -86,8 +86,8 @@ data_pbmc_n <- data_pbmc |>
 df_model_data_pbmc_n <- bind_rows(df_b_pbmc, data_pbmc_n)
 
 langevitour::langevitour(df_model_data_pbmc_n[1:(length(df_model_data_pbmc_n)-1)],
-                         lineFrom = tr_from_to_df_pbmc$from,
-                         lineTo = tr_from_to_df_pbmc$to,
+                         lineFrom = tr_from_to_df_pbmc$from_reindexed,
+                         lineTo = tr_from_to_df_pbmc$to_reindexed,
                          group = factor(df_model_data_pbmc_n$type,
                                         c("cluster1", "cluster2", "cluster3", "model")),
                          levelColors = c("#8dd3c7", "#fdb462", "#bebada", "#000000"))

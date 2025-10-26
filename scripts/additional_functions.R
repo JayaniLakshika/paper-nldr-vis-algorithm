@@ -45,15 +45,15 @@ scale_data_manual <- function(data, type_col) {
 
 # Plot MSE
 
-plot_rmse <- function(error_df) {
+plot_hbe <- function(error_df) {
 
   ggplot(error_df,
          aes(x = a1,
-             y = RMSE,
+             y = HBE,
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
-    ylab("RMSE") +
+    ylab("HBE") +
     xlab(expression(paste("binwidth (", a[1], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
@@ -69,16 +69,16 @@ plot_rmse <- function(error_df) {
 
 }
 
-plot_rmse_dh <- function(error_df) {
+plot_hbe_dh <- function(error_df) {
 
   ggplot(error_df,
          aes(x = d_bar,
-             y = RMSE,
+             y = HBE,
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
     scale_x_log10() +
-    ylab("RMSE") +
+    ylab("HBE") +
     xlab(expression(paste("average bin density (", d[h], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),

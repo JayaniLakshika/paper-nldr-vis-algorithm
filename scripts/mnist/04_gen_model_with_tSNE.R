@@ -98,8 +98,8 @@ data_mnist_cluster <- data_mnist |>
 df_model_data_mnist_n <- bind_rows(df_b_mnist, data_mnist_cluster)
 
 langevitour::langevitour(df_model_data_mnist_n[1:(length(df_model_data_mnist_n)-1)],
-                         lineFrom = tr_from_to_df_mnist$from,
-                         lineTo = tr_from_to_df_mnist$to,
+                         lineFrom = tr_from_to_df_mnist$from_reindexed,
+                         lineTo = tr_from_to_df_mnist$to_reindexed,
                          group = factor(df_model_data_mnist_n$type,
                                         c("big_clust", "small_clust", "model")),
                          levelColors = c("#999999",'#ff7f00', "#000000"))
