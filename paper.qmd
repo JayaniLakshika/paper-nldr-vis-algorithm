@@ -120,6 +120,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+<!--This paper is build with quollr 0.3.15-->
+
 ```{r include=FALSE}
 #| label: install-libraries
 #| warning: false
@@ -1333,7 +1335,7 @@ error_two_curvy <- error_two_curvy |>
 #| label: error-comp-two_curvy
 
 error_plot_two_curvy <-
-  plot_rmse(error_two_curvy) +
+  plot_hbe(error_two_curvy) +
   scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
     #sort(unique(error_two_curvy$a1))[
     #  seq(1, length(
@@ -1348,7 +1350,7 @@ error_plot_two_curvy <-
 
 
 error_plot_two_curvy_dh <-
-  plot_rmse_dh(error_two_curvy_dens) +
+  plot_hbe_dh(error_two_curvy_dens) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
@@ -1649,13 +1651,13 @@ error_pbmc <- error_pbmc |>
 ```{r}
 #| label: error-comp-pbmc
 
-error_plot_pbmc <- plot_rmse(error_pbmc) +
+error_plot_pbmc <- plot_hbe(error_pbmc) +
   scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
                        #sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
 
-error_plot_pbmc_dh <- plot_rmse_dh(error_pbmc) +
+error_plot_pbmc_dh <- plot_hbe_dh(error_pbmc) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
 
@@ -1854,7 +1856,7 @@ error_mnist <- error_mnist |>
 ```{r}
 #| label: error-comp-mnist
 
-error_plot_mnist <- plot_rmse(error_mnist) +
+error_plot_mnist <- plot_hbe(error_mnist) +
   scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
                        #sort(
     #unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
@@ -1865,7 +1867,7 @@ error_plot_mnist <- plot_rmse(error_mnist) +
   theme(aspect.ratio=0.685) +
   ylab("HBE")
 
-error_plot_mnist_dh <- plot_rmse_dh(error_mnist) +
+error_plot_mnist_dh <- plot_hbe_dh(error_mnist) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
