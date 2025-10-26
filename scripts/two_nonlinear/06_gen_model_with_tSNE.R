@@ -286,8 +286,8 @@ write_rds(proj_obj2, "data/two_nonlinear/two_nonlinear_proj_obj2.rds")
 
 ## First projection
 model_prj1 <- cbind(
-  c(0.05658,-0.02838,0.09220,-0.00465,0.03832,-0.02331,0.02753),
-  c(-0.07764,-0.03424,0.00651,-0.07305,0.03800,-0.03488,0.00766))
+  c(0.04463,-0.02833,0.08009,0.03515,-0.05412,0.01459,-0.04136),
+  c(0.04992,-0.01104,-0.00263,0.07529,0.02804,-0.02512,0.07477))
 
 proj_obj1 <- get_projection(projection = model_prj1,
                             proj_scale = 5,
