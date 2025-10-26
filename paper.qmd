@@ -945,7 +945,7 @@ error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_curvy_tsne.rds")
 
 rmse_two_curvy_b <- ggplot(error_two_curvy_tsne, 
                      aes(x = a1, 
-                         y = RMSE)) +
+                         y = HBE)) +
   geom_vline(xintercept = 0.03,
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
@@ -972,7 +972,7 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
 
 rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne, 
                      aes(x = d_bar, 
-                         y = RMSE)) +
+                         y = HBE)) +
   geom_vline(xintercept = error_two_curvy_tsne$d_bar[15],
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
@@ -1141,7 +1141,7 @@ error_rm_two_curvy <- read_rds("data/two_nonlinear/error_rm_lwd_diff_bin.rds") |
 
 rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
                      aes(x = benchmark_rm_lwd, 
-                         y = RMSE,
+                         y = HBE,
                          colour = a1,
                          linetype = a1)) + 
   geom_point(
@@ -1293,7 +1293,7 @@ error_two_curvy_dens <- error_two_curvy_dens |>
   #mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
   group_by(method, d_bar) |>
-  filter(RMSE == min(RMSE)) |>
+  filter(HBE == min(HBE)) |>
   ungroup() |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
 
@@ -1320,13 +1320,13 @@ error_two_curvy <- bind_rows(error_two_curvy_umap,
 
 error_two_curvy_filtered <- error_two_curvy |> 
   dplyr::filter(b1 == 24) |>
-  dplyr::select(method, RMSE)
+  dplyr::select(method, HBE)
 
 error_two_curvy <- error_two_curvy |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
   group_by(method, a1) |>
-  filter(RMSE == min(RMSE)) |>
+  filter(HBE == min(HBE)) |>
   ungroup() |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
 ```
@@ -1367,7 +1367,7 @@ nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Metho
   rename("sc" = "r") |>
   #mutate(sc = 1 - sc) |>
   mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = RMSE)
+  rename(SC = sc, HBE = HBE)
 
 comp_metrics <- ggparcoord(
   data = nldr_metrics,
@@ -1640,7 +1640,7 @@ error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
   group_by(method, a1) |>
-  filter(RMSE == min(RMSE)) |>
+  filter(HBE == min(HBE)) |>
   ungroup()
 
 error_pbmc <- error_pbmc |>
@@ -1847,7 +1847,7 @@ error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
   group_by(method, a1) |>
-  filter(RMSE == min(RMSE)) |>
+  filter(HBE == min(HBE)) |>
   ungroup() |>
   mutate(method = factor(method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
