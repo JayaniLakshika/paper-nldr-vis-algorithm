@@ -1356,29 +1356,6 @@ error_plot_two_curvy_dh <-
   ylab("HBE")
 ```
 
-```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts on the 2NC7 data is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice."
-#| label: fig-toy-rmse
-#| fig-pos: H
-#| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
-
-# Stack the first two plots
-left_column <- error_plot_two_curvy / error_plot_two_curvy_dh
-
-# Combine the remaining plots into the other columns (wrap into 2 columns)
-right_columns <- wrap_plots(
-  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
-  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
-  ncol = 2
-)
-
-# Combine left and right
-final_plot_two_curvy <- left_column | right_columns
-final_plot_two_curvy
-```
-
 <!--two_nonlinear/07_example_evaluation_metrics.R-->
 ```{r}
 nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
@@ -1405,13 +1382,45 @@ comp_metrics <- ggparcoord(
     x = ""
   ) +
   theme(
-    aspect.ratio = 1.5,
+    aspect.ratio = 0.22,
     legend.position = "none",
     legend.title = element_blank(),
     panel.grid.minor = element_blank(),
     axis.text.y = element_blank(),
     panel.border = element_rect(color="black", fill=NA)
   )
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 6 NLDR layouts on the 2NC7 data is the better representation using HBE for varying binwidth ($a_1$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-f). Layout d is universally poor. Layouts a, b, e that show two close clusters are universally suboptimal. Layout b with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has small separation with oddly shaped clusters. Layout a is the best choice. Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot. Color of the line indicates NLDR layout. ARNX is reversed so that lower is best. RTA, SC and GS should be reversed, too, but they best match ARNX and HBE without doing so! There is some general agreement, and small disagreements, with ARNX being most different. All agree that layout f is good, and almost all that d is bad. Interestingly, there is disagreement on layout a, which is almost the same as layout f."
+#| label: fig-toy-rmse
+#| fig-pos: H
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_two_curvy / error_plot_two_curvy_dh +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(
+  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
+  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
+  ncol = 2
+)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_two_curvy <- (top_section) / comp_metrics +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_two_curvy
 ```
 
 <!-- Current metrics like ARNX, RTA, and SC focus on how well local or global structures are preserved, but their suggestions best layout can be very different. In contrast, HBE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.-->
@@ -1425,21 +1434,6 @@ Ironically, RTA, GS and SC should be interpreted as "the higher the better", but
 When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions.
 
 <!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
-
-```{r}
-#| label: fig-comp-metric
-#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot. Color of the line indicates NLDR layout. ARNX is reversed so that lower is best. RTA, SC and GS should be reversed, too, but they best match ARNX and HBE without doing so! There is some general agreement, and small disagreements, with ARNX being most different. All agree that layout f is good, and almost all that d is bad. Interestingly, there is disagreement on layout a, which is almost the same as layout f."
-#| fig-pos: H
-#| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
-
-comp_metrics + wrap_plots(nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3, 
-                                    nldr_two_curvy4, nldr_two_curvy5,
-                                    nldr_two_curvy6, ncol = 2, 
-                                    widths = c(50, 50))
-```
-
 
 ## Applications {#sec-applications}
 
