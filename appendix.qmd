@@ -1294,7 +1294,7 @@ comp_metrics_pbmc_scdeed <- ggparcoord(
 #| label: fig-pbmc-mse-umap
 #| fig-pos: H
 #| out-width: 100%
-#| fig-cap: "Comparing the published layout (a) with what would be suggested to be optimal by scDEED (b), using HBE vs $a_1$, on a subset of PBMC3k data. Color represents NLDR layouts. HBE would corroborate that the scDEED optimised layout is better than what was originally published. Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.04$) for two NLDR layouts of the PBMC3k data the originally published layout (a) and the scDEED optimised layout (b). Each line represents a layout, with color matching the corresponding scatterplots. Most metrics (ARNX, RTA, GS, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while SC slightly favors the published layout. "
+#| fig-cap: "Comparing the published layout (a) with what would be suggested to be optimal by scDEED (b), using HBE vs $a_1$, on a subset of PBMC3k data. Color represents NLDR layouts. HBE would corroborate that the scDEED optimised layout is better than what was originally published. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.04$) for two NLDR layouts of the PBMC3k data the originally published layout (a) and the scDEED optimised layout (b). Each line represents a layout, with color matching the corresponding scatterplots. Most metrics (rSC, rARNX, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while rRTA, and rGS slightly favor the published layout. "
 #| fig-width: 6
 #| fig-height: 4
 
@@ -1588,7 +1588,7 @@ comp_metrics_pbmc <- ggparcoord(
 
 ```{r}
 #| label: fig-comp-metric-pbmc
-#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to an NLDR layout. ARNX is reversed so that lower values indicate better performance. Overall, the metrics show general agreement, with minor differences in ranking. All metrics except SC suggest that layouts d and e outperform layout b. ARNX, GS, and HBE consistently identify layout d as the best, with layout e also performing well."
+#| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to an NLDR layout. RTA, SC, GS, and ARNX is reversed so that lower is best. Overall, the metrics show general agreement, with minor differences in ranking. All metrics except SC suggest that layouts d and e outperform layout b. ARNX, GS, and HBE consistently identify layout d as the best, with layout e also performing well."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 6
