@@ -79,7 +79,7 @@ plot_hbe_dh <- function(error_df) {
     geom_line(linewidth = 0.3) +
     scale_x_log10() +
     ylab("HBE") +
-    xlab(expression(paste("average bin density (", d[h], ")"))) +
+    xlab(expression(paste("average bin density (", bar(d)[h], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
           plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
