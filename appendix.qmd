@@ -1263,13 +1263,14 @@ nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics_scdeed.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
-  #mutate(sc = 1 - sc) |>
-  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = HBE)
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS)
 
 comp_metrics_pbmc_scdeed <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5,2,7), #c(5,8,3,2,7),           # numeric columns to plot
+  columns = c(9,10,11,8,7), #c(5,8,3,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
@@ -1555,15 +1556,16 @@ nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
-  #mutate(sc = 1 - sc) |>
-  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = HBE) |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS) |>
   mutate(Method = factor(Method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
 comp_metrics_pbmc <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5,2,7), #c(5,3,8,2,7),           # numeric columns to plot
+  columns = c(9,10,11,8,7), #c(5,3,8,2,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
@@ -1692,15 +1694,16 @@ nldr_metrics <- read_rds("data/mnist/nldr_eval_metrics.rds")
 
 nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
-  #mutate(sc = 1 - sc) |>
-  mutate(`ARNX` = 1 - `AUC(R_NX)`) |>
-  rename(SC = sc, HBE = HBE) |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS) |>
   mutate(Method = factor(Method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
 comp_metrics_mnist <- ggparcoord(
   data = nldr_metrics,
-  columns = c(8,3,5,2,7), #c(5,8,2,3,7),           # numeric columns to plot
+  columns = c(9,10,11,8,7), #c(5,8,2,3,7),           # numeric columns to plot
   groupColumn = 1,         # color by method
   scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
 ) +
