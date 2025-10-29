@@ -69,7 +69,7 @@ plot_hbe <- function(error_df) {
 
 }
 
-plot_hbe_dh <- function(error_df) {
+plot_hbe_nbar <- function(error_df) {
 
   ggplot(error_df,
          aes(x = n_bar,
@@ -79,7 +79,7 @@ plot_hbe_dh <- function(error_df) {
     geom_line(linewidth = 0.3) +
     scale_x_log10() +
     ylab("HBE") +
-    xlab(expression(paste("average bin density (", bar(n)[h], ")"))) +
+    xlab(expression(paste("average points per bin (", bar(n)[h], ")"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
           plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),

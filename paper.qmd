@@ -1282,35 +1282,19 @@ error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff
 error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
 error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
-error_two_curvy_dens <- bind_rows(error_two_curvy_umap, 
+error_two_curvy_avg <- bind_rows(error_two_curvy_umap, 
                          error_two_curvy_tsne,
                          error_two_curvy_phate,
                          error_two_curvy_trimap,
                          error_two_curvy_pacmap,
                          error_two_curvy_tsne2)
 
-error_two_curvy_dens <- error_two_curvy_dens |>
-  mutate(d_bar = round(d_bar, 3)) |>
-  #mutate(a1 = round(a1, 2)) |>
+error_two_curvy_avg <- error_two_curvy_avg |>
   filter(b1 >= 5) |>
-  group_by(method, d_bar) |>
+  group_by(method, n_bar) |>
   filter(HBE == min(HBE)) |>
   ungroup() |>
   mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
-
-error_two_curvy_tsne2 <- error_two_curvy_tsne2 |>
-  mutate(method = "tSNE2") |> 
-  filter(b1 <= 45)
-
-error_two_curvy_tsne <- error_two_curvy_tsne |> filter(b1 <= 44) #sqrt(2000/1.02)
-
-error_two_curvy_umap <- error_two_curvy_umap |> filter(b1 <= 60)
-
-error_two_curvy_phate <- error_two_curvy_phate |> filter(b1 <= 46)
-
-error_two_curvy_trimap <- error_two_curvy_trimap |> filter(b1 <= 72)
-
-error_two_curvy_pacmap <- error_two_curvy_pacmap |> filter(b1 <= 48)
 
 error_two_curvy <- bind_rows(error_two_curvy_umap, 
                          error_two_curvy_tsne,
@@ -1350,8 +1334,8 @@ error_plot_two_curvy <-
   ylab("HBE")
 
 
-error_plot_two_curvy_dh <-
-  plot_hbe_dh(error_two_curvy_dens) +
+error_plot_two_curvy_n_bar <-
+  plot_hbe_nbar(error_two_curvy_avg) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
@@ -1405,7 +1389,7 @@ comp_metrics <- ggparcoord(
 #| fig-width: 6
 
 # Stack first two error plots vertically (left column)
-left_column <- error_plot_two_curvy / error_plot_two_curvy_dh +
+left_column <- error_plot_two_curvy / error_plot_two_curvy_n_bar +
   plot_layout(heights = c(1, 1))
 
 # Arrange six NLDR plots into two columns (right side)
@@ -1638,6 +1622,15 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_trimap,
                         error_pbmc_pacmap)
 
+
+error_pbmc_avg <- error_pbmc |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -1659,7 +1652,7 @@ error_plot_pbmc <- plot_hbe(error_pbmc) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
 
-error_plot_pbmc_dh <- plot_hbe_dh(error_pbmc) +
+error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
 
@@ -1672,7 +1665,7 @@ error_plot_pbmc_dh <- plot_hbe_dh(error_pbmc) +
 #| out-width: 100%
 
 # Stack error plots in one column
-error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_dh
+error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_n_bar
 
 design <- "
 AACC
@@ -1845,6 +1838,14 @@ error_mnist <- bind_rows(error_mnist_umap,
                         error_mnist_trimap,
                         error_mnist_pacmap)
 
+error_mnist_avg <- error_mnist |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+
 error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -1869,7 +1870,7 @@ error_plot_mnist <- plot_hbe(error_mnist) +
   theme(aspect.ratio=0.685) +
   ylab("HBE")
 
-error_plot_mnist_dh <- plot_hbe_dh(error_mnist) +
+error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
   scale_color_manual(
     values=c('#a65628', '#984ea3', '#999999', 
              '#377eb8', '#ff7f00', '#e41a1c')) +
@@ -1886,7 +1887,7 @@ error_plot_mnist_dh <- plot_hbe_dh(error_mnist) +
 #| out-width: 92%
 
 # Stack the first two plots
-left_column <- error_plot_mnist / error_plot_mnist_dh
+left_column <- error_plot_mnist / error_plot_mnist_n_bar
 
 # Combine the remaining plots into the other columns (wrap into 2 columns)
 right_columns <- wrap_plots(
