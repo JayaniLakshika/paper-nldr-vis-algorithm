@@ -19,6 +19,8 @@ data_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_
 data_two_curvy <- data_two_curvy |>
   mutate(ID = 1:NROW(data_two_curvy))
 
+n <- NROW(data_two_curvy)
+
 ## For umap
 umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds") |>
   mutate(ID = row_number())
@@ -27,7 +29,8 @@ error_two_non_linear_diff_shaped_close_clusters_umap <- gen_diffbin1_errors(high
                                                                             nldr_data = umap_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
                                                                             bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "UMAP")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_umap, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
@@ -43,7 +46,8 @@ error_two_non_linear_diff_shaped_close_clusters_tsne <- gen_diffbin1_errors(high
                                                                             nldr_data = tsne_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
                                                                             bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "tSNE")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_tsne, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
@@ -58,7 +62,8 @@ error_two_non_linear_diff_shaped_close_clusters_tsne <- gen_diffbin1_errors(high
                                                                             nldr_data = tsne_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
                                                                             bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "tSNE2")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_tsne, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
@@ -74,7 +79,8 @@ error_two_non_linear_diff_shaped_close_clusters_phate <- gen_diffbin1_errors(hig
                                                                             nldr_data = phate_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
                                                                             bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "PHATE")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_phate, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
@@ -89,7 +95,8 @@ error_two_non_linear_diff_shaped_close_clusters_trimap <- gen_diffbin1_errors(hi
                                                                              nldr_data = trimap_two_non_linear_diff_shaped_close_clusters,
                                                                              hd_thresh = 0,
                                                                              bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "TriMAP")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_trimap, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
@@ -104,7 +111,8 @@ error_two_non_linear_diff_shaped_close_clusters_pacmap <- gen_diffbin1_errors(hi
                                                                               nldr_data = pacmap_two_non_linear_diff_shaped_close_clusters,
                                                                               hd_thresh = 0,
                                                                               bin1_vec = 5:72) |>
-  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
+  dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2)),
+                n_bar = n/m) |>
   dplyr::mutate(method = "PaCMAP")
 
 write_rds(error_two_non_linear_diff_shaped_close_clusters_pacmap, "data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
