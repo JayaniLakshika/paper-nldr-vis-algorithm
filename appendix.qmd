@@ -1260,12 +1260,10 @@ error_pbmc <- error_pbmc |>
 
 error_umap_plot_pbmc <-  plot_hbe(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19, 20, 21)]) +
-  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
-  ylab("HBE")
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) 
 
 error_umap_plot_pbmc_nbar <-  plot_hbe_nbar(error_pbmc_avg) +
-  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
-  ylab("HBE")
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) 
 ```
 
 ```{r}
@@ -1278,29 +1276,8 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "m
   mutate(`rSC` = 1 - sc) |>
   mutate(`rGS` = 1 -  GS)
 
-comp_metrics_pbmc_scdeed <- ggparcoord(
-  data = nldr_metrics,
-  columns = c(9,10,11,8,7), #c(5,8,3,2,7),           # numeric columns to plot
-  groupColumn = 1,         # color by method
-  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
-) +
-  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
-  theme_minimal() +
-  labs(
-    y = "scaled metric value",
-    x = ""
-  ) +
-  theme(
-    aspect.ratio = 0.5,
-    legend.position = "none",
-    legend.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.title.y = element_text(size = 7),
-    axis.text.y = element_text(size = 7),
-    panel.border = element_rect(color="black", fill=NA),
-    axis.text.x = element_text(size = 7),
-    axis.title.x = element_text(size = 7)
-  )
+comp_metrics_pbmc_scdeed <- plot_comp_metrics(nldr_metrics) +
+  scale_color_manual(values=c('#377eb8', '#e41a1c'))
 ```
 
 ```{r}
@@ -1576,27 +1553,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
   mutate(Method = factor(Method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
-comp_metrics_pbmc <- ggparcoord(
-  data = nldr_metrics,
-  columns = c(9,10,11,8,7), #c(5,3,8,2,7),           # numeric columns to plot
-  groupColumn = 1,         # color by method
-  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
-) +
-  scale_color_manual(
+comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) + scale_color_manual(
     values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
-  theme_minimal() +
-  labs(
-    y = "scaled metric value",
-    x = ""
-  ) +
-  theme(
-    aspect.ratio = 2,
-    legend.position = "none",
-    legend.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.y = element_blank(),
-    panel.border = element_rect(color="black", fill=NA)
-  )
+  theme(aspect.ratio = 2)
 ```
 
 ```{r}
@@ -1714,28 +1673,11 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
   mutate(Method = factor(Method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
-comp_metrics_mnist <- ggparcoord(
-  data = nldr_metrics,
-  columns = c(9,10,11,8,7), #c(5,8,2,3,7),           # numeric columns to plot
-  groupColumn = 1,         # color by method
-  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
-) +
+comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
   scale_color_manual(
     values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
              "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
-  theme_minimal() +
-  labs(
-    y = "scaled metric value",
-    x = ""
-  ) +
-  theme(
-    aspect.ratio = 1.5,
-    legend.position = "none",
-    legend.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.y = element_blank(),
-    panel.border = element_rect(color="black", fill=NA)
-  )
+  theme(aspect.ratio = 1.5)
 ```
 
 ```{r}

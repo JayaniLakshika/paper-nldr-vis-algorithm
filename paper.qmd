@@ -1330,8 +1330,7 @@ error_plot_two_curvy <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.685) +
-  ylab("HBE")
+  theme(aspect.ratio = 0.685) 
 
 
 error_plot_two_curvy_n_bar <-
@@ -1340,8 +1339,7 @@ error_plot_two_curvy_n_bar <-
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.685) +
-  ylab("HBE") 
+  theme(aspect.ratio = 0.685) 
 ```
 
 <!--two_nonlinear/07_example_evaluation_metrics.R-->
@@ -1355,29 +1353,12 @@ nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Metho
   mutate(`rSC` = 1 - sc) |>
   mutate(`rGS` = 1 -  GS)
 
-comp_metrics <- ggparcoord(
-  data = nldr_metrics,
-  columns = c(9,10,11,8,7),           # numeric columns to plot
-  groupColumn = 1,         # color by method
-  scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
-) +
+comp_metrics <- plot_comp_metrics(nldr_metrics) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme_minimal() +
-  labs(
-    y = "scaled metric value",
-    x = ""
-  ) +
-  theme(
-    aspect.ratio = 0.22,
-    legend.position = "none",
-    legend.title = element_blank(),
-    panel.grid.minor = element_blank(),
-    axis.text.y = element_blank(),
-    panel.border = element_rect(color="black", fill=NA)
-  )
+  theme(aspect.ratio = 0.22)
 ```
 
 ```{r}

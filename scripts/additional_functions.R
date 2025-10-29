@@ -94,6 +94,34 @@ plot_hbe_nbar <- function(error_df) {
 
 }
 
+plot_comp_metrics <- function(nldr_metrics){
+
+  ggparcoord(
+    data = nldr_metrics,
+    columns = c(9,10,11,8,7), #c(5,8,3,2,7),           # numeric columns to plot
+    groupColumn = 1,         # color by method
+    scale = "uniminmax"      # normalize between 0 and 1 for fair comparison
+  ) +
+    scale_color_manual(values=c('#377eb8', '#e41a1c')) +
+    theme_minimal() +
+    labs(
+      y = "scaled metric value",
+      x = ""
+    ) +
+    theme(
+      aspect.ratio = 0.5,
+      legend.position = "none",
+      legend.title = element_blank(),
+      panel.grid.minor = element_blank(),
+      axis.title.y = element_text(size = 7),
+      axis.text.y = element_text(size = 7),
+      panel.border = element_rect(color="black", fill=NA),
+      axis.text.x = element_text(size = 7),
+      axis.title.x = element_text(size = 7)
+    )
+
+}
+
 # creating Standardization function
 standardize = function(x){
   z <- (x - mean(x)) / sd(x)
