@@ -1237,6 +1237,12 @@ error_pbmc_tsne <- read_rds("data/pbmc3k/error_scdeed_pbmc_tsne_perplexity_30.rd
 error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_tsne)
 
+error_pbmc_avg <- error_pbmc |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup()
+
 error_pbmc_scdeed <- error_pbmc |> 
   dplyr::filter(b1 == 30) |>
   dplyr::select(method, HBE)
@@ -1254,6 +1260,10 @@ error_pbmc <- error_pbmc |>
 
 error_umap_plot_pbmc <-  plot_hbe(error_pbmc) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 17, 19, 20, 21)]) +
+  scale_color_manual(values=c('#377eb8', '#e41a1c')) +
+  ylab("HBE")
+
+error_umap_plot_pbmc_nbar <-  plot_hbe_nbar(error_pbmc_avg) +
   scale_color_manual(values=c('#377eb8', '#e41a1c')) +
   ylab("HBE")
 ```
@@ -1281,12 +1291,15 @@ comp_metrics_pbmc_scdeed <- ggparcoord(
     x = ""
   ) +
   theme(
-    aspect.ratio = 0.2,
+    aspect.ratio = 0.5,
     legend.position = "none",
     legend.title = element_blank(),
     panel.grid.minor = element_blank(),
-    axis.text.y = element_blank(),
-    panel.border = element_rect(color="black", fill=NA)
+    axis.title.y = element_text(size = 7),
+    axis.text.y = element_text(size = 7),
+    panel.border = element_rect(color="black", fill=NA),
+    axis.text.x = element_text(size = 7),
+    axis.title.x = element_text(size = 7)
   )
 ```
 
@@ -1303,7 +1316,7 @@ bottom_row <- nldr1c + nldr2c +
   plot_layout(ncol = 2, widths = c(50, 50))
 
 # Combine top and bottom rows vertically
-final_plot <- (error_umap_plot_pbmc | bottom_row) /comp_metrics_pbmc_scdeed + plot_layout(heights = c(0.7, 1))
+final_plot <- (error_umap_plot_pbmc | bottom_row)/(error_umap_plot_pbmc_nbar | comp_metrics_pbmc_scdeed) + plot_layout(heights = c(0.7, 1))
 
 final_plot
 ```
