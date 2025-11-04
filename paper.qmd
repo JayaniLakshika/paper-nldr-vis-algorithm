@@ -990,7 +990,7 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
   ylab("HBE") +
   xlab(expression(paste("log(average points per bin (", bar(n)[h], "))"))) +
   #ylim(c(0, 0.75)) +
-  interior_annotation("b", position = c(0.5, 0.1), cex = 2) +
+  annotate("text", x = 109, y = 0.05, label = "b", size = 7, colour = "grey70") +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -998,7 +998,7 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
         axis.ticks.x = element_line(),
         axis.ticks.y = element_line(),
         axis.title = element_text(size = 18),
-        axis.text = element_text(size = 15))
+        axis.text = element_text(size = 15)) 
 
 prop_dens_a1 <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
