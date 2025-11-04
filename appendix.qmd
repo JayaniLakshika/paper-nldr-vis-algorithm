@@ -1198,7 +1198,7 @@ Note that @xia2023 uses a different PBMC dataset than that used by @chen2024, sh
 
 For illustration purposes, we only selected cells generated with inDrops ($n=5858$ cells). Also, @xia2023 used first $9$ principal components to generate the UMAP and tSNE with default hyper-parameters. The objective is to what scDEED suggests is the best layout with what HBE would choose. Layout a (@fig-pbmc-mse-umap) is generated from the hyper-parameters suggested by @chen2024, and layout b (@fig-pbmc-mse-umap) is with suggested hyper-parameters by scDEED to be more accurate. <!--Layouts a and b contain $46$ and $83$ dubious cells respectively.--> The HBE vs binwidth ($a_1$) plot (@fig-pbmc-mse-umap) illustrates that our approach would suggest that scDEED is correct here, that layout b is more accurately reflecting the cluster structure in the PBMC data. This is also supported by examining the models in the data space as shown in @fig-model-pbmc-author-proj.
 
-@fig-pbmc-mse-umap compares the metrics ARNX, RTA, SC, GS, along with HBE computed on $a_1=0.04$ for the six layouts shown in @fig-pbmc-mse-umap. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. The metric ARNX has been reversed so that it aligns with HBE - the lower the value the better the layout. Most metrics (ARNX, RTA, GS, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while SC slightly favors the published layout.
+@fig-pbmc-mse-umap compares the metrics rARNX, rRTA, rSC, rGS, along with HBE computed on $a_1=0.04$ for the six layouts shown in @fig-pbmc-mse-umap. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. Most metrics (ARNX, RTA, GS, and HBE) consistently indicate that the optimised layout (b) provides a better representation, while SC slightly favors the published layout.
 
 ```{r}
 #| label: read-pbmc-umap-layouts
@@ -1263,6 +1263,7 @@ error_umap_plot_pbmc <-  plot_hbe(error_pbmc) +
   scale_color_manual(values=c('#377eb8', '#e41a1c')) 
 
 error_umap_plot_pbmc_nbar <-  plot_hbe_nbar(error_pbmc_avg) +
+  annotate("text", x = 5, y = 4.5, label = "ii", size = 4, colour = "grey70") +
   scale_color_manual(values=c('#377eb8', '#e41a1c')) 
 ```
 
@@ -1277,6 +1278,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc_scdeed, by = c("Method" = "m
   mutate(`rGS` = 1 -  GS)
 
 comp_metrics_pbmc_scdeed <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("iii") +
+  interior_annotation("better", position = c(0.09, 0.15)) +
+  interior_annotation("worse", position = c(0.09, 0.9)) +
   scale_color_manual(values=c('#377eb8', '#e41a1c'))
 ```
 
@@ -1439,7 +1443,7 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 
 ## Compare HBE with existing evaluation metrics
 
-@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as RTA, ARNX, sc, and GS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
+@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as rRTA, rARNX, rSC, and rGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
 #| label: read-pbmc-nldr
@@ -1553,14 +1557,17 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
   mutate(Method = factor(Method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
-comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) + scale_color_manual(
+comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) + 
+  interior_annotation("better", position = c(0.09, 0.03)) +
+  interior_annotation("worse", position = c(0.09, 0.98)) +
+  scale_color_manual(
     values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
   theme(aspect.ratio = 2)
 ```
 
 ```{r}
 #| label: fig-comp-metric-pbmc
-#| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to an NLDR layout. RTA, SC, GS, and ARNX is reversed so that lower is best. Overall, the metrics show general agreement, with minor differences in ranking. All metrics except SC suggest that layouts d and e outperform layout b. ARNX, GS, and HBE consistently identify layout d as the best, with layout e also performing well."
+#| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to an NLDR layout. Overall, the metrics show general agreement, with minor differences in ranking. All metrics except SC suggest that layouts d and e outperform layout b. ARNX, GS, and HBE consistently identify layout d as the best, with layout e also performing well."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 6
@@ -1674,6 +1681,8 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
 comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("better", position = c(0.09, 0.03)) +
+  interior_annotation("worse", position = c(0.09, 0.98)) +
   scale_color_manual(
     values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
              "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
@@ -1682,7 +1691,7 @@ comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
 
 ```{r}
 #| label: fig-comp-metric-mnist
-#| fig-cap: "Comparison of scaled evaluation metrics (ARNX, RTA, SC, GS, and HBE using $a_1=0.04$) for six NLDR layouts computed on the MNIST digit 1 data using a parallel coordinate plot. Each line represents a layout (a–f), with colors corresponding to the scatterplots shown on the right. The metrics display different ranking patterns, indicating that no single measure fully captures embedding quality. ARNX, SC, and GS tend to agree, while RTA and HBE highlight different aspects of structure preservation. Layout c is consistently poor across all metrics, while layouts a and f are generally rated highest except in RTA. Interestingly, ARNX and GS identify layout a as best, whereas HBE and RTA prefer layout f."
+#| fig-cap: "Comparison of scaled evaluation metrics (rARNX, rRTA, rSC, rGS, and HBE using $a_1=0.04$) for six NLDR layouts computed on the MNIST digit 1 data using a parallel coordinate plot. Each line represents a layout (a–f), with colors corresponding to the scatterplots shown on the right. The metrics display different ranking patterns, indicating that no single measure fully captures embedding quality. ARNX, SC, and GS tend to agree, while RTA and HBE highlight different aspects of structure preservation. Layout c is consistently poor across all metrics, while layouts a and f are generally rated highest except in RTA. Interestingly, ARNX and GS identify layout a as best, whereas HBE and RTA prefer layout f."
 #| fig-pos: H
 #| out-width: 100%
 #| fig-height: 6

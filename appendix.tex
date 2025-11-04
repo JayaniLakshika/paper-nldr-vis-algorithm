@@ -857,15 +857,14 @@ reflecting the cluster structure in the PBMC data. This is also
 supported by examining the models in the data space as shown in
 Figure~\ref{fig-model-pbmc-author-proj}.
 
-Figure~\ref{fig-pbmc-mse-umap} compares the metrics ARNX, RTA, SC, GS,
-along with HBE computed on \(a_1=0.04\) for the six layouts shown in
-Figure~\ref{fig-pbmc-mse-umap}. This is a parallel coordinate plot where
-the y-axis shows a normalized score to ensure the metrics are on the
-same scale. Each line corresponds to one layout. The metric ARNX has
-been reversed so that it aligns with HBE - the lower the value the
-better the layout. Most metrics (ARNX, RTA, GS, and HBE) consistently
-indicate that the optimised layout (b) provides a better representation,
-while SC slightly favors the published layout.
+Figure~\ref{fig-pbmc-mse-umap} compares the metrics rARNX, rRTA, rSC,
+rGS, along with HBE computed on \(a_1=0.04\) for the six layouts shown
+in Figure~\ref{fig-pbmc-mse-umap}. This is a parallel coordinate plot
+where the y-axis shows a normalized score to ensure the metrics are on
+the same scale. Each line corresponds to one layout. Most metrics (ARNX,
+RTA, GS, and HBE) consistently indicate that the optimised layout (b)
+provides a better representation, while SC slightly favors the published
+layout.
 
 \begin{figure}[H]
 
@@ -920,10 +919,10 @@ the langevitour animations are available at
 metrics}\label{compare-hbe-with-existing-evaluation-metrics}
 
 Figure~\ref{fig-comp-metric-pbmc} and Figure~\ref{fig-comp-metric-mnist}
-compare HBE with commonly used evaluation metrics such as RTA, ARNX, sc,
-and GS across multiple NLDR layouts. These visual comparisons highlight
-that HBE behaves differently from these existing metrics due to the
-different settings involved.
+compare HBE with commonly used evaluation metrics such as rRTA, rARNX,
+rSC, and rGS across multiple NLDR layouts. These visual comparisons
+highlight that HBE behaves differently from these existing metrics due
+to the different settings involved.
 
 \begin{figure}[H]
 
@@ -937,11 +936,10 @@ different settings involved.
 metrics (rRTA, rSC, rGS, rARNX, and HBE with \(a_1 = 0.06\)) for the
 eight NLDR layouts computed on the PBMC3k data, shown as a parallel
 coordinate plot. The color of each line corresponds to an NLDR layout.
-RTA, SC, GS, and ARNX is reversed so that lower is best. Overall, the
-metrics show general agreement, with minor differences in ranking. All
-metrics except SC suggest that layouts d and e outperform layout b.
-ARNX, GS, and HBE consistently identify layout d as the best, with
-layout e also performing well.}
+Overall, the metrics show general agreement, with minor differences in
+ranking. All metrics except SC suggest that layouts d and e outperform
+layout b. ARNX, GS, and HBE consistently identify layout d as the best,
+with layout e also performing well.}
 
 \end{figure}%
 
@@ -954,7 +952,7 @@ layout e also performing well.}
 }
 
 \caption{\label{fig-comp-metric-mnist}Comparison of scaled evaluation
-metrics (ARNX, RTA, SC, GS, and HBE using \(a_1=0.04\)) for six NLDR
+metrics (rARNX, rRTA, rSC, rGS, and HBE using \(a_1=0.04\)) for six NLDR
 layouts computed on the MNIST digit 1 data using a parallel coordinate
 plot. Each line represents a layout (a--f), with colors corresponding to
 the scatterplots shown on the right. The metrics display different
