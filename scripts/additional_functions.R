@@ -78,10 +78,9 @@ plot_hbe_nbar <- function(error_df) {
              colour = method)) +
     geom_point(size = 0.8) +
     geom_line(linewidth = 0.3) +
-    annotate("text", x = 2.5, y = 1.4, label = "ii", size = 5, colour = "grey70") +
     scale_x_log10() +
     ylab("HBE") +
-    xlab(expression(paste("log(average points per bin (", bar(n)[h], "))"))) +
+    xlab(expression(paste("log(average bin count (", bar(n)[h], "))"))) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
           plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
