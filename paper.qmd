@@ -1157,7 +1157,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
                      labels = parse_format()) +
   scale_linetype_manual(values = c("longdash", "solid", "dotted"),
                         labels = parse_format()) +
-  xlab(expression(paste("low density bin cutoff based on ", d[h]))) +
+  xlab(expression(paste("low count bin cutoff based on ", w[h]))) +
   ylab("HBE") +
   #xlim(c(0, 0.14)) +
   ylim(c(0, 0.75)) +
@@ -1180,7 +1180,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{d}_h$, (c) proportion of non-empty bins vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (d)."
+#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{n}_h$, (c) proportion of non-empty bins ($m/b$) vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
