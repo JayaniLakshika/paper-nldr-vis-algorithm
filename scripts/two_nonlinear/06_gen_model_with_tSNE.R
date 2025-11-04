@@ -568,7 +568,9 @@ error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_s
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   group_by(a1) |>
   filter(b1 == min(b1)) |>
-  ungroup()
+  ungroup() |>
+  filter(b1 != 23) |>
+  bind_rows(error_two_curvy_tsne |> filter(b1 == 24))
 
 base_line_dens <- error_two_curvy_tsne |>
   filter(a1 == min(a1)) |>

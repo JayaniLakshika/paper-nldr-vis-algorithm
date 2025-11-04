@@ -953,7 +953,7 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.07, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
@@ -970,17 +970,20 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
         axis.title = element_text(size = 18),
         axis.text = element_text(size = 15))
 
+error_two_curvy_tsne_filtered <- error_two_curvy_tsne |>
+  filter(b1 %in% c(15, 24, 35))
+
 rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne, 
                      aes(x = n_bar, 
                          y = HBE)) +
-  geom_vline(xintercept = error_two_curvy_tsne$n_bar[15],
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[2],
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
-  geom_vline(xintercept = error_two_curvy_tsne$n_bar[13],
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[3],
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = error_two_curvy_tsne$n_bar[11], linetype="dotted",
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[1], linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
@@ -1010,7 +1013,7 @@ prop_dens_a1 <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.07, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
@@ -1037,7 +1040,7 @@ a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = 0.07, linetype="dotted",
+  geom_vline(xintercept = 0.08, linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) +
   geom_point(size = 1) +
@@ -1180,7 +1183,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 
 ```{r}
 #| echo: false
-#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{n}_h$, (c) proportion of non-empty bins ($m/b$) vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.07$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (d)."
+#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{n}_h$, (c) proportion of non-empty bins ($m/b$) vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low count bins doesn't substantially change HBE, for all three binwidths (d)."
 #| label: fig-param-two-curvy
 #| out-width: 100%
 #| fig-width: 12
