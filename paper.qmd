@@ -1074,7 +1074,7 @@ axis.text = element_text(size = 15))
 
 <!-- Does this really need an entire subsection? It's only 3 sentences long. -->
 
-NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] support reverse mapping. 
+NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] support prediction. 
 
 A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$ and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$. 
 
