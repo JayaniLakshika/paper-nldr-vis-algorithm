@@ -857,15 +857,6 @@ reflecting the cluster structure in the PBMC data. This is also
 supported by examining the models in the data space as shown in
 Figure~\ref{fig-model-pbmc-author-proj}.
 
-Figure~\ref{fig-pbmc-mse-umap} compares the metrics rARNX, rRTA, rSC,
-rGS, along with HBE computed on \(a_1=0.04\) for the six layouts shown
-in Figure~\ref{fig-pbmc-mse-umap}. This is a parallel coordinate plot
-where the y-axis shows a normalized score to ensure the metrics are on
-the same scale. Each line corresponds to one layout. Most metrics (ARNX,
-RTA, GS, and HBE) consistently indicate that the optimised layout (b)
-provides a better representation, while SC slightly favors the published
-layout.
-
 \begin{figure}[H]
 
 \centering{
@@ -962,11 +953,12 @@ layouts computed on the MNIST digit 1 data using a parallel coordinate
 plot. Each line represents a layout (a--f), with colors corresponding to
 the scatterplots shown on the right. The metrics display different
 ranking patterns, indicating that no single measure fully captures
-embedding quality. ARNX, SC, and GS tend to agree, while RTA and HBE
-highlight different aspects of structure preservation. Layout c is
-consistently poor across all metrics, while layouts a and f are
-generally rated highest except in RTA. Interestingly, ARNX and GS
-identify layout a as best, whereas HBE and RTA prefer layout f.}
+embedding quality. Layout a is identified as the best according to HBE
+and rRTA, but is considered much less optimal by rARNX, rSC, and rGS.
+Layout e is considered the worst, or close to the poorest, by all
+metrics. Layouts a and f show similar patterns of agreement across
+metrics, except for rRTA, where layout a performs the best and layout f
+the worst. Layout c is the worst in rARNX, rSC, and HBE.}
 
 \end{figure}%
 
