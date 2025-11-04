@@ -971,25 +971,26 @@ rmse_two_curvy_b <- ggplot(error_two_curvy_tsne,
         axis.text = element_text(size = 15))
 
 rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne, 
-                     aes(x = d_bar, 
+                     aes(x = n_bar, 
                          y = HBE)) +
-  geom_vline(xintercept = error_two_curvy_tsne$d_bar[15],
+  geom_vline(xintercept = error_two_curvy_tsne$n_bar[15],
            colour = "#d95f02", linetype="dashed", 
            linewidth=1) +
-  geom_vline(xintercept = error_two_curvy_tsne$d_bar[13],
+  geom_vline(xintercept = error_two_curvy_tsne$n_bar[13],
              colour = "#1f78b4", 
              linetype="solid",
              linewidth=1) +
-  geom_vline(xintercept = error_two_curvy_tsne$d_bar[11], linetype="dotted",
+  geom_vline(xintercept = error_two_curvy_tsne$n_bar[11], linetype="dotted",
              colour = "#1b9e77", linewidth=1) +
   geom_line(linewidth = 0.5) + 
   geom_point(size = 1) +
 #  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_log10() +
   ylim(c(0, 0.75)) +
   ylab("HBE") +
-    xlab(expression(paste("average bin density (", bar(d)[h], ")"))) +
+  xlab(expression(paste("log(average points per bin (", bar(n)[h], "))"))) +
   #ylim(c(0, 0.75)) +
-  interior_annotation("b", position = c(0.9, 0.1), cex = 2) +
+  interior_annotation("b", position = c(0.5, 0.1), cex = 2) +
   theme_minimal() +
   theme(aspect.ratio = 0.75,
         panel.border = element_rect(fill = 'transparent'),
@@ -1354,6 +1355,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Metho
   mutate(`rGS` = 1 -  GS)
 
 comp_metrics <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("iii") +
+  interior_annotation("better", position = c(0.07, 0.15)) +
+  interior_annotation("worse", position = c(0.07, 0.9)) +
   scale_color_manual(
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
