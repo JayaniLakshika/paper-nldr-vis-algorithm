@@ -1106,7 +1106,7 @@ Default values are provided for each of these, but deciding on the best model fi
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-pos: H
-#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different $b_1$ specifications yielding different $b_2, b, m$: (a) **15**, 18, 270, 98, (b) **24**, 29, 696, 209, and (c) **35**, 42, 1470, 386. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest bin size, the data structure is discontinuous, suggesting that there are too many bins."
+#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different $b_1$ specifications yielding different $b_2, b, m$: (a) **15**, 18, 270, 98, (b) **24**, 29, 696, 209, and (c) **35**, 42, 1470, 386. Color indicates standardized counts, dark indicating high count and light indicates low count. At the smallest binwidth, the data structure is discontinuous, suggesting that there are too many bins."
 #| fig-width: 9
 #| fig-height: 3
 
@@ -1209,12 +1209,14 @@ The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] 
 
 A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually often the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
 
-To decide on a layout an analyst needs:
+<!-- To decide on a layout an analyst needs: -->
 
-- a selection of NLDR representations made with a range of hyper-parameter choices and possibly different methods (tSNE, UMAP, ...).
-- a range of model fits made by varying bin size and low density bin removal.
-- calculated HBE for each layout, when it is transformed into the \pD{} space. 
-- and the ability to examine the fit in the data space.
+<!-- - a selection of NLDR representations made with a range of hyper-parameter choices and possibly different methods such as tSNE, UMAP. -->
+<!-- - a range of model fits made by varying bin size and low count bin removal. -->
+<!-- - calculated HBE for each layout, when it is transformed into the \pD{} space.  -->
+<!-- - and the ability to examine the fit in the data space. -->
+
+To decide on a reasonable layout, an analyst needs a selection of NLDR representations generated using a range of hyper-parameter choices and possibly different methods, such as tSNE and UMAP. They also require a range of model fits created by varying the binwidths and the level of low count bin removal, along with the calculated HBE values for each layout after transformation into the \pD{} space. Finally, the analyst must be able to visually examine how well each model fits the data in the original data space.
 
 Comparing the HBE to obtain the best fit is appropriate if the same NLDR method is used. However, because the HBE is computed on \pD{} data it measures the fit between model and data so it can also be used to compare the fit of different NLDR methods. A lower HBE indicates a better NLDR representation.
 
