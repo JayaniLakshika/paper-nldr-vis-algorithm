@@ -1002,33 +1002,6 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
         axis.title = element_text(size = 18),
         axis.text = element_text(size = 15)) 
 
-prop_dens_a1 <- ggplot(error_two_curvy_tsne,
-                     aes(x = a1,
-                         y = prop_comp)) +
-  geom_vline(xintercept = 0.03,
-           colour = "#d95f02", linetype="dashed", 
-           linewidth=1) +
-  geom_vline(xintercept = 0.05,
-             colour = "#1f78b4", 
-             linetype="solid",
-             linewidth=1) +
-  geom_vline(xintercept = 0.08, linetype="dotted",
-             colour = "#1b9e77", linewidth=1) +
-  geom_line(linewidth = 0.5) +
-  geom_point(size = 1) +
-  # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
-  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
-  labs(x = expression(paste("binwidth (", a[1], ")")), y = paste("relative ave bin density")) +
-  interior_annotation("d", position = c(0.9, 0.1), cex = 2) +
-  theme_minimal() +
-  theme(aspect.ratio = 0.75,
-        panel.border = element_rect(fill = 'transparent'),
-        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
-        axis.ticks.x = element_line(),
-        axis.ticks.y = element_line(),
-        axis.title = element_text(size = 18),
-axis.text = element_text(size = 15))
-
 a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
                      aes(x = a1,
                          y = prop_bins)) +
@@ -1189,7 +1162,7 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 #| fig-height: 10
 
 rmse_two_curvy_b + rmse_two_curvy_relcount + a1_m_two_curvy +
-  rmse_two_curvy_lwd + #prop_dens_a1 +
+  rmse_two_curvy_lwd + 
   plot_layout(ncol=2)
 ```
 

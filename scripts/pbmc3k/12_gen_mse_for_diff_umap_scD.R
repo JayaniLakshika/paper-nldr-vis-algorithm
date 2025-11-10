@@ -9,8 +9,6 @@ data_pbmc <- data_pbmc[, 1:9] |>
 
 names(data_pbmc) <- append(paste0("x", 1:9), "ID")
 
-n <- NROW(data_pbmc)
-
 ## For umap
 umap_pbmc <- read_rds("data/pbmc3k/pbmc_scdeed_umap_n_neighbors_30_min_dist_0.3.rds")
 umap_pbmc <- as_tibble(umap_pbmc)
@@ -19,8 +17,7 @@ umap_pbmc <- umap_pbmc |>
   mutate(ID = 1:NROW(umap_pbmc))
 
 error_pbmc_umap <- gen_diffbin1_errors(highd_data = data_pbmc, nldr_data = umap_pbmc) |>
-  dplyr::mutate(method = "UMAP_30_min_dist_0.3",
-                n_bar = n/m)
+  dplyr::mutate(method = "UMAP_30_min_dist_0.3")
 
 write_rds(error_pbmc_umap, "data/pbmc3k/error_scdeed_pbmc_umap_30_min_dist_0.3.rds")
 
@@ -34,8 +31,7 @@ umap_pbmc <- umap_pbmc |>
   mutate(ID = 1:NROW(umap_pbmc))
 
 error_pbmc_umap <- gen_diffbin1_errors(highd_data = data_pbmc, nldr_data = umap_pbmc) |>
-  dplyr::mutate(method = "UMAP_80_min_dist_0.5",
-                n_bar = n/m)
+  dplyr::mutate(method = "UMAP_80_min_dist_0.5")
 
 write_rds(error_pbmc_umap, "data/pbmc3k/error_scdeed_pbmc_umap_80_min_dist_0.5.rds")
 

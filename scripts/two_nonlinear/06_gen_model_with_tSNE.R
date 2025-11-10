@@ -572,13 +572,6 @@ error_two_curvy_tsne <- error_two_curvy_tsne |>
   filter(b1 != 23) |>
   bind_rows(error_two_curvy_tsne |> filter(b1 == 24))
 
-base_line_dens <- error_two_curvy_tsne |>
-  filter(a1 == min(a1)) |>
-  pull(d_bar) #d_bar
-
-error_two_curvy_tsne <- error_two_curvy_tsne |>
-  mutate(prop_comp = d_bar/base_line_dens)
-
 error_two_curvy_tsne <- error_two_curvy_tsne |>
   mutate(prop_bins = m/b)
 
