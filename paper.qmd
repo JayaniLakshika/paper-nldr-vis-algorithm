@@ -931,7 +931,7 @@ Several common metrics are often used to assess the quality of any NLDR layout, 
 
  <!-- Fitted values,  Error calculation-->
 
-None of the above measures is particularly well-suited to assessing our model fit, as we will show later. Thus, we need to different approach to measuring model fit. Because the model here is similar to a confirmatory factor analysis model (see a general explanation in @brown2015), $\widehat{T} + \Epsilon$, our approach is similar to the ones used in this area. it is based on "residuals" computed as the difference between the fitted model and observed values in \pD{}. Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. In factor analysis language, these fitted values might also be denoted as $\widehat{X}$. The error is computed by taking the squared \pD{} Euclidean distance, of points from their bin centroid, which we will call hexbin error (HBE):
+None of the above measures is particularly well-suited to assessing our model fit, as we will show later. Thus, we need a different approach to measuring model fit. Because the model here is similar to a confirmatory factor analysis model (see a general explanation in @brown2015), $\widehat{T} + \Epsilon$, our approach is similar to the ones used in this area. it is based on "residuals" computed as the difference between the fitted model and observed values in \pD{}. Observations are associated with their bin center, $C_{h}^{(p)}$, which are also considered to be the *fitted values*. In factor analysis language, these fitted values might also be denoted as $\widehat{X}$. The error is computed by taking the squared \pD{} Euclidean distance, of points from their bin centroid, which we will call hexbin error (HBE):
 
 $$ HBE = \sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1} 
 
@@ -990,7 +990,7 @@ rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne,
   scale_x_log10() +
   ylim(c(0, 0.75)) +
   ylab("HBE") +
-  xlab(expression(paste("log(average points per bin (", bar(n)[h], "))"))) +
+  xlab(expression(paste("average points per bin (", bar(n)[h], ")(log scale))"))) +
   #ylim(c(0, 0.75)) +
   annotate("text", x = 109, y = 0.05, label = "b", size = 7, colour = "grey70") +
   theme_minimal() +
@@ -1381,7 +1381,7 @@ There is some agreement between the metrics. All, except rARNX agree that layout
 
 The problem with rSC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout produces a Shepard plot with two clusters of distances which will produce a high correlation value. Similar reasoning would explain why rRTA and rGS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in \pD{}.
 
-When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions. @fig-fit-tsne-phate shows the fitted models for layouts a (rated high by HBE and rARNX) and c (rated poorly). These are \gD{} projectiosn from the tour, with black indicating the fitted model overlaid on the blue points of the data. The reason for the poor fit is that the PHATE layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. We have learned that all the NLDR methods tend to have twists in the fit in \pD{} but this is extreme. This is likely why layout c has poor metrics relative to the other layouts, and it suggests that it does not adequately capture the local structure in the 2NC7 data.
+When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions. @fig-fit-tsne-phate shows the fitted models for layouts a (rated high by HBE and rARNX) and c (rated poorly). These are \gD{} projections from the tour, with black indicating the fitted model overlaid on the blue points of the data. The reason for the poor fit is that the PHATE layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. We have learned that all the NLDR methods tend to have twists in the fit in \pD{} but this is extreme. This is likely why layout c has poor metrics relative to the other layouts, and it suggests that it does not adequately capture the local structure in the 2NC7 data.
 
 <!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
 
@@ -1475,7 +1475,7 @@ two_curvy_proj3_phate <- plot_proj(
 
 ```{r}
 #| label: fig-fit-tsne-phate
-#| fig-cap: "Three $2\\text{-}D$ projections from a tour showing the fitted models (black lines) for layouts a (top row) and c (bottom row) of the 2NC7 data (blue points). Layout c, which was poorly rated by rARNX and HBE covers less of the width of the data than a. The triangular gridding is less visible in c than a, and actually corresponds to extreme twisting."
+#| fig-cap: "Three $2\\text{-}D$ projections from a tour showing the fitted models (black lines) for layouts a (top row) and c (bottom row) of the 2NC7 data (blue points). Layout c, which was poorly rated by rARNX and HBE covers less of the width of the data than a. The triangular gridding is less visible in c than layout a, and actually corresponds to extreme twisting."
 #| fig-width: 6
 #| fig-height: 4
 

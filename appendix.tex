@@ -405,7 +405,6 @@ $l$ & side length\\
 $A$ & area\\
 $n_h$ & number of points in hexagon $h$ (bin count)\\
 $w_h$ & standardized number of points in hexagon $h$ (standardized bin counts)\\
-$d_h$ & density of hexagon $h$ (bin density)\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -503,7 +502,7 @@ This data is constructed by simulating two clusters, each consisting of
 \(X_4 = \cos(\theta)\). Observations lie on a \gD{} manifold in \sD{}.
 The other cluster is from \(X_1 \sim U(0, 2)\), \(X_2 \sim U(0, 3)\),
 \(X_3 = \text{-}(X_1^3 + X_2)\), and \(X_4 \sim U(0, 2)\). It is also
-curved, but observations lie on a \tD{} manifold in\sD{}. Three more
+curved, but observations lie on a \tD{} manifold in \sD{}. Three more
 variables, \(X_5, X_6, X_7\), that are small amounts of pure noise are
 added. We would consider \(T=(X_1, X_2, X_3, X_4)\) to be the geometric
 structure (true model) that we hope to capture.
@@ -526,7 +525,7 @@ configurations}\label{computing-hexagon-grid-configurations}
 Given range of embedding component, \(r_2\), number of bins along the
 x-axis, \(b_1\), and buffer proportion, \(q\), hexagonal starting point
 coordinates, \(s_1 = \text{-}q\), and \(s_2 = \text{-}qr_2\). The
-purpose is to find width of the hexagon. \(a_1\), and number of bins
+purpose is to find width of the hexagon, \(a_1\) and number of bins
 along the y-axis, \(b_2\).
 
 Geometric arguments give rise to the following constraints.
@@ -747,7 +746,7 @@ inadequate for representing the high-dimensional data.
 
 }
 
-\caption{\label{fig-five-gau-projs}NLDR's organise points in the \gD{}
+\caption{\label{fig-five-gau-projs}NLDR's organize points in the \gD{}
 layout in different ways, possibly misleadingly, illustrated using three
 layouts: (a) tSNE, (b) UMAP, (c) PaCMAP. The data has five Gaussian
 clusters in \fD{}. The bottom row of plots shows a \gD{} projection from
@@ -869,17 +868,17 @@ Figure~\ref{fig-model-pbmc-author-proj}.
 with what would be suggested to be optimal by scDEED (b), using HBE for
 varying (i) binwidth (\(a_1\)), and (ii) average bin count
 (\(\bar{n}_h\)), on a subset of PBMC3k data. Color represents NLDR
-layouts. HBE would corroborate that the scDEED optimised layout is
+layouts. HBE would corroborate that the scDEED optimized layout is
 better than what was originally published. Plot (ii), which accounts for
 the density within clusters by using average bin count, shows reduced
 differences between layouts, indicating that part of the variation in
 (i) is driven by cluster density rather than true structural
 differences. Comparison of scaled evaluation metrics (iii) (rRTA, rSC,
 rGS, rARNX, and HBE using \(a_1=0.04\)) for two NLDR layouts of the
-PBMC3k data the originally published layout (a) and the scDEED optimised
+PBMC3k data the originally published layout (a) and the scDEED optimized
 layout (b). Each line represents a layout, with color matching the
 corresponding scatterplots. Most metrics (rSC, rARNX, and HBE)
-consistently indicate that the optimised layout (b) provides a better
+consistently indicate that the optimized layout (b) provides a better
 representation, while rRTA, and rGS slightly favor the published
 layout.}
 
@@ -895,18 +894,18 @@ layout.}
 
 \caption{\label{fig-model-pbmc-author-proj}Compare the published \gD{}
 layout (Figure~\ref{fig-pbmc-mse-umap} a) made with UMAP and the \gD{}
-layout made with tSNE selected as optimal by scDEED and also HBE
-(Figure~\ref{fig-pbmc-mse-umap} b)(Figure~\ref{fig-pbmc-mse-umap}). The
-two plots on the right show projections from a tour, with the models
-overlaid. The published layout a suggested three separated clusters with
-two of them are close, but this is not present in the data. While there
-may be three clusters they are not well-separated. The difference in
-model fit also indicates this: the published layout a does not capture
-the nonlinear structure of the clusters like the model generated from
-layout b. This supports the choice that layout b is the better
-representation of the data, because it shows close clusters. Videos of
-the langevitour animations are available at
-\url{https://youtu.be/ffiB4MGWyn8} and
+layout made with tSNE selected as optimal by scDEED
+(Figure~\ref{fig-pbmc-mse-umap} b) and also HBE
+(Figure~\ref{fig-pbmc-mse-umap}). The two plots on the right show
+projections from a tour, with the models overlaid. The published layout
+a suggested three separated clusters with two of them are close, but
+this is not present in the data. While there may be three clusters they
+are not well-separated. The difference in model fit also indicates this:
+the published layout a does not capture the nonlinear structure of the
+clusters like the model generated from layout b. This supports the
+choice that layout b is the better representation of the data, because
+it shows close clusters. Videos of the langevitour animations are
+available at \url{https://youtu.be/ffiB4MGWyn8} and
 \url{https://youtu.be/e7XNL18co1c} respectively.}
 
 \end{figure}%
