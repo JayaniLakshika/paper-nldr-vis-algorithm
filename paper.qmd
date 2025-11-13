@@ -358,7 +358,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   plot_layout(ncol = 4)
 ```
 
-The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including a simulated data example. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics. <!--Curiosities and unexpected patterns discovered in NLDR results by examining the model in the data space are discussed in @sec-curiosities.--> Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
+The paper is organized as follows. @sec-background provides a summary of the literature on NLDR, and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including a simulated data example. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics.  Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
 
 ## Background {#sec-background}
 
@@ -913,6 +913,7 @@ hex_grid_coloured_two_curvy3 <-  ggplot() +
 #| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doesn't severely impact the \\pD{} model representation."
 #| fig-width: 8
 #| fig-height: 2
+#| fig-pos: "!ht"
 
 trimesh_two_curvy_removed1_tsne_with_data +
   two_curvy_proj_tsne_first_model1 +
@@ -927,7 +928,7 @@ trimesh_two_curvy_removed1_tsne_with_data +
 
 All NLDR methods internally optimize a quantity to produce a layout for any particular hyper-parameter set. These are not always made available in the model output, and may not be universally comparable between hyper-parameter choices and methods. 
 
-Several common metrics are often used to assess the quality of any NLDR layout, based on preservation of global and local structure of the data. The $RNX$ curve quantifies the neighborhood agreement between \pD{} and \kD{} spaces, by computing the area under the curve ($ARNX$) across a range of neighborhood scales [@john2015]. A high value indicates better preservation of a balance of global and local structure. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy compare the order of \gD{} and \pD{} distances of random triplets of points [@yingfan2021]. High values indicate preservation of the geometry, suggesting both local and global structure preservation. The Shepard diagram [@shepard1962] and its associated Spearman correlation (SC) [@spearman1961] between \pD{} and \kD{} distances. High values indicate preservation of global structure. The Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline [@amid2022]. Higher values indicate better preservation of global structure. The metric RTA, SC, GS, and ARNX have been reversed (rRTA, rSC, rGS, and rARNX) so that they align with HBE - the lower the value the better the layout.<!-- KNN Accuracy evaluates neighborhood consistency using leave-one-out classification, and SVM Accuracy assesses neighborhood cohesion with a nonlinear decision boundary [@yingfan2021]. Because these two require a response variable XXX not correct!), they can't be applied for our purposes.--> <!-- Since PCA serves as the optimal linear method, we report $RGS = 1 − GS$ in our comparisons to align the direction of the metric with NLDR methods. As our analysis focuses on unlabeled data, we use ARNX, RTA, sc, and RGS for comparison with our proposed measure.-->
+Several common metrics are often used to assess the quality of any NLDR layout, based on preservation of global and local structure of the data. The $RNX$ curve quantifies the neighborhood agreement between \pD{} and \kD{} spaces, by computing the area under the curve ($ARNX$) across a range of neighborhood scales [@john2015]. A high value indicates better preservation of a balance of global and local structure. Random Triplet Accuracy (RTA) and Centroid Triplet Accuracy compare the order of \gD{} and \pD{} distances of random triplets of points [@yingfan2021]. High values indicate preservation of the geometry, suggesting both local and global structure preservation. The Shepard diagram [@shepard1962] and its associated Spearman correlation (SC) [@spearman1961] between \pD{} and \kD{} distances. High values indicate preservation of global structure. The Global Score (GS) measures how well an embedding retains the overall geometry of the data relative to a PCA baseline [@amid2022]. Higher values indicate better preservation of global structure. The metric RTA, SC, GS, and ARNX have been reversed (rRTA, rSC, rGS, and rARNX) so that they align with HBE - the lower the value the better the layout.
 
  <!-- Fitted values,  Error calculation-->
 
@@ -1041,12 +1042,8 @@ axis.text = element_text(size = 15))
   plot_layout(ncol=3)
 ```
 
-<!-- #### Other evaluation metrics -->
-
 
 ### Prediction into \gD{}
-
-<!-- Does this really need an entire subsection? It's only 3 sentences long. -->
 
 NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] support prediction. 
 
@@ -1054,24 +1051,11 @@ A benefit of our approach is that for any NLDR method, it provides a way to pred
 
 ### Tuning
 
-<!-- The model fitting is based on these parameters:  -->
-
-<!-- - hexagon bin parameters -->
-<!--     - bottom left bin position $(s_1, \ s_2)$,  -->
-<!--     - the number of bins in the horizontal direction ($b_1$), which controls the number of bins the vertical direction ($b_2$), total number of bins ($b$), and total number of non-empty bins ($m$). -->
-<!-- - low count bin removal using standardized bin counts ($w_h = n_h/n, ~~h=1, \dots m$). -->
-
 The model fitting is based on several parameters, including the hexagon bin parameters and the low count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$.
 
 Default values are provided for each of these, but deciding on the best model fit is assisted by examining a range of values. The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are recommended, where the dependence on $r_2$ reflects the preservation of aspect ratio in the NLDR layout.
 
 @fig-bins-two-curvy shows the hexbin grids for three choices of $b_1$. While the number of bins is the common parameter to modify, bin start positions $(s_1, \ s_2)$ can be worth experimenting with also because  it can also change bin counts. 
-
-<!--Choosing these parameters according to HBE can be automated but it is recommended that the user examine the resulting model representation by overlaying it on the data in \pD{}. The next few subsections describe the calculation of default values, and the effect that different choices have on the model fit.-->
-
-<!-- #### Hexagon bin parameters -->
-
-<!-- The values $(s_1, \ s_2)$ define the position of the centroid of the bottom left hexagon. By default, this is at $s_1 = -q, s_2 = -qr_2$, where $q$ is the buffer bound the data. The choice of these values can have some effect on the distribution of bin counts which is seen in @fig-bins-two-curvy. The distribution of bin counts for $s_1$ varying between $\text{-}0.1\,\text{--}\,0.0$.-->
 
 ```{r}
 #| echo: false
@@ -1095,19 +1079,6 @@ It is worthwhile to consider what are desirable aspects of a hexbin result, that
 - HBE can also be examined against average standardized bin count or average bin count (plot b). This is similar to the comparison with $a_1$ but to use when comparing different NLDR layouts. Different layouts might produce different density of points, which will not be captured well by a comparison of HBE vs $a_1$.
 - The proportion of non-empty bins is interesting to examine across different binwidths (plot c). A good binning should have just the right amount of bins to neatly cover the shape of the data, and no more or less. As binwidth gets smaller, $m/b$ should roughly get bigger.
 - Bins with a small number of observations might be removed to sharpen the wireframe model. This can have adverse effects, though - failing to extend the wireframe into sparse areas, or resulting in holes in the wireframe. Plot d shows the relationship between HBE (computed for all observations despite some bin removal) and the standardized bin count cutoff used to remove bins. For all three chosen bin widths a small number of bins can be removed without affecting HBE.
-<!-- - Lastly, an ideal distribution of the density of a grid is uniform, in the sense that if each bin captures a similar number of observations, then it has just the right number of bins to neatly cover the shape of the data. To examine this, the average bin density, $\bar{d}$, is compared against the range of binwidths (@fig-param-two-curvy d), relative to that of the hexgrid with the smallest binwidth. -->
-
-
-<!-- 
-To make comparisons between hexagon configurations made from different parameter choices we use the number of **non-empty** bins ($m$) rather than the total number of bins. 
-
-By default, when assessing the choice of horizontal bins, $b_1$, the total number of bins is measured by the number of **non-empty** bins ($m$). This more accurately reflects the hexagon grid relative to the HBE than the full number of bins in the grid. It may also be beneficial to remove low count bins also, in the situation where data is clustered or stringy, where the observed data is sparse. In order to decide if this is necessary, you would examine the distribution of bin counts, or the density which puts the counts on a standard scale. If there is something of a gap at low values, this would suggest a potential value to use as a cutoff. Alternatively, one could choose to remove based on a percentile, the bins with density in the lowest $5\%$ of all bins, for example. @fig-param-two-curvy (c) illustrates the effect on the model representation of removing bins below different percentages. 
-
-The benchmark value for removing low-density hexagons ranges between $0$ and $1$. When analyzing how these benchmark values influence model performance, it's essential to observe the change in HBE as the benchmark value increases (@fig-param-two-curvy (c)). The HBE shows a gradual decrease as the benchmark value goes from $1$ to $0$. Evaluating this rate of increase is important. If the increment is not considerable, the decision might lean towards retaining low-density hexagons.
--->
-
-<!-- I'll be honest I've no idea what this section is 
-The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$ where $l$ is the side length of the hexagon. If we know $a_1$ and $a_2$, $l$ can be computed (see appendix). The density of a hexagon grid is calculated as $\sum^{h}_{i=1}n_h/A$ and the proportion is $\sum^{h}_{i=1}n_h/Ab$. The baseline proportion is the proportion density at the smallest possible value of $a_1$. The relative proportion density is the ratio of the observed proportion density to the baseline proportion density.-->
 
 <!--two_nonlinear/05_gen_rm_lwd_mse.R-->
 ```{r}
@@ -1177,13 +1148,6 @@ The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] 
 @fig-toy-rmse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable but more important is to identify bad representations so they can be avoided. The goal is to help users decide on a the most useful and appropriate low-dimensional representation of the high-dimensional data. 
 
 A particular pattern that we commonly see is that analysts tend to pick layouts with clusters that have big separations between them. When you examine their data in a tour, it is almost always that we see there are no big separations, and actually often the suggested clusters are not even present. While we don't expect that analysts include animated gifs of tours in their papers, we should expect that any \gD{} representation adequately indicates the clustering that is present, and honestly show lack of separation or lack of clustering when it doesn't exist. It is important for analysts to have tools to select the accurate representation not the pretty but wrong representation.
-
-<!-- To decide on a layout an analyst needs: -->
-
-<!-- - a selection of NLDR representations made with a range of hyper-parameter choices and possibly different methods such as tSNE, UMAP. -->
-<!-- - a range of model fits made by varying bin size and low count bin removal. -->
-<!-- - calculated HBE for each layout, when it is transformed into the \pD{} space.  -->
-<!-- - and the ability to examine the fit in the data space. -->
 
 To decide on a reasonable layout, an analyst needs a selection of NLDR representations generated using a range of hyper-parameter choices and possibly different methods, such as tSNE and UMAP. They also require a range of model fits created by varying the binwidths and the level of low count bin removal, along with the calculated HBE values for each layout after transformation into the \pD{} space. Finally, the analyst must be able to visually examine how well each model fits the data in the original data space.
 
@@ -1373,8 +1337,6 @@ final_plot_two_curvy <- (top_section) / comp_metrics +
 final_plot_two_curvy
 ```
 
-<!-- Current metrics like ARNX, RTA, and SC focus on how well local or global structures are preserved, but their suggestions best layout can be very different. In contrast, HBE gives a more direct and easy-to-understand link between the \pD{} data space and the \gD{} space, showing how well the NLDR method capture the high-dimensional data structure.-->
-
 @fig-toy-rmse compares the metrics rARNX, rRTA, rSC, rGS, along with HBE computed on $a_1=0.05$ for the six layouts shown in @fig-toy-rmse. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. 
 
 There is some agreement between the metrics. All, except rARNX and HBE agree that layout d is best. rARNX and HBE agree that layout f is best or very close to best. Layout a is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout c is considered poor by rRTA, rSC, rGS, and rARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout. 
@@ -1382,8 +1344,6 @@ There is some agreement between the metrics. All, except rARNX and HBE agree tha
 The problem with rSC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout produces a Shepard plot with two clusters of distances which will produce a high correlation value. Similar reasoning would explain why rRTA and rGS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in \pD{}.
 
 When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions. @fig-fit-tsne-phate shows the fitted models for layouts a (rated high by HBE and rARNX) and c (rated poorly). These are \gD{} projections from the tour, with black indicating the fitted model overlaid on the blue points of the data. The reason for the poor fit is that the PHATE layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. We have learned that all the NLDR methods tend to have twists in the fit in \pD{} but this is extreme. This is likely why layout c has poor metrics relative to the other layouts, and it suggests that it does not adequately capture the local structure in the 2NC7 data.
-
-<!-- The variation across metrics highlights that they capture different aspects of structure preservation, and none behave exactly like HBE. While HBE provides a unique perspective on how well the high-dimensional structure is represented, only the RTA and SC metrics show a somewhat similar ordering across methods.-->
 
 <!--two_nonlinear/06_gen_model_with_tSNE.R-->
 ```{r}
@@ -2025,23 +1985,15 @@ We have developed an approach to help assess and compare NLDR layouts, generated
 
 The new methodology is accompanied by an R package called `quollr`, so that it is readily usable and broadly accessible. The package has methods to fit the model, compute diagnostics and also visualize the results, with interactivity. We have primarily used the `langevitour` software [@harisson2024] to view the model in the data space, but other tour software such as `tourr` [@wickham2011] and `detourr` [@hart2022] could also be used.
 
-Two examples illustrating usage are provided: the PBMC3k data, where the NLDR is summarizing clustering in \pD{} and hand-written digits illustrating how NLDR represents an intrinsically low-dimensional nonlinear manifold. We examined a typical published usage of UMAP with the PBMC3k dataset [@chen2024]. As is typical of UMAP layout with default settings, the separation between clusters is grossly exaggerated. The layout even suggests separation where there is none. <!--This is common when layouts are chosen subjectively -- often a preference for the "prettiest".--> Our approach provides a way to choose a reasonable layout and avoids the use of misleading layouts in the future. In the hand-written digits [@lecun1998], we illustrate how our model fit statistics show that a flat disc layout is superior to the curved-shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
+Two examples illustrating usage are provided: the PBMC3k data, where the NLDR is summarizing clustering in \pD{} and hand-written digits illustrating how NLDR represents an intrinsically low-dimensional nonlinear manifold. We examined a typical published usage of UMAP with the PBMC3k dataset [@chen2024]. As is typical of UMAP layout with default settings, the separation between clusters is grossly exaggerated. The layout even suggests separation where there is none.  Our approach provides a way to choose a reasonable layout and avoids the use of misleading layouts in the future. In the hand-written digits [@lecun1998], we illustrate how our model fit statistics show that a flat disc layout is superior to the curved-shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
 
-This work can be applied with existing metrics for evaluating NLDR layout, such as ARNX, RTA, SC, and RGS. It provides an additional evaluation metric, and importantly allows any layout to be viewed in the \pD{} data space. This latter aspect can help to disentangle conflicting suggestions by the different metrics. <!--Additional exploration of metrics to summarize the fit could be a new direction for the work. The difficulty is capturing nonlinear fits, for which Euclidean distance can be sub-optimal. We have used a very simple approach based on clustering methods, Euclidean distances to nearest centroid, which can approximate nonlinear patterns. Other cluster metrics would be natural choices to explore.-->
+This work can be applied with existing metrics for evaluating NLDR layout, such as ARNX, RTA, SC, and RGS. It provides an additional evaluation metric, and importantly allows any layout to be viewed in the \pD{} data space. This latter aspect can help to disentangle conflicting suggestions by the different metrics. 
 
 Additional exploration of distance measures to summarize the fit could be a valuable direction for future work. We have used Euclidean distance, but other measures, such as geodesic distances [@joshua2000], may better capture curved or nonlinear relationships in the data and are worth exploring.
 
 This work has also revealed some interesting behaviors of NLDR methods, including twisting, flattened "pancake" clusters in \pD{}, and severe effects of density differences. These are described in more detail in the supplementary materials.
 
-<!-- This work has also revealed some interesting curiosities about NLDR procedures. They almost all twist to fit data in \pD{}. Sometimes the fitted model appears as a "pancake" in some data where clusters are regularly shaped and high-dimensional, for some methods but not others, which is odd. One can imagine that if algorithms are initiated using principal components then some ordering of points along the major axes might generate this pattern. Alternatively, if local distances dominate the algorithm then it might be possible to see this pattern with well-separated regular clusters. We also demonstrated that there is a tendency for NLDR algorithms to be confused by different density in the data space, and some patterns in the layout are due to density differences rather than nonlinear associations between variables.  -->
-
-Researchers usually use \gD{} layouts, but if a \kD{} ($k>2$) layout is provided the approach developed here could be extended. Potential approaches include $3\text{-}D$ binning, $k$-means clustering, or even special implementations of convex hulls. <!-- cubes could be done in $3\text{-}D$ or higher, and used as the basis for a wireframe of the fitted model.--> <!--@barber1996 (and the associated software @stephane2023) has an algorithm for a convex hull in \pD{} which serves as an inspiration.--> <!-- Another possible direction would be to use a convex hull algorithm in \pD{}, such as that described by @barber1996 (and implemented in the software by @stephane2023), to provide inspiration for constructing a wireframe that captures the outer geometry of the data in \pD{}. An alternative approach using $k$-means clustering to provide centroids in low-dimensional space could also be possible, but the complication would be to determine how to connect the centroids into an appropriate wireframe.-->
-
-<!--XXX Better tools to compare two layouts in \pD{} would be nice.
-
-XXX global vs local AND using density on x axis-->
-
-<!--This work introduces a novel approach for assessing and comparing NLDR layouts in the context of the original data space. By treating the layout as a model, it enables both visual and quantitative evaluation of fit, helping analysts select representations that more faithfully reflect the high-dimensional structure of the data.-->
+Researchers usually use \gD{} layouts, but if a \kD{} ($k>2$) layout is provided the approach developed here could be extended. Potential approaches include $3\text{-}D$ binning, $k$-means clustering, or even special implementations of convex hulls. 
 
 ## Supplementary Materials {#sec-supplementary}
 
