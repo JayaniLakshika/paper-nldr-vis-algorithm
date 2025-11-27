@@ -1,6 +1,6 @@
-# Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction
+# Choosing Better NLDR Layouts by Evaluating the Model in the High-dimensional Data Space
 
-This repo contains the materials to fully reproduce the paper titled "Stop Lying to Me: New Visual Tools to Choose the Most Honest Nonlinear Dimension Reduction".
+This repo contains the materials to fully reproduce the paper titled "Choosing Better NLDR Layouts by Evaluating the Model in the High-dimensional Data Space".
 
 ## Citation
 
