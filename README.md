@@ -6,7 +6,7 @@ This repo contains the materials to fully reproduce the paper titled "Choosing B
 
 Please cite the paper as:
 
-Gamage, J. P., Cook, D., Harrison, P., Lydeamore, M., & Talagala, T. S. (2025). Stop lying to me: New visual tools to choose the most honest nonlinear dimension reduction. arXiv. [https://arxiv.org/abs/2506.22051](https://arxiv.org/abs/2506.22051)
+Gamage, J. P., Cook, D., Harrison, P., Lydeamore, M., & Talagala, T. S. (2025). Choosing better NLDR layouts by evaluating the model in the high-dimensional data space. arXiv. [https://arxiv.org/abs/2506.22051](https://arxiv.org/abs/2506.22051)
 
 ## Description
 
