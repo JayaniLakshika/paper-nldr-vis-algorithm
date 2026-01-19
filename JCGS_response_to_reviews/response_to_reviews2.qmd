@@ -1,0 +1,127 @@
+---
+title: "Response to Review: JCGS-25-420.R1"
+author:
+  - Jayani P. Gamage
+  - Dianne Cook
+  - Paul Harrison
+  - Michael Lydeamore
+  - Thiyanga S. Talagala
+format: pdf
+date: "`r Sys.Date()`"
+header-includes: | 
+  \usepackage{amsmath}
+  \usepackage{float}
+  \usepackage{hyperref}
+  \usepackage[utf8]{inputenc}
+  \usepackage{bm}
+  \def\tightlist{}
+  \usepackage{setspace}
+  \newcommand\pD{$p\text{-}D$}
+  \newcommand\kD{$k\text{-}D$}
+  \newcommand\dD{$d\text{-}D$}
+  \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+```
+
+We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. The original reviewer comment is in normal font and *our response is in italic text*. 
+
+
+
+This revision and the comments given by the authors do not successfully address most of my previous major and minor concerns. My impression is that they attempted a “quick fix” by adding some new material here and there without substantially reworking the narrative, evaluation, and presentation quality of the manuscript and did not engage with the substance of my previous points in good faith. 
+Despite my criticisms, I do think the core idea of HBE + tour overlays is very interesting and innovative and has large potential value as a diagnostic tool for NLDR embeddings. However, in its current form, the manuscript is not suitable for publication in my opinion. 
+
+# Prior Major Points
+
+## 1) Missing comparisons to standard embedding-quality measures (co-ranking / RNX, trustworthiness/continuity, stress, Shepard diagrams, etc.) 
+
+Partly addressed. The revision now explicitly discusses several established metrics in Section 3.4, and it includes numerical/visual comparisons of HBE against metrics such as “rARNX”“, rRTA, rGS, and a Shepard-diagram-based correlation (e.g., Figure 8 and the surrounding discussion). However, the new material mostly illustrates that metrics can disagree rather than establishing when/why HBE should be preferred or how an analyst should reconcile HBE with existing (and complementary) local-vs-global criteria. The revised narrative is too dismissive of disagreement between metrics as”confusion” rather than treating it as an unavoidable multi objective trade-off (see below). 
+
+## 2) Overselling the method as a decision aid for choosing “the best” 2-D embedding vs positioning it primarily as a diagnostic/exploratory tool 
+
+Not addressed (and arguably worse). The paper still contains a full section titled “Choos ing the best 2-D layout” (Section 4), and the surrounding prose continues to frame the workflow as “select the most accurate representation” rather than “diagnose and understand distortions and failure modes of a chosen representation.” 
+In their response letter, the authors themselves explicitly stated that 
+“HBE is intended as a diagnostic tool rather than a definitive selection metric” 1
+but the submitted manuscript text does not reflect this position at all. 
+
+## 3) Section 3.5 (out-of-sample / prediction into an embedding) 
+
+Only very partially addressed. Per the response letter, citations to related work have been added and the authors frame this as future work. But the manuscript still gives it prominent space in the methods section; there is no theoretical argument, no empirical validation, and no comparison to existing out-of-sample embedding approaches. 
+
+## 4) Section 3.6 (parameter tuning guidance) 
+
+Not addressed in substance. The section is longer, but still reads like: “Try many settings, draw many plots, then pick something that looks OK.” I still do not see clear, reproducible guidance that an analyst can follow to choose binwidth etc parameters in a systematic way. If none can be provided, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
+
+## 5) Writing/proofreading and overall presentation quality 
+
+Not addressed. Despite the claim in the response letter that the manuscript was carefully proofread, the revision still contains a distracting density of typos, malformed sentences, in consistent notation, and colloquial phrasing (examples below from Section 3.4 alone). The writing quality is still far below what I would expect for a publication-ready manuscript in JCGS. 
+
+## Logistical aspects of the revision 
+
+The revision process is made unnecessarily difficult because none of the changes are highlighted and the response letter does not point to precise locations (page/line) nor quotes key replace ments. I find this rather inconsiderate and fairly unprofessional. 
+A tracked-changes PDF (or a detailed change log keyed to reviewer comments) would substan tially reduce friction for reviewers and editors if another revision is submitted.
+
+## Summary 
+
+IMO, the manuscript still has at least two critical problems: 
+1. Claim–evidence mismatch: It is still written as if it provides a reasonably objective procedure for choosing the best 2-D layout, but the evaluation is not strong enough to support that framing. 
+2. Presentation quality: The prose is sloppy enough (typos, malformed sentences, non standard/unmotivated notation) that it materially impairs readability and confidence. 
+
+# Major Issues
+
+## 1. Still oversells “Choosing the best 2-D layout” 
+
+Section 4 is still titled “Choosing the best 2-D layout”, and the text repeatedly suggests that the goal is to select an “accurate” representation over a pretty but wrong representation. This framing remains problematic for the basic reason I raised previously: in 2-D NLDR, there is generally no single optimum – there is a trade-off between local and global structure preservation, and “best” is always implicitly “best for some downstream purpose.” 
+The revision now acknowledges that metrics disagree because they emphasize different aspects of structure, but it still presents disagreement as something that “causes confusion” for the analyst, rather than as an expected feature of a multi-objective problem with objectives that are often in conflict. 
+I would suggest to rewrite Section 4 so it explicitly adopts the diagnostic framing stated in the response letter (identify local distortions + misleading global separations; support comparative diagnosis). If authors insist on “selection”, they need to clearly define a decision rule and properly evaluate it (see next issue). 
+
+## 2. Validation remains insufficient for a selection claim (even with new metric comparisons) 
+
+The added comparisons to rARNX/rRTA/rGS/rSC are useful, but they do not resolve the central question: Does HBE reliably help choose better embeddings, and in what sense of “better”? 
+Right now, the paper still reads like a sequence of worked examples. The new metric com parison section mainly shows that different metrics rank layouts differently and then argues (qualitatively) that some metrics overemphasize global separation. That may well be true in specific clustering-heavy scenarios, but it does not constitute validation of HBE as a general purpose criterion. 
+In particular, if the paper’s main claim is diagnostics/exploration, then the evidence should demonstrate that HBE + the tour overlay helps analysts localize + interpret distortions that are hard to see otherwise. (This seems to be there, already, but could be sharpened). If the paper’s claim is selection, then the evidence given in the paper must demonstrate that a well specified selection procedure based on HBE selects embeddings that are “better” ” according to well-defined criteria across a range of controlled scenarios. (This is currently missing and, IMO, would almost necessarily require a simulation study with data with various known high dimensional structures as ground truth.) 
+
+## 3. Section 3.6 still does not give reproducible, non-ad-hoc tuning guidance 
+
+With all due respect, my takeaway from the expanded Section 3.6 is still: “You can try a lot of things and draw some graphs and then maybe pick one of these settings, but who knows…” 
+I might be missing something, but I do not see a clear recipe that an analyst could follow without substantial subjective judgment calls. If no such recipe can be given, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
+
+## 4. Section 3.5 (out-of-sample embedding) still reads like an unvalidated method 
+
+The response letter says this is “future work,” and some citations were added. That is helpful, but it certainly cannot be presented as if it were an alternative to established projection or out of-sample embedding methods just by claiming that it is. Without at least a basic empirical check (e.g., does it preserve neighborhood structure for held-out points as well as established out-of-sample methods?), this section should not be presented as a usable alternative. 
+
+## 5. Writing, proofreading, and notation quality are still far below publication-ready 
+
+The revised paper seems fairly sloppy and badly written overall. It was obviously not proofread or edited with any amount of proper diligence. There are too many typos, inappropriate colloquialisms, weird/bad phrasings, and non-sequiturs to list. Just taking Section 3.4 as an example: 
+
+• p. 12: “ARNX” is not the abbreviation used in the cited work as far as I remember
+(and in any case should be carefully defined and kept consistent with the literature).
+
+• p. 13, l. 6: “The Shepard diagram (Shepard 1962) and its associated Spearman cor-
+relation (SC) (Spearman 1961) between p-D and k-D distances.” – not a sentence (no
+
+verb/object).
+• p. 13: “model here is similar to a confirmatory factor analysis model (see a general
+explanation in Brown (2015)), T + E ̂ ” – the notation T + E ̂ is not introduced nor
+explained anywhere, and not used again anywhere else either; it just confuses/distracts.
+
+• p. 13, l. 31: “our approach is similar to the ones used in this area. it is based on” –
+capitalization error.
+
+• p. 13: “these fitted values might also be denoted as X̂” – notation introduced and then
+never used again anywhere throughout the text.
+
+• p. 14: “which occurs due the intentional design that one cluster is slightly 3-D and
+perfectly captured by a 2-D layout” – not valid English, and also plausibly inverts the
+intended meaning. I assume this should be something like: “which occurs due to the
+intentional design that this cluster is slightly 3-D and thus not able to be perfectly
+represented/preserved by a 2-D layout.”
