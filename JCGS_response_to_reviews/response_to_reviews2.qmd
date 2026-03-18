@@ -46,6 +46,10 @@ Despite my criticisms, I do think the core idea of HBE + tour overlays is very i
 
 **Partly addressed.** The revision now explicitly discusses several established metrics in Section 3.4, and it includes numerical/visual comparisons of HBE against metrics such as "rARNX", "rRTA", "rGS", and a Shepard-diagram-based correlation (e.g., Figure 8 and the surrounding discussion). However, the new material mostly *illustrates that metrics can disagree rather than establishing when/why HBE should be preferred* or how an analyst should reconcile HBE with existing (and complementary) local-vs-global criteria. The revised narrative is too dismissive of disagreement between metrics as "confusion" rather than treating it as an unavoidable multi-objective trade-off (see below). 
 
+*We thank the reviewer for this thoughtful and constructive comment. We appreciate the recognition that the revised manuscript includes a broader set of comparisons to established embedding-quality measures. However, we agree that the current presentation does not yet sufficiently clarify when and why HBE should be used, nor how it relates to existing metrics in a principled way.*
+
+*In particular, we acknowledge the reviewer’s point that our previous wording may have been overly dismissive in describing disagreements between metrics as “confusion.” We agree that such differences are more appropriately understood as an inherent feature of NLDR, which involves multiple competing objectives, such as preserving local neighborhoods versus global structure.*
+
 ## 2) Overselling the method as a decision aid for choosing "the best" 2-D embedding vs positioning it primarily as a diagnostic/exploratory tool 
 
 **Not addressed (and arguably worse).** The paper still contains a full section titled *"Choosing the best 2-D layout"* (Section 4), and the surrounding prose continues to frame the workflow as "select the most accurate representation" rather than "diagnose and understand distortions and failure modes of a chosen representation."
@@ -82,11 +86,11 @@ IMO, the manuscript still has at least two critical problems:
 
 ## 1. Still oversells "Choosing the best 2-D layout"
 
-Section 4 is still titled **"Choosing the best 2-D layout"**, and the text repeatedly suggests that the goal is to select an “accurate” representation over a pretty but wrong representation. This framing remains problematic for the basic reason I raised previously: in 2-D NLDR, *there is generally no single optimum* – there is a trade-off between local and global structure preservation, and "best" is always implicitly "best for some downstream purpose." 
+Section 4 is still titled **"Choosing the best 2-D layout"**, and the text repeatedly suggests that the goal is to select an "accurate" representation over a pretty but wrong representation. This framing remains problematic for the basic reason I raised previously: in 2-D NLDR, *there is generally no single optimum* – there is a trade-off between local and global structure preservation, and "best" is always implicitly "best for some downstream purpose." 
 
-The revision now acknowledges that metrics disagree because they emphasize different aspects of structure, but it still presents disagreement as something that “causes confusion” for the analyst, rather than as an expected feature of a multi-objective problem with objectives that are often in conflict. 
+The revision now acknowledges that metrics disagree because they emphasize different aspects of structure, but it still presents disagreement as something that "causes confusion" for the analyst, rather than as an expected feature of a multi-objective problem with objectives that are often in conflict. 
 
-I would suggest to rewrite Section 4 so it explicitly adopts the diagnostic framing stated in the response letter (identify local distortions + misleading global separations; *support comparative diagnosis*). If authors insist on “selection”, they need to clearly define a *decision* rule and properly evaluate it (see next issue). 
+I would suggest to rewrite Section 4 so it explicitly adopts the diagnostic framing stated in the response letter (identify local distortions + misleading global separations; *support comparative diagnosis*). If authors insist on "selection", they need to clearly define a *decision* rule and properly evaluate it (see next issue). 
 
 ## 2. Validation remains insufficient for a selection claim (even with new metric comparisons) 
 
@@ -95,6 +99,12 @@ The added comparisons to rARNX/rRTA/rGS/rSC are useful, but they do not resolve 
 Right now, the paper still reads like a sequence of worked examples. The new metric com parison section mainly shows that different metrics rank layouts differently and then argues (qualitatively) that some metrics overemphasize global separation. That may well be true in specific clustering-heavy scenarios, but it does not constitute validation of HBE as a general purpose criterion. 
 
 In particular, if the paper’s main claim is **diagnostics/exploration**, then the evidence should demonstrate that HBE + the tour overlay helps analysts localize + interpret distortions that are hard to see otherwise. (This seems to be there, already, but could be sharpened). If the paper’s claim is **selection**, then the evidence given in the paper must demonstrate that a well specified selection procedure based on HBE selects embeddings that are "better" according to well-defined criteria across a range of controlled scenarios. (This is currently missing and, IMO, would almost necessarily require a simulation study with data with various known high dimensional structures as ground truth.) 
+
+*We thank the reviewer for this careful and insightful comment. We agree that the current manuscript does not provide sufficient evidence to support HBE as a general-purpose selection criterion for choosing an optimal embedding, and we appreciate the reviewer’s clear distinction between diagnostic and selection-oriented claims.*
+
+*Our intention has always been closer to the former—namely, to provide a diagnostic and exploratory framework for understanding how an embedding represents the original high-dimensional data. We acknowledge that the manuscript, as previously written, did not consistently reflect this intention and instead suggested a stronger selection-oriented interpretation than is warranted by the current evidence.*
+
+*We also appreciate the reviewer’s suggestion that a selection claim would require a well-defined decision rule and systematic validation across controlled scenarios with known ground truth. We agree that such an evaluation is beyond the scope of the current work.*
 
 ## 3. Section 3.6 still does not give reproducible, non-ad-hoc tuning guidance 
 
@@ -133,8 +143,7 @@ capitalization error.
 
 *Capitalization, punctuation, and phrasing errors have been corrected throughout.*
 
-- **p. 13**: "these fitted values might also be denoted as $\hat{X}$" – notation introduced and then
-never used again anywhere throughout the text.
+- **p. 13**: "these fitted values might also be denoted as $\hat{X}$" – notation introduced and then never used again anywhere throughout the text.
 
 - **p. 14**: "which occurs due the intentional design that one cluster is slightly 3-D and
 perfectly captured by a 2-D layout" – not valid English, and also plausibly inverts the
