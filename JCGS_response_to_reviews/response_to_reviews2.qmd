@@ -65,6 +65,20 @@ In their response letter, the authors themselves explicitly stated that
 
 **Only very partially addressed.** Per the response letter, citations to related work have been added and the authors frame this as future work. But the manuscript still gives it prominent space in the methods section; there is no theoretical argument, no empirical validation, and no comparison to existing out-of-sample embedding approaches. 
 
+*We agree that, in the previous revision, Section 3.5 gave the impression of a fully developed out-of-sample embedding method without sufficient theoretical justification, empirical validation, or comparison to existing approaches. This was not our intention.*
+
+*In response, we have revised Section 3.5 in several ways:*
+
+- *Repositioning of the contribution: The section has been rewritten to clearly present the proposed approach as a simple, model-consistent approximation based on the fitted wireframe, rather than as an alternative to established out-of-sample embedding methods. We explicitly state that it is intended for exploratory use.*
+
+- *Reduced emphasis: The prominence of this section has been reduced, and the language has been made more cautious to avoid overstating its role within the overall methodology.*
+
+- *Initial empirical check: We have added a basic comparison with the UMAP `predict()` function using a train/test split. This provides a preliminary assessment of how the approach performs in terms of neighborhood preservation and consistency with the fitted model.*
+
+- *Clarification of limitations: We now explicitly acknowledge that this is only an initial investigation, and that a more comprehensive evaluation across methods and datasets remains future work.*
+
+*These changes aim to ensure that the section is aligned with the primary goal of the paper; developing diagnostic tools for understanding NLDR layouts, while avoiding overstating the capabilities of this component.*
+
 ## 4) Section 3.6 (parameter tuning guidance) 
 
 **Not addressed in substance.** The section is longer, but still reads like: “Try many settings, draw many plots, then pick something that looks OK.” I still do not see clear, reproducible guidance that an analyst can follow to choose binwidth etc parameters in a systematic way. If none can be provided, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
