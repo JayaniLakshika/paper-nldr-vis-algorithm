@@ -358,7 +358,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   plot_layout(ncol = 4)
 ```
 
-The paper is organized as follows. @sec-background provides a summary of the literature on NLDR and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including a simulated data example. In @sec-bestfit, we describe how to assess the best fit and identify the most accurate \gD{} layout based on the proposed model diagnostics.  Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
+The paper is organized as follows. @sec-background provides a summary of the literature on NLDR and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including a simulated data example. In @sec-bestfit, we describe a workflow for assessing the quality of \gD{} layouts based on the proposed model diagnostics.  Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
 
 ## Background {#sec-background}
 
@@ -1065,9 +1065,17 @@ axis.text = element_text(size = 15))
 
 ### Prediction into \gD{}
 
-NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction. 
+<!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
 
-A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$. 
+<!-- A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$.  -->
+
+NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and most do not explicitly support out-of-sample prediction. Among the methods considered here, only UMAP provides a `predict()` function for embedding new observations based on a learned representation [@tomasz2023]. Other approaches, such as PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009], also provide mechanisms for mapping new data into a low-dimensional space.
+
+Within the framework developed here, a simple approach can be used to approximate the embedding of a new observation, in a manner consistent with the fitted model. The procedure is to (i) identify the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (ii) assign the corresponding centroid in \gD{}, $C^{(2)}_{h}$, as the predicted embedding. This treats the fitted wireframe as a piecewise representation of the underlying structure.
+
+To provide an initial assessment, we compare this approach with the UMAP `predict()` function using a train/test split. Predictions are evaluated in terms of neighborhood preservation and their consistency with the fitted model representation. The results suggest that the approach provides a reasonable approximation for placing new observations relative to the fitted structure.
+
+This method is intended as a simple extension of the model rather than as a replacement for established out-of-sample embedding techniques. A more comprehensive evaluation across a broader range of datasets and methods remains an important direction for future work.
 
 ### Tuning
 
