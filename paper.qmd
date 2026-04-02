@@ -1077,6 +1077,79 @@ To provide an initial assessment, we compare this approach with the UMAP `predic
 
 This method is intended as a simple extension of the model rather than as a replacement for established out-of-sample embedding techniques. A more comprehensive evaluation across a broader range of datasets and methods remains an important direction for future work.
 
+```{r}
+#| label: test-two-curvy
+
+## First projection
+proj_obj1 <- read_rds("data/two_nonlinear/test_two_nonlinear_proj_obj1.rds")
+
+
+projected_df <- proj_obj1$projected_df
+axes <- proj_obj1$axes
+circle <- proj_obj1$circle
+
+
+two_curvy_proj_test <- projected_df |>
+  ggplot(
+    aes(
+      x = proj1,
+      y = proj2)) +
+  geom_point(
+    size = 0.5,
+    alpha = 0.2,
+    colour = clr_choice) +
+  geom_segment(
+    data=axes,
+    aes(x=x1, y=y1, xend=x2, yend=y2),
+    colour="grey70") +
+  geom_text(
+    data=axes,
+    aes(x=x2, y=y2),
+    label=rownames(axes),
+    colour="grey50",
+    size = 2) +
+  geom_path(
+    data=circle,
+    aes(x=c1, y=c2), colour="grey70") +
+  xlim(c(-1.1, 0.8)) +
+  ylim(c(-1.1, 0.8)) +
+  interior_annotation(label = "a", cex = 1.5) +
+  theme(aspect.ratio = 1,
+        legend.position = "none") 
+```
+
+```{r}
+#| label: prediction-two-curvy
+
+predict_highdvis <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict.rds")
+
+predict_two_curvy_highdvis <- ggplot(predict_highdvis, 
+                                  aes(x = pred_emb_1, y = pred_emb_2)) +
+  geom_point(alpha = 0.5, colour = clr_choice, size = 0.5) +
+  interior_annotation(label = "b", cex = 1.5) 
+
+predict_umap <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_umap_predict.rds")
+
+predict_two_curvy_umap <- ggplot(predict_umap, 
+                                  aes(x = UMAP1, y = UMAP2)) +
+  geom_point(alpha = 0.5, colour = clr_choice, size = 0.5) +
+  interior_annotation(label = "c", cex = 1.5) 
+
+```
+
+```{r}
+#| label: predict
+#| fig-cap: ""
+#| fig-width: 6
+#| fig-height: 2
+#| fig-pos: "!ht"
+
+two_curvy_proj_test + 
+  predict_two_curvy_highdvis + 
+  predict_two_curvy_umap +
+  plot_layout(ncol = 3)
+```
+
 ### Tuning
 
 The model fitting is based on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$.

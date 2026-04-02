@@ -89,3 +89,38 @@ predict_df <- predict_emb(highd_data = testing_data_two_curvy[,1:8],
 ## Run only once
 write_rds(predict_df, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict.rds")
 
+################################################################################
+
+## First projection of test data
+projection <- cbind(
+  c(0.09800,0.01534,0.01887,0.00252,0.01737,-0.06895,-0.00886),
+  c(-0.05248,-0.05845,0.06057,-0.00352,0.01697,-0.06938,0.01953))
+
+highd_data <- dplyr::select(testing_data_two_curvy[,1:7], tidyselect::starts_with("x"))
+projected <- as.matrix(testing_data_two_curvy[,1:7]) %*% projection
+projected_df <- dplyr::mutate(dplyr::rename(tibble::as_tibble(projected,
+                                                              .name_repair = "unique"),
+                                            c(proj1 = "...1", proj2 = "...2")),
+                              ID = dplyr::row_number())
+
+axis_param = list(limits = 0.8,
+                  axis_scaled = 5,
+                  axis_pos_x = -0.95,
+                  axis_pos_y = -0.95,
+                  threshold = 0.042)
+
+limits <- axis_param$limits
+axis_scaled <- axis_param$axis_scaled
+axis_pos_x <- axis_param$axis_pos_x
+axis_pos_y <- axis_param$axis_pos_y
+threshold <- axis_param$threshold
+axes_obj <- gen_axes(proj = projection * axis_scaled, limits = limits,
+                     axis_pos_x = axis_pos_x, axis_pos_y = axis_pos_y, axis_labels = names(highd_data),
+                     threshold = threshold)
+axes <- axes_obj$axes
+circle <- axes_obj$circle
+
+proj_obj1 <- list(projected_df = projected_df,
+     axes = axes, circle = circle)
+
+write_rds(proj_obj1, "data/two_nonlinear/test_two_nonlinear_proj_obj1.rds")
