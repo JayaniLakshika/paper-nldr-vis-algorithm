@@ -53,9 +53,7 @@ Despite my criticisms, I do think the core idea of HBE + tour overlays is very i
 ## 2) Overselling the method as a decision aid for choosing "the best" 2-D embedding vs positioning it primarily as a diagnostic/exploratory tool 
 
 **Not addressed (and arguably worse).** The paper still contains a full section titled *"Choosing the best 2-D layout"* (Section 4), and the surrounding prose continues to frame the workflow as "select the most accurate representation" rather than "diagnose and understand distortions and failure modes of a chosen representation."
-In their response letter, the authors themselves explicitly stated that 
-
-"HBE is intended as a diagnostic tool rather than a definitive selection metric" but the submitted manuscript text does not reflect this position at all. 
+In their response letter, the authors themselves explicitly stated that HBE is intended as a diagnostic tool rather than a definitive selection metric" but the submitted manuscript text does not reflect this position at all. 
 
 *We thank the reviewer for highlighting this important issue. We fully agree that the manuscript, in its previous form, continued to frame the method as a tool for selecting a “best” 2-D layout, which is not consistent with our intended contribution.*
 
@@ -82,6 +80,20 @@ In their response letter, the authors themselves explicitly stated that
 ## 4) Section 3.6 (parameter tuning guidance) 
 
 **Not addressed in substance.** The section is longer, but still reads like: “Try many settings, draw many plots, then pick something that looks OK.” I still do not see clear, reproducible guidance that an analyst can follow to choose binwidth etc parameters in a systematic way. If none can be provided, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
+
+*We agree that the previous version of Section 3.6 did not provide sufficiently clear and reproducible guidance, and may have given the impression of an ad hoc, trial-and-error process.*
+
+*In response, we have substantially revised this section to provide a more structured and reproducible workflow for parameter tuning. Specifically, we now:*
+
+- *Provide a step-by-step procedure for selecting and evaluating parameter values, including choosing a grid of binwidths, examining HBE stability, and assessing bin occupancy measures;*
+
+- *Clarify how summary quantities such as average bin count and proportion of non-empty bins can be used to guide parameter selection in a systematic way;*
+
+- *Emphasize robustness-based selection, where preferred parameter values are those for which the fitted model is stable across a range of settings;*
+
+- *Reframe the goal from identifying a single optimal parameter choice to identifying a range of stable and interpretable configurations.*
+
+*We also clarify that, consistent with the overall goals of the paper, this process is intended to support diagnostic assessment rather than to define a fully automated selection rule.*
 
 ## 5) Writing/proofreading and overall presentation quality 
 
@@ -114,7 +126,7 @@ I would suggest to rewrite Section 4 so it explicitly adopts the diagnostic fram
 
 The added comparisons to rARNX/rRTA/rGS/rSC are useful, but they do not resolve the central question: **Does HBE reliably help choose better embeddings, and in what sense of "better"?** 
 
-Right now, the paper still reads like a sequence of worked examples. The new metric com parison section mainly shows that different metrics rank layouts differently and then argues (qualitatively) that some metrics overemphasize global separation. That may well be true in specific clustering-heavy scenarios, but it does not constitute validation of HBE as a general purpose criterion. 
+Right now, the paper still reads like a sequence of worked examples. The new metric comparison section mainly shows that different metrics rank layouts differently and then argues (qualitatively) that some metrics overemphasize global separation. That may well be true in specific clustering-heavy scenarios, but it does not constitute validation of HBE as a general purpose criterion. 
 
 In particular, if the paper’s main claim is **diagnostics/exploration**, then the evidence should demonstrate that HBE + the tour overlay helps analysts localize + interpret distortions that are hard to see otherwise. (This seems to be there, already, but could be sharpened). If the paper’s claim is **selection**, then the evidence given in the paper must demonstrate that a well specified selection procedure based on HBE selects embeddings that are "better" according to well-defined criteria across a range of controlled scenarios. (This is currently missing and, IMO, would almost necessarily require a simulation study with data with various known high dimensional structures as ground truth.) 
 

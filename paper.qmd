@@ -1152,11 +1152,35 @@ two_curvy_proj_test +
 
 ### Tuning
 
-The model fitting is based on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$.
+<!-- The model fitting is based on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$. -->
 
-Default values are provided for each of these, but deciding on the best model fit is assisted by examining a range of values. The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are recommended, where the dependence on $r_2$ reflects the preservation of aspect ratio in the NLDR layout.
+<!-- Default values are provided for each of these, but deciding on the best model fit is assisted by examining a range of values. The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are recommended, where the dependence on $r_2$ reflects the preservation of aspect ratio in the NLDR layout. -->
 
-@fig-bins-two-curvy shows the hexbin grids for three choices of $b_1$. While the number of bins is the common parameter to modify, bin start positions $(s_1, \ s_2)$ can also be worth experimenting with, because they can also change bin counts. 
+<!-- @fig-bins-two-curvy shows the hexbin grids for three choices of $b_1$. While the number of bins is the common parameter to modify, bin start positions $(s_1, \ s_2)$ can also be worth experimenting with, because they can also change bin counts.  -->
+
+
+The model fitting depends on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, s_2)$, the number of bins in the horizontal direction ($b_1$), which determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the number of non-empty bins ($m$). Low-count bins are removed using standardized bin counts, defined as $w_h = n_h/n$, for $h = 1, \dots, m$.
+
+Default values are provided for these parameters. In particular, the default number of bins is determined from the sample size by setting $b_1 = n^{1/3}$, consistent with the Diaconis–Freedman rule [@freedman1981], with $b_2$ computed to preserve the aspect ratio of the layout.
+
+Rather than selecting a single set of parameters a priori, we recommend a structured procedure to examine the stability of the fitted model across a range of values. A practical workflow is as follows:
+
+1. **Select a grid of binwidths:** Choose a sequence of values for $b_1$ ranging from coarse to fine resolution (e.g., from small values up to $b_1 = \sqrt{n/r_2}$). This controls the level of detail in the fitted wireframe.
+
+2. **Compute HBE across the grid:** For each choice of $b_1$, compute the HBE. Stable regions where HBE changes slowly indicate parameter values where the fitted model is not overly sensitive to binning resolution.
+
+3. **Assess bin occupancy:** Examine summary quantities such as average bin count ($\bar{n}$), average standardized bin count ($\bar{w}$), and the proportion of non-empty bins ($m/b$).
+   Reasonable parameter choices typically correspond to:
+
+   - sufficiently large $\bar{n}$ to avoid sparse bins, and
+   
+   - moderate values of $m/b$, indicating that bins cover the data without excessive fragmentation.
+
+4. **Check robustness to bin removal:** Evaluate the effect of removing low-count bins using a range of thresholds. Parameter values where HBE remains stable under small amounts of bin removal indicate robustness of the fitted structure.
+
+5. **Compare across layouts (if applicable):** When comparing multiple NLDR layouts, examine HBE as a function of average bin count or standardized bin count. This helps account for differences in point density between layouts.
+
+This process does not yield a single "optimal" parameter choice, but instead identifies a range of stable and interpretable settings. The goal is to avoid parameter values that produce unstable fits, overly sparse binning, or misleading structure in the fitted wireframe.
 
 ```{r}
 #| echo: false
@@ -1174,12 +1198,12 @@ hex_grid_coloured_two_curvy2 +
 
 <!-- #### Handling of low-density bins-->
 
-It is worthwhile to consider what desirable aspects of a hexbin result, that maps to summarizing the \pD{} fit well. The binning should capture the underlying data distribution closely, with a minimum number of necessary bins. An ideal binning might be indicated by a more uniform distribution of bin counts or having few relatively empty bins. To help with this assessment average bin count ($\bar{n} = \sum{n_h}/m$), average standardized bin count ($\bar{w} = \sum{w_h}/m$) and proportion of non-empty bins ($m/b$), are also computed. @fig-param-two-curvy shows some choices of plots of these quantities for a single NLDR layout, with three choices of $a_1$ indicated. Some expectations and reasoning for these plots are:
+<!-- It is worthwhile to consider what desirable aspects of a hexbin result, that maps to summarizing the \pD{} fit well. The binning should capture the underlying data distribution closely, with a minimum number of necessary bins. An ideal binning might be indicated by a more uniform distribution of bin counts or having few relatively empty bins. To help with this assessment average bin count ($\bar{n} = \sum{n_h}/m$), average standardized bin count ($\bar{w} = \sum{w_h}/m$) and proportion of non-empty bins ($m/b$), are also computed. @fig-param-two-curvy shows some choices of plots of these quantities for a single NLDR layout, with three choices of $a_1$ indicated. Some expectations and reasoning for these plots are: -->
 
-- HBE will increase as $a_1$ increases, so good choices will be just before a big increase. In plot a, HBE changes fairly steadily, so there is no easy choice to make.
-- HBE can also be examined against the average standardized bin count or average bin count (plot b). This is similar to the comparison with $a_1$, but to use when comparing different NLDR layouts. Different layouts might produce different densities of points, which will not be captured well by a comparison of HBE vs $a_1$.
-- The proportion of non-empty bins is interesting to examine across different binwidths (plot c). A good binning should have just the right number of bins to neatly cover the shape of the data, and no more or fewer. As binwidth gets smaller, $m/b$ should roughly get bigger.
-- Bins with a small number of observations might be removed to sharpen the wireframe model. This can have adverse effects, though - failing to extend the wireframe into sparse areas, or resulting in holes in the wireframe. Plot d shows the relationship between HBE (computed for all observations despite some bin removal) and the standardized bin count cutoff used to remove bins. For all three chosen bin widths, a small number of bins can be removed without affecting HBE.
+<!-- - HBE will increase as $a_1$ increases, so good choices will be just before a big increase. In plot a, HBE changes fairly steadily, so there is no easy choice to make. -->
+<!-- - HBE can also be examined against the average standardized bin count or average bin count (plot b). This is similar to the comparison with $a_1$, but to use when comparing different NLDR layouts. Different layouts might produce different densities of points, which will not be captured well by a comparison of HBE vs $a_1$. -->
+<!-- - The proportion of non-empty bins is interesting to examine across different binwidths (plot c). A good binning should have just the right number of bins to neatly cover the shape of the data, and no more or fewer. As binwidth gets smaller, $m/b$ should roughly get bigger. -->
+<!-- - Bins with a small number of observations might be removed to sharpen the wireframe model. This can have adverse effects, though - failing to extend the wireframe into sparse areas, or resulting in holes in the wireframe. Plot d shows the relationship between HBE (computed for all observations despite some bin removal) and the standardized bin count cutoff used to remove bins. For all three chosen bin widths, a small number of bins can be removed without affecting HBE. -->
 
 <!--two_nonlinear/05_gen_rm_lwd_mse.R-->
 ```{r}
