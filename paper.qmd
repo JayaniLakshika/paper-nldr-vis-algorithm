@@ -1086,7 +1086,7 @@ predict_highdvis2 <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shape
 
 predict_highdvis3 <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_54.rds")
 
-umap_test <- read_rds("data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
+umap_test <- read_rds("data/two_nonlinear/test_umap_predict_scaled_two_non_linear_diff_shaped_close_clusters.rds")
 
 test_two_curvy_umap1 <- ggplot(umap_test, 
                                   aes(x = UMAP1, y = UMAP2)) +
@@ -1112,6 +1112,34 @@ test_two_curvy_umap3 <- ggplot(umap_test,
   ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
   interior_annotation(label = "c1", cex = 1.5)
 
+```
+
+```{r}
+umap_test <- read_rds("data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
+
+test_two_curvy_umap11 <- ggplot(umap_test, 
+                                  aes(x = UMAP1, y = UMAP2)) +
+  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
+  geom_point(data = predict_highdvis1, aes(
+    x = pred_emb_1, y = pred_emb_2
+  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
+  interior_annotation(label = "a1", cex = 1.5)
+
+test_two_curvy_umap21 <- ggplot(umap_test, 
+                                  aes(x = UMAP1, y = UMAP2)) +
+  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
+  geom_point(data = predict_highdvis2, aes(
+    x = pred_emb_1, y = pred_emb_2
+  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
+  interior_annotation(label = "b1", cex = 1.5)
+
+test_two_curvy_umap31 <- ggplot(umap_test, 
+                                  aes(x = UMAP1, y = UMAP2)) +
+  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
+  geom_point(data = predict_highdvis3, aes(
+    x = pred_emb_1, y = pred_emb_2
+  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
+  interior_annotation(label = "c1", cex = 1.5)
 ```
 
 ```{r}
@@ -1183,14 +1211,81 @@ dist_cmp_plt3 <- ggplot(dist_comp3,
 ```
 
 ```{r}
+dist_comp1 <- read_rds("data/two_nonlinear/dist_comp_bin_13_org.rds") |>
+  as.tibble()
+
+dist_cmp_plt11 <- ggplot(dist_comp1, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "a2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
+
+dist_comp2 <- read_rds("data/two_nonlinear/dist_comp_bin_30_org.rds") |>
+  as.tibble()
+
+dist_cmp_plt21 <- ggplot(dist_comp2, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "b2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
+
+dist_comp3 <- read_rds("data/two_nonlinear/dist_comp_bin_54_org.rds") |>
+  as.tibble()
+
+dist_cmp_plt31 <- ggplot(dist_comp3, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "c2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
+```
+
+```{r}
 #| label: predict
 #| fig-cap: ""
 #| fig-width: 9
-#| fig-height: 6
+#| fig-height: 12
 #| fig-pos: "!ht"
 
 test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
   dist_cmp_plt1 + dist_cmp_plt2 + dist_cmp_plt3 +
+  test_two_curvy_umap11 + test_two_curvy_umap21 + test_two_curvy_umap31 +
+  dist_cmp_plt11 + dist_cmp_plt21 + dist_cmp_plt31 +
   plot_layout(ncol = 3)
 ```
 

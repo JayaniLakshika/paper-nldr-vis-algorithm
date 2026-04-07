@@ -133,6 +133,69 @@ write_rds(predict_df3, file = "data/two_nonlinear/test_two_non_linear_diff_shape
 umap_test_scaled_obj <- gen_scaled_data(nldr_data = test_umap_two_curvy[, 1:3])
 write_rds(umap_test_scaled_obj$scaled_nldr, file = "data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
 
+
+## To compute pairwise distance
+library(proxy)
+conflicted::conflicts_prefer(proxy::dist)
+
+A <- as.matrix(predict_df1[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_13_org.rds")
+
+A <- as.matrix(predict_df2[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_30_org.rds")
+
+A <- as.matrix(predict_df3[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_54_org.rds")
+
+
+################################################################################
+
+## Using predict function
+
+umap_test <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
+umap_test_scaled_obj <- gen_scaled_data(nldr_data = umap_test)
+write_rds(umap_test_scaled_obj$scaled_nldr, file = "data/two_nonlinear/test_umap_predict_scaled_two_non_linear_diff_shaped_close_clusters.rds")
+
+
 ################################################################################
 
 ## To compute pairwise distance

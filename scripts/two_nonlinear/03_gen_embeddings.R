@@ -92,6 +92,18 @@ names(UMAP_data) <- c("UMAP1", "UMAP2")
 ## Run only once
 write_rds(UMAP_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_", n_neighbors, "_min-dist_", min_dist, ".rds"))
 
+## Predict for test set
+test_data_two_curvy <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters.rds")
+
+predict_UMAP_df <- predict(UMAP_fit, test_data_two_curvy[, 1:7]) |>
+  as_tibble()
+
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+write_rds(predict_UMAP_df, file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
+
+
+
+
 ## Predict for true model
 true_model_data <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_true_model.rds")
 # true_model_data <- true_model_data |>
