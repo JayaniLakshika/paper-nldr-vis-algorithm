@@ -1094,7 +1094,7 @@ test_two_curvy_umap1 <- ggplot(umap_test,
   geom_point(data = predict_highdvis1, aes(
     x = pred_emb_1, y = pred_emb_2
   ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "a", cex = 1.5)
+  interior_annotation(label = "a1", cex = 1.5)
 
 test_two_curvy_umap2 <- ggplot(umap_test, 
                                   aes(x = UMAP1, y = UMAP2)) +
@@ -1102,7 +1102,7 @@ test_two_curvy_umap2 <- ggplot(umap_test,
   geom_point(data = predict_highdvis2, aes(
     x = pred_emb_1, y = pred_emb_2
   ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "b", cex = 1.5)
+  interior_annotation(label = "b1", cex = 1.5)
 
 test_two_curvy_umap3 <- ggplot(umap_test, 
                                   aes(x = UMAP1, y = UMAP2)) +
@@ -1110,20 +1110,87 @@ test_two_curvy_umap3 <- ggplot(umap_test,
   geom_point(data = predict_highdvis3, aes(
     x = pred_emb_1, y = pred_emb_2
   ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "c", cex = 1.5)
+  interior_annotation(label = "c1", cex = 1.5)
+
+```
+
+```{r}
+#| label: pair-wise-dist-two-curvy
+
+dist_comp1 <- read_rds("data/two_nonlinear/dist_comp_bin_13.rds") |>
+  as.tibble()
+
+dist_cmp_plt1 <- ggplot(dist_comp1, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "a2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
+
+dist_comp2 <- read_rds("data/two_nonlinear/dist_comp_bin_30.rds") |>
+  as.tibble()
+
+dist_cmp_plt2 <- ggplot(dist_comp2, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "b2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
+
+dist_comp3 <- read_rds("data/two_nonlinear/dist_comp_bin_54.rds") |>
+  as.tibble()
+
+dist_cmp_plt3 <- ggplot(dist_comp3, 
+                                  aes(x = umap_test, y = quollr_predict)) +
+  geom_point(alpha = 0.05, colour = "#000000", size = 0.5) +
+  interior_annotation(label = "c2", sc_ltr_pos, cex = 1.5) +
+  xlab("distance in UMAP") +
+  ylab("distance in predict") +
+  theme_minimal() +
+  theme(panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        axis.text.x = element_text(size = 7),
+        axis.text.y = element_text(size = 7),
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        plot.margin = margin(0, 0, 0, 0))
 
 ```
 
 ```{r}
 #| label: predict
 #| fig-cap: ""
-#| fig-width: 6
-#| fig-height: 2
+#| fig-width: 9
+#| fig-height: 6
 #| fig-pos: "!ht"
 
-test_two_curvy_umap1 +
-  test_two_curvy_umap2 + 
-  test_two_curvy_umap3 +
+test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
+  dist_cmp_plt1 + dist_cmp_plt2 + dist_cmp_plt3 +
   plot_layout(ncol = 3)
 ```
 

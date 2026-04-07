@@ -67,12 +67,12 @@ counts_df <- algo_obj_two_curvy$hb_obj$std_cts
 
 ## Predict
 
-predict_df <- predict_emb(highd_data = test_data_two_curvy[,1:8],
+predict_df1 <- predict_emb(highd_data = test_data_two_curvy[,1:8],
                           model_highd = df_bin_two_curvy,
                           model_2d = df_bin_centroids_two_curvy)
 
 ## Run only once
-write_rds(predict_df, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_13.rds")
+write_rds(predict_df1, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_13.rds")
 
 
 num_bins_x_two_curvy <- 30
@@ -93,12 +93,12 @@ counts_df <- algo_obj_two_curvy$hb_obj$std_cts
 
 ## Predict
 
-predict_df <- predict_emb(highd_data = test_data_two_curvy[,1:8],
+predict_df2 <- predict_emb(highd_data = test_data_two_curvy[,1:8],
             model_highd = df_bin_two_curvy,
             model_2d = df_bin_centroids_two_curvy)
 
 ## Run only once
-write_rds(predict_df, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_30.rds")
+write_rds(predict_df2, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_30.rds")
 
 ## Fit the model
 
@@ -120,15 +120,71 @@ counts_df <- algo_obj_two_curvy$hb_obj$std_cts
 
 ## Predict
 
-predict_df <- predict_emb(highd_data = test_data_two_curvy[,1:8],
+predict_df3 <- predict_emb(highd_data = test_data_two_curvy[,1:8],
                           model_highd = df_bin_two_curvy,
                           model_2d = df_bin_centroids_two_curvy)
 
 ## Run only once
-write_rds(predict_df, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_54.rds")
+write_rds(predict_df3, file = "data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_54.rds")
 
 
 ################################################################################
 
 umap_test_scaled_obj <- gen_scaled_data(nldr_data = test_umap_two_curvy[, 1:3])
 write_rds(umap_test_scaled_obj$scaled_nldr, file = "data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
+
+################################################################################
+
+## To compute pairwise distance
+library(proxy)
+conflicted::conflicts_prefer(proxy::dist)
+
+A <- as.matrix(predict_df1[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_13.rds")
+
+A <- as.matrix(predict_df2[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_30.rds")
+
+A <- as.matrix(predict_df3[, 1:2], pairwise = TRUE)
+B <- as.matrix(umap_test_scaled_obj$scaled_nldr[, 1:2], pairwise = TRUE)
+
+# distances in original space
+d_high <- dist(A)
+
+# distances in embedding
+d_low <- dist(B)
+
+df <- data.frame(
+  quollr_predict = as.vector(d_high),
+  umap_test  = as.vector(d_low)
+)
+
+write_rds(df, file = "data/two_nonlinear/dist_comp_bin_54.rds")
+
+
