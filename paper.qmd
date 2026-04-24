@@ -358,26 +358,26 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   plot_layout(ncol = 4)
 ```
 
-The paper is organized as follows. @sec-background provides a summary of the literature on NLDR and high-dimensional data visualization methods. @sec-method contains the details of the new methodology, including a simulated data example. In @sec-bestfit, we describe a workflow for assessing the quality of \gD{} layouts based on the proposed model diagnostics.  Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
+The paper is organized as follows. @sec-background provides a summary of the literature on NLDR and high-dimensional data visualization methods. <!--@sec-method--> Sections [-@sec-NLDRmodel], [-@sec-algorithm], [-@sec-highd], [-@sec-summary] contain the details of the new methodology, illustrated using a simulated data example. @sec-prediction describes a way to predict the layout positions of new observations. @sec-interactive illustrates interactive graphics to view the fitted model in high dimensions linked to the NLDR layout, to diagnose a fit. A workflow for choosing from a selection of layouts is provided in @sec-bestfit. Two applications illustrating the use of the new methodology for bioinformatics and image classification are in @sec-applications. Limitations and future directions are provided in @sec-discussion. 
 
-## Background {#sec-background}
+## Background literature {#sec-background}
 
 <!-- - Connection between NLDR and MDS-->
 Historically, low-dimensional (\kD{}) representations of high-dimensional (\pD{}) data have been computed using multidimensional scaling (MDS) [@kruskal1964], which includes principal components analysis (PCA) (for an overview see @jolliffe2011). (A contemporary comprehensive guide to MDS can be found in @borg2005.) The \kD{} representation can be considered to be a layout of points in \kD{}   produced by an embedding procedure that maps the data from \pD{}. In MDS, the \kD{} layout is constructed by minimizing a stress function that differs distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Challenges in working with high-dimensional data, including visualization, are outlined in @johnstone2009. 
 
 Many new methods for NLDR have emerged in recent years, all designed to better capture specific structures potentially existing in \pD{}. Here we focus on five currently popular techniques: tSNE, UMAP, PHATE, TriMAP, and PaCMAP. The methods tSNE, UMAP, TriMAP, and PaCMAP can be considered for producing the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is an example of a diffusion process spreading to capture geometric shapes that include both global and local structure. (See @coifman2005 for an explanation of diffusion processes.)  
 
-The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and hyper-parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly **separated clusters** (a, b, e, g, h) with the number ranging from 3-6; (2) **stringy branches** (f), and (3) **barely separated clusters** (c, d), which would **contradict** the other representations. These contradictions arise because these methods and hyper-parameter choices provide different lenses on the interpoint distances in the data.
+The array of layouts in @fig-NLDR-variety illustrate what can emerge from the choices of method and hyper-parameters, and the random seed that initiates the computation. Key structures interpreted from these views suggest: (1) highly *separated clusters* (a, b, e, g, h) with the number ranging from 3-6; (2) *stringy branches* (f), and (3) *barely separated clusters* (c, d), which would **contradict** the other representations. These contradictions arise because these methods and hyper-parameter choices provide different lenses on the interpoint distances in the data.
 
 The alternative approach to visualizing the high-dimensional data is to use linear projections. PCA is the classical approach, resulting in a set of new variables that are linear combinations of the original variables. Tours, defined by @As85, broaden the scope by providing movies of linear projections that provide views of the data from all directions. (See @lee2021 for a review of tour methods.) There are many tour algorithms implemented, with many available in the R package `tourr` [@wickham2011], and versions enabling better interactivity in `langevitour` [@harisson2024] and `detourr` [@hart2022]. Linear projections are a safe way to view high-dimensional data because they do not warp the space, so they are more faithful representations of the structure. However, linear projections can be cluttered, and global patterns can obscure local structure. The simple activity of projecting data from \pD{} suffers from piling [@laa2022], where data concentrates in the center of projections. NLDR is designed to escape these issues, to exaggerate structure so that it can be observed. But as a result, NLDR can hallucinate wildly, to suggest patterns that are not actually present in the data. 
 
-Our proposed solution is to use the tour to examine how the NLDR is warping the space. It follows what @wickham2015 describes as *model-in-the-data-space*. The fitted model should be overlaid on the data to examine the fit relative to the spread of the observations. While this is straightforward, and commonly done when data is \gD{}, it is also possible in \pD{}, for many models, when a tour is used. 
+Our proposed solution is to use the tour to examine how the NLDR is warping the space. It follows what @wickham2015 describes as **model-in-the-data-space**. The fitted model should be overlaid on the data to examine the fit relative to the spread of the observations. While this is straightforward, and commonly done when data is \gD{}, it is also possible in \pD{}, for many models, when a tour is used. 
 
 @wickham2015 provides several examples of models overlaid on the data in \pD{}. In hierarchical clustering, a representation of the dendrogram using points and lines can be constructed by augmenting the data with points marking the merging of clusters. Showing the movie of linear projections shows how the algorithm sequentially fitted the cluster model to the data. For linear discriminant analysis or model-based clustering, the model can be indicated by $(p-1)\text{-}D$ ellipses. It is possible to see whether the elliptical shapes appropriately match the variance of the relevant clusters, and to compare and contrast different fits. For PCA, one can display the model (a \kD{} plane of the reduced dimension) using wireframes of transformed cubes. Using a wireframe is the approach we take here to represent the NLDR model in \pD{}.
 
-## Method {#sec-method}
+<!--## Methodology {#sec-method}-->
 
-### What is the NLDR model?
+## Considering the NLDR as a model {#sec-NLDRmodel}
 
 At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{} NLDR layout is the simplified representation. Typically, $k=2$ is used for the rest of this paper. From a statistical perspective, we can consider the distances between points in the \gD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   is the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, which will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@joreskog1969] and MDS. (Note that, for this thinking, the full \pD{}   data needs to be available, not just the interpoint distances.)
 
@@ -647,12 +647,12 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
 ```
 
 
-To illustrate the method and how to use it to choose from a selection of layouts, we generated \sD{} simulated data, which we call the "2NC7" data. It has two separated nonlinear clusters, one forming a \gD{} curved shape, and the other a \tD{} curved shape, each consisting of $1000$ observations. The first four variables, $X_1, X_2, X_3, X_4$ hold this cluster structure, and the remaining three $X_5, X_6, X_7$ are purely noise. Because, no error was simulated in the first four variables, we would consider $T=(X_1, X_2, X_3, X_4)$ to be **the geometric structure (true model)** that we hope to capture. In practice, all variables might have some small error, and structure to detect might be in any or all variables. The 2NC7 data is simple but complex enough illustrate the new methodology. We can also consider the two *separated clusters as global structure*, and the *nonlinear surfaces to be relatively local structure*. An *ideal NLDR layout would reveal the two clusters with moderate separation, and flatten the curvilinear forms* while preserving the proximity of points.
+To illustrate the method and how to use it to choose from a selection of layouts, we generated \sD{} simulated data, which we call the "2NC7" data. It has two separated nonlinear clusters, one forming a \gD{} curved shape, and the other a \tD{} curved shape, each consisting of $1000$ observations. The first four variables, $X_1, X_2, X_3, X_4$ hold this cluster structure, and the remaining three $X_5, X_6, X_7$ are purely noise. Because, no error was simulated in the first four variables, we would consider $T=(X_1, X_2, X_3, X_4)$ to be **the geometric structure (true model)** that we hope to capture. In practice, all variables might have some small error, and structure to detect might be in any or all variables. The 2NC7 data is simple but complex enough illustrate the new methodology. We can also consider the two separated clusters as *global structure*, and the nonlinear surfaces to be relatively *local structure*. @fig-NLDR-two-curvy uses an **ideal NLDR layout** of 2NC7, which reveals the two clusters with moderate separation (global), and flattens the curvilinear forms while (hopefully) preserving the proximity of points (local).
 
 ```{r}
 #| label: fig-NLDR-two-curvy
 #| echo: false
-#| fig-cap: "Key steps for constructing the model on the tSNE layout ($k=2$) of 2NC7: (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The 2NC7 data is shown."
+#| fig-cap: "Key steps for constructing the model on the (ideal) tSNE layout ($k=2$) of 2NC7: (a) data, (b) hexagon bins, (c) bin centroids, and (d) triangulated centroids. The 2NC7 data is shown."
 #| fig-width: 12
 #| fig-height: 4
 #| out-width: 100%
@@ -663,13 +663,13 @@ nldr_two_curvy + hex_grid_two_curvy +
   plot_layout(ncol = 4)
 ```
 
-### Algorithm to represent the model in \gD{}  
+## Algorithm to represent the model in \gD{} {#sec-algorithm}
 
-#### Scale the data
+### Scale the data
 
 Because we are working with distances between points, starting with data having a standard scale, e.g., [0, 1], is recommended. The default should take the aspect ratio produced by the NLDR $(r_1, r_2, ..., r_k)$ into account. When $k=2$, as in hexagon binning, the default range is $[0, y_{i,\text{max}}], i=1,2$, where $y_{1,\text{max}}=1$ and $y_{2,\text{max}} = r_2/r_1$ (@fig-NLDR-two-curvy). If the NLDR aspect ratio is ignored then set $y_ {2,\text{max}} = 1.$ 
 
-#### Hexagon grid configuration
+### Hexagon grid configuration
 
 Although there are several implementations of hexagon binning [@carr1987] and a published paper [@dan2023], surprisingly, none have sufficient detail or components that produce everything needed for this project. So we described the process used here. @fig-hex-param illustrates the notation used. 
 
@@ -822,18 +822,18 @@ hex_param_vis <- ggplot() +
 hex_param_vis
 ```
 
-#### Binning the data
+### Binning the data
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
 $$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
 
 By default, the bin centroid is used for describing a hexagon (as done in @fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used. The bin centers and the binned data are the two important components needed to render the model representation in high dimensions.  
 
-#### Indicating neighborhood
+### Indicating neighborhood
 
 Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned, the triangulation connects centroids. The edges preserve the neighborhood information from the \gD{} representation when the model is lifted into \pD{}. 
 
-### Rendering the model in \pD{}
+## Rendering the model in \pD{} {#sec-highd}
 
 The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the $j^{th}$ component of the \pD{} mean be
 
@@ -920,7 +920,7 @@ trimesh_two_curvy_removed1_tsne_with_data +
 ```
 
 
-### Measuring the fit {#sec-summary}
+## Measuring the fit {#sec-summary}
 
 <!-- Existing approaches -->
 
@@ -1061,7 +1061,7 @@ axis.text = element_text(size = 15))
 ```
 
 
-### Prediction into \gD{}
+## Prediction into \gD{} {#sec-prediction}
 
 <!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
 
@@ -1220,7 +1220,7 @@ test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
   plot_layout(ncol = 3)
 ```
 
-### Tuning
+## Tuning {#sec-tuning}
 
 <!-- The model fitting is based on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$. -->
 
@@ -1333,13 +1333,13 @@ rmse_two_curvy_b + rmse_two_curvy_relcount + a1_m_two_curvy +
   plot_layout(ncol=2)
 ```
 
-### Interactive graphics
+## Interactive graphics {#sec-interactive}
 
 Matching points in the \gD{} layout with their positions in \pD{} is useful when tuning the fit. This can be used to examine the fitted model in some subspaces in \pD{}, in particular in association with residual plots. 
 
 The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] view with the fitted model overlaid can be linked using a browsable HTML widget (@joe2025, @joe2024). A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This approach will be illustrated on the examples, to show how it can help to understand how the NLDR has organized the observations and learn where it does not do well.
 
-## Choosing a \gD{} layout {#sec-bestfit}
+## Choosing from a selection of layouts {#sec-bestfit}
 <!--updated according to the reviews-->
 
 @fig-toy-rmse illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations, such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable, but more important is to identify bad representations so they can be avoided. The goal is to help users decide on the most useful and appropriate low-dimensional representation of the high-dimensional data.
