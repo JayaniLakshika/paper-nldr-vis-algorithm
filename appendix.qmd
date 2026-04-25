@@ -144,6 +144,7 @@ library(kableExtra)
 library(conflicted)
 library(ggforce)
 library(GGally)
+library(scales)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -774,6 +775,102 @@ Rather than selecting a single set of parameters a priori, we recommend a struct
 This process does not yield a single "optimal" parameter choice, but instead identifies a range of stable and interpretable settings. The goal is to avoid parameter values that produce unstable fits, overly sparse binning, or misleading structure in the fitted wireframe.
 
 ```{r}
+sc_ltr_pos <- c(0.08, 0.9)
+sc_xlims <- c(-0.3, 1.2)
+sc_ylims <- c(-0.17, 1.25)
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy1
+hex_grid_with_counts <- read_rds("data/two_nonlinear/hex_grid_with_counts.rds")
+
+tsne_two_curvy_scaled <- read_rds("data/two_nonlinear/tsne_two_curvy_scaled.rds")
+
+hex_grid_coloured_two_curvy1 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts, 
+    aes(x = x, y = y,
+      group = h, 
+      fill = w_h), colour = "grey70", linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(x = emb1, y = emb2),
+             colour = clr_choice,
+             alpha = 0.3,
+             size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "E") +
+  interior_annotation("b", sc_ltr_pos, cex = 2) + 
+  xlim(sc_xlims) + ylim(sc_ylims)
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy2
+
+hex_grid_with_counts_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy2.rds")
+tr_from_to_df_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy2.rds")
+
+hex_grid_coloured_two_curvy2 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_two_curvy2, 
+    aes(x = x, y = y, 
+        group = h, 
+        fill = w_h), 
+        colour = "grey70", 
+        linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+           aes(x = emb1, y = emb2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "C") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos, cex = 2)
+
+trimesh_two_curvy2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy2,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             colour = "#636363",
+            alpha = 0.5,
+            size = 0.5
+            ) +
+  coord_equal() +
+  interior_annotation("a1", sc_ltr_pos) 
+
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy3
+
+hex_grid_with_counts_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy3.rds")
+tr_from_to_df_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
+
+hex_grid_coloured_two_curvy3 <-  ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_two_curvy3, 
+    aes(x = x, y = y, 
+        group = h, 
+        fill = w_h), 
+        colour = "grey70", linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+           aes(x = emb1, y = emb2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("c", sc_ltr_pos, cex = 2)
+```
+
+```{r}
 #| echo: false
 #| label: fig-bins-two-curvy
 #| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different $b_1$ specifications yielding different $b_2, b, m$: (a) **15**, 18, 270, 98, (b) **24**, 29, 696, 209, and (c) **35**, 42, 1470, 386. Color indicates standardized counts, dark indicating high count, and light indicating low count. At the smallest binwidth, the data structure is discontinuous, suggesting that there are too many bins."
@@ -839,6 +936,99 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
         axis.text = element_text(size = 15))
 ```
 
+```{r}
+#| label: error-two-curvy
+
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_curvy_tsne.rds")
+
+rmse_two_curvy_b <- ggplot(error_two_curvy_tsne, 
+                     aes(x = a1, 
+                         y = HBE)) +
+  geom_vline(xintercept = 0.03,
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = 0.05,
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = 0.08, linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) + 
+  geom_point(size = 1) +
+  scale_x_continuous(breaks = seq(0.03, 0.28, 0.03)) + #sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = "HBE") +
+  ylim(c(0, 0.75)) +
+  interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
+
+error_two_curvy_tsne_filtered <- error_two_curvy_tsne |>
+  filter(b1 %in% c(15, 24, 35))
+
+rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne, 
+                     aes(x = n_bar, 
+                         y = HBE)) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[2],
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[3],
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[1], linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) + 
+  geom_point(size = 1) +
+#  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_log10() +
+  ylim(c(0, 0.75)) +
+  ylab("HBE") +
+  xlab(expression(paste("average points per bin (", bar(n)[h], ")(log scale))"))) +
+  #ylim(c(0, 0.75)) +
+  annotate("text", x = 109, y = 0.05, label = "b", size = 7, colour = "grey70") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15)) 
+
+a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
+                     aes(x = a1,
+                         y = prop_bins)) +
+  geom_vline(xintercept = 0.03,
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = 0.05,
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = 0.08, linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) +
+  geom_point(size = 1) +
+  # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = seq(0.03, 0.28, 0.03)) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression("prop. non-empty bins " * bgroup("(", m / b, ")"))) +
+  interior_annotation("c", position = c(0.9, 0.1), cex = 2) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+axis.text = element_text(size = 15))
+```
+
 
 ```{r}
 #| echo: false
@@ -847,7 +1037,6 @@ rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy,
 #| out-width: 100%
 #| fig-width: 12
 #| fig-height: 10
-#| eval: false
 
 rmse_two_curvy_b + rmse_two_curvy_relcount + a1_m_two_curvy +
   rmse_two_curvy_lwd + 
