@@ -1748,6 +1748,190 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 @fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as rRTA, rARNX, rSC, and rGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
+#| label: read-two-curvy-clust-nldr
+# Read a variety of different NLDR representations of two_non_linear_diff_shaped_close_clusters
+# and plot them on same aspect ratio
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds")
+
+nldr_two_curvy1 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a") +
+  theme(aspect.ratio = 1) 
+
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds")
+
+nldr_two_curvy6 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("f") +
+  theme(aspect.ratio = 1) 
+
+umap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+
+nldr_two_curvy2 <- umap_two_curvy |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#636363') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1) 
+
+phate_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds")
+
+nldr_two_curvy3 <- phate_two_curvy |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("c") +
+  theme(aspect.ratio = 1) 
+
+trimap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+
+nldr_two_curvy4 <- trimap_two_curvy |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("d") +
+  theme(aspect.ratio = 1)
+
+pacmap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+
+nldr_two_curvy5 <- pacmap_two_curvy |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e") +
+  theme(aspect.ratio = 1)
+```
+
+<!--two_nonlinear/04_gen_mse_for_diff_methods.R-->
+```{r}
+#| label: combine-data-two_curvy
+
+error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
+error_two_curvy_phate <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
+error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
+error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
+error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
+
+error_two_curvy_avg <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_avg <- error_two_curvy_avg |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+
+error_two_curvy <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_filtered <- error_two_curvy |> 
+  dplyr::filter(b1 == 24) |>
+  dplyr::select(method, HBE)
+
+error_two_curvy <- error_two_curvy |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+```
+
+```{r}
+#| label: error-comp-two_curvy
+
+error_plot_two_curvy <-
+  plot_hbe(error_two_curvy) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+    #sort(unique(error_two_curvy$a1))[
+    #  seq(1, length(
+    #    unique(error_two_curvy$a1)), 
+    #    by = 5)]) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+
+
+error_plot_two_curvy_n_bar <-
+  plot_hbe_nbar(error_two_curvy_avg) +
+  annotate("text", x = 2.5, y = 1.3, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+```
+
+<!--two_nonlinear/07_example_evaluation_metrics.R-->
+```{r}
+nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS)
+
+comp_metrics <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("iii") +
+  interior_annotation("better", position = c(0.07, 0.15)) +
+  interior_annotation("worse", position = c(0.07, 0.9)) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.22)
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color represents the NLDR layout. Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot (iii). Color of the line indicates NLDR layout."
+#| label: fig-toy-rmse
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_two_curvy / error_plot_two_curvy_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(
+  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
+  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
+  ncol = 2
+)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_two_curvy <- (top_section) / comp_metrics +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_two_curvy
+```
+
+```{r}
 #| label: read-pbmc-nldr
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio

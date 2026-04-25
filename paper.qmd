@@ -1218,10 +1218,6 @@ comp_metrics <- plot_comp_metrics(nldr_metrics) +
 #| fig-height: 6
 #| fig-width: 6
 
-# Stack first two error plots vertically (left column)
-left_column <- error_plot_two_curvy / error_plot_two_curvy_n_bar +
-  plot_layout(heights = c(1, 1))
-
 # Arrange six NLDR plots into two columns (right side)
 right_columns <- wrap_plots(
   nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
@@ -1230,7 +1226,7 @@ right_columns <- wrap_plots(
 )
 
 # Combine left (2 plots) and right (6 plots) into one aligned block
-top_section <- left_column | right_columns +
+top_section <- error_plot_two_curvy | right_columns +
   plot_layout(widths = c(1.2, 1.2), guides = "collect") 
 
 # Place comp_metrics below and match full width
