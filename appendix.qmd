@@ -2014,6 +2014,7 @@ nldr_mnist5 <- pacmap_mnist |>
   theme(aspect.ratio = 1)
 ```
 
+<!--mnist/03_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-mnist
 
@@ -2031,11 +2032,46 @@ error_mnist <- bind_rows(error_mnist_umap,
                         error_mnist_trimap,
                         error_mnist_pacmap)
 
-error_mnist <- error_mnist |> 
-  dplyr::filter(b1 == 30) |>
-  dplyr::select(method, HBE) |>
+error_mnist_avg <- error_mnist |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
   mutate(method = factor(method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+
+error_mnist <- error_mnist |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+```
+
+```{r}
+#| label: error-comp-mnist
+
+error_plot_mnist <- plot_hbe(error_mnist) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(
+    #unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
+ #                                      by = 5), 24)]) +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
+error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
+  annotate("text", x = 4, y = 2.1, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
 ```
 
 ```{r}
@@ -2067,8 +2103,28 @@ comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
 #| fig-height: 6
 #| fig-width: 6
 
-comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+# comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+#                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_mnist / error_plot_mnist_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_mnist <- (top_section) / comp_metrics_mnist +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_mnist
 ```
 
 \clearpage

@@ -1448,15 +1448,6 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_trimap,
                         error_pbmc_pacmap)
 
-
-# error_pbmc_avg <- error_pbmc |>
-#   filter(b1 >= 5) |>
-#   group_by(method, n_bar) |>
-#   filter(HBE == min(HBE)) |>
-#   ungroup() |>
-#   mutate(method = factor(method,
-#                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
-
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -1477,12 +1468,6 @@ error_plot_pbmc <- plot_hbe(error_pbmc) +
                        #sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
-
-# error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
-#   annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
-#   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
-#   ylab("HBE")
-
 ```
 
 ```{r}
@@ -1661,13 +1646,13 @@ error_mnist <- bind_rows(error_mnist_umap,
                         error_mnist_trimap,
                         error_mnist_pacmap)
 
-error_mnist_avg <- error_mnist |>
-  filter(b1 >= 5) |>
-  group_by(method, n_bar) |>
-  filter(HBE == min(HBE)) |>
-  ungroup() |>
-  mutate(method = factor(method,
-                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+# error_mnist_avg <- error_mnist |>
+#   filter(b1 >= 5) |>
+#   group_by(method, n_bar) |>
+#   filter(HBE == min(HBE)) |>
+#   ungroup() |>
+#   mutate(method = factor(method,
+#                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
 error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
@@ -1693,13 +1678,13 @@ error_plot_mnist <- plot_hbe(error_mnist) +
   theme(aspect.ratio=0.685) +
   ylab("HBE")
 
-error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
-  annotate("text", x = 4, y = 2.1, label = "ii", size = 4, colour = "grey70") +
-  scale_color_manual(
-    values=c('#a65628', '#984ea3', '#999999', 
-             '#377eb8', '#ff7f00', '#e41a1c')) +
-  theme(aspect.ratio=0.685) +
-  ylab("HBE")
+# error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
+#   annotate("text", x = 4, y = 2.1, label = "ii", size = 4, colour = "grey70") +
+#   scale_color_manual(
+#     values=c('#a65628', '#984ea3', '#999999', 
+#              '#377eb8', '#ff7f00', '#e41a1c')) +
+#   theme(aspect.ratio=0.685) +
+#   ylab("HBE")
 
 ```
 
@@ -1707,11 +1692,8 @@ error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
 ```{r}
 #| label: fig-mnist-rmse
 #| fig-cap: "Assessing which of the 6 NLDR layouts of the MNIST digit 1 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color is used for the lines and points in the left plot to match the scatterplots of the NLDR layouts (a-f). Layout c is universally poor. Layouts a and f that show a big cluster and a small circular cluster are universally optimal. Layout a performs well at tiny binwidth (where most points are in their own bin) and not as well as f with larger binwidth, thus layout f is the best choice. Plot (ii), which accounts for the density within clusters by using average bin count, shows reduced differences between layouts, indicating that part of the variation in (i) is driven by cluster density rather than true structural differences."
-#| out-width: 92%
+#| out-width: 100%
 #| fig-pos: "!ht"
-
-# Stack the first two plots
-left_column <- error_plot_mnist / error_plot_mnist_n_bar
 
 # Combine the remaining plots into the other columns (wrap into 2 columns)
 right_columns <- wrap_plots(
@@ -1721,7 +1703,7 @@ right_columns <- wrap_plots(
 )
 
 # Combine left and right
-final_plot_mnist <- left_column | right_columns
+final_plot_mnist <- error_plot_mnist + right_columns
 final_plot_mnist
 ```
 
