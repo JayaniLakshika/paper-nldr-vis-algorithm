@@ -1128,20 +1128,6 @@ error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff
 error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
 error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
 
-error_two_curvy_avg <- bind_rows(error_two_curvy_umap, 
-                         error_two_curvy_tsne,
-                         error_two_curvy_phate,
-                         error_two_curvy_trimap,
-                         error_two_curvy_pacmap,
-                         error_two_curvy_tsne2)
-
-error_two_curvy_avg <- error_two_curvy_avg |>
-  filter(b1 >= 5) |>
-  group_by(method, n_bar) |>
-  filter(HBE == min(HBE)) |>
-  ungroup() |>
-  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
-
 error_two_curvy <- bind_rows(error_two_curvy_umap, 
                          error_two_curvy_tsne,
                          error_two_curvy_phate,
@@ -1178,16 +1164,6 @@ error_plot_two_curvy <-
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
   theme(aspect.ratio = 0.685) 
-
-
-error_plot_two_curvy_n_bar <-
-  plot_hbe_nbar(error_two_curvy_avg) +
-  annotate("text", x = 2.5, y = 1.3, label = "ii", size = 4, colour = "grey70") +
-  scale_color_manual(
-    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
-             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
-             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.685) 
 ```
 
 <!--two_nonlinear/07_example_evaluation_metrics.R-->
@@ -1209,15 +1185,18 @@ comp_metrics <- plot_comp_metrics(nldr_metrics) +
     values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
              "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
              "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
-  theme(aspect.ratio = 0.22)
+  theme(aspect.ratio = 0.685)
 ```
 
 ```{r}
 #| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color represents the NLDR layout. Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot (iii). Color of the line indicates NLDR layout."
 #| label: fig-toy-rmse
 #| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
+#| fig-height: 3.5
+#| fig-width: 5
+
+left_column <- error_plot_two_curvy/comp_metrics +
+  plot_layout(heights = c(1, 1))
 
 # Arrange six NLDR plots into two columns (right side)
 right_columns <- wrap_plots(
@@ -1226,14 +1205,8 @@ right_columns <- wrap_plots(
   ncol = 2
 )
 
-# Combine left (2 plots) and right (6 plots) into one aligned block
-top_section <- error_plot_two_curvy | right_columns +
-  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
-
 # Place comp_metrics below and match full width
-final_plot_two_curvy <- (top_section) / comp_metrics +
-  plot_layout(heights = c(3, 1)) &
-  theme(plot.margin = margin(0, 0, 0, 0))
+final_plot_two_curvy <- left_column | right_columns
 
 # Show the result
 final_plot_two_curvy
