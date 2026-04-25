@@ -1020,6 +1020,32 @@ rSC, and rGS across multiple NLDR layouts. These visual comparisons
 highlight that HBE behaves differently from these existing metrics due
 to the different settings involved.
 
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-pbmc-rmse-1.pdf}
+
+}
+
+\caption{\label{fig-pbmc-rmse}Assessing which of the 8 NLDR layouts on
+the PBMC3k data (shown in \textbf{?@fig-NLDR-variety}) is the better
+representation using HBE for varying (i) binwidth (\(a_1\)), and (ii)
+average bin count (\(\bar{n}_h\)). Color used for the lines and points
+in the left plot and in the scatterplots represents NLDR layout (a-h).
+Layout f is universally poor. Layouts a, c, g, and h that show large
+separations between clusters are universally suboptimal. Layout d with
+little separation performs well at tiny binwidth (where most points are
+in their own bin) and poorly as binwidth increases. The choice of the
+best is between layouts b and e, which have small separations between
+oddly shaped clusters. Layout e is chosen as the best. Plot (ii), which
+accounts for the density within clusters by using average bin count,
+shows reduced differences between layouts, indicating that part of the
+variation in (i) is driven by cluster density rather than true
+structural differences.}
+
+\end{figure}%
+
 \begin{figure}[!ht]
 
 \centering{

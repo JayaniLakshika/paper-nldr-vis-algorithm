@@ -1818,6 +1818,7 @@ nldr8c <- pacmap_pbmc |>
 ```
 
 
+<!--pbmc3k/08_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-pbmc
 
@@ -1839,13 +1840,62 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_trimap,
                         error_pbmc_pacmap)
 
-error_pbmc <- error_pbmc |> 
-  dplyr::filter(b1 == 22) |>
-  dplyr::select(method, HBE) |>
+
+error_pbmc_avg <- error_pbmc |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+
+error_pbmc <- error_pbmc |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup()
+
+error_pbmc <- error_pbmc |>
   mutate(method = factor(method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 ```
 
+```{r}
+#| label: error-comp-pbmc
+
+error_plot_pbmc <- plot_hbe(error_pbmc) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
+  annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, and h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of the best is between layouts b and e, which have small separations between oddly shaped clusters. Layout e is chosen as the best. Plot (ii), which accounts for the density within clusters by using average bin count, shows reduced differences between layouts, indicating that part of the variation in (i) is driven by cluster density rather than true structural differences."
+#| label: fig-pbmc-rmse
+#| out-width: 100%
+
+# Stack error plots in one column
+error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_n_bar
+
+design <- "
+AACC
+AACC
+BBCC
+BBCC
+"
+error_plots_pbmc + 
+  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+  plot_layout(design = design)
+```
 
 ```{r}
 nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
@@ -1872,18 +1922,36 @@ comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) +
 #| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to a NLDR layout. All, except rGS and rARNX agree that layout e is best or very close to best. Layout d is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout f is considered poor by rARNX and HBE. Layout a is cosidered close to the best by rGS and rSC."
 #| fig-pos: "!ht"
 #| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
 
 design <- "
 AABB
 AABB
 AABB
 "
-comp_metrics_pbmc + 
-  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
-             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
-  plot_layout(design = design)
+# comp_metrics_pbmc + 
+#   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+#              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+#   plot_layout(design = design)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_pbmc / error_plot_pbmc_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_pbmc <- (top_section) / comp_metrics_pbmc +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_pbmc
 ```
 
 

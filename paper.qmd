@@ -1449,13 +1449,13 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_pacmap)
 
 
-error_pbmc_avg <- error_pbmc |>
-  filter(b1 >= 5) |>
-  group_by(method, n_bar) |>
-  filter(HBE == min(HBE)) |>
-  ungroup() |>
-  mutate(method = factor(method,
-                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+# error_pbmc_avg <- error_pbmc |>
+#   filter(b1 >= 5) |>
+#   group_by(method, n_bar) |>
+#   filter(HBE == min(HBE)) |>
+#   ungroup() |>
+#   mutate(method = factor(method,
+#                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
 error_pbmc <- error_pbmc |>
   mutate(a1 = round(a1, 2)) |>
@@ -1478,10 +1478,10 @@ error_plot_pbmc <- plot_hbe(error_pbmc) +
   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
   ylab("HBE")
 
-error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
-  annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
-  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
-  ylab("HBE")
+# error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
+#   annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
+#   scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+#   ylab("HBE")
 
 ```
 
@@ -1490,16 +1490,13 @@ error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
 #| label: fig-pbmc-rmse
 #| out-width: 100%
 
-# Stack error plots in one column
-error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_n_bar
-
 design <- "
-AACC
-AACC
-BBCC
-BBCC
+AABB
+AABB
+AABB
+AABB
 "
-error_plots_pbmc + 
+error_plot_pbmc + 
   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
   plot_layout(design = design)
