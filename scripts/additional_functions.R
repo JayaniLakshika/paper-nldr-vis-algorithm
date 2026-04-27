@@ -55,7 +55,6 @@ plot_hbe <- function(error_df) {
     geom_line(linewidth = 0.3) +
     ylab("HBE") +
     xlab(expression(paste("binwidth (", a[1], ")"))) +
-    interior_annotation("i", position = c(0.07, 0.9)) +
     theme_minimal() +
     theme(panel.border = element_rect(fill = 'transparent'),
           plot.title = element_text(size = 12, hjust = 0.5, vjust = -0.5),

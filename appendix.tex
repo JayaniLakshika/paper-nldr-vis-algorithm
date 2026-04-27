@@ -697,6 +697,107 @@ l = \frac{-a_2 \pm \sqrt{a_2^2 - 6[-(a_1^2 + a_2^2)]}}{3},
 
 where \(l > 0\).
 
+\section{Tuning}\label{sec-tuning}
+
+The model fitting depends on several parameters, including the hexagon
+bin parameters and the low-count bin removal process. The hexagon bin
+parameters define the bottom-left bin position \((s_1, s_2)\), the
+number of bins in the horizontal direction (\(b_1\)), which determines
+the number of bins in the vertical direction (\(b_2\)), the total number
+of bins (\(b\)), and the number of non-empty bins (\(m\)). Low-count
+bins are removed using standardized bin counts, defined as
+\(w_h = n_h/n\), for \(h = 1, \dots, m\).
+
+Default values are provided for these parameters. In particular, the
+default number of bins is determined from the sample size by setting
+\(b_1 = n^{1/3}\), consistent with the Diaconis--Freedman rule
+\citep{freedman1981}, with \(b_2\) computed to preserve the aspect ratio
+of the layout.
+
+Rather than selecting a single set of parameters a priori, we recommend
+a structured procedure to examine the stability of the fitted model
+across a range of values. A practical workflow is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Select a grid of binwidths:} Choose a sequence of values for
+  \(b_1\) ranging from coarse to fine resolution (e.g., from small
+  values up to \(b_1 = \sqrt{n/r_2}\)). This controls the level of
+  detail in the fitted wireframe.
+\item
+  \textbf{Compute HBE across the grid:} For each choice of \(b_1\),
+  compute the HBE. Stable regions where HBE changes slowly indicate
+  parameter values where the fitted model is not overly sensitive to
+  binning resolution.
+\item
+  \textbf{Assess bin occupancy:} Examine summary quantities such as
+  average bin count (\(\bar{n}\)), average standardized bin count
+  (\(\bar{w}\)), and the proportion of non-empty bins (\(m/b\)).
+  Reasonable parameter choices typically correspond to:
+
+  \begin{itemize}
+  \item
+    sufficiently large \(\bar{n}\) to avoid sparse bins, and
+  \item
+    moderate values of \(m/b\), indicating that bins cover the data
+    without excessive fragmentation.
+  \end{itemize}
+\item
+  \textbf{Check robustness to bin removal:} Evaluate the effect of
+  removing low-count bins using a range of thresholds. Parameter values
+  where HBE remains stable under small amounts of bin removal indicate
+  robustness of the fitted structure.
+\item
+  \textbf{Compare across layouts (if applicable):} When comparing
+  multiple NLDR layouts, examine HBE as a function of average bin count
+  or standardized bin count. This helps account for differences in point
+  density between layouts.
+\end{enumerate}
+
+This process does not yield a single ``optimal'' parameter choice, but
+instead identifies a range of stable and interpretable settings. The
+goal is to avoid parameter values that produce unstable fits, overly
+sparse binning, or misleading structure in the fitted wireframe.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-bins-two-curvy-1.pdf}
+
+}
+
+\caption{\label{fig-bins-two-curvy}Hexbin density plots of tSNE layout
+of the 2NC7 data, using three different \(b_1\) specifications yielding
+different \(b_2, b, m\): (a) \textbf{15}, 18, 270, 98, (b) \textbf{24},
+29, 696, 209, and (c) \textbf{35}, 42, 1470, 386. Color indicates
+standardized counts, dark indicating high count, and light indicating
+low count. At the smallest binwidth, the data structure is
+discontinuous, suggesting that there are too many bins.}
+
+\end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-param-two-curvy-1.pdf}
+
+}
+
+\caption{\label{fig-param-two-curvy}Various plots to help tune the model
+fit: (a) HBE vs \(a_1\), (b) HBE vs \(\bar{n}_h\), (c) proportion of
+non-empty bins (\(m/b\)) vs \(a_1\), (d) HBE vs \(w_h\) cutoff used for
+removing low count bins. Color indicates the three binwidths show in
+Figure 6: \(0.03\) (orange dashed), \(0.05\) (blue solid), and \(0.08\)
+(green dotted). The better model fit will have low HBE, but reasonably
+sized bins that capture the data sufficiently. Proportion of non-empty
+bins tends to increase with \(a_1\) (c). Removing a few low-count bins
+doesn't substantially change HBE, for all three binwidths (d).}
+
+\end{figure}%
+
 \section{Curiosities about NLDR results discovered by examining the
 model in the data space}\label{sec-curiosities}
 
@@ -920,6 +1021,58 @@ compare HBE with commonly used evaluation metrics such as rRTA, rARNX,
 rSC, and rGS across multiple NLDR layouts. These visual comparisons
 highlight that HBE behaves differently from these existing metrics due
 to the different settings involved.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-toy-rmse-1.pdf}
+
+}
+
+\caption{\label{fig-toy-rmse}Assessing which of the 6 NLDR layouts (a-f)
+on the 2NC7 data is the better representation using HBE for varying (i)
+binwidth (\(a_1\)), and (ii) average bin count (\(\bar{n}_h\)). Color
+represents the NLDR layout. Layout d is universally poor. Layouts b and
+e that show two close clusters are universally suboptimal. Layout f with
+little separation performs well at tiny binwidth (where most points are
+in their own bin) and poorly as binwidth increases. Layout e has a small
+separation with oddly shaped clusters. Layout a is the best choice. Plot
+(ii), which compares HBE values with respect to average bin count, helps
+account for differences in cluster density; here, the variation among
+layouts is reduced, showing that some differences observed in (i) arise
+from density rather than true structure. Comparison of scaled evaluation
+metrics (rRTA, rSC, rGS, rARNX, and HBE using \(a_1=0.05\)) for the six
+NLDR layouts computed on the 2NC7 data using a parallel coordinate plot
+(iii). Color of the line indicates NLDR layout.}
+
+\end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-pbmc-rmse-1.pdf}
+
+}
+
+\caption{\label{fig-pbmc-rmse}Assessing which of the 8 NLDR layouts on
+the PBMC3k data (shown in \textbf{?@fig-NLDR-variety}) is the better
+representation using HBE for varying (i) binwidth (\(a_1\)), and (ii)
+average bin count (\(\bar{n}_h\)). Color used for the lines and points
+in the left plot and in the scatterplots represents NLDR layout (a-h).
+Layout f is universally poor. Layouts a, c, g, and h that show large
+separations between clusters are universally suboptimal. Layout d with
+little separation performs well at tiny binwidth (where most points are
+in their own bin) and poorly as binwidth increases. The choice of the
+best is between layouts b and e, which have small separations between
+oddly shaped clusters. Layout e is chosen as the best. Plot (ii), which
+accounts for the density within clusters by using average bin count,
+shows reduced differences between layouts, indicating that part of the
+variation in (i) is driven by cluster density rather than true
+structural differences.}
+
+\end{figure}%
 
 \begin{figure}[!ht]
 

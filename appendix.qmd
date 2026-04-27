@@ -144,6 +144,7 @@ library(kableExtra)
 library(conflicted)
 library(ggforce)
 library(GGally)
+library(scales)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -741,6 +742,307 @@ $$
 
 where $l > 0$.
 
+## Tuning {#sec-tuning}
+
+<!-- The model fitting is based on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, \ s_2)$, the number of bins in the horizontal direction ($b_1$), which also determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the total number of non-empty bins ($m$). Low count bins are removed using standardized bin counts, defined as $w_h = n_h/n, ~~h=1, \dots m$. -->
+
+<!-- Default values are provided for each of these, but deciding on the best model fit is assisted by examining a range of values. The default number of bins $b=b_1\times b_2$ is computed based on the sample size, by setting $b_1=n^{1/3}$, consistent with the Diaconis-Freedman rule [@freedman1981]. The value of $b_2$ is determined analytically by $b_1, q, r_2$ (@eq-bin2). Values of $b_1$ between $2$ and $b_1 = \sqrt{n/r_2}$ are recommended, where the dependence on $r_2$ reflects the preservation of aspect ratio in the NLDR layout. -->
+
+<!-- @fig-bins-two-curvy shows the hexbin grids for three choices of $b_1$. While the number of bins is the common parameter to modify, bin start positions $(s_1, \ s_2)$ can also be worth experimenting with, because they can also change bin counts.  -->
+
+
+The model fitting depends on several parameters, including the hexagon bin parameters and the low-count bin removal process. The hexagon bin parameters define the bottom-left bin position $(s_1, s_2)$, the number of bins in the horizontal direction ($b_1$), which determines the number of bins in the vertical direction ($b_2$), the total number of bins ($b$), and the number of non-empty bins ($m$). Low-count bins are removed using standardized bin counts, defined as $w_h = n_h/n$, for $h = 1, \dots, m$.
+
+Default values are provided for these parameters. In particular, the default number of bins is determined from the sample size by setting $b_1 = n^{1/3}$, consistent with the Diaconis–Freedman rule [@freedman1981], with $b_2$ computed to preserve the aspect ratio of the layout.
+
+Rather than selecting a single set of parameters a priori, we recommend a structured procedure to examine the stability of the fitted model across a range of values. A practical workflow is as follows:
+
+1. **Select a grid of binwidths:** Choose a sequence of values for $b_1$ ranging from coarse to fine resolution (e.g., from small values up to $b_1 = \sqrt{n/r_2}$). This controls the level of detail in the fitted wireframe.
+
+2. **Compute HBE across the grid:** For each choice of $b_1$, compute the HBE. Stable regions where HBE changes slowly indicate parameter values where the fitted model is not overly sensitive to binning resolution.
+
+3. **Assess bin occupancy:** Examine summary quantities such as average bin count ($\bar{n}$), average standardized bin count ($\bar{w}$), and the proportion of non-empty bins ($m/b$).
+   Reasonable parameter choices typically correspond to:
+
+   - sufficiently large $\bar{n}$ to avoid sparse bins, and
+   
+   - moderate values of $m/b$, indicating that bins cover the data without excessive fragmentation.
+
+4. **Check robustness to bin removal:** Evaluate the effect of removing low-count bins using a range of thresholds. Parameter values where HBE remains stable under small amounts of bin removal indicate robustness of the fitted structure.
+
+5. **Compare across layouts (if applicable):** When comparing multiple NLDR layouts, examine HBE as a function of average bin count or standardized bin count. This helps account for differences in point density between layouts.
+
+This process does not yield a single "optimal" parameter choice, but instead identifies a range of stable and interpretable settings. The goal is to avoid parameter values that produce unstable fits, overly sparse binning, or misleading structure in the fitted wireframe.
+
+```{r}
+sc_ltr_pos <- c(0.08, 0.9)
+sc_xlims <- c(-0.3, 1.2)
+sc_ylims <- c(-0.17, 1.25)
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy1
+hex_grid_with_counts <- read_rds("data/two_nonlinear/hex_grid_with_counts.rds")
+
+tsne_two_curvy_scaled <- read_rds("data/two_nonlinear/tsne_two_curvy_scaled.rds")
+
+hex_grid_coloured_two_curvy1 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts, 
+    aes(x = x, y = y,
+      group = h, 
+      fill = w_h), colour = "grey70", linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(x = emb1, y = emb2),
+             colour = clr_choice,
+             alpha = 0.3,
+             size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "E") +
+  interior_annotation("b", sc_ltr_pos, cex = 2) + 
+  xlim(sc_xlims) + ylim(sc_ylims)
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy2
+
+hex_grid_with_counts_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy2.rds")
+tr_from_to_df_two_curvy2 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy2.rds")
+
+hex_grid_coloured_two_curvy2 <- ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_two_curvy2, 
+    aes(x = x, y = y, 
+        group = h, 
+        fill = w_h), 
+        colour = "grey70", 
+        linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+           aes(x = emb1, y = emb2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, 
+    na.value = "#ffffff", option = "C") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("a", sc_ltr_pos, cex = 2)
+
+trimesh_two_curvy2 <- ggplot() +
+  geom_segment(data = tr_from_to_df_two_curvy2,
+               aes(
+                 x = x_from,
+                 y = y_from,
+                 xend = x_to,
+                 yend = y_to),
+               colour = "#000000") +
+  geom_point(data = tsne_two_curvy_scaled,
+             aes(
+               x = tSNE1,
+               y = tSNE2
+             ),
+             colour = "#636363",
+            alpha = 0.5,
+            size = 0.5
+            ) +
+  coord_equal() +
+  interior_annotation("a1", sc_ltr_pos) 
+
+```
+
+```{r}
+#| label: hexbin-regular-two-curvy3
+
+hex_grid_with_counts_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_hex_grid_with_counts_two_curvy3.rds")
+tr_from_to_df_two_curvy3 <- read_rds("data/two_nonlinear/two_nonlinear_tr_from_to_df_two_curvy3.rds")
+
+hex_grid_coloured_two_curvy3 <-  ggplot() + 
+  geom_polygon(
+    data = hex_grid_with_counts_two_curvy3, 
+    aes(x = x, y = y, 
+        group = h, 
+        fill = w_h), 
+        colour = "grey70", linewidth=0.2) +
+  geom_point(data = tsne_two_curvy_scaled,
+           aes(x = emb1, y = emb2),
+           alpha = 0.3,
+           size = 0.5) +
+  scale_fill_viridis_c(direction = -1, na.value = "#ffffff", option = "D") +
+  xlim(sc_xlims) + ylim(sc_ylims) +
+  interior_annotation("c", sc_ltr_pos, cex = 2)
+```
+
+```{r}
+#| echo: false
+#| label: fig-bins-two-curvy
+#| fig-cap: "Hexbin density plots of tSNE layout of the 2NC7 data, using three different $b_1$ specifications yielding different $b_2, b, m$: (a) **15**, 18, 270, 98, (b) **24**, 29, 696, 209, and (c) **35**, 42, 1470, 386. Color indicates standardized counts, dark indicating high count, and light indicating low count. At the smallest binwidth, the data structure is discontinuous, suggesting that there are too many bins."
+#| fig-width: 9
+#| fig-height: 3
+
+hex_grid_coloured_two_curvy2 +
+  hex_grid_coloured_two_curvy1 +
+  hex_grid_coloured_two_curvy3 +
+  plot_layout(guides='collect', ncol = 3) &
+  theme(legend.position='none', plot.tag = element_text(size = 12))
+``` 
+
+<!-- #### Handling of low-density bins-->
+
+<!-- It is worthwhile to consider what desirable aspects of a hexbin result, that maps to summarizing the \pD{} fit well. The binning should capture the underlying data distribution closely, with a minimum number of necessary bins. An ideal binning might be indicated by a more uniform distribution of bin counts or having few relatively empty bins. To help with this assessment average bin count ($\bar{n} = \sum{n_h}/m$), average standardized bin count ($\bar{w} = \sum{w_h}/m$) and proportion of non-empty bins ($m/b$), are also computed. @fig-param-two-curvy shows some choices of plots of these quantities for a single NLDR layout, with three choices of $a_1$ indicated. Some expectations and reasoning for these plots are: -->
+
+<!-- - HBE will increase as $a_1$ increases, so good choices will be just before a big increase. In plot a, HBE changes fairly steadily, so there is no easy choice to make. -->
+<!-- - HBE can also be examined against the average standardized bin count or average bin count (plot b). This is similar to the comparison with $a_1$, but to use when comparing different NLDR layouts. Different layouts might produce different densities of points, which will not be captured well by a comparison of HBE vs $a_1$. -->
+<!-- - The proportion of non-empty bins is interesting to examine across different binwidths (plot c). A good binning should have just the right number of bins to neatly cover the shape of the data, and no more or fewer. As binwidth gets smaller, $m/b$ should roughly get bigger. -->
+<!-- - Bins with a small number of observations might be removed to sharpen the wireframe model. This can have adverse effects, though - failing to extend the wireframe into sparse areas, or resulting in holes in the wireframe. Plot d shows the relationship between HBE (computed for all observations despite some bin removal) and the standardized bin count cutoff used to remove bins. For all three chosen bin widths, a small number of bins can be removed without affecting HBE. -->
+
+<!--two_nonlinear/05_gen_rm_lwd_mse.R-->
+```{r}
+#| label: rm-lwd-bin-error
+
+error_rm_two_curvy <- read_rds("data/two_nonlinear/error_rm_lwd_diff_bin.rds") |>
+  mutate(b1  = as.factor(b1))
+
+rmse_two_curvy_lwd <- ggplot(error_rm_two_curvy, 
+                     aes(x = benchmark_rm_lwd, 
+                         y = HBE,
+                         colour = a1,
+                         linetype = a1)) + 
+  geom_point(
+    size = 1
+    ) +
+  geom_line(
+    linewidth = 0.5
+    ) + 
+  scale_x_continuous(breaks = sort(unique(error_rm_two_curvy$benchmark_rm_lwd))[c(1, 4, 7, 11, 15)]) +
+  scale_color_manual(values=c("#d95f02", "#1f78b4", "#1b9e77"),
+                     labels = parse_format()) +
+  scale_linetype_manual(values = c("longdash", "solid", "dotted"),
+                        labels = parse_format()) +
+  xlab(expression(paste("low count bin cutoff based on ", w[h]))) +
+  ylab("HBE") +
+  #xlim(c(0, 0.14)) +
+  ylim(c(0, 0.75)) +
+  interior_annotation("d", position = c(0.07, 0.9), cex = 2) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, 
+                                  hjust = 0.5, 
+                                  vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        legend.position = "none",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 18),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
+```
+
+```{r}
+#| label: error-two-curvy
+
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_curvy_tsne.rds")
+
+rmse_two_curvy_b <- ggplot(error_two_curvy_tsne, 
+                     aes(x = a1, 
+                         y = HBE)) +
+  geom_vline(xintercept = 0.03,
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = 0.05,
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = 0.08, linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) + 
+  geom_point(size = 1) +
+  scale_x_continuous(breaks = seq(0.03, 0.28, 0.03)) + #sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = "HBE") +
+  ylim(c(0, 0.75)) +
+  interior_annotation("a", position = c(0.9, 0.1), cex = 2) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15))
+
+error_two_curvy_tsne_filtered <- error_two_curvy_tsne |>
+  filter(b1 %in% c(15, 24, 35))
+
+rmse_two_curvy_relcount <- ggplot(error_two_curvy_tsne, 
+                     aes(x = n_bar, 
+                         y = HBE)) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[2],
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[3],
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = error_two_curvy_tsne_filtered$n_bar[1], linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) + 
+  geom_point(size = 1) +
+#  scale_x_continuous(breaks = sort(unique(round(error_two_curvy_tsne$a1, 2)))[c(1, 4, 7, 11, 13, 14, 15, 16)]) +
+  scale_x_log10() +
+  ylim(c(0, 0.75)) +
+  ylab("HBE") +
+  xlab(expression(paste("average points per bin (", bar(n)[h], ")(log scale))"))) +
+  #ylim(c(0, 0.75)) +
+  annotate("text", x = 109, y = 0.05, label = "b", size = 7, colour = "grey70") +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+        axis.text = element_text(size = 15)) 
+
+a1_m_two_curvy <- ggplot(error_two_curvy_tsne,
+                     aes(x = a1,
+                         y = prop_bins)) +
+  geom_vline(xintercept = 0.03,
+           colour = "#d95f02", linetype="dashed", 
+           linewidth=1) +
+  geom_vline(xintercept = 0.05,
+             colour = "#1f78b4", 
+             linetype="solid",
+             linewidth=1) +
+  geom_vline(xintercept = 0.08, linetype="dotted",
+             colour = "#1b9e77", linewidth=1) +
+  geom_line(linewidth = 0.5) +
+  geom_point(size = 1) +
+  # scale_y_continuous(breaks = sort(unique(error_two_curvy$b_non_empty))[-3]) +
+  scale_x_continuous(breaks = seq(0.03, 0.28, 0.03)) +
+  labs(x = expression(paste("binwidth (", a[1], ")")), y = expression("prop. non-empty bins " * bgroup("(", m / b, ")"))) +
+  interior_annotation("c", position = c(0.9, 0.1), cex = 2) +
+  theme_minimal() +
+  theme(aspect.ratio = 0.75,
+        panel.border = element_rect(fill = 'transparent'),
+        plot.title = element_text(size = 20, hjust = 0.5, vjust = -0.5),
+        axis.ticks.x = element_line(),
+        axis.ticks.y = element_line(),
+        axis.title = element_text(size = 18),
+axis.text = element_text(size = 15))
+```
+
+
+```{r}
+#| echo: false
+#| fig-cap: "Various plots to help tune the model fit: (a) HBE vs $a_1$, (b) HBE vs $\\bar{n}_h$, (c) proportion of non-empty bins ($m/b$) vs $a_1$, (d) HBE vs $w_h$ cutoff used for removing low count bins. Color indicates the three binwidths show in Figure 6: $0.03$ (orange dashed), $0.05$ (blue solid), and $0.08$ (green dotted). The better model fit will have low HBE, but reasonably sized bins that capture the data sufficiently. Proportion of non-empty bins tends to increase with $a_1$ (c). Removing a few low-count bins doesn't substantially change HBE, for all three binwidths (d)."
+#| label: fig-param-two-curvy
+#| out-width: 100%
+#| fig-width: 12
+#| fig-height: 10
+
+rmse_two_curvy_b + rmse_two_curvy_relcount + a1_m_two_curvy +
+  rmse_two_curvy_lwd + 
+  plot_layout(ncol=2)
+```
+
 ## Curiosities about NLDR results discovered by examining the model in the data space {#sec-curiosities}
 
 With the drawing of the model in the data, several interesting differences between NLDR methods can be observed.
@@ -1259,6 +1561,7 @@ error_pbmc <- error_pbmc |>
 #| label: error-comp-pbmc-umap
 
 error_umap_plot_pbmc <-  plot_hbe(error_pbmc) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
   scale_x_continuous(breaks = sort(unique(error_pbmc$a1))[c(1, 5, 9, 12, 15, 18, 20, 21)]) +
   scale_color_manual(values=c('#377eb8', '#e41a1c')) 
 
@@ -1446,6 +1749,191 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
 @fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as rRTA, rARNX, rSC, and rGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
 
 ```{r}
+#| label: read-two-curvy-clust-nldr
+# Read a variety of different NLDR representations of two_non_linear_diff_shaped_close_clusters
+# and plot them on same aspect ratio
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds")
+
+nldr_two_curvy1 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a") +
+  theme(aspect.ratio = 1) 
+
+tsne_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds")
+
+nldr_two_curvy6 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("f") +
+  theme(aspect.ratio = 1) 
+
+umap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+
+nldr_two_curvy2 <- umap_two_curvy |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#636363') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1) 
+
+phate_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds")
+
+nldr_two_curvy3 <- phate_two_curvy |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("c") +
+  theme(aspect.ratio = 1) 
+
+trimap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds")
+
+nldr_two_curvy4 <- trimap_two_curvy |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("d") +
+  theme(aspect.ratio = 1)
+
+pacmap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds")
+
+nldr_two_curvy5 <- pacmap_two_curvy |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e") +
+  theme(aspect.ratio = 1)
+```
+
+<!--two_nonlinear/04_gen_mse_for_diff_methods.R-->
+```{r}
+#| label: combine-data-two_curvy
+
+error_two_curvy_umap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_umap.rds")
+error_two_curvy_tsne <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds")
+error_two_curvy_phate <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_phate.rds")
+error_two_curvy_trimap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_trimap.rds")
+error_two_curvy_pacmap <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds")
+error_two_curvy_tsne2 <- read_rds("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds")
+
+error_two_curvy_avg <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_avg <- error_two_curvy_avg |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+
+error_two_curvy <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_filtered <- error_two_curvy |> 
+  dplyr::filter(b1 == 24) |>
+  dplyr::select(method, HBE)
+
+error_two_curvy <- error_two_curvy |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+```
+
+```{r}
+#| label: error-comp-two_curvy
+
+error_plot_two_curvy <-
+  plot_hbe(error_two_curvy) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+    #sort(unique(error_two_curvy$a1))[
+    #  seq(1, length(
+    #    unique(error_two_curvy$a1)), 
+    #    by = 5)]) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+
+
+error_plot_two_curvy_n_bar <-
+  plot_hbe_nbar(error_two_curvy_avg) +
+  annotate("text", x = 2.5, y = 1.3, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+```
+
+<!--two_nonlinear/07_example_evaluation_metrics.R-->
+```{r}
+nldr_metrics <- read_rds("data/two_nonlinear/nldr_eval_metrics.rds")
+
+nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS)
+
+comp_metrics <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("iii", position = c(0.95, 0.85)) +
+  interior_annotation("better", position = c(0.07, 0.15)) +
+  interior_annotation("worse", position = c(0.07, 0.9)) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.22)
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color represents the NLDR layout. Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot (iii). Color of the line indicates NLDR layout."
+#| label: fig-toy-rmse
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_two_curvy / error_plot_two_curvy_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(
+  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
+  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
+  ncol = 2
+)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_two_curvy <- (top_section) / comp_metrics +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_two_curvy
+```
+
+```{r}
 #| label: read-pbmc-nldr
 # Read a variety of different NLDR representations of PBMC
 # and plot them on same aspect ratio
@@ -1516,6 +2004,7 @@ nldr8c <- pacmap_pbmc |>
 ```
 
 
+<!--pbmc3k/08_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-pbmc
 
@@ -1537,13 +2026,63 @@ error_pbmc <- bind_rows(error_pbmc_umap,
                         error_pbmc_trimap,
                         error_pbmc_pacmap)
 
-error_pbmc <- error_pbmc |> 
-  dplyr::filter(b1 == 22) |>
-  dplyr::select(method, HBE) |>
+
+error_pbmc_avg <- error_pbmc |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+
+error_pbmc <- error_pbmc |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup()
+
+error_pbmc <- error_pbmc |>
   mutate(method = factor(method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 ```
 
+```{r}
+#| label: error-comp-pbmc
+
+error_plot_pbmc <- plot_hbe(error_pbmc) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
+  annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data  (shown in @fig-NLDR-variety) is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, and h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of the best is between layouts b and e, which have small separations between oddly shaped clusters. Layout e is chosen as the best. Plot (ii), which accounts for the density within clusters by using average bin count, shows reduced differences between layouts, indicating that part of the variation in (i) is driven by cluster density rather than true structural differences."
+#| label: fig-pbmc-rmse
+#| out-width: 100%
+
+# Stack error plots in one column
+error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_n_bar
+
+design <- "
+AACC
+AACC
+BBCC
+BBCC
+"
+error_plots_pbmc + 
+  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+  plot_layout(design = design)
+```
 
 ```{r}
 nldr_metrics <- read_rds("data/pbmc3k/nldr_eval_metrics.rds")
@@ -1562,7 +2101,7 @@ comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) +
   interior_annotation("worse", position = c(0.09, 0.98)) +
   scale_color_manual(
     values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
-  theme(aspect.ratio = 2)
+  theme(aspect.ratio = 0.22)
 ```
 
 ```{r}
@@ -1570,18 +2109,36 @@ comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) +
 #| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to a NLDR layout. All, except rGS and rARNX agree that layout e is best or very close to best. Layout d is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout f is considered poor by rARNX and HBE. Layout a is cosidered close to the best by rGS and rSC."
 #| fig-pos: "!ht"
 #| out-width: 100%
-#| fig-height: 6
-#| fig-width: 6
 
 design <- "
 AABB
 AABB
 AABB
 "
-comp_metrics_pbmc + 
-  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
-             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
-  plot_layout(design = design)
+# comp_metrics_pbmc + 
+#   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+#              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+#   plot_layout(design = design)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_pbmc / error_plot_pbmc_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_pbmc <- (top_section) / comp_metrics_pbmc +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_pbmc
 ```
 
 
@@ -1644,6 +2201,7 @@ nldr_mnist5 <- pacmap_mnist |>
   theme(aspect.ratio = 1)
 ```
 
+<!--mnist/03_gen_mse_for_diff_methods.R-->
 ```{r}
 #| label: combine-data-mnist
 
@@ -1661,11 +2219,47 @@ error_mnist <- bind_rows(error_mnist_umap,
                         error_mnist_trimap,
                         error_mnist_pacmap)
 
-error_mnist <- error_mnist |> 
-  dplyr::filter(b1 == 30) |>
-  dplyr::select(method, HBE) |>
+error_mnist_avg <- error_mnist |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
   mutate(method = factor(method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+
+error_mnist <- error_mnist |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+```
+
+```{r}
+#| label: error-comp-mnist
+
+error_plot_mnist <- plot_hbe(error_mnist) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(
+    #unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
+ #                                      by = 5), 24)]) +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
+error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
+  annotate("text", x = 4, y = 2.1, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
 ```
 
 ```{r}
@@ -1686,7 +2280,7 @@ comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
   scale_color_manual(
     values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
              "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
-  theme(aspect.ratio = 1.5)
+  theme(aspect.ratio = 0.22)
 ```
 
 ```{r}
@@ -1697,8 +2291,28 @@ comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
 #| fig-height: 6
 #| fig-width: 6
 
-comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+# comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+#                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_mnist / error_plot_mnist_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_mnist <- (top_section) / comp_metrics_mnist +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_mnist
 ```
 
 \clearpage
