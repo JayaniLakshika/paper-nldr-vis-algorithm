@@ -86,6 +86,12 @@ test_data_two_curvy <- data_two_curvy |>
 
 ## Fit the model
 
+training_data_two_curvy <- training_data_two_curvy |>
+  mutate(ID = row_number())
+
+training_umap_two_curvy <- training_umap_two_curvy |>
+  mutate(ID = row_number())
+
 num_bins_x_two_curvy <- 54
 
 algo_obj_two_curvy <- fit_highd_model(
