@@ -4,7 +4,7 @@ library(readr)
 library(conflicted)
 
 library(Rtsne)
-library(umap) #predit for uwot not working
+library(umap) #predict for uwot not working
 library(phateR)
 library(reticulate)
 

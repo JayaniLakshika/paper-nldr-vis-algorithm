@@ -65,6 +65,7 @@
 
 
 \usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
 \usepackage{etoolbox}
@@ -401,6 +402,7 @@ $q$ & buffer to ensure hexgrid covers data, proportion of data range, 0-1\\
 $m$ & number of non-empty bins\\
 $b$ & number of  hexagons in the grid\\
 $h$ & hexagonal id\\
+$H_h$ & set of observations in bin $h$\\
 $l$ & side length\\
 $A$ & area\\
 $n_h$ & number of points in hexagon $h$ (bin count)\\
@@ -532,19 +534,19 @@ Geometric arguments give rise to the following constraints.
 
 \(\text{min }a_1 \text{ s.t.}\)
 
-\begin{equation}\phantomsection\label{eq-equation1}{
+\begin{equation}\protect\phantomsection\label{eq-equation1}{
 s_1 - \frac{a_1}{2} < 0,
 }\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation2}{
+\begin{equation}\protect\phantomsection\label{eq-equation2}{
 s_1 + (b_1 - 1) \times a_1 \geq 1,
 }\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation4}{
+\begin{equation}\protect\phantomsection\label{eq-equation4}{
 s_2 - \frac{a_2}{2} < 0,
 }\end{equation}
 
-\begin{equation}\phantomsection\label{eq-equation5}{
+\begin{equation}\protect\phantomsection\label{eq-equation5}{
 s_2 + (b_2 - 1) \times a_2 \geq r_2.
 }\end{equation}
 
@@ -573,14 +575,14 @@ a_1 > -\frac{4}{\sqrt{3}}qr_2
 Also, substituting \(a_2 = \sqrt{3}a_1/{2}\), \(s_2 = \text{-}qr_2\) and
 rearranging Equation~\ref{eq-equation5} gives:
 
-\begin{equation}\phantomsection\label{eq-equation6}{
+\begin{equation}\protect\phantomsection\label{eq-equation6}{
 a_1 \geq \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
 }\end{equation}
 
 Similarly, substituting \(s_1 = \text{-}q\) Equation~\ref{eq-equation2}
 becomes,
 
-\begin{equation}\phantomsection\label{eq-equation7}{
+\begin{equation}\protect\phantomsection\label{eq-equation7}{
 a_1 \geq \frac{(1 + q)}{(b_1 - 1)}.
 }\end{equation}
 
@@ -600,7 +602,7 @@ b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
 
 and since \(b_2\) should be an integer,
 
-\begin{equation}\phantomsection\label{eq-equation8}{
+\begin{equation}\protect\phantomsection\label{eq-equation8}{
 b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil.
 }\end{equation}
 
