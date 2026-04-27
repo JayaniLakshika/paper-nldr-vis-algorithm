@@ -2,8 +2,10 @@
 
 library(dplyr)
 library(tibble)
+library(rsample)
 library(readr)
 library(conflicted)
+library(quollr)
 
 library(Rtsne)
 library(umap) #predit for uwot not working
@@ -13,6 +15,7 @@ library(reticulate)
 set.seed(20240110)
 
 conflicts_prefer(umap::umap)
+conflicts_prefer(dplyr::filter)
 
 use_python("~/miniforge3/envs/pcamp_env/bin/python")
 use_condaenv("pcamp_env")
@@ -22,19 +25,12 @@ use_condaenv("pcamp_env")
 
 #source(here::here("R/nldr_code.R"), local = TRUE)
 
-data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds")) |>
-  mutate(cluster = if_else(ID <= 1000, "cluster1", "cluster2"))
+data <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
 
 ################################################################################
-## Approach A:
 
-## To split the data
 
-split <- initial_split(data, prop = 0.7, strata = cluster)
-training_two_curvy <- training(split)
-test_two_curvy <- testing(split)
-
-### 1) UMAP on the whole data (training + test)
+##UMAP on the whole data (training + test)
 
 n_neighbors <- 15
 min_dist <- 0.1
@@ -52,7 +48,35 @@ UMAP_data <- UMAP_fit$layout |>
 
 names(UMAP_data) <- c("UMAP1", "UMAP2")
 
-### 2) quollr on training data using UMAP layout
+## To split the data
+
+UMAP_data <- UMAP_data |>
+  mutate(ID = 1:NROW(UMAP_data)) |>
+  mutate(cluster = if_else(ID <= 1000, "cluster1", "cluster2"))
+
+split <- initial_split(UMAP_data, prop = 0.7, strata = cluster)
+training_umap_two_curvy <- training(split)
+test_umap_two_curvy <- testing(split)
+
+### Predict the test set with UMAP model
+
+predict_UMAP_df <- predict(UMAP_fit, test_data_two_curvy[, 1:7]) |>
+  as_tibble()
+
+names(predict_UMAP_df) <- c("UMAP1", "UMAP2")
+
+
+## To split data as well
+data_two_curvy <- data |>
+  mutate(ID = 1:NROW(data))
+
+training_data_two_curvy <- data_two_curvy |>
+  filter(ID %in% training_umap_two_curvy$ID)
+
+test_data_two_curvy <- data_two_curvy |>
+  filter(ID %in% test_umap_two_curvy$ID)
+
+### quollr on training data using UMAP layout
 
 ## Fit the model
 
@@ -77,3 +101,11 @@ counts_df <- algo_obj_two_curvy$hb_obj$std_cts
 predict_df3 <- predict_emb(highd_data = test_data_two_curvy[,1:8],
                            model_highd = df_bin_two_curvy,
                            model_2d = df_bin_centroids_two_curvy)
+
+## Approach A: Compare train vs test UMAP positions
+
+
+## Approach B: Compare UMAP true test positions vs predicted positions
+
+
+## Approach C: Compare quollr positions vs UMAP positions
