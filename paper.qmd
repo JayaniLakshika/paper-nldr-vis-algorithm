@@ -815,12 +815,11 @@ hex_param_vis
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
 $$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
-
-By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used. The hexagonal bin, $h$, for each observation is needed to construct the model representation in high dimensions.  
+<!--By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used.--> The bin id, $h$, for each observation is needed to construct the model representation in high dimensions.  
 
 ### Indicating neighborhood
 
-Delaunay triangulation [@lee1980;@alb2024] is used to connect points so that edges indicate neighboring observations, in both the NLDR layout (@fig-NLDR-two-curvy (d)) and the \pD{} model representation. When the data has been binned, the triangulation connects centroids. The edges preserve the neighborhood information from the \gD{} representation when the model is lifted into \pD{}. 
+Delaunay triangulation [@lee1980;@alb2024] is used to connect centroids to indicate neighboring observations in the NLDR layout (@fig-NLDR-two-curvy (d)). These are retained to preserve the neighborhood information when the model is lifted into \pD{}. 
 
 ## Rendering the model in \pD{} {#sec-highd}
 
