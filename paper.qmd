@@ -383,7 +383,7 @@ At first glance, thinking of NLDR as a modeling technique might seem strange. It
 
 We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times 2}$, with hyper-parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
 
-With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has fewer artifacts than a rectangular grid. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
+With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has fewer artifacts than a rectangular grid [@carr1987]. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
 <!--two_nonlinear/06_gen_model_with_tSNE.R-->
 ```{r}
@@ -658,7 +658,7 @@ Because the algorithm is based on distances between points, scaling the layout d
 
 ### Hexagon grid configuration
 
-Hexagon binning is a good solution for \gD{} [@dan2023].  Although there are several implementations available (e.g., @carr1987), none have components made available to produce what is needed for this project. So we have re-implemented the method and describe the process (@fig-hex-param). 
+Although there are several implementations available (e.g., @dan2023), the full set of data objects needed for this project. So we have re-implemented the method so that all items needed for creating the \pD{} representation are available. 
 
 The \gD{} hexagon grid is uniquely defined the hexagon ids, $h (= 1, \dots, b)$, where $b$ is the number of bins, and their \gD{} centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The number of bins in each direction is denoted as $(b_1, b_2)$, with  $b = b_1 \times b_2$ being the total number of bins. We expect the user to provide just $b_1$, and we calculate $b_2$ using the NLDR ratio to compute the grid. 
 
