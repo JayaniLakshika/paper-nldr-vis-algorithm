@@ -109,3 +109,17 @@ predict_df3 <- predict_emb(highd_data = test_data_two_curvy[,1:8],
 
 
 ## Approach C: Compare quollr positions vs UMAP positions
+
+
+################################################################################
+
+# tSNE simulate new test data and then compare training vs new predicted test
+
+
+
+# PHATE simulate new test data and then compare training vs new predicted test
+
+
+################################################################################
+
+# New badly simulate outside domain of training and compare for best tSNE
