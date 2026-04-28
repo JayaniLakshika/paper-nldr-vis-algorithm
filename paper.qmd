@@ -227,7 +227,7 @@ Check-list before submission
 
 Nonlinear dimension reduction (NLDR) is popular for making a convenient low-dimensional (\kD{}) representation of high-dimensional (\pD{}) data ($k < p$). Recently developed methods include t-distributed stochastic neighbor embedding (tSNE) [@laurens2008], uniform manifold approximation and projection (UMAP) [@leland2018], potential of heat-diffusion for affinity-based trajectory embedding (PHATE) algorithm [@moon2019], large-scale dimensionality reduction using triplets (TriMAP) [@amid2022], and pairwise controlled manifold approximation (PaCMAP) [@yingfan2021]. 
 
-However, the representation generated can vary dramatically from method to method, choice of hyper-parameter, or even random seed, as illustrated by @fig-NLDR-variety. The specific method and hyper-parameters used to produce each layout (see Supplementary Materials) are not essential for the discussion. The dilemma for the analyst is which representation to use. The choice may result in different procedures being used in the downstream analysis or different inferential conclusions. Various academics have expressed concerns about current practices and procedures for choosing (e.g., @irizarry2024, @chari2023). The research described here provides new numerical and visual tools to aid with this decision. 
+However, the representation generated can vary dramatically from method to method, choice of hyper-parameter, or even random seed, as illustrated by @fig-NLDR-variety. <!--The specific method and hyper-parameters used to produce each layout (see Supplementary Materials) are not essential for the discussion. The dilemma for the analyst is which representation to use.--> The choice may result in different procedures being used in the downstream analysis or different inferential conclusions. Various academics have expressed concerns about current practices and procedures for choosing (e.g., @irizarry2024, @chari2023). The research described here provides new numerical and visual tools to help choose a suitable layout. 
 
 ```{r}
 #| label: read-pbmc-nldr
@@ -359,7 +359,7 @@ nldr1 + nldr2 + nldr3 + nldr4 +
   plot_layout(ncol = 4)
 ```
 
-The paper is organized as follows. @sec-background gives more details behind NLDR and high-dimensional data visualization. <!--@sec-method--> Sections [-@sec-NLDRmodel], [-@sec-algorithm], [-@sec-highd], [-@sec-summary] describes the new methodology, illustrated using a simulated data example. @sec-prediction extends the approach for prediction of new observations. @sec-interactive illustrates interactive graphics to diagnose an NLDR fit. A workflow for choosing from a selection of layouts is provided in @sec-bestfit. Two applications <!--illustrating the use of the new methodology for bioinformatics and image classification--> are in @sec-applications. @sec-discussion discusses limitations and future directions. 
+The paper is organized as follows. @sec-background gives more details behind NLDR and high-dimensional data visualization. <!--@sec-method--> Sections [-@sec-NLDRmodel], [-@sec-algorithm], [-@sec-highd], [-@sec-summary] describes the new methodology, illustrated using a simulated data example. @sec-prediction extends the approach for prediction of new observations. @sec-interactive illustrates interactive graphics to diagnose an NLDR fit. A workflow for choosing from a selection of layouts is provided in @sec-bestfit. Two applications <!--illustrating the use of the new methodology for bioinformatics and image classification--> are in @sec-applications. @sec-discussion discusses limitations and future directions. In addition, there is an R package `quollr` which implements the methods.
 
 ## Background literature on dimension reduction {#sec-background}
 
@@ -892,14 +892,21 @@ where $n$ is the number of observations, $m$ is the number of non-empty bins, $n
 
 ## Prediction into \gD{} {#sec-prediction}
 
-Starting with a good layout produced by UMAP
+**Starting with a good layout produced by UMAP- maybe this should be the configuration, or something similar used throughout the first part of the paper.**
+
+NLDR methods focus on a visualization solution for exploration. Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023]. Other approaches not illustrated in this work, such as neural network autoencoders [@hinton2006], and parametric tSNE [@van2009], provide some mechanisms for embedding new data.  A benefit of our approach, is that with the model representation, we can predict layout positions for any method. 
+
+The procedure isfor the new observation: (i) identify the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (ii) assign the corresponding centroid in \gD{}, $C^{(2)}_{h}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions: 
+find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding.  
+
+@fig-prediction-comparison shows the results for UMAP (a) and our predictions(b)  made using `quollr`. The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. The test set is held out for prediction. In both cases it can be seen that the test set matches the training set in the layout quite well. The main differences is that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. **Add tSNE, PHATE, TriMAP and PACMAP training and quollr predictions to this plot, in a 3x2 layout**
 
 ```{r}
-#| label: prediction-comparison
+#| label: fig-prediction-comparison
 #| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the UMAP layout."
-#| fig-height: 4
-#| fig-width: 8
-#| out-width: 100%
+#| fig-height: 2
+#| fig-width: 4
+#| out-width: 80%
 # Code to generate the saved data is in scripts/two_nonlinear/compare_pred_approaches.R
 d_2NC7_tr <- read_rds(here::here("data/two_nonlinear/2NC7_tr.rds"))
 d_2NC7_ts <- read_rds(here::here("data/two_nonlinear/2NC7_ts.rds"))
@@ -947,9 +954,9 @@ d_umap <- bind_rows(UMAP_2NC7_tr_scaled, UMAP_2NC7_ts_pred_scaled) |>
 
 pcompare1 <- ggplot(d_umap,
        aes(x = UMAP1, y = UMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 1) +
+  geom_point(alpha = 0.5, size = 0.5) +
   scale_color_brewer("", palette = "Paired", direction = -1) +
-  ggtitle("UMAP predictions") +
+  ggtitle("a. UMAP") +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
         axis.ticks = element_blank(),
@@ -962,9 +969,9 @@ d_quollr <- bind_rows(UMAP_2NC7_tr_scaled, d_2NC7_ts_qpred) |>
 
 pcompare2 <- ggplot(d_quollr,
        aes(x = UMAP1, y = UMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 1) +
+  geom_point(alpha = 0.5, size = 0.5) +
   scale_color_brewer("", palette = "Paired", direction = -1) +
-  ggtitle("Our predictions") +
+  ggtitle("b. quollr") +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
         axis.ticks = element_blank(),
@@ -977,13 +984,11 @@ pcompare1 + pcompare2 + plot_layout(ncol=2)
 
 <!-- A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$.  -->
 
-NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and most do not explicitly support out-of-sample prediction. Among the methods considered here, only UMAP provides a `predict()` function for embedding new observations based on a learned representation [@tomasz2023]. Other approaches, such as PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009], also provide mechanisms for mapping new data into a low-dimensional space.
 
-Within the framework developed here, a simple approach can be used to approximate the embedding of a new observation, in a manner consistent with the fitted model. The procedure is to (i) identify the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (ii) assign the corresponding centroid in \gD{}, $C^{(2)}_{h}$, as the predicted embedding. This treats the fitted wireframe as a piecewise representation of the underlying structure.
 
-To provide an initial assessment, we compare this approach with the UMAP `predict()` function using a train/test split. Predictions are evaluated in terms of neighborhood preservation and their consistency with the fitted model representation. The results suggest that the approach provides a reasonable approximation for placing new observations relative to the fitted structure.
+<!-- To provide an initial assessment, we compare this approach with the UMAP `predict()` function using a train/test split. Predictions are evaluated in terms of neighborhood preservation and their consistency with the fitted model representation. The results suggest that the approach provides a reasonable approximation for placing new observations relative to the fitted structure.
 
-This method is intended as a simple extension of the model rather than as a replacement for established out-of-sample embedding techniques. A more comprehensive evaluation across a broader range of datasets and methods remains an important direction for future work.
+This method is intended as a simple extension of the model rather than as a replacement for established out-of-sample embedding techniques. A more comprehensive evaluation across a broader range of datasets and methods remains an important direction for future work.-->
 
 ```{r}
 #| label: prediction-two-curvy
