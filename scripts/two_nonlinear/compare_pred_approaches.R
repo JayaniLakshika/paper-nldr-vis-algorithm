@@ -38,13 +38,16 @@ d_2NC7 <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_clo
 # Create a config list with the parameters matching layout for main paper
 # which happen to be the defaults, actually.
 # a better UMAP layout can be generated using n_neighbors = 50, min_dist <- 0.9
+# Changing to use a better layout, because this one doesn't actually
+# match plot b of fig 8 in main paper - actually, the layouts don't match
+# the methods and parameters in the appendix!
 # set.seed(20240110)
-# #n_neighbors <- 15
-# #min_dist <- 0.1
+# n_neighbors <- 50
+# min_dist <- 0.9
 # umap_config <- umap.defaults
-# #umap_config$n_neighbors <- n_neighbors      # Set the number of neighbors
+# umap_config$n_neighbors <- n_neighbors      # Set the number of neighbors
 # #umap_config$n_components <- 2    # Set the number of output dimensions (typically 2 or 3)
-# #umap_config$min_dist <- min_dist
+# umap_config$min_dist <- min_dist
 #
 # UMAP_fit <- umap(d_2NC7, config = umap_config)
 #
@@ -52,8 +55,13 @@ d_2NC7 <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_clo
 #   as_tibble()
 # names(UMAP_d_2NC7) <- c("UMAP1", "UMAP2")
 #
+# ## Additional variables for splitting and checking
+# UMAP_d_2NC7 <- UMAP_d_2NC7 |>
+#   mutate(ID = row_number()) |>
+#   mutate(cluster = if_else(ID <= 1000, "cluster1", "cluster2"))
+#
 # # check result
-# ggplot(UMAP_d_2NC7, aes(UMAP1, UMAP2)) +
+# ggplot(UMAP_d_2NC7, aes(UMAP1, UMAP2, colour = cluster)) +
 #   geom_point() +
 #   theme_few() +
 #   theme(aspect.ratio = 1)
@@ -65,12 +73,7 @@ d_2NC7 <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_clo
 UMAP_d_2NC7 <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
 load("data/two_nonlinear/UMAP_fit.rda")
 
-## To split the layout and the data, ID needed for this
 set.seed(20240110)
-UMAP_d_2NC7 <- UMAP_d_2NC7 |>
-  mutate(ID = row_number()) |>
-  mutate(cluster = if_else(ID <= 1000, "cluster1", "cluster2"))
-
 split <- initial_split(UMAP_d_2NC7, prop = 0.7, strata = cluster)
 UMAP_d_2NC7_tr <- training(split)
 UMAP_d_2NC7_ts <- testing(split)
@@ -84,7 +87,7 @@ d_2NC7_ts <- d_2NC7 |>
   filter(!(ID %in% split$in_id))
 
 ## Predict the test set with UMAP model, and save result
-#
+
 # UMAP_d_2NC7_ts_pred <- predict(UMAP_fit, d_2NC7_ts[, 1:7]) |>
 #   as_tibble()
 #
@@ -138,6 +141,9 @@ counts_df <- algo_obj_2NC7$hb_obj$std_cts
 d_2NC7_ts_qpred <- predict_emb(highd_data = d_2NC7_ts[,1:8],
                            model_highd = df_bin_2NC7,
                            model_2d = df_bin_centroids_2NC7)
+d_2NC7_ts_qpred <- d_2NC7_ts_qpred |>
+  rename(UMAP1 = pred_emb_1,
+         UMAP2 = pred_emb_2)
 
 ## Comparison 1: Compare train vs test UMAP positions (remember trained on all this data, so should look similar)
 ## Note original NLDR scale
@@ -154,40 +160,27 @@ ggplot(d,
 
 ## Comparison 2: Compare UMAP true test positions vs predicted positions
 
-ggplot(UMAP_d_2NC7_ts,
-       aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = UMAP_d_2NC7_ts_pred, aes(
-    x = UMAP1, y = UMAP2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
+d <- bind_rows(UMAP_d_2NC7_ts, UMAP_d_2NC7_ts_pred) |>
+  mutate(type = factor(c(rep("true test", NROW(UMAP_d_2NC7_ts)),
+                         rep("pred test", NROW(UMAP_d_2NC7_ts_pred)))))
+ggplot(d,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
   theme_few() +
   theme(aspect.ratio = 1)
 
-### DC: Are you sure the rows are returned in the same order by the UMAP prediction?
+d_scat1 <- tibble(true = UMAP_d_2NC7_ts$UMAP1,
+                  pred = UMAP_d_2NC7_ts_pred$UMAP1)
+d_scat2 <- tibble(true = UMAP_d_2NC7_ts$UMAP2,
+                  pred = UMAP_d_2NC7_ts_pred$UMAP2)
 
-d <- bind_cols(UMAP_d_2NC7_ts, UMAP_d_2NC7_ts_pred) |>
-  rename(true_UMAP1 = `UMAP1...1`,
-         true_UMAP2 = `UMAP2...2`,
-         pred_UMAP1 = `UMAP1...5`,
-         pred_UMAP2 = `UMAP2...6`) #|>
-  #pivot_longer(c(true_UMAP1, true_UMAP2, pred_UMAP1, pred_UMAP2),
-  #             names_to = "type", values_to = "position") |>
-  #separate(type, into = c("type", "coord")) |>
-  #pivot_wider(names_from = coord, values_from = position)
-# Probably could have used bind_rows to make this easier
-
-#ggplot(d, aes(UMAP1, UMAP2, colour = type)) +
-#  geom_point() +
-#  scale_colour_brewer("", palette = "Paired", direction = -1) +
-#  theme_few() +
-#  theme(aspect.ratio = 1)
-
-p1 <- ggplot(d, aes(true_UMAP1, pred_UMAP1)) +
+p1 <- ggplot(d_scat1, aes(true, pred)) +
   geom_abline(intercept = 0, slope = 1) +
   geom_point(alpha=0.5) +
   coord_equal() +
   theme_few()
-p2 <- ggplot(d, aes(true_UMAP2, pred_UMAP2)) +
+p2 <- ggplot(d_scat2, aes(true, pred)) +
   geom_abline(intercept = 0, slope = 1) +
   geom_point(alpha=0.5) +
   coord_equal() +
@@ -196,17 +189,150 @@ p1 + p2 + plot_layout(ncol=2)
 
 ## Comparison 3: Compare quollr positions vs UMAP positions
 
-d_2NC7_ts_qpred_scaled <- gen_scaled_data(nldr_data = UMAP_d_2NC7_ts)$scaled_nldr
+d_2NC7_ts_pred_scaled <- gen_scaled_data(nldr_data = UMAP_d_2NC7_ts)$scaled_nldr
+# Hmm, this is problematic!
+# What units are used to do the scaling? It should be the original data range, not just the test data
 
-ggplot(d_2NC7_ts_qpred_scaled,
-       aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = d_2NC7_ts_qpred, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
+d_ts_pred_qpred <- bind_rows(d_2NC7_ts_pred_scaled[,1:3],
+                             d_2NC7_ts_qpred[,1:3]) |>
+  mutate(type = c(rep("UMAP", NROW(d_2NC7_ts_pred_scaled)),
+                  rep("quollr", NROW(d_2NC7_ts_qpred))))
+
+ggplot(d_ts_pred_qpred,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size=1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
   theme_few() +
   theme(aspect.ratio = 1)
 
+################################################################################
+##### End result is UMAP predictions are very consistent with the
+##### test set positions in the layout of the full data.
+##### For the paper, then , use just training test split to make
+##### comparisons fair, and applicable across methods
+################################################################################
+## Read the 2NC7 data
+d_2NC7 <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
+d_2NC7 <- d_2NC7 |>
+  mutate(ID = row_number())
+
+# Generate training and test splits, don't use cluster bc don't usually know this
+set.seed(20240110)
+split <- initial_split(d_2NC7, prop = 0.7)
+
+d_2NC7_tr <- training(split)
+d_2NC7_ts <- testing(split)
+
+# Run UMAP
+set.seed(20240110)
+n_neighbors <- 50
+min_dist <- 0.9
+umap_config <- umap.defaults
+umap_config$n_neighbors <- n_neighbors      # Set the number of neighbors
+#umap_config$n_components <- 2    # Set the number of output dimensions (typically 2 or 3)
+umap_config$min_dist <- min_dist
+
+UMAP_fit <- umap(d_2NC7_tr[,1:7], config = umap_config)
+
+UMAP_d_2NC7_tr <- UMAP_fit$layout |>
+  as_tibble() |>
+  rename(UMAP1 = V1, UMAP2 = V2) |>
+  mutate(ID = row_number())
+
+# check result
+ggplot(UMAP_d_2NC7_tr, aes(UMAP1, UMAP2)) +
+  geom_point() +
+  theme_few() +
+  theme(aspect.ratio = 1)
+
+write_rds(UMAP_d_2NC7_tr, file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+save(UMAP_fit, file="data/two_nonlinear/UMAP_fit.rda")
+
+UMAP_d_2NC7_ts_pred <- predict(UMAP_fit, d_2NC7_ts[, 1:7]) |>
+  as_tibble() |>
+  rename(UMAP1 = V1, UMAP2 = V2) |>
+  mutate(ID = row_number())
+
+write_rds(UMAP_d_2NC7_ts_pred, file="data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
+
+d_2NC7_tr <- d_2NC7_tr |>
+  rename(ID_orig = ID) |>
+  mutate(ID = row_number()) |>
+  select(x1:x7, ID, ID_orig)
+d_2NC7_ts <- d_2NC7_ts |>
+  rename(ID_orig = ID) |>
+  mutate(ID = row_number()) |>
+  select(x1:x7, ID, ID_orig)
+
+num_bins_x_2NC7 <- 40
+
+algo_obj_2NC7 <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = UMAP_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7,
+  q = 0.1,
+  hd_thresh = 0)
+
+# umap_2NC7_scaled <- algo_obj_2NC7$nldr_scaled_obj$scaled_nldr
+# tr_from_to_df_2NC7 <- algo_obj_2NC7$trimesh_data
+# df_bin_centroids_2NC7 <- algo_obj_2NC7$model_2d
+# df_bin_2NC7 <- algo_obj_2NC7$model_highd
+# hex_grid <- algo_obj_2NC7$hb_obj$hex_poly
+# counts_df <- algo_obj_2NC7$hb_obj$std_cts
+
+## Predict positions using quollr
+d_2NC7_ts_qpred <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                               model_highd = algo_obj_2NC7$model_highd,
+                               model_2d = algo_obj_2NC7$model_2d)
+d_2NC7_ts_qpred <- d_2NC7_ts_qpred |>
+  rename(UMAP1 = pred_emb_1,
+         UMAP2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+UMAP_2NC7_tr_scaled <- algo_obj_2NC7$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7$nldr_scaled_obj$lim2[1])/
+      (algo_obj_2NC7$nldr_scaled_obj$lim1[2]-
+         algo_obj_2NC7$nldr_scaled_obj$lim1[1])
+UMAP_2NC7_ts_pred_scaled <- UMAP_d_2NC7_ts_pred |>
+  mutate(UMAP1 = (UMAP1 - algo_obj_2NC7$nldr_scaled_obj$lim1[1])/
+           (algo_obj_2NC7$nldr_scaled_obj$lim1[2]-
+              algo_obj_2NC7$nldr_scaled_obj$lim1[1]),
+         UMAP2 = (UMAP2 - algo_obj_2NC7$nldr_scaled_obj$lim2[1])/
+           (algo_obj_2NC7$nldr_scaled_obj$lim2[2]-
+              algo_obj_2NC7$nldr_scaled_obj$lim2[1])*ar)
+
+# Comparison 1: training vs UMAP predictions
+d_umap <- bind_rows(UMAP_2NC7_tr_scaled, UMAP_2NC7_ts_pred_scaled) |>
+  mutate(type = factor(c(rep("train", NROW(UMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(UMAP_2NC7_ts_pred_scaled)))))
+
+ggplot(d_umap,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("UMAP predictions") +
+  theme_few() +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+
+# Comparison 2
+d_quollr <- bind_rows(UMAP_2NC7_tr_scaled, d_2NC7_ts_qpred) |>
+  mutate(type = factor(c(rep("train", NROW(UMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred)))))
+
+ggplot(d_quollr,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("Our predictions") +
+  theme_few() +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
 
 ################################################################################
 
