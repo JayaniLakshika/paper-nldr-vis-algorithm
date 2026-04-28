@@ -168,6 +168,7 @@ library(conflicted)
 library(ggbeeswarm)
 library(scales)
 library(GGally)
+library(quollr)
 
 conflicts_prefer(dplyr::filter)
 conflicts_prefer(dplyr::select)
@@ -891,6 +892,87 @@ where $n$ is the number of observations, $m$ is the number of non-empty bins, $n
 
 ## Prediction into \gD{} {#sec-prediction}
 
+Starting with a good layout produced by UMAP
+
+```{r}
+#| label: prediction-comparison
+#| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the UMAP layout."
+#| fig-height: 4
+#| fig-width: 8
+#| out-width: 100%
+# Code to generate the saved data is in scripts/two_nonlinear/compare_pred_approaches.R
+d_2NC7_tr <- read_rds(here::here("data/two_nonlinear/2NC7_tr.rds"))
+d_2NC7_ts <- read_rds(here::here("data/two_nonlinear/2NC7_ts.rds"))
+
+UMAP_d_2NC7_tr <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+load(file="data/two_nonlinear/UMAP_fit.rda")
+
+UMAP_d_2NC7_ts_pred <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
+
+num_bins_x_2NC7 <- 40
+
+algo_obj_2NC7 <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = UMAP_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7,
+  q = 0.1,
+  hd_thresh = 0)
+
+## Predict positions using quollr
+d_2NC7_ts_qpred <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                               model_highd = algo_obj_2NC7$model_highd,
+                               model_2d = algo_obj_2NC7$model_2d)
+d_2NC7_ts_qpred <- d_2NC7_ts_qpred |>
+  rename(UMAP1 = pred_emb_1,
+         UMAP2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+UMAP_2NC7_tr_scaled <- algo_obj_2NC7$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7$nldr_scaled_obj$lim2[1])/
+      (algo_obj_2NC7$nldr_scaled_obj$lim1[2]-
+         algo_obj_2NC7$nldr_scaled_obj$lim1[1])
+UMAP_2NC7_ts_pred_scaled <- UMAP_d_2NC7_ts_pred |>
+  mutate(UMAP1 = (UMAP1 - algo_obj_2NC7$nldr_scaled_obj$lim1[1])/
+           (algo_obj_2NC7$nldr_scaled_obj$lim1[2]-
+              algo_obj_2NC7$nldr_scaled_obj$lim1[1]),
+         UMAP2 = (UMAP2 - algo_obj_2NC7$nldr_scaled_obj$lim2[1])/
+           (algo_obj_2NC7$nldr_scaled_obj$lim2[2]-
+              algo_obj_2NC7$nldr_scaled_obj$lim2[1])*ar)
+
+# Comparison 1: training vs UMAP predictions
+d_umap <- bind_rows(UMAP_2NC7_tr_scaled, UMAP_2NC7_ts_pred_scaled) |>
+  mutate(type = factor(c(rep("train", NROW(UMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(UMAP_2NC7_ts_pred_scaled)))))
+
+pcompare1 <- ggplot(d_umap,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("UMAP predictions") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+
+# Comparison 2: training vs quollr predictions
+d_quollr <- bind_rows(UMAP_2NC7_tr_scaled, d_2NC7_ts_qpred) |>
+  mutate(type = factor(c(rep("train", NROW(UMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred)))))
+
+pcompare2 <- ggplot(d_quollr,
+       aes(x = UMAP1, y = UMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 1) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("Our predictions") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+
+pcompare1 + pcompare2 + plot_layout(ncol=2)
+
+```
 <!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
 
 <!-- A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$.  -->
@@ -943,6 +1025,7 @@ test_two_curvy_umap3 <- ggplot(umap_test,
 ```
 
 ```{r}
+#| eval: false
 umap_test <- read_rds("data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
 
 test_two_curvy_umap11 <- ggplot(umap_test, 
@@ -971,6 +1054,7 @@ test_two_curvy_umap31 <- ggplot(umap_test,
 ```
 
 ```{r}
+#| eval: false
 dist_comp_quollr_13 <- read_rds("data/two_nonlinear/quollr_predict_13_dist.rds")
 
 dist_comp_umap_predict <- read_rds("data/two_nonlinear/umap_predict_dist.rds")
@@ -1000,6 +1084,7 @@ dist_cmp_plt13 <- ggplot(diff_quollr_54_umap_predict, aes(x = diff, y = after_st
 ```
 
 ```{r}
+#| eval: false
 dist_comp_quollr_13 <- read_rds("data/two_nonlinear/quollr_predict_13_dist.rds")
 
 dist_comp_umap_test <- read_rds("data/two_nonlinear/umap_test_dist.rds")
@@ -1041,6 +1126,7 @@ dist_cmp_plt <- ggplot(diff_umap_predict_test, aes(x = diff, y = after_stat(dens
 #| fig-width: 9
 #| fig-height: 15
 #| fig-pos: "!ht"
+#| eval: false
 
 test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
   test_two_curvy_umap11 + test_two_curvy_umap21 + test_two_curvy_umap31 +

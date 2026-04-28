@@ -223,6 +223,9 @@ split <- initial_split(d_2NC7, prop = 0.7)
 d_2NC7_tr <- training(split)
 d_2NC7_ts <- testing(split)
 
+write_rds(d_2NC7_tr, file = "data/two_nonlinear/2NC7_tr.rds")
+write_rds(d_2NC7_ts, file = "data/two_nonlinear/2NC7_ts.rds")
+
 # Run UMAP
 set.seed(20240110)
 n_neighbors <- 50
