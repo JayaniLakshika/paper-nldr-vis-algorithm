@@ -248,7 +248,7 @@ ggplot(UMAP_d_2NC7_tr, aes(UMAP1, UMAP2)) +
   theme_few() +
   theme(aspect.ratio = 1)
 
-write_rds(UMAP_d_2NC7_tr, file = "data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+write_rds(UMAP_d_2NC7_tr, file = "data/two_nonlinear/UMAP-2NC7-tr.rds")
 save(UMAP_fit, file="data/two_nonlinear/UMAP_fit.rda")
 
 UMAP_d_2NC7_ts_pred <- predict(UMAP_fit, d_2NC7_ts[, 1:7]) |>
