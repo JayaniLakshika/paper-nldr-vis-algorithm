@@ -366,7 +366,7 @@ The paper is organized as follows. @sec-background gives more details behind NLD
 <!-- - Connection between NLDR and MDS-->
 Making useful low-dimensional (\kD{}) layouts of high-dimensional (\pD{}) data has historically been achieved using multidimensional scaling (MDS) [@kruskal1964] ].  In MDS, the \kD{} layout is constructed by minimizing a stress function that compares distances between points in \pD{} with potential distances between points in \kD{}. Various formulations of the stress function result in non-metric scaling [@saeed2018] and isomap [@silva2002]. Principal components analysis (PCA) produces the same layout as classical MDS, if interpoint distances are Euclidean. Recent overviews of MDS, PCA and  statistically conducting linear and nonlinear dimension reduction can be found in @borg2005, @johnstone2009, @jolliffe2011, @Koch_2013. 
 
-The recently developed NLDR methods tSNE, UMAP, PHATE, TriMAP, and PaCMAP, can be considered new approaches tackling the same problem as MDS. The methods tSNE, UMAP, TriMAP, and PaCMAP are similar in that they determine the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is different, and is based on a diffusion process spreading to capture geometric shapes that include both global and local structure. (See @coifman2005 for more details on diffusion processes.)  
+The relatively recent NLDR methods, tSNE, UMAP, PHATE, TriMAP, and PaCMAP, can be considered new approaches tackling the same problem as MDS. The methods tSNE, UMAP, TriMAP, and PaCMAP are similar in that they determine the \kD{} representation by minimizing the divergence between two inter-point distance distributions. PHATE is different, and is based on a diffusion process spreading to capture geometric shapes that include both global and local structure. (See @coifman2005 for more details on diffusion processes.)  
 
 The array of layouts in @fig-NLDR-variety illustrate what can result by choosing different methods, tuning with different hyper-parameters, and even the random seed that initiates the computation. Each layout provides a different lens on the interpoint distances in the data. The key structures in the high-dimensional data that we might hypothesize from these \gD{} layouts are: (1) highly *separated clusters* (a, b, e, g, h) with the number of clusters ranging from 3-6; (2) *stringy branches* (f), and (3) *barely separated clusters* (c, d). They are at odds with each other, and it begs us to decide which are actually present in the \pD{} data. 
 
@@ -382,7 +382,7 @@ The alternative approach to visualizing the high-dimensional data is to use line
 
 At first glance, thinking of NLDR as a modeling technique might seem strange. It is a simplified representation or abstraction of a system, process, or phenomenon in the real world. The \pD{}   observations are the realization of the phenomenon, and the \kD{} NLDR layout is the simplified representation. Typically, $k=2$ is used. From a statistical perspective, we can consider the distances between points in the \gD{}   layout to be variance that the model explains, and the (relative) difference with their distances in \pD{}   as the error, or unexplained variance. We can also imagine that the positioning of points in \gD{}    represent the fitted values, which will have some prescribed position in \pD{}   that can be compared with their observed values. This is the conceptual framework underlying the more formal versions of factor analysis [@joreskog1969] and MDS. (Note that, for this thinking, the full \pD{}   data needs to be available, not just the interpoint distances.)
 
-We define the NLDR as a function $g\text{:}~ \mathbb{R}^{n\times p} \rightarrow \mathbb{R}^{n\times 2}$, with hyper-parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
+We define the NLDR as a function $g\text{:}~ \mathbfit{X} \in \mathbb{R}^{n\times p} \mapsto \mathbfit{Y} \in \mathbb{R}^{n\times 2}$, with hyper-parameters $\mathbfit{\theta}$. These parameters, $\mathbfit{\theta}$, depend on the choice of $g$, and can be considered part of model fitting in the traditional sense. Common choices for $g$ include functions used in tSNE, UMAP, PHATE, TriMAP, PaCMAP, or MDS, although in theory any function that does this mapping is suitable. 
 
 With our goal being to make a representation of this \gD{} layout that can be lifted into high-dimensional space, the layout needs to be augmented to include neighbor information. A simple approach would be to triangulate the points and add edges. A more stable approach is to first bin the data, reducing it from $n$ to $m\leq n$ observations, and connect the bin centroids. We recommend using a hexagon grid because it better reflects the data distribution and has fewer artifacts than a rectangular grid [@carr1987]. This process serves to reduce some noisiness in the resulting surface shown in \pD{}. The steps in this process are shown in @fig-NLDR-two-curvy, and documented below.
 
@@ -416,7 +416,7 @@ nldr_two_curvy <- nldr_two_curvy_original +
   xlim(sc_xlims) +
   ylim(sc_ylims) +
   annotate("text", x=c(0.1, 0.9), y=c(0, 0.1), 
-           label = c("cluster 1", "cluster 2"), 
+           label = c("cluster 2", "cluster 1"), 
            colour=clr_choice, size=5)
 
 hex_grid_two_curvy <- ggplot(
@@ -528,6 +528,9 @@ error_plot_two_curvy <- error_df_two_curvy_abs |>
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
   xlab("tSNE1") +
   ylab("tSNE2") +
+  annotate("text", x=c(0.2, 0.8), y=c(0, 0.15), 
+           label = c("cluster 2", "cluster 1"), 
+           colour=clr_choice, size=3) +
   theme_bw() +
   theme(
     aspect.ratio = 1,
@@ -549,7 +552,7 @@ error_plot_two_curvy_quasi <- ggplot(
                                  "#F5AA00", "#F49B00", "#F28A00", "#F07800",
                                  "#ED6400", "#EA4D00", "#DE3900", "#CD2A00",
                                  "#BB1B00", "#A70C00", "#93001C", "#7D0025")) +
-  xlab(expression(e[hi])) +
+  xlab("residuals") +
   ylab("") +
   theme_bw() +
   theme(axis.text.y = element_blank(),
@@ -574,8 +577,10 @@ two_curvy_proj_tsne_first_model1 <- plot_proj(
     axis_text_size = 2, 
     is_category = FALSE) +
   interior_annotation(label = "b", cex = 1.2) +
-  theme(aspect.ratio = 1,
-        legend.position = "none") 
+  annotate("text", x=c(0, -0.2), y=c(0.55, 0), 
+        label = c("cluster 1", "cluster 2"), 
+        colour=clr_choice, size=3) +
+  theme(aspect.ratio = 1) 
 
 
 projected_df <- proj_obj1$projected_df
@@ -616,6 +621,9 @@ two_curvy_proj_tsne_first_model1_coloured <- projected_df |>
   xlim(c(-0.75, 0.75)) +
   ylim(c(-0.75, 0.75)) +
   interior_annotation(label = "c", cex = 1.5) +
+  annotate("text", x=c(0, -0.2), y=c(0.55, 0), 
+        label = c("cluster 1", "cluster 2"), 
+        colour=clr_choice, size=3) +
   theme(aspect.ratio = 1,
         legend.position = "none") 
 
@@ -631,6 +639,9 @@ two_curvy_proj_tsne_all_model1 <- plot_proj(
   axis_text_size = 2, 
   is_category = FALSE) +
   interior_annotation(label = "c", cex = 1.2) +
+  annotate("text", x=c(-0.25, 0.2), y=c(0.25, 0.25), 
+        label = c("cluster 1", "cluster 2"), 
+        colour=clr_choice, size=3) +
   theme(aspect.ratio = 1)
 
 ```
@@ -659,7 +670,7 @@ Because the algorithm is based on distances between points, scaling the layout d
 
 ### Hexagon grid configuration
 
-Although there are several implementations available (e.g., @dan2023), the full set of data objects needed for this project. So we have re-implemented the method so that all items needed for creating the \pD{} representation are available. 
+Although there are several implementations available (e.g., @dan2023), the full set of data objects needed for this project. So we have re-implemented the method so that all items needed for creating the \pD{} representation are available (illustrated in @fig-hex-param). 
 
 The \gD{} hexagon grid is uniquely defined by the hexagon ids, $h (= 1, \dots, b)$, and their \gD{} centroids, $C_{h}^{(2)} = (c_{h1}, c_{h2})$. The algorithm inputs $b_1$, which determines $b_2$ using the NLDR ratio, producing $b = b_1 \times b_2$, the total number of bins in the grid. 
 
@@ -671,7 +682,7 @@ $$
 a_2 \geq \frac{r_2 + q(1 + r_2)}{(b_2 - 1)}.
 $${#eq-bin1a}
 
-For regular hexagons $a_2 = \sqrt{3}a_1/2$, @eq-bin1a can be re-written as
+Because we are using regular hexagons $a_2 = \sqrt{3}a_1/2$, and @eq-bin1a can be re-written as
 
 $$
 a_1 \geq \frac{2(r_2 + q(1 + r_2))}{\sqrt{3}(b_2 - 1)}.
@@ -681,7 +692,7 @@ This is a linear optimization problem, resulting in calculating $b_2$ as
 
 $$
 b_2 = \Big\lceil1 +\frac{2(r_2 + q(1 + r_2)(b_1 - 1)}{\sqrt{3}(1 + 2q)}\Big\rceil.
-$${#eq-bin2}
+$$
 
 where $\lceil . \rceil$ indicate "smallest integer greater than or equal to".
 
@@ -814,9 +825,9 @@ hex_param_vis
 
 ### Binning the data
 
-Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m\leq b$ (total number of bins). This can be defined using the function $u: \mathbb{R}^{n\times 2} \rightarrow \mathbb{R}^{m\times 2}$, where
+Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m$ (number of non-empty bins) $\leq b$ (total number of bins). This can be defined using the function $u: \mathbfit{Y} \in \mathbb{R}^{n\times 2} \mapsto \mathbfit{\hat{Y}} \in \mathbb{R}^{m\times 2}$, where
 $$u(i) = \arg\min_{j = 1, \dots, b} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
-<!--By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used.--> The bin id, $h$, for each observation is needed to construct the model representation in high dimensions.  
+<!--By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used.--> Then $\mathbfit{\hat{Y}}_i (i=1, \dots, n) \in \{\mathbfit{C}^{(2)} = (C^{(2)}_{j1}, C^{(2)}_{j2}), j=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \gD{} residuals. The bin id, $h$, for each observation is needed to construct the model representation in high dimensions. 
 
 ### Indicating neighborhood
 
@@ -826,11 +837,12 @@ Delaunay triangulation [@lee1980;@alb2024] is used to connect centroids to indic
 
 The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the $j^{th}$ component of the \pD{} mean be
 
-$$C_{hj}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_{hij}, ~~~h = 1, \dots, b;~ j=1, \dots, p; ~ n_h > 0.$$
+$$C_{hj}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_{ij}\cdot\mathbf{1}[i \in H_h], ~~~h = 1, \dots, b;~ j=1, \dots, p; ~ n_h > 0.$$
+We can consider this procedure to be a pseudo-inverse of $g$, $\tilde{g}\text{:}~ \mathbfit{C}^{(2)} \in \mathbb{R}^{m\times 2} \mapsto \mathbfit{C}^{(p)} \in \mathbb{R}^{m\times p}$. Then $\mathbfit{\hat{X}}_i (i=1, \dots, n) \in \{\mathbfit{C}^{(p)} = (C^{(p)}_{j1}, C^{(2)}_{j2}), j=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \pD{} residuals.
 
 ```{r}
 #| label: best-fit-tsne
-#| fig-cap: "Lifting the \\gD{} fitted model into \\pD{}. Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in one cluster (top one in b), but slightly less so in the other cluster, probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout, the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice, but this doesn't severely impact the \\pD{} model representation."
+#| fig-cap: "Lifting the \\gD{} fitted model (a) into \\pD{} (b,c). Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in cluster 1, but slightly less so in cluster 2, probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout, the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice for tSNE, but this doesn't severely impact the \\pD{} model representation."
 #| fig-width: 8
 #| fig-height: 2
 #| fig-pos: "!ht"
@@ -860,13 +872,13 @@ trimesh_two_curvy_removed1_tsne_with_data +
 
 <!--updated according to the reviewes-->
 
-All NLDR methods internally optimize an objective function to produce a layout for a given set of hyper-parameters. These objective functions are not always available in the model output and are generally not directly comparable across methods or hyper-parameter choices.
+All NLDR methods internally optimize an objective function to produce a layout for a given set of hyper-parameters. These objective functions are not always made available to the user in the model output and or comparable across methods.
 
 A range of established metrics are commonly used to assess the quality of NLDR embeddings, each emphasizing different aspects of structure preservation. For example, the $RNX$ curve summarizes neighborhood agreement between \pD{} and \kD{} spaces across a range of scales, with its area under the curve (ARNX) reflecting a balance between local and global structure preservation [@john2015]. Random Triplet Accuracy (RTA) evaluates the consistency of distance orderings among triplets of points in \gD{} and \pD{} spaces, providing a measure of geometric preservation [@yingfan2021]. The Shepard diagram [@shepard1962], together with its associated Spearman correlation (SC) [@spearman1961], assesses the monotonic relationship between pairwise distances in the two spaces and is often interpreted as a measure of global structure preservation. The Global Score (GS) compares the embedding to a PCA baseline and evaluates how well the overall geometry is retained [@amid2022].
 
 These metrics provide useful but complementary perspectives, as they capture different and often competing objectives, such as preserving local neighborhoods versus global distances. As a result, it is common for these measures to rank embeddings differently, reflecting the multi-objective nature of NLDR rather than a deficiency of any single metric.
 
-To facilitate comparison with our proposed measure, we use reversed forms of these metrics (rRTA, rSC, rGS, and rARNX), so that lower values consistently indicate better performance.
+To facilitate comparison with our proposed measure, we use reversed forms of these metrics (rRTA, rSC, rGS, and rARNX), (XXX is this still true) so that lower values consistently indicate better performance.
 
 While the above measures evaluate properties of the embedding itself, our goal is different: to assess how well the embedding supports a representation of the data in the original \pD{} space. This motivates a complementary approach based on model residuals.
 
@@ -874,13 +886,13 @@ We treat the embedding as defining a fitted representation in \pD{}, where each 
 
 We define the hexbin error (HBE) as the root mean squared Euclidean distance between observations and their associated bin centroids:
 
-$$ HBE = \sqrt{\frac{1}{n}\sum_{h = 1}^{m}\sum_{i = 1}^{n_h}\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$${#eq-equation1}
+$$ HBE = \sqrt{\frac{1}{n}\sum_{i = 1}^{n}\sum_{h = 1}^{m}\sum_{j = 1}^{p} (\mathbfit{x}_{ij} - C^{(p)}_{hj})^2\cdot\mathbf{1}[i \in H_h]}$${#eq-equation1}
 
-where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{hij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation in $h^{th}$ hexagon. We can consider $e_{hi} = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{hij} - C^{(p)}_{hj})^2}$ to be the residual for each observation. @fig-p-d-error-in-2d-two-curvy visualizes these residuals as a density (a), as colors in the NLDR layout (b), and in a tour (c). Larger residuals are concentrated in one cluster, reflecting the intentional design that this cluster has intrinsic higher-dimensional structure (approximately \tD{}) and therefore cannot be fully represented in a \gD{} embedding. Importantly, HBE is not intended to replace existing embedding-quality metrics. Instead, it provides a complementary diagnostic perspective, highlighting where the embedding fails to represent the original data structure in \pD{}. Differences between HBE and other metrics can therefore be interpreted as informative signals about trade-offs between local and global structure preservation.
+where $n$ is the number of observations, $m$ is the number of non-empty bins, $n_h$ is the number of observations in $h^{th}$ bin, $p$ is the number of variables and $\mathbfit{x}_{ij}$ is the $j^{th}$ dimensional data of $i^{th}$ observation. We can consider $e_i = \sqrt{\sum_{j = 1}^{p} (\mathbfit{x}_{ij} - \mathbfit{\hat{x}}_{ij})^2}$ to be the residual for each observation. @fig-p-d-error-in-2d-two-curvy visualizes these residuals as a density (a), as colors in the NLDR layout (b), and in a tour (c). Larger residuals are concentrated in one cluster, reflecting the intentional design that this cluster has intrinsic higher-dimensional structure (approximately \tD{}) and therefore cannot be fully represented in a \gD{} embedding. Importantly, HBE is not intended to replace existing embedding-quality metrics. Instead, it provides a complementary diagnostic perspective, highlighting where the embedding fails to represent the original data structure in \pD{}. Differences between HBE and other metrics can therefore be interpreted as informative signals about trade-offs between local and global structure preservation.
 
 ```{r}
 #| label: fig-p-d-error-in-2d-two-curvy
-#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b), and a tour of \\fD{} data space (c). Color indicates residual ($e_{hi}$), dark color indicating high value. Most large residuals are distributed in one cluster (bottom one in c), and most small residuals are distributed in the other cluster."
+#| fig-cap: "Examining the distribution of residuals in a jittered dotplot (a), \\gD{} NLDR layout (b), and a tour of \\fD{} data space (c). Color indicates residual value ($e_{i}$), dark indicating high value. Most large residuals are distributed in cluster 2, which is due to the \\gD{}'s inability to capture the \\tD{} structure."
 #| out-width: 100%
 #| fig-width: 8
 #| fig-height: 3
@@ -892,14 +904,12 @@ where $n$ is the number of observations, $m$ is the number of non-empty bins, $n
 
 ## Prediction into \gD{} {#sec-prediction}
 
-**Starting with a good layout produced by UMAP- maybe this should be the configuration, or something similar used throughout the first part of the paper.**
+NLDR methods focus on visualization solution for exploration without the ability to place new observations in a layout. Partially, this is also due to the methods being designed to operate only on the interpoint distance matrices instead of $\pD{}$ data. Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023] when the full data is available, and this is made available in the `umap` [@leland2018] software. Other approaches not illustrated in this work, such as neural network autoencoders [@hinton2006], and parametric tSNE [@van2009], provide some mechanisms for embedding new data.  A benefit of our approach, is that with the model representation, we can predict layout positions for any method. 
 
-NLDR methods focus on a visualization solution for exploration. Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023]. Other approaches not illustrated in this work, such as neural network autoencoders [@hinton2006], and parametric tSNE [@van2009], provide some mechanisms for embedding new data.  A benefit of our approach, is that with the model representation, we can predict layout positions for any method. 
+The procedure for the new observation: (i) identify the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (ii) assign the corresponding centroid in \gD{}, $C^{(2)}_{h}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions: 
+find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding. This can be considered to be an estimate of the mapping $g$ that maps the new observation ($\mathbfit{x}^*$) into the layout ($\mathbfit{y}^*$), $\hat{g}\text{:}~ \mathbfit{x}^* \in \mathbb{R}^{1\times p} \mapsto \mathbfit{y}^* \in \mathbb{R}^{1\times 2}$.
 
-The procedure isfor the new observation: (i) identify the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (ii) assign the corresponding centroid in \gD{}, $C^{(2)}_{h}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions: 
-find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding.  
-
-@fig-prediction-comparison shows the results for UMAP (a) and our predictions(b)  made using `quollr`. The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. The test set is held out for prediction. In both cases it can be seen that the test set matches the training set in the layout quite well. The main differences is that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. **Add tSNE, PHATE, TriMAP and PACMAP training and quollr predictions to this plot, in a 3x2 layout**
+@fig-prediction-comparison shows the results for UMAP (a) and our predictions(b) made using `quollr`. The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases it can be seen that the test set matches the training set in the layout quite well. The main differences is that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. **Add tSNE, PHATE, TriMAP and PACMAP training and quollr predictions to this plot, in a 3x2 layout**
 
 ```{r}
 #| label: fig-prediction-comparison
@@ -1247,7 +1257,7 @@ error_two_curvy <- error_two_curvy |>
 ```{r}
 #| label: error-comp-two_curvy
 
-error_plot_two_curvy <-
+HBE_plot_two_curvy <-
   plot_hbe(error_two_curvy) +
   interior_annotation("i", position = c(0.07, 0.9)) +
   scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
@@ -1291,7 +1301,7 @@ comp_metrics <- plot_comp_metrics(nldr_metrics) +
 #| fig-height: 3.5
 #| fig-width: 5
 
-left_column <- error_plot_two_curvy/comp_metrics +
+left_column <- HBE_plot_two_curvy/comp_metrics +
   plot_layout(heights = c(1, 1))
 
 # Arrange six NLDR plots into two columns (right side)

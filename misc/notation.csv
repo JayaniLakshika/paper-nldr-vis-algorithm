@@ -1,7 +1,14 @@
 Notation ,Description
 "$n, p, k$","number of observations, variables, embedding dimension, respectively"
-"$\mathbfit{X}, \mathbfit{x}$","$p$-dimensional data (population, sample)"
-$\mathbfit{y}$,$k$-dimensional layout
+$\mathbfit{X}$,$n \times p$-dimensional data 
+$\mathbfit{x}$,$p$-dimensional observation ($1\times p$)
+$\mathbfit{x}^*$,new $p$-dimensional observation ($1\times p$)
+$\mathbfit{\hat{X}}$,$n \times p$-dimensional fitted values
+$\mathbfit{Y}$,$n\times k$-dimensional data (layout)
+$\mathbfit{y}$,$k$-dimensional obervation ($1\times k$)
+$\mathbfit{\hat{Y}}$,$n \times k$-dimensional fitted values
+$\mathbfit{y}^*$,new $k$-dimensional observation ($1\times k$)
+$e_i$,"Residual of observation $i$, computed on $p$-dimensional data"
 $P$,"orthonormal basis, generating a $d\text{-}dimensional$ linear projection of $p$-dimensional data"
 $T$,true  model
 $g$,"functional mapping from \pD{} to \kD{}, especially as prescribed by NLDR"
@@ -20,3 +27,6 @@ $l$,side length
 $A$,area
 $n_h$,number of points in hexagon $h$ (bin count)
 $w_h$,standardized number of points in hexagon $h$ (standardized bin counts)
+$g$,mapping from $p$ to $k$ dimensions
+$\tilde{g}$,pseudo-inverse of $g$
+$\hat{g}$,estimate of $g$
