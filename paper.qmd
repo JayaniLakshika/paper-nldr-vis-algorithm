@@ -826,8 +826,8 @@ hex_param_vis
 ### Binning the data
 
 Observations are grouped into bins based on their nearest centroid. This produces a reduction in size of the data from $n$ to $m$, where $m$ (number of non-empty bins) $\leq b$ (total number of bins). This can be defined using the function $u: \{1, \dots, n\} \rightarrow \{1, \dots, m\}$, where
-$$u(i) = \arg\min_{j = 1, \dots, m} \sqrt{(y_{i1} - C^{(2)}_{j1})^2 + (y_{i2} - C^{(2)}_{j2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
-<!--By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used.--> Then $\mathbfit{\widehat{Y}}_i = \mathbfit{C}^{(2)}_{u(i)} (i=1, \dots, n) \in \{\mathbfit{C}^{(2)} = (C^{(2)}_{j1}, C^{(2)}_{j2}), j=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \gD{} residuals. The bin id, $h$, for each observation is needed to construct the model representation in high dimensions. 
+$$u(i) = \arg\min_{h = 1, \dots, m} \sqrt{(y_{i1} - C^{(2)}_{h1})^2 + (y_{i2} - C^{(2)}_{h2})^2},$$ maps observation $i$ into $H_h = \{i| u(i) = h\}$. 
+<!--By default, the bin centroid is used to represent a hexagon center (@fig-NLDR-two-curvy (c)), but any measure of center, such as a mean or weighted mean of the points within each hexagon, could be used.--> Then $\mathbfit{\widehat{Y}}_i = \mathbfit{C}^{(2)}_{u(i)} (i=1, \dots, n) \in \{\mathbfit{C}^{(2)} = (C^{(2)}_{h1}, C^{(2)}_{h2}), h=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \gD{} residuals. The bin id, $h$, for each observation is needed to construct the model representation in high dimensions. 
 
 ### Indicating neighborhood
 
