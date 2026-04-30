@@ -841,7 +841,7 @@ $$C_{hj}^{(p)} = \frac{1}{n_h}\sum_{i =1}^{n_h} x_{ij}\cdot\mathbf{1}[i \in H_h]
 We can consider this procedure to be a pseudo-inverse of $g$, $\tilde{g}\text{:}~ \mathbfit{C}^{(2)} \in \mathbb{R}^{m\times 2} \mapsto \mathbfit{C}^{(p)} \in \mathbb{R}^{m\times p}$. Then $\mathbfit{\hat{X}}_i (i=1, \dots, n) \in \{\mathbfit{C}^{(p)} = (C^{(p)}_{j1}, C^{(2)}_{j2}), j=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \pD{} residuals.
 
 ```{r}
-#| label: best-fit-tsne
+#| label: fig-best-fit-tsne
 #| fig-cap: "Lifting the \\gD{} fitted model (a) into \\pD{} (b,c). Two projections of the \\pD{} fitted model overlaying the data are shown in b, c. The fit is reasonably tight with the data in cluster 1, but slightly less so in cluster 2, probably because it is $3\\text{-}D$. Notice also that, in the \\gD{} layout, the two clusters have internal gaps which creates a model with some holes. This lacy pattern happens regardless of the hyper-parameter choice for tSNE, but this doesn't severely impact the \\pD{} model representation."
 #| fig-width: 8
 #| fig-height: 2
@@ -1153,9 +1153,7 @@ test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
 
 ## Interactive graphics {#sec-interactive}
 
-Matching points in the \gD{} layout with their positions in \pD{} is useful when tuning the fit. This can be used to examine the fitted model in some subspaces in \pD{}, in particular in association with residual plots. 
-
-The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] view with the fitted model overlaid can be linked using a browsable HTML widget (@joe2025, @joe2024). A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This approach will be illustrated on the examples, to show how it can help to understand how the NLDR has organized the observations and learn where it does not do well.
+Matching points in the \gD{} layout with their positions in \pD{} is useful when assessing the fit, deciding on a layout, and basically understanding what a layout communicates about the data. The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] view with the fitted model overlaid can be linked using a browsable HTML widget (@joe2025, @joe2024). A rectangular "brush" is used to select points in one plot, which will highlight the corresponding points in the other plot(s). Because the langevitour is dynamic, brush events that become active will pause the animation, so that a user can interrogate the current view. This approach is illustrated on the examples in the Appendix, and video supplements, to show how it can help to understand how an NLDR has organized the observations.
 
 ## Choosing from a selection of layouts {#sec-bestfit}
 <!--updated according to the reviews-->
@@ -1165,13 +1163,18 @@ The interactive \gD{} layout [@chapman2020] and the langevitour [@harisson2024] 
 1. Fit the model to a range of binwidths for each layout, calculating HBE.
 2. Plot each trace against binwidth. 
 3. Better representations will have universally lower HBE. When the lines cross one needs to decide whether the local structure (smaller binwidth) is more important than larger structure (large binwidth).
-4. Examine the model for the chosen layout in \pD{}. The exact choice of binwidth isn't important, but we recommend a reasonably small one, so that wireframe is smoother, and there is a chance to see small details of departures between the fitted model and the data. (See @best-fit-tsne b, c for this data.)
+4. Examine the model for the chosen layout in \pD{}. The exact choice of binwidth isn't important, but we recommend a reasonably small one, so that wireframe is smoother, and there is a chance to see small details of departures between the fitted model and the data. (See @fig-best-fit-tsne b, c for this data.)
 
 For this set of layouts, either (a) or (f) would be preferable to the other layouts - we used (a) to illustrate the approach in the previous sections. 
 
-It can also be useful to calculate the suite of other metrics to measure the fit, for each layout, which is done in plot (ii). HBE shows most agreement with rARNX, both rank (a) and (f) the best. They differ in how they rate layout (d): HBE would consider it the worst, and rARNX to be not quite as good as (a) and (f). The other three metrics roughly agree with each other, and almost the polar opposite of HBE. This is most likely explained by the tension between local and global structure. Most will prefer bigger distance between clusters in the layout, or at least not penalise this. The problem is that this leads to incorrect perception when the clusters are not widely separated, as is the case for this data (@best-fit-tsne).
+Note that, using binwidth as the horizontal axis is a choice. An alternative is to use average bin count. In theory, this is the more instinctive choice. It summarizes the grid occupancy of the data; smaller binwidth for one layout might be equivalent to a larger binwidth in a different layout. Using binwidth sets up these possible mismatches. However, 
+it tends to lose the ability to penalize layouts that exaggerate inter-cluster distance (see plots in the Appendix).
 
-The final check is to examine the chosen model fit (or several top-rated fits) in the \pD{} data space @best-fit-tsne (b, c). As with all model fitting, if the data closely hugs the model representation, in all projections shown by the tour, then the choice is further supported. You might find that some elements of the \pD{} structure is captured, but others are not. If this happens, a strategy break the data into subsets and repeat the process of deciding on a layout. Showing multiple layouts for a data set may better illustrate its nature. This might be advisable with 2NC7 also. At first glance layout (b) looks prefable, because the distribution of observations within each cluster is smooher than in either (a) or (f). This likely reflects that the layout better captures the local structure better. 
+It can also be useful to calculate the suite of other metrics to measure the fit, for each layout, which is done in plot ii. The comparison with HBE requires that a single value is chosen. Here $a_1=0.05$ is used, but the actual choice wouldn't substantially matter because the ordering of the curves is quite consistent across binwidths. Note that in this parallel coordinate plot, the individual metrics are individually scaled to range between 0 and 1.  HBE shows most agreement with rARNX, both rank a and f the best. They differ in how they rate (1) layout d - HBE would consider it the worst, and rARNX to be not quite as good as a and f - and (2) layout c - rARNX considers it to be the worst, and HBE in the mddle. The other three metrics roughly agree with each other, and almost the polar opposite of HBE. This is most likely explained by the tension between local and global structure. Most will prefer bigger distance between clusters in the layout, or at least not penalise this. The problem is that this leads to incorrect perception when the clusters are not widely separated, as is the case for this data (@fig-best-fit-tsne). 
+
+The final check is to examine the chosen model fit (or several top-rated fits) in the \pD{} data space @fig-best-fit-tsne (b, c). As with all model fitting, if the data closely hugs the model representation, in all projections shown by the tour, then the choice is further supported. This is a sutiable approach to better understand why metrics disagree on layouts. The Appendix has a comparison of the model fits for layout a and c. Layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. Twisting in the fitted model appears to be very common for all methods for many data sets, which one could imagine a solution for squashing higher dimensions into lower ones while preserving neighborhood. In this case it is quite extreme. 
+
+You might find that some elements of the \pD{} structure is captured, but others are not. If this happens, a strategy break the data into subsets and repeat the process of deciding on a layout. Showing multiple layouts for a data set may better illustrate its nature. This might be advisable with 2NC7 also. At first glance layout (b) looks prefable, because the distribution of observations within each cluster is smooher than in either (a) or (f). This likely reflects that the layout better captures the local structure better. 
 
 <!--illustrates the approach to compare the fits for different representations and assess the strength of any fit. What does it mean to be a best fit for this problem? Analysts use an NLDR layout to display the structure present in high-dimensional data in a convenient \gD{} display. It is a competitor to linear dimension reduction that can better represent nonlinear associations, such as clusters. However, these methods can hallucinate, suggesting patterns that don't exist, and grossly exaggerate other patterns. Having a layout that best fits the high-dimensional structure is desirable, but more important is to identify bad representations so they can be avoided. The goal is to help users decide on the most useful and appropriate low-dimensional representation of the high-dimensional data.-->
 
@@ -1308,11 +1311,12 @@ comp_metrics <- plot_comp_metrics(nldr_metrics) +
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color represents the NLDR layout. Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot (iii). Color of the line indicates NLDR layout."
+#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using (i) HBE for varying binwidth ($a_1$), and (ii) scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$). Color represents the NLDR layout. Using HBE (i), layouts a and f are nearly indistinguishable from each other but have universally lower values than the others: either layout could adequately represent the data. HBE mostly agrees with rARNX, except for layout d. The other metrics rank the layouts in reverse oder! The problem though is that they favor more separation, which is misleading for this data. This can be validated by viewing the data in a tour."
 #| label: fig-toy-rmse
 #| out-width: 100%
 #| fig-height: 3.5
 #| fig-width: 5
+#| fig-pos: "t"
 
 left_column <- HBE_plot_two_curvy/comp_metrics +
   plot_layout(heights = c(1, 1))
@@ -1335,107 +1339,8 @@ final_plot_two_curvy
 
 There is some agreement between the metrics. All, except rARNX and HBE, agree that layout d is best. rARNX and HBE agree that layout f is best or very close to best. Layout a is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout c is considered poor by rRTA, rSC, rGS, and rARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout. 
 
-The problem with rSC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout, produces a Shepard plot with two clusters of distances, which will produce a high correlation value. Similar reasoning would explain why rRTA and rGS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data, further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in \pD{}.
+The problem with rSC is that correlation is not a good measure in the presence of clusters - the further the clusters are apart in the layout, produces a Shepard plot with two clusters of distances, which will produce a high correlation value. Similar reasoning would explain why rRTA and rGS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data, further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in \pD{}.-->
 
-When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions. @fig-fit-tsne-phate shows the fitted models for layouts a (rated high by HBE and rARNX) and c (rated poorly). These are \gD{} projections from the tour, with black indicating the fitted model overlaid on the blue points of the data. The reason for the poor fit is that the PHATE layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. We have learned that all the NLDR methods tend to have twists in the fit in \pD{}, but this is extreme. This is likely why layout c has poor metrics relative to the other layouts, and it suggests that it does not adequately capture the local structure in the 2NC7 data.-->
-
-<!--two_nonlinear/06_gen_model_with_tSNE.R-->
-```{r}
-#| label: projs-tsne
-## First projection
-
-proj_obj1 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj1_tsne.rds")
-
-two_curvy_proj1_tsne <- plot_proj(
-  proj_obj = proj_obj1, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.4, 0.3), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "a1", cex = 1.2) +
-  theme(aspect.ratio = 1)
-
-## Second projection
-proj_obj2 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj2_tsne.rds")
-
-two_curvy_proj2_tsne <- plot_proj(
-  proj_obj = proj_obj2, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.5, 0.5), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "a2", cex = 1.2) +
-  theme(aspect.ratio = 1)
-
-## Third projection
-proj_obj3 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj3_tsne.rds")
-
-two_curvy_proj3_tsne <- plot_proj(
-  proj_obj = proj_obj3, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.62, 0.62), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "a3", cex = 1.2) +
-  theme(aspect.ratio = 1)
-```
-
-<!--two_nonlinear/08_gen_model_with_PHATE.R-->
-```{r}
-#| label: projs-phate
-## First projection
-
-proj_obj1 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj1_phate.rds")
-
-two_curvy_proj1_phate <- plot_proj(
-  proj_obj = proj_obj1, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.4, 0.3), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "c1", cex = 1.2) +
-  theme(aspect.ratio = 1)
-
-## Second projection
-proj_obj2 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj2_phate.rds")
-
-two_curvy_proj2_phate <- plot_proj(
-  proj_obj = proj_obj2, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.5, 0.5), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "c2", cex = 1.2) +
-  theme(aspect.ratio = 1)
-
-## Third projection
-proj_obj3 <- read_rds("data/two_nonlinear/two_nonlinear_proj_obj3_phate.rds")
-
-two_curvy_proj3_phate <- plot_proj(
-  proj_obj = proj_obj3, 
-  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
-  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
-  plot_limits = c(-0.62, 0.62), 
-  axis_text_size = 2, 
-  is_category = FALSE) +
-  interior_annotation(label = "c3", cex = 1.2) +
-  theme(aspect.ratio = 1)
-```
-
-```{r}
-#| label: fig-fit-tsne-phate
-#| fig-cap: "Three $2\\text{-}D$ projections from a tour showing the fitted models (black lines) for layouts a (top row) and c (bottom row) of the 2NC7 data (blue points). Layout c, which was poorly rated by rARNX and HBE, covers less of the width of the data than layout a. The triangular gridding is less visible in c than layout a, and actually corresponds to extreme twisting."
-#| fig-width: 6
-#| fig-height: 4
-
-two_curvy_proj1_tsne + two_curvy_proj2_tsne + two_curvy_proj3_tsne + two_curvy_proj1_phate + two_curvy_proj2_phate + two_curvy_proj3_phate +
-  plot_layout(ncol = 3)
-```
 
 ## Applications {#sec-applications}
 

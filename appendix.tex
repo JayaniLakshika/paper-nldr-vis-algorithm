@@ -707,7 +707,9 @@ l = \frac{-a_2 \pm \sqrt{a_2^2 - 6[-(a_1^2 + a_2^2)]}}{3},
 
 where \(l > 0\).
 
-\section{Tuning}\label{sec-tuning}
+\section{\texorpdfstring{Tuning to decide on best binwidth for viewing
+in
+\pD{}}{Tuning to decide on best binwidth for viewing in }}\label{sec-tuning}
 
 The model fitting depends on several parameters, including the hexagon
 bin parameters and the low-count bin removal process. The hexagon bin
@@ -1057,6 +1059,39 @@ NLDR layouts computed on the 2NC7 data using a parallel coordinate plot
 (iii). Color of the line indicates NLDR layout.}
 
 \end{figure}%
+
+\begin{figure}
+
+\centering{
+
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{appendix_files/figure-pdf/fig-fit-tsne-phate-1.pdf}
+
+}
+
+\caption{\label{fig-fit-tsne-phate}Three \(2\text{-}D\) projections from
+a tour showing the fitted models (black lines) for layouts a (top row)
+and c (bottom row) of the 2NC7 data (blue points). Layout c, which was
+poorly rated by rARNX and HBE, covers less of the width of the data than
+layout a. The triangular gridding is less visible in c than layout a,
+and actually corresponds to extreme twisting.}
+
+\end{figure}%
+
+When the metrics disagree is causes confusion for the analyst, and thus
+provides a temptation to choose the nicest looking layout (very
+separated clusters), even though it may be a hallucination. Because HBE
+is accompanied with a representation of the layout in \pD{} to compare
+with the observed data, it can help to add more clarity in making
+decisions. Figure~\ref{fig-fit-tsne-phate} shows the fitted models for
+layouts a (rated high by HBE and rARNX) and c (rated poorly). These are
+\gD{} projections from the tour, with black indicating the fitted model
+overlaid on the blue points of the data. The reason for the poor fit is
+that the PHATE layout (c) twists extremely along the 2- and \tD{}
+manifolds where the data lies. We have learned that all the NLDR methods
+tend to have twists in the fit in \pD{}, but this is extreme. This is
+likely why layout c has poor metrics relative to the other layouts, and
+it suggests that it does not adequately capture the local structure in
+the 2NC7 data.
 
 \begin{figure}
 
