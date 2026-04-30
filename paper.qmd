@@ -838,7 +838,7 @@ Delaunay triangulation [@lee1980;@alb2024] is used to connect centroids to indic
 The last step is to lift the \gD{} model into \pD{} by computing \pD{} vectors that represent bin centroids. We use the \pD{} mean of the points in a given hexagon, $H_h$, denoted $C_{h}^{(p)}$, to map the centroid $C_{h}^{(2)} = (c_{h1}, c_{h2})$ to a point in \pD{}. Let the $j^{th}$ component of the \pD{} mean be
 
 $$C_{hj}^{(p)} = \frac{1}{n_h}\sum_{i \in H_h} x_{ij}, ~~~h = 1, \dots, b;~ j=1, \dots, p; ~ n_h > 0.$$
-We can consider this procedure to be a pseudo-inverse of $g$, $\mathbfit{C}^{p} = \tilde{g}(\mathbfit{C}^{(2)})$, $\tilde{g}\text{:}~ \mathbfit{C}^{(2)} \subset \mathbb{R}^2 \mapsto \mathbfit{C}^{p} \subset \mathbb{R}^p$. Then $\mathbfit{\hat{X}}_i (i=1, \dots, n) \in \{\mathbfit{C}^{(p)} = (C^{(p)}_{j1}, C^{(p)}_{j2}), j=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \pD{} residuals.
+We can consider this procedure to be a pseudo-inverse of $g$, $\mathbfit{C}^{p} = \tilde{g}(\mathbfit{C}^{(2)})$, $\tilde{g}\text{:}~ \mathbfit{C}^{(2)} \subset \mathbb{R}^2 \mapsto \mathbfit{C}^{p} \subset \mathbb{R}^p$. Then $\mathbfit{\hat{X}}_i (i=1, \dots, n) \in \{\mathbfit{C}^{(p)} = (C^{(p)}_{h1}, \dots C^{(p)}_{hp}), h=1, \dots, m\}$ are considered the fitted values, from which we can also calculate \pD{} residuals.
 
 ```{r}
 #| label: fig-best-fit-tsne
