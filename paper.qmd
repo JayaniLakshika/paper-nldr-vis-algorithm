@@ -1101,11 +1101,6 @@ find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to
 @fig-prediction-comparison shows the results for UMAP (a) and our predictions(b) made using `quollr`. The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases, it can be seen that the test set matches the training set in the layout quite well. The main differences are that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. **Add tSNE, PHATE, TriMAP, and PACMAP training and quollr predictions to this plot, in a 3x2 layout**
 
 ```{r}
-#| label: fig-prediction-comparison
-#| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the UMAP layout."
-#| fig-height: 2
-#| fig-width: 4
-#| out-width: 80%
 # Code to generate the saved data is in scripts/two_nonlinear/compare_pred_approaches.R
 d_2NC7_tr <- read_rds(here::here("data/two_nonlinear/2NC7_tr.rds"))
 d_2NC7_ts <- read_rds(here::here("data/two_nonlinear/2NC7_ts.rds"))
@@ -1175,10 +1170,201 @@ pcompare2 <- ggplot(d_quollr,
         axis.text = element_blank(),
         axis.ticks = element_blank(),
         legend.position = "none")
+```
 
-pcompare1 + pcompare2 + plot_layout(ncol=2)
+```{r}
+tSNE_d_2NC7_tr <- tsne_two_curvy |>
+  filter(row_number() %in% d_2NC7_tr$ID) |>
+  mutate(ID = row_number())
+
+num_bins_x_2NC7_tSNE <- 40
+
+algo_obj_2NC7_tSNE <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = tSNE_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7_tSNE,
+  q = 0.1,
+  hd_thresh = 0)
+
+## Predict positions using quollr
+d_2NC7_ts_qpred_tSNE <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                                    model_highd = algo_obj_2NC7_tSNE$model_highd,
+                                    model_2d = algo_obj_2NC7_tSNE$model_2d)
+d_2NC7_ts_qpred_tSNE <- d_2NC7_ts_qpred_tSNE |>
+  rename(tSNE1 = pred_emb_1,
+         tSNE2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+tSNE_2NC7_tr_scaled <- algo_obj_2NC7_tSNE$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7_tSNE$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7_tSNE$nldr_scaled_obj$lim2[1])/
+  (algo_obj_2NC7_tSNE$nldr_scaled_obj$lim1[2]-
+     algo_obj_2NC7_tSNE$nldr_scaled_obj$lim1[1])
+
+# Comparison 2: training vs quollr predictions
+d_quollr_tSNE <- bind_rows(tSNE_2NC7_tr_scaled, d_2NC7_ts_qpred_tSNE) |>
+  mutate(type = factor(c(rep("train", NROW(tSNE_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred_tSNE)))))
+
+pcompare2_tSNE <- ggplot(d_quollr_tSNE,
+                         aes(x = tSNE1, y = tSNE2, colour = type)) +
+  geom_point(alpha = 0.5, size = 0.5) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("b. quollr") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+```
+
+```{r}
+PHATE_d_2NC7_tr <- phate_two_curvy |>
+  filter(row_number() %in% d_2NC7_tr$ID) |>
+  mutate(ID = row_number())
+
+num_bins_x_2NC7_PHATE <- 20
+
+algo_obj_2NC7_PHATE <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = PHATE_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7_PHATE,
+  q = 0.1,
+  hd_thresh = 0)
+
+## Predict positions using quollr
+d_2NC7_ts_qpred_PHATE <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                                    model_highd = algo_obj_2NC7_PHATE$model_highd,
+                                    model_2d = algo_obj_2NC7_PHATE$model_2d)
+d_2NC7_ts_qpred_PHATE <- d_2NC7_ts_qpred_PHATE |>
+  rename(PHATE1 = pred_emb_1,
+         PHATE2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+PHATE_2NC7_tr_scaled <- algo_obj_2NC7_PHATE$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7_PHATE$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7_PHATE$nldr_scaled_obj$lim2[1])/
+  (algo_obj_2NC7_PHATE$nldr_scaled_obj$lim1[2]-
+     algo_obj_2NC7_PHATE$nldr_scaled_obj$lim1[1])
+
+# Comparison 2: training vs quollr predictions
+d_quollr_PHATE <- bind_rows(PHATE_2NC7_tr_scaled, d_2NC7_ts_qpred_PHATE) |>
+  mutate(type = factor(c(rep("train", NROW(PHATE_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred_PHATE)))))
+
+pcompare2_PHATE <- ggplot(d_quollr_PHATE,
+                         aes(x = PHATE1, y = PHATE2, colour = type)) +
+  geom_point(alpha = 0.5, size = 0.5) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("b. quollr") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+```
+
+```{r}
+TriMAP_d_2NC7_tr <- trimap_two_curvy |>
+  filter(row_number() %in% d_2NC7_tr$ID) |>
+  mutate(ID = row_number())
+
+num_bins_x_2NC7_TriMAP <- 20
+
+algo_obj_2NC7_TriMAP <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = TriMAP_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7_TriMAP,
+  q = 0.1,
+  hd_thresh = 0)
+
+## Predict positions using quollr
+d_2NC7_ts_qpred_TriMAP <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                                     model_highd = algo_obj_2NC7_TriMAP$model_highd,
+                                     model_2d = algo_obj_2NC7_TriMAP$model_2d)
+d_2NC7_ts_qpred_TriMAP <- d_2NC7_ts_qpred_TriMAP |>
+  rename(TriMAP1 = pred_emb_1,
+         TriMAP2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+TriMAP_2NC7_tr_scaled <- algo_obj_2NC7_TriMAP$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7_TriMAP$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7_TriMAP$nldr_scaled_obj$lim2[1])/
+  (algo_obj_2NC7_TriMAP$nldr_scaled_obj$lim1[2]-
+     algo_obj_2NC7_TriMAP$nldr_scaled_obj$lim1[1])
+
+# Comparison 2: training vs quollr predictions
+d_quollr_TriMAP <- bind_rows(TriMAP_2NC7_tr_scaled, d_2NC7_ts_qpred_TriMAP) |>
+  mutate(type = factor(c(rep("train", NROW(TriMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred_TriMAP)))))
+
+pcompare2_TriMAP <- ggplot(d_quollr_TriMAP,
+                          aes(x = TriMAP1, y = TriMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 0.5) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("b. quollr") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+```
+
+```{r}
+PaCMAP_d_2NC7_tr <- pacmap_two_curvy |>
+  filter(row_number() %in% d_2NC7_tr$ID) |>
+  mutate(ID = row_number())
+
+num_bins_x_2NC7_PaCMAP <- 10
+
+algo_obj_2NC7_PaCMAP <- fit_highd_model(
+  highd_data = d_2NC7_tr[, 1:8],
+  nldr_data = PaCMAP_d_2NC7_tr[, 1:3],
+  b1 = num_bins_x_2NC7_PaCMAP,
+  q = 0.1,
+  hd_thresh = 0)
+
+## Predict positions using quollr
+d_2NC7_ts_qpred_PaCMAP <- predict_emb(highd_data = d_2NC7_ts[,1:8],
+                                      model_highd = algo_obj_2NC7_PaCMAP$model_highd,
+                                      model_2d = algo_obj_2NC7_PaCMAP$model_2d)
+d_2NC7_ts_qpred_PaCMAP <- d_2NC7_ts_qpred_PaCMAP |>
+  rename(PaCMAP1 = pred_emb_1,
+         PaCMAP2 = pred_emb_2)
+
+# Scale to match quollr scaled data
+PaCMAP_2NC7_tr_scaled <- algo_obj_2NC7_PaCMAP$nldr_scaled_obj$scaled_nldr
+ar <- (algo_obj_2NC7_PaCMAP$nldr_scaled_obj$lim2[2]-
+         algo_obj_2NC7_PaCMAP$nldr_scaled_obj$lim2[1])/
+  (algo_obj_2NC7_PaCMAP$nldr_scaled_obj$lim1[2]-
+     algo_obj_2NC7_PaCMAP$nldr_scaled_obj$lim1[1])
+
+# Comparison 2: training vs quollr predictions
+d_quollr_PaCMAP <- bind_rows(PaCMAP_2NC7_tr_scaled, d_2NC7_ts_qpred_PaCMAP) |>
+  mutate(type = factor(c(rep("train", NROW(PaCMAP_2NC7_tr_scaled)),
+                         rep("test", NROW(d_2NC7_ts_qpred_PaCMAP)))))
+
+pcompare2_PaCMAP <- ggplot(d_quollr_PaCMAP,
+                           aes(x = PaCMAP1, y = PaCMAP2, colour = type)) +
+  geom_point(alpha = 0.5, size = 0.5) +
+  scale_color_brewer("", palette = "Paired", direction = -1) +
+  ggtitle("b. quollr") +
+  theme(aspect.ratio = 1,
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        legend.position = "none")
+
 
 ```
+
+```{r}
+#| label: fig-prediction-comparison
+#| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the UMAP layout."
+#| fig-height: 6
+#| fig-width: 4
+#| out-width: 80%
+pcompare1 + pcompare2 +
+  pcompare2_tSNE + pcompare2_PHATE +
+  pcompare2_TriMAP + pcompare2_PaCMAP + plot_layout(ncol=2)
+```
+
 <!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
 
 <!-- A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$.  -->
