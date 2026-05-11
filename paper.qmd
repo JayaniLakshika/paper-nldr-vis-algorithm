@@ -911,7 +911,7 @@ Matching points in the \gD{} layout with their positions in \pD{} is useful when
 ## Choosing from a selection of layouts {#sec-bestfit}
 <!--updated according to the reviews-->
 
-@fig-toy-rmse shows the diagnostic plot of HBE vs binwidth (i) for a selection of plots from which to use. Color in all plots indicates the layout (a-f). The details of how they were generated are in the Appendix. There is nothing special about this selection of layouts other than that all five methods were used: (a, f) tSNE, (b) UMAP, (c) PHATE, (d) TriMAP, (e) PaCMAP. (XXX check these) They represent different patterns, but all agree on there being two clusters, with varying distance and shape between them. The process to make a decision is:
+@fig-toy-rmse shows the diagnostic plot of HBE vs binwidth (i) for a selection of plots from which to use. Color in all plots indicates the layout (a-f). The details of how they were generated are in the Appendix. There is nothing special about this selection of layouts other than that all five methods were used: (a, f) tSNE, (b) UMAP, (c) PHATE, (d) TriMAP, (e) PaCMAP. They represent different patterns, but all agree on there being two clusters, with varying distance and shape between them. The process to make a decision is:
 
 1. Fit the model to a range of binwidths for each layout, calculating HBE.
 2. Plot each HBE against binwidth, for all layouts. 
@@ -1370,6 +1370,7 @@ pcompare2_PaCMAP <- ggplot(d_quollr_PaCMAP,
 #| fig-height: 6
 #| fig-width: 4
 #| out-width: 80%
+
 pcompare1 + pcompare2 +
   pcompare2_tSNE + pcompare2_PHATE +
   pcompare2_TriMAP + pcompare2_PaCMAP + plot_layout(ncol=2)
