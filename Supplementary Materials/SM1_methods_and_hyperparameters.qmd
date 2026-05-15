@@ -1,0 +1,116 @@
+---
+title: "Supplementary Material 1: Methods and hyper-parameters used to generate layouts"
+format: pdf
+tbl-cap-location: bottom
+header-includes: | 
+  \usepackage{amsmath}
+  \usepackage{float}
+  \usepackage{hyperref}
+  \usepackage[utf8]{inputenc}
+  \usepackage{bm}
+  \def\tightlist{}
+  \usepackage{setspace}
+  \newcommand\pD{$p\text{-}D$}
+  \newcommand\kD{$k\text{-}D$}
+  \newcommand\dD{$d\text{-}D$}
+  \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
+  \newcommand{\To}{\textbf{to}~}
+  \usepackage{abstract}
+  \renewcommand{\abstractname}{}    % clear the title
+  \renewcommand{\absnamepos}{empty} % originally center
+---
+
+```{r include=FALSE}
+# Set up chunk for for knitr
+knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  code.line.numbers = FALSE,
+  fig.retina = 4,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  dev.args = list(pointsize = 11)
+)
+```
+
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
+
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
+
+packages_to_check <- c("readr", "kableExtra")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
+
+```
+
+```{r}
+#| label: load-libraries
+#| warning: false
+#| echo: false
+library(readr)
+library(kableExtra)
+```
+
+@tbl-fig-param contains the list of methods and hyper-parameters used for each of the layouts shown in the paper. 
+
+```{r}
+#| label: tbl-fig-param
+#| tbl-pos: H
+#| tbl-cap: "NLDR methods and hyper-parameters used for each Figure in the main paper."
+
+fig_param_df <- read_csv(here::here("misc/fig_nldr_param.csv"))
+
+# Create the table
+kable(fig_param_df, 
+      format = "latex", 
+      booktabs = TRUE, escape = FALSE, longtable = TRUE, linesep = "") |>
+  kable_styling(position = "center", 
+                full_width = FALSE, 
+                font_size = 12,
+                latex_options = c("repeat_header")) |>
+  row_spec(0, bold = TRUE) |>
+  column_spec(1:3, width = c("1.5cm", "2cm", "10cm")) |>
+  row_spec(8, hline_after = TRUE) |>
+  row_spec(12, hline_after = TRUE) |>
+  row_spec(18, hline_after = TRUE) |>
+  row_spec(26, hline_after = TRUE) |>
+  row_spec(28, hline_after = TRUE) |>
+  row_spec(34, hline_after = TRUE) |>
+  row_spec(35, hline_after = TRUE) |>
+  row_spec(36, hline_after = TRUE) |>
+  row_spec(39, hline_after = TRUE) |>
+  row_spec(40, hline_after = TRUE) |>
+  row_spec(42, hline_after = TRUE) |>
+  row_spec(44, hline_after = TRUE) |>
+  row_spec(46, hline_after = TRUE) |>
+  row_spec(54, hline_after = TRUE)
+```
+
+\clearpage
