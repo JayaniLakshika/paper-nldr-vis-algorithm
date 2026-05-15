@@ -1,0 +1,539 @@
+---
+title: "Supplementary Material 6: Hexagon Grid: Configuration, Binning, and Area"
+format: pdf
+tbl-cap-location: bottom
+header-includes: | 
+  \usepackage{amsmath}
+  \usepackage{float}
+  \usepackage{hyperref}
+  \usepackage[utf8]{inputenc}
+  \usepackage{bm}
+  \def\tightlist{}
+  \usepackage{setspace}
+  \newcommand\pD{$p\text{-}D$}
+  \newcommand\kD{$k\text{-}D$}
+  \newcommand\dD{$d\text{-}D$}
+  \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
+  \newcommand{\To}{\textbf{to}~}
+  \usepackage{abstract}
+  \renewcommand{\abstractname}{}    % clear the title
+  \renewcommand{\absnamepos}{empty} % originally center
+---
+
+```{r include=FALSE}
+# Set up chunk for for knitr
+knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  code.line.numbers = FALSE,
+  fig.retina = 4,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  dev.args = list(pointsize = 11)
+)
+```
+
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
+
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
+
+packages_to_check <- c("remotes", "tidyverse", "patchwork", "colorspace", "kableExtra", "conflicted", "ggforce")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
+
+```
+
+```{r}
+#| label: load-libraries
+#| warning: false
+#| echo: false
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(patchwork)
+library(colorspace)
+library(kableExtra)
+library(conflicted)
+library(ggforce)
+library(GGally)
+library(scales)
+
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+```
+
+```{r}
+#| label: plot-theme
+theme_set(theme_linedraw() +
+   theme(
+     #aspect.ratio = 1,
+     plot.background = element_rect(fill = 'transparent', colour = NA),
+     plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+     panel.background = element_rect(fill = 'transparent', 
+                                     colour = NA),
+     panel.grid.major = element_blank(), 
+     panel.grid.minor = element_blank(), 
+     axis.title.x = element_blank(), axis.title.y = element_blank(),
+     axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+     axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+     legend.background = element_rect(fill = 'transparent', 
+                                      colour = NA),
+     legend.key = element_rect(fill = 'transparent', 
+                               colour = NA),
+     legend.position = "bottom", 
+     legend.title = element_blank(), 
+     legend.text = element_text(size=4),
+     legend.key.height = unit(0.25, 'cm'),
+     legend.key.width = unit(0.25, 'cm'),
+     plot.margin = margin(0, 0, 0, 0)
+   )
+)
+```
+
+```{r}
+#| label: import-scripts
+source(here::here("scripts/additional_functions.R"))
+```
+
+```{r}
+#| label: code-setup
+set.seed(20240110)
+```
+
+```{r}
+clr_choice <- "#0077A3"
+```
+
+# Computing hexagon grid configurations
+
+Given range of embedding component, $r_2$, number of bins along the x-axis, $b_1$, and buffer proportion, $q$, hexagonal starting point coordinates, $s_1 = \text{-}q$, and $s_2 = \text{-}qr_2$. The purpose is to find width of the hexagon, $a_1$ and number of bins along the y-axis, $b_2$.
+
+Geometric arguments give rise to the following constraints.
+
+$\text{min }a_1 \text{ s.t.}$
+
+$$
+s_1 - \frac{a_1}{2} < 0,
+$$ {#eq-equation1}
+
+$$
+s_1 + (b_1 - 1) \times a_1 \geq 1,
+$$ {#eq-equation2}
+
+$$
+s_2 - \frac{a_2}{2} < 0,
+$$ {#eq-equation4}
+
+$$
+s_2 + (b_2 - 1) \times a_2 \geq r_2.
+$$ {#eq-equation5}
+
+
+
+
+```{r}
+#| label: code-illustration
+# Code to draw illustration for notation
+## hexagon binning to have regular hexagons
+
+hex_grid_temp <- read_rds(here::here("data/two_nonlinear/hex_grid_temp.rds"))
+all_centroids_df_temp <- read_rds(here::here("data/two_nonlinear/all_centroids_df_tempp.rds"))
+start_pt <- read_rds(here::here("data/two_nonlinear/start_pt.rds"))
+d_rect <- read_rds(here::here("data/two_nonlinear/d_rect.rds"))
+a1 <- read_rds(here::here("data/two_nonlinear/a2_data.rds"))
+a2 <- read_rds(here::here("data/two_nonlinear/a1_data.rds"))
+l <- read_rds(here::here("data/two_nonlinear/l_data.rds"))
+rect_adj <- read_rds(here::here("data/two_nonlinear/rect_adj.rds"))
+
+hex_param_vis <- ggplot() + 
+  geom_polygon(data = hex_grid_temp, 
+               aes(x = x, 
+                   y = y, 
+                   group = h),
+               fill = "white", 
+               colour = "#bdbdbd") +
+  geom_point(data = all_centroids_df_temp, aes(
+    x = c_x, 
+    y = c_y), 
+    colour = "#31a354", size = 0.9) +
+  geom_point(data = start_pt, aes(x = c_x, 
+                                  y = c_y), 
+             colour = "black") + 
+  geom_rect(data=d_rect, 
+            aes(xmin = x1min - rect_adj$x1,# - rect_adj$s1, 
+                xmax = x1max - rect_adj$x1,# - rect_adj$s1, 
+                ymin = x2min - rect_adj$x2,# - rect_adj$s2, 
+                ymax = x2max - rect_adj$x2),# - rect_adj$s2), 
+            fill = "white", 
+            colour = "black", 
+            alpha = 0, 
+            linewidth = 0.7) +
+  geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                              y=x2min - rect_adj$x2)) + 
+  geom_point(data=d_rect, aes(x=x1max - rect_adj$x1, 
+                              y=x2min - rect_adj$x2)) + 
+  geom_point(data=d_rect, aes(x=x1min - rect_adj$x1, 
+                              y=x2max - rect_adj$x2)) + 
+  annotate("text", x=d_rect$x1min - rect_adj$x1, 
+           y=d_rect$x2min - rect_adj$x2,
+           label = "(0,0)", 
+           hjust=-0.1, vjust=-0.3, size = 8) + 
+  annotate("text", x=d_rect$x1max - rect_adj$x1, 
+           y=d_rect$x2min - rect_adj$x2,
+           label = "(0,1)", 
+           hjust=1.1, vjust=-0.3, size = 8) + 
+  annotate("text", x=d_rect$x1min - rect_adj$x1, 
+           y=d_rect$x2max - rect_adj$x2,
+           label = "'(0,'*y[2][max]*')'", 
+           parse = TRUE,
+           hjust=-0.1, vjust=1.2, size = 8) + 
+  geom_segment(data=d_rect, aes(
+    x = x1min  - rect_adj$x1, # 0 - 0.03, 
+    y = -0.31, 
+    xend = x1max - rect_adj$x1, #1 - 0.03, 
+    yend = -0.31), #-0.35),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+
+  annotate("text", x=0.5, y=-0.38, 
+           label = "r[1]", parse = TRUE, colour = "black", size = 8) +
+  geom_segment(data=d_rect, aes(
+    x = -0.25, 
+    y = x2min - rect_adj$x2, #0 - 0.05, 
+    xend = -0.25, 
+    yend = x2max - rect_adj$x2), #r2 - 0.05),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+ 
+  annotate("text", x=-0.3, y=0.4, 
+           label = "r[2]", parse = TRUE, colour = "black", size = 8) +
+  geom_segment(data = a1, aes(
+    x = x, #-0.1 + 0.2087578, 
+    y = y, #-0.15, 
+    xend = xend, #-0.1 + 0.2087578*2, 
+    yend = yend), #-0.15),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black")+ # a1 = 0.2087578
+  annotate("text", 
+           x=(a1$x+a1$xend)/2, 
+           y=a1$y, 
+           label = "a[1]", parse = TRUE, 
+           colour = "black",
+           vjust = 1.2, size = 8) +
+  geom_segment(data = a2, aes(
+    x = x, #-0.15, 
+    y = y, #-0.1*r2 + 0.1807896*2, 
+    xend = xend, #-0.15, 
+    yend = yend), #-0.1*r2 + 0.1807896*3),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black") + # a2 = 0.1807896
+  annotate("text", x=a2$x, y=(a2$y+a2$yend)/2, 
+           label = "a[2]", parse = TRUE,
+           colour = "black", hjust=-0.2, size = 8) +
+  annotate("text", x=-0.18, y=-0.24, 
+           label = "'('*s[1]*','*s[2]*')'", parse = TRUE,
+           colour = "black", size = 8) +
+  geom_segment(data = l, aes(
+    x = x, #-0.15, 
+    y = y, #-0.1*r2 + 0.1807896*2, 
+    xend = xend, #-0.15, 
+    yend = yend), #-0.1*r2 + 0.1807896*3),
+    arrow = arrow(length = unit(0.03, "npc"),
+                  ends = "both"), 
+    colour = "black") + 
+  annotate("text", x=l$x + 0.03, y=(l$y+l$yend)/2, 
+           label = "l", parse = TRUE,
+           colour = "black", hjust=-0.2, size = 8) +
+  coord_equal()
+```
+
+```{r}
+#| label: fig-hex-param
+#| fig-cap: "The components of the hexagon grid illustrating notation."
+#| out-width: 30%
+#| fig-pos: "!ht"
+#| eval: false
+
+hex_param_vis
+```
+
+Since $a_1$ and $a_2$ are distances,
+
+$$
+a_1, a_2 > 0.
+$$ Also, $(s_1, s_2) \in (\text{-}0.1, \text{-}0.05)$ as these are multiplicative offsets in the negative direction.
+
+@eq-equation1 can be rearranged as,
+
+$$
+a_1 > 2s_1
+$$
+
+which given $s_1 < 0$ and $a_1 > 0$ will *always* be true. The same logic follows for @eq-equation4 and substituting $a_2 = \sqrt{3}a_1/{2}$, and $s_2 = \text{-}qr_2$ to @eq-equation4 can be written as,
+
+$$
+a_1 > -\frac{4}{\sqrt{3}}qr_2
+$$
+
+Also, substituting $a_2 = \sqrt{3}a_1/{2}$, $s_2 = \text{-}qr_2$ and rearranging @eq-equation5 gives:
+
+$$
+a_1 \geq \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+$$ {#eq-equation6}
+
+Similarly, substituting $s_1 = \text{-}q$ @eq-equation2 becomes,
+
+$$
+a_1 \geq \frac{(1 + q)}{(b_1 - 1)}.
+$$ {#eq-equation7}
+
+This is a linear optimization problem. Therefore, the optimal solution must occur on a vertex. So, by setting @eq-equation6 equals to @eq-equation7 gives,
+
+$$
+\frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)} = \frac{(1 + q)}{(b_1 - 1)}.
+$$ 
+
+After rearranging this,
+
+$$
+b_2 = 1 + \frac{2r_2(b_1 - 1)}{\sqrt{3}}
+$$
+
+and since $b_2$ should be an integer,
+
+$$
+b_2 = \Big\lceil1 +\frac{2r_2(b_1 - 1)}{\sqrt{3}}\Big\rceil.
+$$ {#eq-equation8}
+
+Furthermore, with known $b_1$ and $b_2$, by considering @eq-equation2 or @eq-equation5 as the *binding* or *active constraint*, can compute $a_1$.
+
+If @eq-equation2 is active, then,
+
+$$
+\frac{(1 + q)}{(b_1 - 1)} < \frac{2(r_2 + qr_2)}{\sqrt{3}(b_2 - 1)}.
+$$
+
+Rearranging this gives,
+
+$$
+r_2 > \frac{\sqrt{3}(b_2 - 1)}{2(b_1 - 1)}.
+$$
+
+Therefore, if this equality is true, then 
+$$
+a_1 = \frac{(1+q)}{(b_1 - 1)},
+$$
+otherwise, 
+$$
+a_1 = \frac{2r_2(1+q)}{\sqrt{3}(b_2 - 1)}.
+$$
+
+# Binning the data
+
+Points are assigned to the bin they fall into based on the nearest centroid. If a point is equidistant from multiple centroids, it is assigned to the centroid with the smallest bin ID.
+
+```{r}
+
+## Data set with all centroids
+all_centroids_df <- read_rds(here::here("data/two_nonlinear/two_nonlinear_all_centroids_two_curvy4.rds"))
+
+## Generate all coordinates of hexagons
+hex_grid <- read_rds(here::here("data/two_nonlinear/two_nonlinear_hex_grid_two_curvy4.rds"))
+
+## Data to generate circle
+circles <- data.frame(
+  x = c(0.608, 0.372),
+  y = c(0.306, 0.715),
+  r = rep(0.27, 2)
+)
+
+emb_df1 <- tibble(emb1 = 0.45, emb2 = 0.47) |>
+  add_row(emb1 = 0.54, emb2 = 0.56)
+
+assign_data_vis1 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = h)) +
+  geom_point(data = emb_df1, aes(x = emb1, y = emb2), color = "black", size = 0.7) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
+  geom_circle(data = circles, aes(x0 = x, y0 = y, r = r), fill = NA) +
+  geom_segment(x = 0.45, y = 0.47, xend = 0.58, yend = 0.3, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#969696") +
+  geom_segment(x = 0.54, y = 0.56, xend = 0.4, yend = 0.715, 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#969696")
+```
+
+```{r}
+hex_data <- hex_grid |> 
+  dplyr::filter(h == 8)
+
+# Create all pairs of rows
+pairs <- expand_grid(row1 = 1:nrow(hex_data), row2 = 1:nrow(hex_data)) |>
+  filter(row1 < row2)
+
+# Compute middle points for each pair of rows
+middle_points <- pairs |>
+  rowwise() |>
+  mutate(
+    h = hex_data$h[row1],
+    x = (hex_data$x[row1] + hex_data$x[row2]) / 2,
+    y = (hex_data$y[row1] + hex_data$y[row2]) / 2
+  ) |>
+  ungroup() |>
+  select(h, x, y) |>
+  filter(row_number() %in% c(1, 5, 6, 10, 13, 15))
+
+points_df <- bind_rows(hex_data, middle_points)
+
+arrow_df <- tibble(
+  x = points_df$x, 
+  y = points_df$y,
+  xend = c(0.37, points_df$x[2] - 0.1, 0.136, points_df$x[4] - 0.1, 0.61, points_df$x[6] - 0.1, 0.33, points_df$x[8] - 0.1, 0,  points_df$x[10] - 0.1, 0.58, 0.45),
+  yend = c(0.82, points_df$y[2] - 0.1, 0.4, points_df$y[4] - 0.1, 0.4, points_df$y[6] - 0.1, 0.82, points_df$y[8] - 0.1, 0.715, points_df$y[10] - 0.1, 0.4, 0.71)
+)
+
+assign_data_vis2 <- ggplot(data = hex_grid, aes(x = x, y = y)) + 
+  geom_polygon(fill = "white", color = "#bdbdbd", aes(group = h)) +
+  geom_point(data = points_df, aes(x = x, y = y), color = "black", size = 0.7) +
+  geom_text(data = all_centroids_df, aes(x = c_x, y = c_y, label = h), size = 5, colour = "#bdbdbd") +
+  geom_segment(data = arrow_df, aes(x = x, y = y, xend = xend, yend = yend), 
+               arrow = arrow(length = unit(0.02, "npc")), color = "#bdbdbd") 
+```
+
+```{r}
+#| label: fig-assign-data
+#| fig-cap: "Binning the data. Points are assigned to the nearest centroid. If a point is equidistant from multiple centroids, assigned to the centroid with the smallest bin ID."
+#| fig-width: 12
+#| fig-height: 6
+#| fig-pos: "!ht"
+
+assign_data_vis1 + assign_data_vis2 +
+  plot_layout(ncol = 2)
+```
+
+# Area of a hexagon
+
+The area of a hexagon is defined as $A = 3\sqrt{3}l^2/2$, where $l$ is the side length of the hexagon. $l$ can be computed using $a_1$ and $a_2$.
+
+
+```{r}
+# triangle_temp <- tibble(
+#   x = c(0, 4, 0),
+#   y = c(0, 0, 3)
+# )
+
+triangle_line_temp <- tibble(
+  x = c(4, 0, 4),
+  xend = c(0, 0, 0),
+  y = c(0, 0, 0),
+  yend = c(0, 3, 3)
+)
+
+# triangle_arrow_temp <- tibble(
+#   x = c(4 + 0.04, 0 - 0.06, 4 + 0.06),
+#   xend = c(0 + 0.04, 0 - 0.06, 0 + 0.06),
+#   y = c(0 - 0.04, 0 - 0.06, 0 + 0.06),
+#   yend = c(0 - 0.04, 3 - 0.06, 3 + 0.06)
+# )
+
+triangle_plot <- ggplot() +
+  # geom_point(
+  #   data = triangle_temp,
+  #   aes(
+  #     x = x,
+  #     y = y
+  #   )
+  # ) +
+  geom_segment(
+    data = triangle_line_temp,
+    aes(
+      x = x,
+      xend = xend,
+      y = y,
+      yend = yend
+    )
+  ) + 
+  annotate("text", x = -1.5, y = 1.5,
+         label = "frac(a[2]-a[1], 2)",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8) +
+annotate("text", x = 1.5, y = -0.5,
+         label = "a[1]/2",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8) +
+annotate("text", x = 2.5, y = 1.5,
+         label = "l",
+         parse = TRUE,
+         color = "black", hjust = -0.2, size = 8)
+```
+
+```{r}
+#| label: fig-tri-param
+#| fig-cap: "The components of the right triangle illustrating notation."
+#| out-width: 30%
+#| fig-pos: "!ht"
+
+triangle_plot
+```
+
+By applying the Pythagorean theorem, we obtain,
+
+$$
+l^2 = \left(\frac{a_1}{2}\right)^2 + \left(\frac{a_2 - l}{2}\right)^2.
+$$
+Next, rearranging the terms, we get,
+
+$$
+l^2 - \left(\frac{a_2 - l}{2}\right)^2 = \left(\frac{a_1}{2}\right)^2,
+$$
+
+$$
+\left[l - \left(\frac{a_2 - l}{2}\right)\right]\left[l + \left(\frac{a_2 - l}{2}\right)\right] = \left(\frac{a_1}{2}\right)^2,
+$$
+
+$$
+3l^2 + 2a_2l - (a_1^2 + a_2^2) = 0.
+$$
+
+Finally, by solving the quadratic equation, we compute,
+
+$$
+l = \frac{-2a_2 \pm \sqrt{4a_2^2 - 24[-(a_1^2 + a_2^2)]}}{6},
+$$
+
+$$
+l = \frac{-a_2 \pm \sqrt{a_2^2 - 6[-(a_1^2 + a_2^2)]}}{3},
+$$
+
+where $l > 0$.
+
+\clearpage

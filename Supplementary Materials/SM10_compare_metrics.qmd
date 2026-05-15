@@ -1,0 +1,805 @@
+---
+title: "Supplementary Material 10: Compare HBE with existing evaluation metrics"
+format: pdf
+tbl-cap-location: bottom
+header-includes: | 
+  \usepackage{amsmath}
+  \usepackage{float}
+  \usepackage{hyperref}
+  \usepackage[utf8]{inputenc}
+  \usepackage{bm}
+  \def\tightlist{}
+  \usepackage{setspace}
+  \newcommand\pD{$p\text{-}D$}
+  \newcommand\kD{$k\text{-}D$}
+  \newcommand\dD{$d\text{-}D$}
+  \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
+  \newcommand{\To}{\textbf{to}~}
+  \usepackage{abstract}
+  \renewcommand{\abstractname}{}    % clear the title
+  \renewcommand{\absnamepos}{empty} % originally center
+---
+
+```{r include=FALSE}
+# Set up chunk for for knitr
+knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  code.line.numbers = FALSE,
+  fig.retina = 4,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  dev.args = list(pointsize = 11)
+)
+```
+
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
+
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
+
+packages_to_check <- c("remotes", "tidyverse", "patchwork", "colorspace", "kableExtra", "conflicted", "ggforce")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
+
+```
+
+```{r}
+#| label: load-libraries
+#| warning: false
+#| echo: false
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(patchwork)
+library(colorspace)
+library(kableExtra)
+library(conflicted)
+library(ggforce)
+library(GGally)
+library(scales)
+
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+```
+
+```{r}
+#| label: plot-theme
+theme_set(theme_linedraw() +
+   theme(
+     #aspect.ratio = 1,
+     plot.background = element_rect(fill = 'transparent', colour = NA),
+     plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+     panel.background = element_rect(fill = 'transparent', 
+                                     colour = NA),
+     panel.grid.major = element_blank(), 
+     panel.grid.minor = element_blank(), 
+     axis.title.x = element_blank(), axis.title.y = element_blank(),
+     axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+     axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+     legend.background = element_rect(fill = 'transparent', 
+                                      colour = NA),
+     legend.key = element_rect(fill = 'transparent', 
+                               colour = NA),
+     legend.position = "bottom", 
+     legend.title = element_blank(), 
+     legend.text = element_text(size=4),
+     legend.key.height = unit(0.25, 'cm'),
+     legend.key.width = unit(0.25, 'cm'),
+     plot.margin = margin(0, 0, 0, 0)
+   )
+)
+```
+
+```{r}
+#| label: import-scripts
+source(here::here("scripts/additional_functions.R"))
+```
+
+```{r}
+#| label: code-setup
+set.seed(20240110)
+```
+
+```{r}
+clr_choice <- "#0077A3"
+```
+
+@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as rRTA, rARNX, rSC, and rGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
+
+```{r}
+#| label: read-two-curvy-clust-nldr
+# Read a variety of different NLDR representations of two_non_linear_diff_shaped_close_clusters
+# and plot them on same aspect ratio
+tsne_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds"))
+
+nldr_two_curvy1 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a") +
+  theme(aspect.ratio = 1) 
+
+tsne_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds"))
+
+nldr_two_curvy6 <- tsne_two_curvy |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("f") +
+  theme(aspect.ratio = 1) 
+
+umap_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds"))
+
+nldr_two_curvy2 <- umap_two_curvy |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#636363') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1) 
+
+phate_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds"))
+
+nldr_two_curvy3 <- phate_two_curvy |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("c") +
+  theme(aspect.ratio = 1) 
+
+trimap_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds"))
+
+nldr_two_curvy4 <- trimap_two_curvy |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("d") +
+  theme(aspect.ratio = 1)
+
+pacmap_two_curvy <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds"))
+
+nldr_two_curvy5 <- pacmap_two_curvy |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e") +
+  theme(aspect.ratio = 1)
+```
+
+<!--two_nonlinear/04_gen_mse_for_diff_methods.R-->
+```{r}
+#| label: combine-data-two_curvy
+
+error_two_curvy_umap <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_umap.rds"))
+error_two_curvy_tsne <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne.rds"))
+error_two_curvy_phate <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_phate.rds"))
+error_two_curvy_trimap <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_trimap.rds"))
+error_two_curvy_pacmap <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_pacmap.rds"))
+error_two_curvy_tsne2 <- read_rds(here::here("data/two_nonlinear/error_two_non_linear_diff_shaped_close_clusters_tsne2.rds"))
+
+error_two_curvy_avg <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_avg <- error_two_curvy_avg |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+
+error_two_curvy <- bind_rows(error_two_curvy_umap, 
+                         error_two_curvy_tsne,
+                         error_two_curvy_phate,
+                         error_two_curvy_trimap,
+                         error_two_curvy_pacmap,
+                         error_two_curvy_tsne2)
+
+error_two_curvy_filtered <- error_two_curvy |> 
+  dplyr::filter(b1 == 24) |>
+  dplyr::select(method, HBE)
+
+error_two_curvy <- error_two_curvy |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method, levels = c("PaCMAP", "PHATE", "TriMAP", "tSNE", "UMAP", "tSNE2")))
+```
+
+```{r}
+#| label: error-comp-two_curvy
+
+error_plot_two_curvy <-
+  plot_hbe(error_two_curvy) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+    #sort(unique(error_two_curvy$a1))[
+    #  seq(1, length(
+    #    unique(error_two_curvy$a1)), 
+    #    by = 5)]) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+
+
+error_plot_two_curvy_n_bar <-
+  plot_hbe_nbar(error_two_curvy_avg) +
+  annotate("text", x = 2.5, y = 1.3, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.685) 
+```
+
+<!--two_nonlinear/07_example_evaluation_metrics.R-->
+```{r}
+nldr_metrics <- read_rds(here::here("data/two_nonlinear/nldr_eval_metrics.rds"))
+
+nldr_metrics <- inner_join(nldr_metrics, error_two_curvy_filtered, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS)
+
+comp_metrics <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("iii", position = c(0.95, 0.85)) +
+  interior_annotation("better", position = c(0.07, 0.15)) +
+  interior_annotation("worse", position = c(0.07, 0.9)) +
+  scale_color_manual(
+    values=c("PaCMAP" = '#e41a1c', "PHATE" = '#ff7f00', 
+             "TriMAP" = '#4daf4a', "tSNE" = '#a65628', 
+             "UMAP" = '#636363', "tSNE2" = '#984ea3')) +
+  theme(aspect.ratio = 0.22)
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color represents the NLDR layout. Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$) for the six NLDR layouts computed on the 2NC7 data using a parallel coordinate plot (iii). Color of the line indicates NLDR layout."
+#| label: fig-toy-rmse
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_two_curvy / error_plot_two_curvy_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(
+  nldr_two_curvy1, nldr_two_curvy2, nldr_two_curvy3,
+  nldr_two_curvy4, nldr_two_curvy5, nldr_two_curvy6,
+  ncol = 2
+)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_two_curvy <- (top_section) / comp_metrics +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_two_curvy
+```
+
+
+<!--two_nonlinear/06_gen_model_with_tSNE.R-->
+```{r}
+#| label: projs-tsne
+## First projection
+
+proj_obj1 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj1_tsne.rds"))
+
+two_curvy_proj1_tsne <- plot_proj(
+  proj_obj = proj_obj1, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.4, 0.3), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a1", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Second projection
+proj_obj2 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj2_tsne.rds"))
+
+two_curvy_proj2_tsne <- plot_proj(
+  proj_obj = proj_obj2, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a2", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Third projection
+proj_obj3 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj3_tsne.rds"))
+
+two_curvy_proj3_tsne <- plot_proj(
+  proj_obj = proj_obj3, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.62, 0.62), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "a3", cex = 1.2) +
+  theme(aspect.ratio = 1)
+```
+
+<!--two_nonlinear/08_gen_model_with_PHATE.R-->
+```{r}
+#| label: projs-phate
+## First projection
+
+proj_obj1 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj1_phate.rds"))
+
+two_curvy_proj1_phate <- plot_proj(
+  proj_obj = proj_obj1, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.4, 0.3), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c1", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Second projection
+proj_obj2 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj2_phate.rds"))
+
+two_curvy_proj2_phate <- plot_proj(
+  proj_obj = proj_obj2, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c2", cex = 1.2) +
+  theme(aspect.ratio = 1)
+
+## Third projection
+proj_obj3 <- read_rds(here::here("data/two_nonlinear/two_nonlinear_proj_obj3_phate.rds"))
+
+two_curvy_proj3_phate <- plot_proj(
+  proj_obj = proj_obj3, 
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.5, "black"), # linewidth, alpha
+  plot_limits = c(-0.62, 0.62), 
+  axis_text_size = 2, 
+  is_category = FALSE) +
+  interior_annotation(label = "c3", cex = 1.2) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| label: fig-fit-tsne-phate
+#| fig-cap: "Three $2\\text{-}D$ projections from a tour showing the fitted models (black lines) for layouts a (top row) and c (bottom row) of the 2NC7 data (blue points). Layout c, which was poorly rated by rARNX and HBE, covers less of the width of the data than layout a. The triangular gridding is less visible in c than layout a, and actually corresponds to extreme twisting."
+#| fig-width: 6
+#| fig-height: 4
+
+two_curvy_proj1_tsne + two_curvy_proj2_tsne + two_curvy_proj3_tsne + two_curvy_proj1_phate + two_curvy_proj2_phate + two_curvy_proj3_phate +
+  plot_layout(ncol = 3)
+```
+
+When the metrics disagree is causes confusion for the analyst, and thus provides a temptation to choose the nicest looking layout (very separated clusters), even though it may be a hallucination. Because HBE is accompanied with a representation of the layout in \pD{} to compare with the observed data, it can help to add more clarity in making decisions. @fig-fit-tsne-phate shows the fitted models for layouts a (rated high by HBE and rARNX) and c (rated poorly). These are \gD{} projections from the tour, with black indicating the fitted model overlaid on the blue points of the data. The reason for the poor fit is that the PHATE layout (c) twists extremely along the 2- and \tD{} manifolds where the data lies. We have learned that all the NLDR methods tend to have twists in the fit in \pD{}, but this is extreme. This is likely why layout c has poor metrics relative to the other layouts, and it suggests that it does not adequately capture the local structure in the 2NC7 data.
+
+```{r}
+#| label: read-pbmc-nldr
+# Read a variety of different NLDR representations of PBMC
+# and plot them on same aspect ratio
+umap_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_umap_30_min_dist_0.3.rds"))
+
+nldr1c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("a", c(0.08, 0.9))
+
+umap_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_umap_5_min_dist_0.8.rds"))
+
+nldr2c <- umap_pbmc |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
+  interior_annotation("b", c(0.08, 0.9))
+
+
+umap_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_umap_5_min_dist_0.01.rds"))
+
+nldr3c <- umap_pbmc |>
+  ggplot(aes(x = UMAP1,
+             y = UMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("c")
+
+tsne_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_tsne_5.rds"))
+
+nldr4c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("d") 
+
+tsne_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_tsne_30.rds"))
+
+nldr5c <- tsne_pbmc |>
+  ggplot(aes(x = tSNE1,
+             y = tSNE2))+
+  geom_point(alpha=0.1, size=1, colour='#4daf4a') +
+  interior_annotation("e", c(0.08, 0.9)) 
+
+phate_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_phate_5.rds"))
+
+nldr6c <- phate_pbmc |>
+  ggplot(aes(x = PHATE1,
+             y = PHATE2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("f") 
+
+trimap_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_trimap_12_4_3.rds"))
+
+nldr7c <- trimap_pbmc |>
+  ggplot(aes(x = TriMAP1,
+             y = TriMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("g") 
+
+pacmap_pbmc <- read_rds(here::here("data/pbmc3k/pbmc_pacmap_30_random_0.9_5.rds"))
+
+nldr8c <- pacmap_pbmc |>
+  ggplot(aes(x = PaCMAP1,
+             y = PaCMAP2))+
+  geom_point(alpha=0.1, size=1, colour='#f781bf') +
+  interior_annotation("h") 
+```
+
+
+<!--pbmc3k/08_gen_mse_for_diff_methods.R-->
+```{r}
+#| label: combine-data-pbmc
+
+error_pbmc_umap <- read_rds(here::here("data/pbmc3k/error_pbmc_umap_30_min_dist_0.3.rds"))
+error_pbmc_umap2 <- read_rds(here::here("data/pbmc3k/error_pbmc_umap_5_min_dist_0.01.rds"))
+error_pbmc_umap3 <- read_rds(here::here("data/pbmc3k/error_pbmc_umap_5_min_dist_0.8.rds"))
+error_pbmc_tsne <- read_rds(here::here("data/pbmc3k/error_pbmc_tsne_5.rds"))
+error_pbmc_tsne2 <- read_rds(here::here("data/pbmc3k/error_pbmc_tsne_30.rds"))
+error_pbmc_phate <- read_rds(here::here("data/pbmc3k/error_pbmc_phate_5.rds"))
+error_pbmc_trimap <- read_rds(here::here("data/pbmc3k/error_pbmc_trimap_12_4_3.rds"))
+error_pbmc_pacmap <- read_rds(here::here("data/pbmc3k/error_pbmc_pacmap_30_random_0.9_5.rds"))
+
+error_pbmc <- bind_rows(error_pbmc_umap, 
+                        error_pbmc_umap2,
+                        error_pbmc_umap3,
+                        error_pbmc_tsne,
+                        error_pbmc_tsne2,
+                        error_pbmc_phate,
+                        error_pbmc_trimap,
+                        error_pbmc_pacmap)
+
+
+error_pbmc_avg <- error_pbmc |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+
+error_pbmc <- error_pbmc |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup()
+
+error_pbmc <- error_pbmc |>
+  mutate(method = factor(method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+```
+
+```{r}
+#| label: error-comp-pbmc
+
+error_plot_pbmc <- plot_hbe(error_pbmc) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(unique(error_pbmc$a1))[c(1, 5, 9, 13, 17, 21, 26)]) +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+error_plot_pbmc_n_bar <- plot_hbe_nbar(error_pbmc_avg) +
+  annotate("text", x = 4, y = 6.8, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(values=c('#999999','#a65628','#e41a1c','#377eb8','#4daf4a','#ff7f00','#984ea3','#f781bf')) +
+  ylab("HBE")
+
+```
+
+```{r}
+#| fig-cap: "Assessing which of the 8 NLDR layouts on the PBMC3k data is the better representation using HBE for varying (i) binwidth ($a_1$), and (ii) average bin count ($\\bar{n}_h$). Color used for the lines and points in the left plot and in the scatterplots represents NLDR layout (a-h). Layout f is universally poor. Layouts a, c, g, and h that show large separations between clusters are universally suboptimal. Layout d with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. The choice of the best is between layouts b and e, which have small separations between oddly shaped clusters. Layout e is chosen as the best. Plot (ii), which accounts for the density within clusters by using average bin count, shows reduced differences between layouts, indicating that part of the variation in (i) is driven by cluster density rather than true structural differences."
+#| label: fig-pbmc-rmse
+#| out-width: 100%
+
+# Stack error plots in one column
+error_plots_pbmc <- error_plot_pbmc / error_plot_pbmc_n_bar
+
+design <- "
+AACC
+AACC
+BBCC
+BBCC
+"
+error_plots_pbmc + 
+  wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+  plot_layout(design = design)
+```
+
+```{r}
+nldr_metrics <- read_rds(here::here("data/pbmc3k/nldr_eval_metrics.rds"))
+
+nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS) |>
+  mutate(Method = factor(Method,
+                         levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
+
+comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) + 
+  interior_annotation("better", position = c(0.09, 0.03)) +
+  interior_annotation("worse", position = c(0.09, 0.98)) +
+  scale_color_manual(
+    values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
+  theme(aspect.ratio = 0.22)
+```
+
+```{r}
+#| label: fig-comp-metric-pbmc
+#| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to a NLDR layout. All, except rGS and rARNX agree that layout e is best or very close to best. Layout d is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout f is considered poor by rARNX and HBE. Layout a is cosidered close to the best by rGS and rSC."
+#| fig-pos: "!ht"
+#| out-width: 100%
+
+design <- "
+AABB
+AABB
+AABB
+"
+# comp_metrics_pbmc + 
+#   wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+#              nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2) +
+#   plot_layout(design = design)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_pbmc / error_plot_pbmc_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr1c, nldr2c, nldr3c, nldr4c,
+             nldr5c, nldr6c, nldr7c, nldr8c, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_pbmc <- (top_section) / comp_metrics_pbmc +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_pbmc
+```
+
+
+```{r}
+#| label: read-mnist-nldr
+# Read a variety of different NLDR representations of mnist
+# and plot them on same aspect ratio
+tsne_mnist <- read_rds(here::here("data/mnist/mnist_tsne30.rds"))
+
+nldr_mnist1 <- tsne_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#984ea3') +
+  interior_annotation("a", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
+
+tsne_mnist2 <- read_rds(here::here("data/mnist/mnist_tsne89.rds"))
+
+nldr_mnist6 <- tsne_mnist2 |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#999999') +
+  interior_annotation("f", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
+
+umap_mnist <- read_rds(here::here("data/mnist/mnist_umap.rds"))
+
+nldr_mnist2 <- umap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2)) +
+  geom_point(alpha=0.1, size=1, colour='#a65628') +
+  interior_annotation("b") +
+  theme(aspect.ratio = 1)
+
+phate_mnist <- read_rds(here::here("data/mnist/mnist_phate.rds"))
+
+nldr_mnist3 <- phate_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#377eb8') +
+  interior_annotation("c", c(0.94, 0.92)) +
+  theme(aspect.ratio = 1)
+
+trimap_mnist <- read_rds(here::here("data/mnist/mnist_trimap.rds"))
+
+nldr_mnist4 <- trimap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#ff7f00') +
+  interior_annotation("d", position = c(0.86, 0.92)) +
+  theme(aspect.ratio = 1)
+
+pacmap_mnist <- read_rds(here::here("data/mnist/mnist_pacmap.rds"))
+
+nldr_mnist5 <- pacmap_mnist |>
+  ggplot(aes(x = emb1,
+             y = emb2))+
+  geom_point(alpha=0.1, size=1, colour='#e41a1c') +
+  interior_annotation("e", c(0.08, 0.9)) +
+  theme(aspect.ratio = 1)
+```
+
+<!--mnist/03_gen_mse_for_diff_methods.R-->
+```{r}
+#| label: combine-data-mnist
+
+error_mnist_umap <- read_rds(here::here("data/mnist/error_mnist_umap.rds"))
+error_mnist_tsne <- read_rds(here::here("data/mnist/error_mnist_tsne.rds"))
+error_mnist_tsne2 <- read_rds(here::here("data/mnist/error_mnist_tsne2.rds"))
+error_mnist_phate <- read_rds(here::here("data/mnist/error_mnist_phate.rds"))
+error_mnist_trimap <- read_rds(here::here("data/mnist/error_mnist_trimap.rds"))
+error_mnist_pacmap <- read_rds(here::here("data/mnist/error_mnist_pacmap.rds"))
+
+error_mnist <- bind_rows(error_mnist_umap, 
+                        error_mnist_tsne,
+                        error_mnist_tsne2,
+                        error_mnist_phate,
+                        error_mnist_trimap,
+                        error_mnist_pacmap)
+
+error_mnist_avg <- error_mnist |>
+  filter(b1 >= 5) |>
+  group_by(method, n_bar) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+
+error_mnist <- error_mnist |>
+  mutate(a1 = round(a1, 2)) |>
+  filter(b1 >= 5) |>
+  group_by(method, a1) |>
+  filter(HBE == min(HBE)) |>
+  ungroup() |>
+  mutate(method = factor(method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+```
+
+```{r}
+#| label: error-comp-mnist
+
+error_plot_mnist <- plot_hbe(error_mnist) +
+  interior_annotation("i", position = c(0.07, 0.9)) +
+  scale_x_continuous(breaks = seq(0, 0.25, 0.05)) +
+                       #sort(
+    #unique(error_mnist$a1))[append(seq(1, length(unique(error_mnist$a1)), 
+ #                                      by = 5), 24)]) +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
+error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
+  annotate("text", x = 4, y = 2.1, label = "ii", size = 4, colour = "grey70") +
+  scale_color_manual(
+    values=c('#a65628', '#984ea3', '#999999', 
+             '#377eb8', '#ff7f00', '#e41a1c')) +
+  theme(aspect.ratio=0.685) +
+  ylab("HBE")
+
+```
+
+```{r}
+nldr_metrics <- read_rds(here::here("data/mnist/nldr_eval_metrics.rds"))
+
+nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
+  rename("sc" = "r") |>
+  mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
+  mutate(`rRTA` = 1 - RTA) |>
+  mutate(`rSC` = 1 - sc) |>
+  mutate(`rGS` = 1 -  GS) |>
+  mutate(Method = factor(Method,
+                         levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
+
+comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
+  interior_annotation("better", position = c(0.09, 0.03)) +
+  interior_annotation("worse", position = c(0.09, 0.98)) +
+  scale_color_manual(
+    values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
+             "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
+  theme(aspect.ratio = 0.22)
+```
+
+```{r}
+#| label: fig-comp-metric-mnist
+#| fig-cap: "Comparison of scaled evaluation metrics (rARNX, rRTA, rSC, rGS, and HBE using $a_1=0.04$) for six NLDR layouts computed on the MNIST digit 1 data using a parallel coordinate plot. Each line represents a layout (a–f), with colors corresponding to the scatterplots shown on the right. The metrics display different ranking patterns, indicating that no single measure fully captures embedding quality. Layout a is identified as the best according to HBE and rRTA, but is considered much less optimal by rARNX, rSC, and rGS. Layout e is considered the worst, or close to the poorest, by all metrics. Layouts a and f show similar patterns of agreement across metrics, except for rRTA, where layout a performs the best and layout f the worst. Layout c is the worst in rARNX, rSC, and HBE."
+#| fig-pos: "!ht"
+#| out-width: 100%
+#| fig-height: 6
+#| fig-width: 6
+
+# comp_metrics_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+#                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Stack first two error plots vertically (left column)
+left_column <- error_plot_mnist / error_plot_mnist_n_bar +
+  plot_layout(heights = c(1, 1))
+
+# Arrange six NLDR plots into two columns (right side)
+right_columns <- wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3, 
+                                    nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
+
+# Combine left (2 plots) and right (6 plots) into one aligned block
+top_section <- left_column | right_columns +
+  plot_layout(widths = c(1.2, 1.2), guides = "collect") 
+
+# Place comp_metrics below and match full width
+final_plot_mnist <- (top_section) / comp_metrics_mnist +
+  plot_layout(heights = c(3, 1)) &
+  theme(plot.margin = margin(0, 0, 0, 0))
+
+# Show the result
+final_plot_mnist
+```
+\clearpage

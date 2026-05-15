@@ -1,0 +1,174 @@
+---
+title: "Supplementary Material 5: Generating the 2NC7 data"
+format: pdf
+tbl-cap-location: bottom
+header-includes: | 
+  \usepackage{amsmath}
+  \usepackage{float}
+  \usepackage{hyperref}
+  \usepackage[utf8]{inputenc}
+  \usepackage{bm}
+  \def\tightlist{}
+  \usepackage{setspace}
+  \newcommand\pD{$p\text{-}D$}
+  \newcommand\kD{$k\text{-}D$}
+  \newcommand\dD{$d\text{-}D$}
+  \newcommand\gD{$2\text{-}D$}
+  \newcommand\tD{$3\text{-}D$}
+  \newcommand\fD{$4\text{-}D$}
+  \newcommand\sD{$7\text{-}D$}
+  \newcommand{\To}{\textbf{to}~}
+  \usepackage{abstract}
+  \renewcommand{\abstractname}{}    % clear the title
+  \renewcommand{\absnamepos}{empty} % originally center
+---
+
+```{r include=FALSE}
+# Set up chunk for for knitr
+knitr::opts_chunk$set(
+  fig.width = 5,
+  fig.height = 5,
+  fig.align = "center",
+  out.width = "100%",
+  code.line.numbers = FALSE,
+  fig.retina = 4,
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  cache = FALSE,
+  dev.args = list(pointsize = 11)
+)
+```
+
+```{r include=FALSE}
+#| label: install-libraries
+#| warning: false
+#| echo: false
+
+options(repos = c(CRAN = "https://cran.rstudio.com")) # Setup mirror
+
+packages_to_check <- c("remotes", "tidyverse", "patchwork", "colorspace", "kableExtra", "conflicted", "ggforce")
+
+for (pkg in packages_to_check) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    message(paste("Installing package:", pkg))
+    install.packages(pkg)
+  } else {
+    installed_version <- packageVersion(pkg)
+    available_version <- tryCatch({
+      utils::packageDescription(pkg)$Version
+    }, error = function(e) NA) # Handle cases where package info isn't readily available
+
+    if (!is.na(available_version) && installed_version < package_version(available_version)) {
+      message(paste("A newer version of package", pkg, "is available. Updating..."))
+      install.packages(pkg)
+    } else {
+      message(paste("Package", pkg, "is up-to-date (version", installed_version, ")."))
+    }
+  }
+}
+
+```
+
+```{r}
+#| label: load-libraries
+#| warning: false
+#| echo: false
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(readr)
+library(tidyr)
+library(patchwork)
+library(colorspace)
+library(kableExtra)
+library(conflicted)
+library(ggforce)
+library(GGally)
+library(scales)
+
+conflicts_prefer(dplyr::filter)
+conflicts_prefer(dplyr::select)
+```
+
+```{r}
+#| label: plot-theme
+theme_set(theme_linedraw() +
+   theme(
+     #aspect.ratio = 1,
+     plot.background = element_rect(fill = 'transparent', colour = NA),
+     plot.title = element_text(size = 7, hjust = 0.5, vjust = -0.5),
+     panel.background = element_rect(fill = 'transparent', 
+                                     colour = NA),
+     panel.grid.major = element_blank(), 
+     panel.grid.minor = element_blank(), 
+     axis.title.x = element_blank(), axis.title.y = element_blank(),
+     axis.text.x = element_blank(), axis.ticks.x = element_blank(),
+     axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+     legend.background = element_rect(fill = 'transparent', 
+                                      colour = NA),
+     legend.key = element_rect(fill = 'transparent', 
+                               colour = NA),
+     legend.position = "bottom", 
+     legend.title = element_blank(), 
+     legend.text = element_text(size=4),
+     legend.key.height = unit(0.25, 'cm'),
+     legend.key.width = unit(0.25, 'cm'),
+     plot.margin = margin(0, 0, 0, 0)
+   )
+)
+```
+
+```{r}
+#| label: import-scripts
+source(here::here("scripts/additional_functions.R"))
+```
+
+```{r}
+#| label: code-setup
+set.seed(20240110)
+```
+
+```{r}
+clr_choice <- "#0077A3"
+```
+
+This data is constructed by simulating two clusters, each consisting of $1000$ observations. The C-shaped cluster is generated from $\theta \sim U(\text{-}3\pi/2, 0)$, $X_1 = \sin(\theta)$, $X_2 \sim U(0, 2)$ (adding thickness to the C), $X_3 = \text{sign}(\theta) \times (\cos(\theta) - 1)$, $X_4 = \cos(\theta)$. Observations lie on a \gD{} manifold in \sD{}. The other cluster is from $X_1 \sim U(0, 2)$, $X_2 \sim U(0, 3)$, $X_3 = \text{-}(X_1^3 + X_2)$, and $X_4 \sim U(0, 2)$. It is also curved, but observations lie on a \tD{} manifold in \sD{}. Three more variables, $X_5, X_6, X_7$, that are small amounts of pure noise are added. We would consider $T=(X_1, X_2, X_3, X_4)$ to be the geometric structure (true model) that we hope to capture.
+
+```{r}
+proj_obj1_true <- read_rds(here::here("data/two_nonlinear/two_nonlinear_true_proj_obj1.rds"))
+
+two_curvy_proj_true1 <- plot_proj(
+  proj_obj = proj_obj1_true,
+  point_param = c(0.5, 0.2, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.3, "#000000"), # linewidth, alpha
+  plot_limits = c(-0.75, 0.75),
+  axis_text_size = 4,
+  is_category = FALSE) +
+  interior_annotation(label = "a", cex = 2) +
+  theme(aspect.ratio = 1,
+        legend.position = "none")
+
+proj_obj2_true <- read_rds(here::here("data/two_nonlinear/two_nonlinear_true_proj_obj2.rds"))
+
+two_curvy_proj_true2 <- plot_proj(
+  proj_obj = proj_obj2_true,
+  point_param = c(0.1, 0.5, clr_choice), # size, alpha, color
+  line_param = c(0.5, 0.3, "black"), # linewidth, alpha
+  plot_limits = c(-0.5, 0.5),
+  axis_text_size = 4,
+  is_category = FALSE) +
+  interior_annotation(label = "b", cex = 2) +
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+#| fig-width: 10
+#| fig-height: 5
+#| fig-cap: "Two projections of the \\pD{} true model overlaying the data are shown in a, b. Video of the langevitour animations is available at <https://youtu.be/35TrnYJsUUI>."
+
+two_curvy_proj_true1 + two_curvy_proj_true2 +
+  plot_layout(ncol = 2)
+```
+
+\clearpage
