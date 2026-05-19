@@ -530,6 +530,10 @@ error_pbmc <- error_pbmc |>
   filter(HBE == min(HBE)) |>
   ungroup()
 
+error_pbmc_filtered <- error_pbmc |> 
+  dplyr::filter(b1 == 22) |>
+  dplyr::select(method, HBE)
+
 error_pbmc <- error_pbmc |>
   mutate(method = factor(method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
@@ -573,9 +577,9 @@ error_plots_pbmc +
 ```
 
 ```{r}
-nldr_metrics <- read_rds(here::here("data/pbmc3k/nldr_eval_metrics.rds"))
+nldr_metrics_pbmc <- read_rds(here::here("data/pbmc3k/nldr_eval_metrics.rds"))
 
-nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")) |>
+nldr_metrics_pbmc <- inner_join(nldr_metrics_pbmc, error_pbmc_filtered, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
   mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
   mutate(`rRTA` = 1 - RTA) |>
@@ -584,9 +588,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_pbmc, by = c("Method" = "method")
   mutate(Method = factor(Method,
                          levels = c("UMAP_5_min_dist_0.8", "UMAP_30_min_dist_0.3", "UMAP_5_min_dist_0.01","tsne_5", "tsne_30", "phate_5", "trimap_12_4_3", "pacmap")))
 
-comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) + 
-  interior_annotation("better", position = c(0.09, 0.03)) +
-  interior_annotation("worse", position = c(0.09, 0.98)) +
+comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics_pbmc) + 
+  interior_annotation("better", position = c(0.07, 0.08)) +
+  interior_annotation("worse", position = c(0.07, 0.93)) +
   scale_color_manual(
     values=c("UMAP_5_min_dist_0.8" = '#999999', "UMAP_30_min_dist_0.3" = '#a65628', "UMAP_5_min_dist_0.01" = '#e41a1c',"tsne_5" = '#377eb8', "tsne_30" = '#4daf4a', "phate_5" = '#ff7f00', "trimap_12_4_3" = '#984ea3', "pacmap" ='#f781bf')) +
   theme(aspect.ratio = 0.22)
@@ -597,6 +601,8 @@ comp_metrics_pbmc <- plot_comp_metrics(nldr_metrics) +
 #| fig-cap: "Comparison of scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE with $a_1 = 0.06$) for the eight NLDR layouts computed on the PBMC3k data, shown as a parallel coordinate plot. The color of each line corresponds to a NLDR layout. All, except rGS and rARNX agree that layout e is best or very close to best. Layout d is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC and rGS. Layout f is considered poor by rARNX and HBE. Layout a is cosidered close to the best by rGS and rSC."
 #| fig-pos: "!ht"
 #| out-width: 100%
+#| fig-height: 8
+#| fig-width: 6
 
 design <- "
 AABB
@@ -715,6 +721,10 @@ error_mnist_avg <- error_mnist |>
   mutate(method = factor(method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
+error_mnist_filtered <- error_mnist |> 
+  dplyr::filter(b1 == 30) |>
+  dplyr::select(method, HBE)
+
 error_mnist <- error_mnist |>
   mutate(a1 = round(a1, 2)) |>
   filter(b1 >= 5) |>
@@ -751,9 +761,9 @@ error_plot_mnist_n_bar <- plot_hbe_nbar(error_mnist_avg) +
 ```
 
 ```{r}
-nldr_metrics <- read_rds(here::here("data/mnist/nldr_eval_metrics.rds"))
+nldr_metrics_mnist <- read_rds(here::here("data/mnist/nldr_eval_metrics.rds"))
 
-nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method")) |>
+nldr_metrics_mnist <- inner_join(nldr_metrics_mnist, error_mnist_filtered, by = c("Method" = "method")) |>
   rename("sc" = "r") |>
   mutate(`rARNX` = 1 - `AUC(R_NX)`) |>
   mutate(`rRTA` = 1 - RTA) |>
@@ -762,9 +772,9 @@ nldr_metrics <- inner_join(nldr_metrics, error_mnist, by = c("Method" = "method"
   mutate(Method = factor(Method,
                          levels = c("UMAP", "tSNE", "tSNE2", "PHATE", "TriMAP", "PaCMAP")))
 
-comp_metrics_mnist <- plot_comp_metrics(nldr_metrics) +
-  interior_annotation("better", position = c(0.09, 0.03)) +
-  interior_annotation("worse", position = c(0.09, 0.98)) +
+comp_metrics_mnist <- plot_comp_metrics(nldr_metrics_mnist) +
+  interior_annotation("better", position = c(0.07, 0.07)) +
+  interior_annotation("worse", position = c(0.07, 0.94)) +
   scale_color_manual(
     values=c("UMAP" = '#a65628', "tSNE" = '#984ea3', "tSNE2" = '#999999', 
              "PHATE" = '#377eb8', "TriMAP" = '#ff7f00', "PaCMAP" = '#e41a1c')) +
