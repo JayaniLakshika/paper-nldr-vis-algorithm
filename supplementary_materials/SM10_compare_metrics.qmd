@@ -133,7 +133,10 @@ set.seed(20240110)
 clr_choice <- "#0077A3"
 ```
 
-@fig-comp-metric-pbmc and @fig-comp-metric-mnist compare HBE with commonly used evaluation metrics such as rRTA, rARNX, rSC, and rGS across multiple NLDR layouts. These visual comparisons highlight that HBE behaves differently from these existing metrics due to the different settings involved.
+@fig-toy-rmse, @fig-comp-metric-pbmc, and @fig-comp-metric-mnist compares the metrics rARNX, rRTA, rSC, rGS, along with HBE computed on specific $a_1$ for the multiple NLDR layouts. This is a parallel coordinate plot where the y-axis shows a normalized score to ensure the metrics are on the same scale. Each line corresponds to one layout. 
+
+<!-- The problem with rSC is that correlation is not a good measure in the presence of clusters - the -->
+<!-- further the clusters are apart in the layout, produces the Shepard plot with two clusters of distances will produce a high correlation value. Similar reasoning would explain why rRTA and rGS behave similarly: they put too much emphasis on the global structure. Thus, for the 2NC7 data, further apart clusters score better, overly emphasizing that there are two clusters, even though this separation is not accurately reflecting the difference in p-D. -->
 
 ```{r}
 #| label: read-two-curvy-clust-nldr
@@ -290,7 +293,7 @@ comp_metrics <- plot_comp_metrics(nldr_metrics) +
 ```
 
 ```{r}
-#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), (ii) average bin count ($\\bar{n}_h$), and (iii) scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$). Color represents the NLDR layout (a-f). Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure."
+#| fig-cap: "Assessing which of the 6 NLDR layouts (a-f) on the 2NC7 data is the better representation using HBE for varying (i) binwidth ($a_1$), (ii) average bin count ($\\bar{n}_h$), and (iii) scaled evaluation metrics (rRTA, rSC, rGS, rARNX, and HBE using $a_1=0.05$). Color represents the NLDR layout (a-f). Layout d is universally poor. Layouts b and e that show two close clusters are universally suboptimal. Layout f with little separation performs well at tiny binwidth (where most points are in their own bin) and poorly as binwidth increases. Layout e has a small separation with oddly shaped clusters. Layout a is the best choice. Plot (ii), which compares HBE values with respect to average bin count, helps account for differences in cluster density; here, the variation among layouts is reduced, showing that some differences observed in (i) arise from density rather than true structure. There is some agreement between the metrics in (iii). All, except rARNX and HBE, agree that layout d is best. rARNX and HBE agree that layout f is best or very close to best. Layout a is best according to HBE and rARNX but considered to be much less optimal by rRTA, rSC, and rGS. Layout c is considered poor by rRTA, rSC, rGS, and rARNX. This illustrates how difficult it is to use the numerical metrics alone to decide on the best layout."
 #| label: fig-toy-rmse
 #| out-width: 100%
 #| fig-height: 6
