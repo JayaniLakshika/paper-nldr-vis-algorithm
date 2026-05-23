@@ -88,19 +88,27 @@ library(kableExtra)
 fig_param_df <- read_csv(here::here("misc/fig_nldr_param.csv"))
 
 # Create the table
-kable(fig_param_df, 
-      format = "latex", 
-      booktabs = TRUE, escape = FALSE, longtable = TRUE, linesep = "") |>
-  kable_styling(position = "center", 
-                full_width = FALSE, 
-                font_size = 12,
-                latex_options = c("repeat_header")) |>
-  row_spec(0, bold = TRUE) |>
+kable(
+  fig_param_df,
+  format = "latex",
+  booktabs = TRUE,
+  escape = FALSE,
+  longtable = TRUE
+) |>
+  kable_styling(
+    position = "center",
+    full_width = FALSE,
+    font_size = 12,
+    latex_options = c("repeat_header")
+  ) |>
   column_spec(1:4, width = c("5cm", "1.7cm", "5cm", "3cm")) |>
+  row_spec(0, bold = TRUE) |>
   row_spec(9, hline_after = TRUE) |>
   row_spec(10, hline_after = TRUE) |>
   row_spec(14, hline_after = TRUE) |>
   row_spec(20, hline_after = TRUE)
 ```
+
+The "Note" column describes how hyper-parameters were chosen. "**default**" denotes software defaults in R/Python. "**published**" refers to settings used in published examples. "**high-d informed**" indicates settings selected after examining the high-dimensional structure using tour and/or fitted models. "**structurally dissimilar**" denotes intentionally different parameter choices used to generate alternative layouts for comparison and evaluation purposes.
 
 \clearpage
