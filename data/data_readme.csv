@@ -1,0 +1,234 @@
+subfolder,file,dims,description
+five_gau_clusters,data_five_gau.rds,5000 x 5,Full simulated dataset: 4 numeric features (x1-x4) + row ID. Original (unscaled) values.
+five_gau_clusters,data_five_gau_with_clusts.rds,5000 x 6,Same as data_five_gau with a cluster label column (e.g. cluster1-cluster5) added.
+five_gau_clusters,data_five_gau_with_labels.rds,5000 x 6,Scaled/normalised version of the full dataset with cluster labels. Used for projection and model fitting.
+five_gau_clusters,data_five_gau_training.rds,3750 x 5,Training split (75%) of the scaled dataset without cluster labels.
+five_gau_clusters,data_five_gau_test.rds,1250 x 5,Test split (25%) of the scaled dataset without cluster labels.
+five_gau_clusters,tsne_data_five_gau_30.rds,5000 x 3,t-SNE 2D embedding (perplexity 30) of the full dataset. Columns: tSNE1 tSNE2 ID.
+five_gau_clusters,tsne_data_five_gau_61.rds,3750 x 3,t-SNE 2D embedding (perplexity 61) on the training split.
+five_gau_clusters,tsne_data_five_gau_71.rds,5000 x 3,t-SNE 2D embedding (perplexity 71) of the full dataset.
+five_gau_clusters,umap_data_five_gau.rds,5000 x 3,UMAP 2D embedding of the full dataset. Columns: UMAP1 UMAP2 ID.
+five_gau_clusters,umap_data_five_gau_predict.rds,1250 x 3,UMAP embedding predicted for the test split using the model trained on the training set.
+five_gau_clusters,pacmap_data_five_gau.rds,5000 x 3,PaCMAP 2D embedding of the full dataset. Columns: PaCMAP1 PaCMAP2 ID.
+five_gau_clusters,phate_data_five_gau.rds,5000 x 3,PHATE 2D embedding of the full dataset. Columns: PHATE1 PHATE2 ID.
+five_gau_clusters,phate_data_with_hb_id_gau.rds,3750 x 3,PHATE embedding of the training split with hexbin IDs (hb_id) assigned to each point.
+five_gau_clusters,trimap_data_five_gau.rds,5000 x 3,TriMAP 2D embedding of the full dataset. Columns: TriMAP1 TriMAP2 ID.
+five_gau_clusters,tsne_gau_scaled.rds,5000 x 3,t-SNE embedding rescaled to [0-1] for hexbin-based model fitting.
+five_gau_clusters,umap_gau_scaled.rds,5000 x 3,UMAP embedding rescaled to [0-1].
+five_gau_clusters,pacmap_gau_scaled.rds,5000 x 3,PaCMAP embedding rescaled to [0-1].
+five_gau_clusters,tsne_cluster1.rds,1000 x 2,t-SNE 2D coordinates for cluster 1 only. Columns: emb1 emb2.
+five_gau_clusters,umap_cluster1.rds,1000 x 2,UMAP 2D coordinates for cluster 1 only.
+five_gau_clusters,pacmap_cluster1.rds,1000 x 2,PaCMAP 2D coordinates for cluster 1 only.
+five_gau_clusters,tsne_model.rds,74 x 5,Hexbin centroids in original 4D space representing the lifted t-SNE model. Columns: x1-x4 type.
+five_gau_clusters,umap_model.rds,80 x 5,Hexbin centroids for the lifted UMAP model.
+five_gau_clusters,pacmap_model.rds,69 x 6,Hexbin centroids for the lifted PaCMAP model. Includes hb_id column.
+five_gau_clusters,tsne_model_mapping_data.rds,5000 x 3,Mapping of each original data point to its hexbin (hb_id) in the t-SNE embedding with original ID and neighbour point IDs (pts_ID).
+five_gau_clusters,umap_model_mapping_data.rds,5000 x 3,Same mapping structure for UMAP.
+five_gau_clusters,pacmap_model_mapping_data.rds,5000 x 3,Same mapping structure for PaCMAP.
+five_gau_clusters,tsne_gau_proj_obj1.rds,list(4),Projection object for grand tour visualisation of the lifted t-SNE model: projected data model hexbin data 2-axis tour basis and unit circle.
+five_gau_clusters,tsne_gau_proj_obj2.rds,list(4),Same as above with a 3-axis basis (alternative tour view).
+five_gau_clusters,umap_gau_proj_obj1.rds,list(4),Projection object (2-axis basis) for UMAP grand tour.
+five_gau_clusters,umap_gau_proj_obj2.rds,list(4),Projection object (3-axis basis) for UMAP grand tour.
+five_gau_clusters,pacmap_gau_proj_obj1.rds,list(4),Projection object (2-axis basis) for PaCMAP grand tour.
+five_gau_clusters,pacmap_gau_proj_obj2.rds,list(4),Projection object (3-axis basis) for PaCMAP grand tour.
+five_gau_clusters,tsne_wireframe.rds,150 x 3,Edge list connecting adjacent hexbin centroids in the lifted t-SNE model for wireframe display. Columns: from to distance.
+five_gau_clusters,umap_wireframe.rds,176 x 3,Wireframe edge list for the UMAP model.
+five_gau_clusters,pacmap_wireframe.rds,141 x 3,Wireframe edge list for the PaCMAP model.
+five_gau_clusters,tr_from_to_df_gau1.rds,222 x 8,Hexbin-to-hexbin transition counts and 2D coordinates for the t-SNE (perplexity 30) embedding. Used for flow visualisations.
+five_gau_clusters,tr_from_to_df_gau1_umap.rds,213 x 8,Same structure for UMAP.
+five_gau_clusters,tr_from_to_df_gau1_pacmap.rds,220 x 8,Same structure for PaCMAP.
+five_gau_clusters,df_bin_gau_phate.rds,62 x 5,Mean original-space coordinates (x1-x4) per hexbin cell in the PHATE embedding.
+five_gau_clusters,df_bin_centroids_gau_phate.rds,62 x 5,2D centroid positions and normalised point counts per hexbin cell in the PHATE embedding. Used for overlaying the lifted model on the PHATE layout.
+mnist,mnist_digit_1.rds,7877 x 785,Raw pixel values for all digit-1 images. 784 columns (px1-px784) representing flattened 28x28 grayscale pixels plus a label column.
+mnist,mnist_10_pcs_of_digit_1.rds,7877 x 10,Top 10 principal components of the digit-1 images (PC1-PC10). Used as the high-dimensional input for all NLDR embeddings.
+mnist,mnist_tsne30.rds,7877 x 3,t-SNE 2D embedding (perplexity 30). Columns: emb1 emb2 ID.
+mnist,mnist_tsne40.rds,7877 x 3,t-SNE 2D embedding (perplexity 40). Columns: tSNE1 tSNE2 ID.
+mnist,mnist_tsne89.rds,7877 x 3,t-SNE 2D embedding (perplexity 89). Columns: emb1 emb2 ID.
+mnist,mnist_umap.rds,7877 x 3,UMAP 2D embedding. Columns: emb1 emb2 ID.
+mnist,mnist_pacmap.rds,7877 x 3,PaCMAP 2D embedding. Columns: emb1 emb2 ID.
+mnist,mnist_phate.rds,7877 x 3,PHATE 2D embedding. Columns: emb1 emb2 ID.
+mnist,mnist_trimap.rds,7877 x 3,TriMAP 2D embedding. Columns: emb1 emb2 ID.
+mnist,mnist_tsne_minst_scaled.rds,7877 x 4,Scaled t-SNE embedding (perplexity 40 rescaled to [0-1]) with cluster labels. Primary embedding for model fitting. Columns: emb1 emb2 ID cluster.
+mnist,mnist_error_df.rds,7877 x 48,Per-point error data for the t-SNE (perplexity 40) embedding. Contains original 10D coordinates (x1-x10) lifted model predictions (model_high_d_x1-x10) per-dimension squared and absolute errors row-wise total errors 2D embedding coordinates and cluster labels.
+mnist,error_mnist_tsne.rds,80 x 11,Hexbin-level goodness-of-fit error summary for t-SNE (perplexity 30) across grid sizes. Columns: Error HBE b1 b2 b m a1 a2 d_bar method n_bar.
+mnist,error_mnist_tsne2.rds,70 x 11,Same structure for t-SNE (perplexity 40). Method label: tSNE2.
+mnist,error_mnist_umap.rds,75 x 11,Same structure for UMAP.
+mnist,error_mnist_pacmap.rds,94 x 11,Same structure for PaCMAP.
+mnist,error_mnist_phate.rds,103 x 11,Same structure for PHATE.
+mnist,error_mnist_trimap.rds,119 x 11,Same structure for TriMAP.
+mnist,mnist_img_error_inside.rds,3920 x 6,Pixel data (long format) for 5 representative digit-1 images sampled from the low-error (inside) region of the t-SNE embedding. Columns: Label instance pixel value x y.
+mnist,mnist_img_error_outside.rds,3920 x 6,Same structure for 5 images sampled from the high-error (outside/periphery) region.
+mnist,mnist_img_middle.rds,3920 x 6,Same structure for 5 images sampled from the middle region of the embedding.
+mnist,mnist_img_right_bottom.rds,3920 x 6,Same structure for 5 images from the bottom-right region of the embedding.
+mnist,mnist_img_right_top.rds,3920 x 6,Same structure for 5 images from the top-right region of the embedding.
+mnist,mnist_proj_obj1.rds,list(5),Projection object for grand tour visualisation of the lifted t-SNE model on MNIST. Contains projected data (7877 obs) model hexbin data (1696 obs) 3-axis tour basis unit circle and cluster labels.
+mnist,mnist_proj_obj2.rds,list(5),Same structure as above with an alternative tour basis for a second grand tour view.
+mnist,nldr_eval_metrics.rds,6 x 6,Summary table of standard NLDR evaluation metrics for all 6 methods. Columns: Method GS RTA AUC(R_NX) r RGS.
+mnist,RNX_curves.rds,17250 x 3,R_NX curve data for all 6 methods across neighbourhood sizes K. Columns: K R_NX method.
+mnist,shepard_all.rds,30000 x 3,Shepard diagram data comparing pairwise distances in the original 10D space (dX) to distances in the 2D embedding (dY) for all methods. 5000 random pairs per method x 6 methods.
+one_c_shaped_dens_structure,one_c_shaped_dens_data.rds,1000 x 4,"Simulated 4D dataset with a C-shaped structure and non-uniform (varying) point density. Columns: x1-x4. Note: x4 = -x3 so the intrinsic structure is effectively 3-dimensional."
+one_c_shaped_dens_structure,one_c_shaped_uni_dens_data.rds,1000 x 4,Matching 4D dataset with the same C-shaped structure but uniform point density. Used as a comparison baseline. Columns: x1-x4.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_tsne_perplexity_15.rds,1000 x 2,t-SNE embedding (perplexity 15) of the non-uniform density C-shape. Columns: tSNE1 tSNE2.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_tsne_perplexity_30.rds,1000 x 2,t-SNE embedding (perplexity 30) of the non-uniform density C-shape.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_tsne_perplexity_42.rds,1000 x 2,t-SNE embedding (perplexity 42) of the non-uniform density C-shape.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_tsne_perplexity_52.rds,1000 x 2,t-SNE embedding (perplexity 52) of the non-uniform density C-shape. Columns named emb1 emb2.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_umap_n-neigbors_15_min-dist_0.1.rds,1000 x 2,UMAP embedding (n_neighbors=15 min_dist=0.1). Columns: UMAP1 UMAP2.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds,1000 x 2,PaCMAP embedding (n_neighbors=10 random init MN-ratio=0.5 FP-ratio=2). Columns: PaCMAP1 PaCMAP2.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_phate_knn_5.rds,1000 x 2,PHATE embedding (k=5 nearest neighbours). Columns: PHATE1 PHATE2.
+one_c_shaped_dens_structure,one_c_shaped_dens_structure_trimap_n-inliers_12_n-outliers_4_n-random_3.rds,1000 x 2,TriMAP embedding (n_inliers=12 n_outliers=4 n_random=3). Columns: TriMAP1 TriMAP2.
+one_c_shaped_dens_structure,one_c_shaped_uni_dens_structure_tsne_perplexity_15.rds,1000 x 2,t-SNE embedding (perplexity 15) of the uniform-density C-shape.
+one_c_shaped_dens_structure,one_c_shaped_uni_dens_structure_tsne_perplexity_30.rds,1000 x 2,t-SNE embedding (perplexity 30) of the uniform-density C-shape.
+one_c_shaped_dens_structure,one_c_shaped_uni_dens_structure_tsne_perplexity_42.rds,1000 x 2,t-SNE embedding (perplexity 42) of the uniform-density C-shape.
+one_c_shaped_dens_structure,one_c_shaped_uni_dens_structure_tsne_perplexity_52.rds,1000 x 2,t-SNE embedding (perplexity 52) of the uniform-density C-shape. Columns named emb1 emb2.
+one_c_shaped_dens_structure,error_df_one_curvy_abs_deselected11.rds,914 x 26,"Per-point error data for the low-error (deselected) points under threshold 1. Contains original 4D coordinates lifted model predictions per-dimension squared and absolute errors row-wise totals scaled 2D coordinates local density and error category labels (error_cat_n error_cat_n2)."
+one_c_shaped_dens_structure,error_df_one_curvy_abs_selected11.rds,86 x 26,Per-point error data for the high-error (selected) points under threshold 1. These 86 points correspond to the region where the embedding poorly represents the original data.
+one_c_shaped_dens_structure,error_df_one_curvy_abs_deselected12.rds,938 x 26,Per-point error data for the low-error (deselected) points under threshold 2.
+one_c_shaped_dens_structure,error_df_one_curvy_abs_selected12.rds,62 x 26,Per-point error data for the high-error (selected) points under threshold 2. These 62 points represent a stricter selection of the worst-fit region.
+one_c_shaped_dens_structure,projected_df1.rds,1000 x 4,"2D tour projection of all 1000 points for tour view 1. Columns: proj1 proj2 ID cluster (factor: selected/deselected under threshold 1)."
+one_c_shaped_dens_structure,projected_df2.rds,1000 x 4,Same tour projection with cluster labels reflecting threshold 2 selections.
+one_c_shaped_dens_structure,model_df1.rds,435 x 12,"Hexbin-to-hexbin transition edge data for the lifted model in tour view 1. Includes 2D embedding coordinates (x_from y_from x_to y_to) bin counts and projected tour-space coordinates."
+one_c_shaped_dens_structure,model_df2.rds,435 x 12,Same edge structure for tour view 2 with a different tour basis.
+one_c_shaped_dens_structure,axes1.rds,3 x 5,Tour axis vectors for the first grand tour view. Defines 3 projection axes with start/end coordinates and distances.
+one_c_shaped_dens_structure,axes2.rds,3 x 5,Tour axis vectors for the second grand tour view.
+one_c_shaped_dens_structure,circle1.rds,50 x 2,Unit circle coordinates for overlaying on the first grand tour biplot.
+one_c_shaped_dens_structure,circle2.rds,50 x 2,Unit circle coordinates for the second grand tour biplot.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_data.rds,2000 x 7,Full simulated dataset with two differently-shaped nonlinear clusters. 7 numeric features (x1-x7); no ID or cluster column.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_data_stats.rds,1 x 14,Per-variable summary statistics (mean and SD) for all 7 features of the full dataset. Used for standardisation.
+two_nonlinear,training_two_non_linear_diff_shaped_close_clusters.rds,1400 x 8,Training split (70%) with x1-x7 and ID.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters.rds,600 x 8,Test split (30%) with x1-x7 and ID.
+two_nonlinear,testing_two_non_linear_diff_shaped_close_clusters.rds,600 x 9,Test split with an additional cluster label column (cluster1/cluster2).
+two_nonlinear,2NC7_tr.rds,1400 x 8,Training split of a secondary 7D two-nonlinear-cluster dataset (alternative ID set). Columns: x1-x7 ID.
+two_nonlinear,2NC7_ts.rds,600 x 8,Test split of the secondary dataset.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_true_model.rds,600 x 7,Known ground-truth manifold of the two clusters (analytically defined) in 7D space. Used as a reference to compare against fitted NLDR models.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_true_model_connections.rds,1475 x 2,Edge list connecting adjacent points on the true model manifold (from to). Used to draw the wireframe of the true model in grand tour views.
+two_nonlinear,df_true_model_data_two_curvy_filtered.rds,2600 x 8,Expanded true model points in 7D with a type column (true model). Used for overlaying the true manifold on scatter plots.
+two_nonlinear,df_model_data_two_curvy_filtered.rds,2209 x 8,Fitted hexbin model points lifted back into 7D with a type column (model). Counterpart to the true model for visual comparison.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_tsne_perplexity_47.rds,2000 x 2,t-SNE embedding (perplexity 47). Columns: tSNE1 tSNE2.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_tsne_perplexity_62.rds,2000 x 2,t-SNE embedding (perplexity 62).
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds,1400 x 3,UMAP embedding of the training split (n_neighbors=15 min_dist=0.1). Columns: UMAP1 UMAP2 ID.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_pacmap_n-neighbors_10_init_random_MN-ratio_0.5_FP-ratio_2.rds,2000 x 2,PaCMAP embedding of the full dataset (n_neighbors=10 random init MN-ratio=0.5 FP-ratio=2).
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_phate_knn_5.rds,2000 x 2,PHATE embedding (k=5 nearest neighbours).
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_trimap_n-inliers_12_n-outliers_4_n-random_3.rds,2000 x 2,TriMAP embedding (n_inliers=12 n_outliers=4 n_random=3).
+two_nonlinear,tsne_two_curvy_scaled.rds,2000 x 3,t-SNE embedding (perplexity 47) rescaled to [0-1] for hexbin model fitting. Columns: emb1 emb2 ID.
+two_nonlinear,UMAP-2NC7-tr.rds,1400 x 3,UMAP embedding of the secondary dataset training split (2NC7_tr). Columns: UMAP1 UMAP2 ID.
+two_nonlinear,training_umap_two_non_linear_diff_shaped_close_clusters.rds,1400 x 4,UMAP embedding of the training split with cluster labels. Columns: UMAP1 UMAP2 ID cluster.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds,1400 x 2,UMAP embedding computed directly on the test set (not predicted from training model).
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_umap_predict.rds,600 x 2,UMAP 2D coordinates for the test split predicted from the training UMAP model.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds,600 x 3,Predicted UMAP coordinates for the test split with ID. Alternative prediction output.
+two_nonlinear,two_non_linear_diff_shaped_close_clusters_umap_predict_true.rds,600 x 2,UMAP predictions for the true model manifold points.
+two_nonlinear,test_umap_two_non_linear_diff_shaped_close_clusters.rds,600 x 4,Test split UMAP embedding with cluster labels. Columns: UMAP1 UMAP2 ID cluster.
+two_nonlinear,test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds,600 x 3,Test split UMAP embedding rescaled to [0-1]. Columns: UMAP1 UMAP2 ID.
+two_nonlinear,test_umap_predict_scaled_two_non_linear_diff_shaped_close_clusters.rds,600 x 3,Predicted test split UMAP embedding rescaled to [0-1]. Columns: UMAP1 UMAP2 ID.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict.rds,600 x 4,Default resolution model predictions: predicted 2D embedding coordinates and hexbin ID for test points. Columns: pred_emb_1 pred_emb_2 ID pred_h.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_13.rds,600 x 4,Same structure at bin resolution 13.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_23.rds,600 x 4,Same structure at bin resolution 23.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_30.rds,600 x 4,Same structure at bin resolution 30.
+two_nonlinear,test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_54.rds,600 x 4,Same structure at bin resolution 54.
+two_nonlinear,quollr_predict_13_dist.rds,179700 x 1,Pairwise distances between lifted model predictions at bin resolution 13 (600x599/2 = 179700 pairs).
+two_nonlinear,quollr_predict_30_dist.rds,179700 x 1,Pairwise distances at bin resolution 30.
+two_nonlinear,quollr_predict_54_dist.rds,179700 x 1,Pairwise distances at bin resolution 54.
+two_nonlinear,umap_test_dist.rds,179700 x 1,Pairwise distances between scaled UMAP test set embeddings.
+two_nonlinear,umap_predict_dist.rds,179700 x 1,Pairwise distances between predicted UMAP test set embeddings.
+two_nonlinear,dist_comp_bin_13.rds,179700 x 2,Side-by-side comparison of model prediction distances (bin 13) and scaled UMAP test distances.
+two_nonlinear,dist_comp_bin_13_org.rds,179700 x 2,Same comparison using original (unscaled) UMAP test distances.
+two_nonlinear,dist_comp_bin_30.rds,179700 x 2,Distance comparison at bin resolution 30 (scaled UMAP).
+two_nonlinear,dist_comp_bin_30_org.rds,179700 x 2,Distance comparison at bin resolution 30 (original UMAP).
+two_nonlinear,dist_comp_bin_54.rds,179700 x 2,Distance comparison at bin resolution 54 (scaled UMAP).
+two_nonlinear,dist_comp_bin_54_org.rds,179700 x 2,Distance comparison at bin resolution 54 (original UMAP).
+two_nonlinear,error_df_two_curvy_abs.rds,2000 x 36,"Per-point goodness-of-fit error data for the full dataset. Contains original 7D coordinates lifted model predictions per-dimension squared and absolute errors row-wise totals scaled 2D coordinates and error_cat factor (20 levels: error01-error20) categorising points by error quantile bin."
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_tsne.rds,68 x 12,Hexbin-level goodness-of-fit summary across grid sizes for t-SNE (perplexity 47). Columns include total error HBE grid dimensions occupied bin count bin area mean distance side length and proportion metrics.
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_tsne2.rds,68 x 12,Same structure for t-SNE (perplexity 62). Method label: tSNE2.
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_umap.rds,68 x 12,Same structure for UMAP.
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_pacmap.rds,68 x 12,Same structure for PaCMAP.
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_phate.rds,68 x 12,Same structure for PHATE.
+two_nonlinear,error_two_non_linear_diff_shaped_close_clusters_trimap.rds,68 x 12,Same structure for TriMAP.
+two_nonlinear,error_two_curvy_tsne.rds,16 x 14,Extended t-SNE error summary with additional proportion columns (prop_comp prop_bins). Subset of grid sizes.
+two_nonlinear,error_two_curvy_umap.rds,15 x 13,Extended UMAP error summary with RMSE and proportion density columns.
+two_nonlinear,error_rm_lwd_diff_bin.rds,30 x 9,Error sensitivity analysis varying the low-weight-drop threshold (benchmark_rm_lwd) at three fixed bin grid sizes (b1: 15 24 35). Shows how removing low-count bins affects total error and occupied bin count.
+two_nonlinear,hex_grid_nonempty.rds,1254 x 3,Hexagon vertex coordinates for all non-empty hexbins in the default grid. Columns: h (bin ID) x y.
+two_nonlinear,hex_grid_temp.rds,378 x 3,Intermediate hexbin grid vertices (coarser resolution).
+two_nonlinear,hex_grid_with_counts.rds,4176 x 5,Full hexbin grid including bin counts (n_h) and weights (w_h); many bins have NA counts (empty bins).
+two_nonlinear,two_nonlinear_hex_grid_two_curvy4.rds,72 x 3,Coarse hexbin grid (12 bins total) vertex coordinates.
+two_nonlinear,two_nonlinear_hex_grid_with_counts_two_curvy2.rds,1620 x 5,Hexbin grid with counts at resolution 2.
+two_nonlinear,two_nonlinear_hex_grid_with_counts_two_curvy3.rds,8820 x 5,Hexbin grid with counts at resolution 3 (finest available).
+two_nonlinear,df_bin_centroids_two_curvy.rds,209 x 5,Centroids of non-empty hexbins with point counts (n_h) and weights (w_h). Columns: h c_x c_y n_h w_h.
+two_nonlinear,all_centroids_df_tempp.rds,63 x 3,Temporary centroid coordinates for all 63 hexbins in an intermediate grid.
+two_nonlinear,two_nonlinear_all_centroids_two_curvy4.rds,12 x 3,Centroids for the coarse 12-bin grid.
+two_nonlinear,start_pt.rds,1 x 3,Starting hexbin centroid (bin 1) used as an anchor point in grid construction or animation.
+two_nonlinear,tr_from_to_df_two_curvy.rds,513 x 10,Hexbin-to-hexbin transition edge data for the default t-SNE embedding. Includes 2D coordinates bin counts and re-indexed bin IDs.
+two_nonlinear,two_nonlinear_tr_from_to_df_two_curvy2.rds,230 x 10,Transition edge data at resolution 2.
+two_nonlinear,two_nonlinear_tr_from_to_df_two_curvy3.rds,929 x 10,Transition edge data at resolution 3.
+two_nonlinear,two_nonlinear_proj_obj1.rds,list(5),Grand tour projection (view 1) for the fitted t-SNE model. Contains projected data (2000 obs) model hexbin edges (513) 3-axis basis unit circle and error-category cluster labels (20 levels).
+two_nonlinear,two_nonlinear_proj_obj2.rds,list(4),Alternative grand tour view (2-axis basis) for the fitted t-SNE model.
+two_nonlinear,two_nonlinear_proj_obj1_tsne.rds,list(4),Grand tour view 1 for t-SNE (without cluster labels).
+two_nonlinear,two_nonlinear_proj_obj2_tsne.rds,list(4),Grand tour view 2 for t-SNE (2-axis basis).
+two_nonlinear,two_nonlinear_proj_obj3_tsne.rds,list(4),Grand tour view 3 for t-SNE (3-axis basis).
+two_nonlinear,two_nonlinear_proj_obj1_phate.rds,list(4),Grand tour view 1 for the fitted PHATE model (490 model hexbin edges).
+two_nonlinear,two_nonlinear_proj_obj2_phate.rds,list(4),Grand tour view 2 for PHATE (2-axis basis).
+two_nonlinear,two_nonlinear_proj_obj3_phate.rds,list(4),Grand tour view 3 for PHATE (3-axis basis).
+two_nonlinear,two_nonlinear_true_proj_obj1.rds,list(5),Grand tour view 1 using the true model manifold edges (1475 connections) instead of fitted hexbin edges. Includes cluster labels.
+two_nonlinear,two_nonlinear_true_proj_obj2.rds,list(4),Grand tour view 2 for the true model (2-axis basis).
+two_nonlinear,test_two_nonlinear_proj_obj1.rds,list(3),Grand tour projection for the test split only (600 points no model edges). Contains projected coordinates 3-axis basis and unit circle.
+two_nonlinear,nldr_eval_metrics.rds,6 x 6,Summary of standard NLDR evaluation metrics for all 6 methods. Columns: Method GS RTA AUC(R_NX) r RGS.
+two_nonlinear,RNX_curves.rds,11988 x 3,R_NX neighbourhood preservation curves for all 6 methods. Columns: K R_NX method.
+two_nonlinear,shepard_all.rds,30000 x 3,Shepard diagram data (5000 random pairs x 6 methods) comparing high-dimensional distances (dX) to embedding distances (dY). Methods include tSNE_p47 and tSNE_p62.
+two_nonlinear,a1_data.rds,1 x 5,Coordinates and label for annotation arrow 1 (vertical) in a figure. Columns: x xend y yend label.
+two_nonlinear,a2_data.rds,1 x 5,Coordinates and label for annotation arrow 2 (horizontal).
+two_nonlinear,l_data.rds,1 x 5,Coordinates and label for a leader line annotation.
+two_nonlinear,d_rect.rds,1 x 4,Bounding rectangle coordinates (x1min x1max x2min x2max) used to draw a reference box on a plot.
+two_nonlinear,rect_adj.rds,1 x 2,Small x-axis adjustment values (x1 x2) for nudging a rectangle annotation.
+pbmc3k,pbmc_pca_50.rds,2622 x 50,Top 50 principal components of the 2622-cell PBMC dataset (PC_1-PC_50). Used as the high-dimensional input for all NLDR embeddings.
+pbmc3k,pbmc_pca_50_scdeed.rds,5858 x 50,Top 50 PCs for the larger 5858-cell dataset used in the scDEED comparison analysis.
+pbmc3k,pbmc_seurat_clusters.rds,2622 x 1,Seurat-derived cluster labels (10 clusters factor levels 0-9) for the 2622-cell dataset. Used to colour cells in visualisations.
+pbmc3k,pbmc_tsne_5.rds,2622 x 3,t-SNE embedding (perplexity 5). Columns: tSNE1 tSNE2 ID.
+pbmc3k,pbmc_tsne_9.rds,2622 x 3,t-SNE embedding (perplexity 9).
+pbmc3k,pbmc_tsne_30.rds,2622 x 3,t-SNE embedding (perplexity 30). Primary embedding used for grand tour and model fitting.
+pbmc3k,pbmc_tsne_51.rds,2622 x 3,t-SNE embedding (perplexity 51).
+pbmc3k,pbmc_tsne_86.rds,2622 x 3,t-SNE embedding (perplexity 86).
+pbmc3k,pbmc_tsne_92.rds,2622 x 3,t-SNE embedding (perplexity 92).
+pbmc3k,pbmc_umap_5_min_dist_0.8.rds,2622 x 3,UMAP (n_neighbors=5 min_dist=0.8). Primary embedding used for grand tour and model fitting.
+pbmc3k,pbmc_umap_30_min_dist_0.3.rds,2622 x 3,UMAP (n_neighbors=30 min_dist=0.3). Second key reference embedding.
+pbmc3k,pbmc_umap_{n}_min_dist_{d}.rds,2622 x 3,"All other UMAP hyperparameter combinations. n_neighbors values tested: 3 4 5 6 9 10 11 12 14 15 23 30 51 52 63 75 84. min_dist values tested: 0.01 0.03 0.1 0.2 0.3 0.45 0.5 0.6 0.65 0.7 0.75 0.78 0.79 0.8 0.81 0.82 0.85 0.9 0.99 1.0."
+pbmc3k,pbmc_pacmap_30_random_0.9_5.rds,2622 x 3,PaCMAP (n_neighbors=30 random init MN-ratio=0.9 FP-ratio=5). Primary configuration used for error evaluation.
+pbmc3k,pbmc_pacmap_30_random_0.1_1.rds,2622 x 3,PaCMAP (n_neighbors=30 random init MN-ratio=0.1 FP-ratio=1).
+pbmc3k,pbmc_pacmap_10_pca_0.5_2.rds,2622 x 3,PaCMAP (n_neighbors=10 PCA init MN-ratio=0.5 FP-ratio=2).
+pbmc3k,pbmc_pacmap_5_pca_0.1_1.rds,2622 x 3,PaCMAP (n_neighbors=5 PCA init MN-ratio=0.1 FP-ratio=1).
+pbmc3k,pbmc_phate_2.rds,2622 x 3,PHATE embedding (k=2 nearest neighbours). Columns: PHATE1 PHATE2 ID.
+pbmc3k,pbmc_phate_5.rds,2622 x 3,PHATE embedding (k=5). Primary configuration used for error evaluation.
+pbmc3k,pbmc_phate_10.rds,2622 x 3,PHATE embedding (k=10).
+pbmc3k,pbmc_trimap_5_2_2.rds,2622 x 3,TriMAP embedding (n_inliers=5 n_outliers=2 n_random=2). Columns: TriMAP1 TriMAP2 ID.
+pbmc3k,pbmc_trimap_12_4_3.rds,2622 x 3,TriMAP embedding (n_inliers=12 n_outliers=4 n_random=3). Primary configuration used for error evaluation.
+pbmc3k,pbmc_trimap_30_4_10.rds,2622 x 3,TriMAP embedding (n_inliers=30 n_outliers=4 n_random=10).
+pbmc3k,pbmc_scdeed_tsne_perplexity_30.rds,5858 x 2,t-SNE 2D matrix (perplexity 30) for 5858 cells. Representative mid-range setting for scDEED comparison.
+pbmc3k,pbmc_scdeed_tsne_perplexity_320.rds,5858 x 2,t-SNE 2D matrix (perplexity 320) for 5858 cells. High-perplexity extreme.
+pbmc3k,pbmc_scdeed_tsne_perplexity_{N}.rds,5858 x 2,"All other perplexity values for 5858-cell scDEED t-SNE embeddings: 5 10 15 20 25 35 40 45 50 55 60 65 70 75 80 85 90 95 100 105 110 115 120 125 130 135 140 145."
+pbmc3k,pbmc_scdeed_tsne_perplexity_51.rds,2622 x 2,t-SNE 2D matrix (perplexity 51) for the 2622-cell dataset (stored as scDEED format).
+pbmc3k,pbmc_scdeed_umap_n_neighbors_{N}_min_dist_{D}.rds,5858 x 2 or 2622 x 2,"UMAP 2D matrices for scDEED comparison. 5858-cell versions: n_neighbors in {5 6 7 8 9 10 20 30 40 50 80 160 240} x min_dist in {0.0125 0.05 0.1 0.3 0.5 0.7 0.9}. 2622-cell versions: n_neighbors in {5 15 30} x min_dist in {0.01 0.3 0.99}."
+pbmc3k,pbmc_scdeed_tsne_results.rds,29 x 2,scDEED dubious cell counts for t-SNE across 29 perplexity values (5-320). Columns: perplexity number_dubious_cells.
+pbmc3k,pbmc_scdeed_tsne_results_320.rds,1 x 2,scDEED result for t-SNE perplexity 320 only (stored separately).
+pbmc3k,pbmc_scdeed_umap_results.rds,91 x 3,scDEED dubious cell counts for UMAP across 91 hyperparameter combinations. Columns: n_neighbors min.dist number_dubious_cells.
+pbmc3k,error_pbmc_tsne_30.rds,43 x 11,Hexbin-level goodness-of-fit error summary for t-SNE (perplexity 30) across grid sizes. Columns: Error HBE b1 b2 b m a1 a2 d_bar method n_bar.
+pbmc3k,error_pbmc_tsne_5.rds,49 x 11,Same structure for t-SNE (perplexity 5).
+pbmc3k,error_pbmc_umap_5_min_dist_0.8.rds,42 x 11,Error summary for UMAP (n_neighbors=5 min_dist=0.8). Primary UMAP configuration. Includes HBE and d_bar/n_bar columns.
+pbmc3k,error_pbmc_umap_30_min_dist_0.3.rds,44 x 11,Error summary for UMAP (n_neighbors=30 min_dist=0.3). Second key UMAP configuration.
+pbmc3k,error_pbmc_umap_5_min_dist_0.01.rds,52 x 11,Error summary for UMAP (n_neighbors=5 min_dist=0.01).
+pbmc3k,error_pbmc_umap_9_min_dist_0.5.rds,45 x 11,Error summary for UMAP (n_neighbors=9 min_dist=0.5).
+pbmc3k,error_pbmc_umap_15_min_dist_0.99.rds,41 x 9,Error summary for UMAP (n_neighbors=15 min_dist=0.99). Uses RMSE instead of HBE and includes a2 column.
+pbmc3k,error_pbmc_umap_{n}_min_dist_{d}.rds,35-49 x 8,All remaining UMAP error summaries. Files with 8 columns use MSE instead of HBE and omit d_bar/n_bar (earlier schema variant).
+pbmc3k,error_pbmc_pacmap_30_random_0.9_5.rds,53 x 11,Error summary for PaCMAP (n_neighbors=30 MN-ratio=0.9 FP-ratio=5).
+pbmc3k,error_pbmc_phate_5.rds,70 x 11,Error summary for PHATE (k=5).
+pbmc3k,error_pbmc_trimap_12_4_3.rds,57 x 11,Error summary for TriMAP (n_inliers=12 n_outliers=4 n_random=3).
+pbmc3k,error_scdeed_pbmc_tsne_perplexity_30.rds,70 x 11,Error summary for t-SNE (perplexity 30) on the 5858-cell scDEED dataset.
+pbmc3k,error_scdeed_pbmc_tsne_perplexity_320.rds,82 x 11,Error summary for t-SNE (perplexity 320) on the scDEED dataset.
+pbmc3k,error_scdeed_pbmc_umap_{n}_min_dist_{d}.rds,46-80 x 8-11,"Error summaries for UMAP on the 5858-cell scDEED dataset. Configurations: n_neighbors in {5 15 30 80} min_dist in {0.01 0.1 0.3 0.5 0.99}."
+pbmc3k,df_model_data_pbmc_n.rds,2841 x 10,Hexbin centroids lifted back into 9D PC space for the t-SNE (perplexity 30) model. Columns: x1-x9 type (model).
+pbmc3k,df_model_data_pbmc_n_umap.rds,2693 x 10,Lifted model for the UMAP (n_neighbors=5 min_dist=0.8) embedding. Same structure.
+pbmc3k,df_bin_centroids_pbmc_umap.rds,71 x 5,2D centroid positions and point counts for non-empty hexbins in the UMAP embedding. Columns: h c_x c_y n_h w_h.
+pbmc3k,hex_grid_nonempty.rds,426 x 3,Hexagon vertex coordinates for all non-empty hexbins in the UMAP embedding. Columns: h x y.
+pbmc3k,hex_grid_with_counts.rds,3696 x 5,Full hexbin grid including counts (n_h) and weights (w_h); most bins have NA (empty).
+pbmc3k,pbmc_tsne_proj_obj1.rds,list(5),Grand tour projection (view 1) for the lifted t-SNE (perplexity 30) model. Contains projected data (2622 obs) model hexbin edges (532) 3-axis basis unit circle and Seurat cluster labels.
+pbmc3k,pbmc_tsne_proj_obj2.rds,list(5),Alternative grand tour view for the t-SNE model (same structure different tour basis).
+pbmc3k,pbmc_umap_proj_obj1.rds,list(5),Grand tour projection (view 1) for the lifted UMAP model. Smaller model (144 hexbin edges) reflecting a tighter embedding.
+pbmc3k,pbmc_umap_proj_obj2.rds,list(5),Alternative grand tour view for the UMAP model.
+pbmc3k,nldr_eval_metrics.rds,8 x 6,Standard NLDR evaluation metrics for 8 selected PBMC configurations. Columns: Method GS RTA AUC(R_NX) r RGS.
+pbmc3k,nldr_eval_metrics_scdeed.rds,2 x 6,Same metric structure for 2 methods (UMAP_30_min_dist_0.3 and tsne_perplexity_30) on the scDEED dataset. Used for direct comparison with scDEED results.
