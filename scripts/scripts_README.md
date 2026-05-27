@@ -1,7 +1,9 @@
 ---
+title: "scripts README"
 output:
+  pdf_document:
+    latex_engine: xelatex
   html_document: default
-  pdf_document: default
 ---
 # Scripts README
 
