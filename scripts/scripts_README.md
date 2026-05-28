@@ -19,7 +19,6 @@ scripts/
 ├── function_scripts/            # Low-level hexbin model fitting functions (one per NLDR method)
 │   ├── Fit_PacMAP_code.py
 │   ├── Fit_TriMAP_code.py
-│   └── functions_tri_hex_*.R
 ├── five_gau_clusters/           # Five Gaussian clusters experiment
 ├── c_shaped_dens_str/           # C-shaped density structure experiment
 ├── two_nonlinear/               # Two nonlinear clusters experiment
@@ -95,8 +94,6 @@ These files are sourced or imported inside experiment scripts and should not be 
 | `evaluation.py` | Python | Evaluation metrics: `global_score()`, `knn_eval()`, `faster_svm_eval()`, `random_triplet_eval()`, `centroid_triplet_eval()`. Sourced via `reticulate` in evaluation scripts |
 | `function_scripts/Fit_PacMAP_code.py` | Python | Low-level PaCMAP fitting called via `reticulate::source_python()` |
 | `function_scripts/Fit_TriMAP_code.py` | Python | Low-level TriMAP fitting called via `reticulate::source_python()` |
-| `function_scripts/functions_tri_hex_*.R` | R | Hexbin model fitting functions, one file per NLDR method and variant (with/without PCA pre-processing). Sourced inside experiment scripts |
-
 
 ## 3. Running the experiments
 
