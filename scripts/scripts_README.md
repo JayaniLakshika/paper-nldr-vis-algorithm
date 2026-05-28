@@ -9,8 +9,6 @@ output:
 
 This README explains how to set up the environment and run all scripts in this repository, from initial setup through to generating figures and evaluation results.
 
----
-
 ## Project structure
 
 ```
@@ -28,8 +26,6 @@ scripts/
 ├── mnist/                       # MNIST digit-1 experiment
 └── pbmc3k/                      # PBMC3k single-cell RNA-seq experiment
 ```
-
----
 
 ## 1. One-time environment setup
 
@@ -88,8 +84,6 @@ reticulate::import("pacmap")   # should import without error
 reticulate::import("trimap")   # should import without error
 ```
 
----
-
 ## 2. Shared files
 
 These files are sourced or imported inside experiment scripts and should not be run directly.
@@ -103,7 +97,6 @@ These files are sourced or imported inside experiment scripts and should not be 
 | `function_scripts/Fit_TriMAP_code.py` | Python | Low-level TriMAP fitting called via `reticulate::source_python()` |
 | `function_scripts/functions_tri_hex_*.R` | R | Hexbin model fitting functions, one file per NLDR method and variant (with/without PCA pre-processing). Sourced inside experiment scripts |
 
----
 
 ## 3. Running the experiments
 
@@ -114,8 +107,6 @@ setwd("/path/to/paper-nldr-vis-algorithm")
 ```
 
 Scripts within each subfolder are numbered and must be run **in order**.
-
----
 
 ### 3.1 Five Gaussian clusters (`five_gau_clusters/`)
 
@@ -135,8 +126,6 @@ Rscript scripts/five_gau_clusters/03_gen_model_with_UMAP.R
 Rscript scripts/five_gau_clusters/04_gen_model_with_PaCMAP.R
 ```
 
----
-
 ### 3.2 C-shaped density structure (`c_shaped_dens_str/`)
 
 | Order | Script | What it does |
@@ -152,8 +141,6 @@ Rscript scripts/c_shaped_dens_str/01_gen_data.R
 Rscript scripts/c_shaped_dens_str/02_gen_embeddings_uni_dens.R
 Rscript scripts/c_shaped_dens_str/03_gen_model_with_tSNE.R
 ```
-
----
 
 ### 3.3 Two nonlinear clusters (`two_nonlinear/`)
 
@@ -185,8 +172,6 @@ Rscript scripts/two_nonlinear/09_gen_model_prediction_with_umap_and_our_approach
 Rscript scripts/two_nonlinear/compare_pred_approaches.R
 ```
 
----
-
 ### 3.4 MNIST (`mnist/`)
 
 | Order | Script | What it does |
@@ -208,8 +193,6 @@ Rscript scripts/mnist/04_gen_model_with_tSNE.R
 Rscript scripts/mnist/05_evaluation_metrics.R
 Rscript scripts/mnist/06_link_brush_layout_e.R
 ```
-
----
 
 ### 3.5 PBMC3k (`pbmc3k/`)
 
@@ -261,8 +244,6 @@ Rscript scripts/pbmc3k/17_evaluation_metrics.R
 Rscript scripts/pbmc3k/18_evaluation_metrics_scD.R
 ```
 
----
-
 ## 4. Recommended run order across experiments
 
 If reproducing everything from scratch, run experiments in this order (each is independent but later experiments assume the shared setup is working):
@@ -271,9 +252,7 @@ If reproducing everything from scratch, run experiments in this order (each is i
 2. `c_shaped_dens_str/`
 3. `two_nonlinear/`
 4. `mnist/`
-5. `pbmc3k/` — most computationally intensive; run last
-
----
+5. `pbmc3k/`
 
 ## 5. Notes and common issues
 
@@ -284,5 +263,3 @@ If reproducing everything from scratch, run experiments in this order (each is i
 **`umap` vs `uwot`:** The scripts use the `umap` package (not `uwot`) because `uwot`'s `predict()` method was not available at the time of writing. Do not substitute `uwot`.
 
 **`here::here()`:** All file paths are relative to the project root via `here::here()`. Always open the `.Rproj` file or set your working directory to the project root before running any script.
-
-**Long-running scripts:** The PBMC3k hyperparameter sweep (scripts 3–4) and scDEED evaluation (script 9) can take several hours. Run them in a persistent session or via `nohup` / `screen`.
