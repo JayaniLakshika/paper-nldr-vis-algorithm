@@ -1369,13 +1369,13 @@ pcompare2_PaCMAP <- ggplot(d_quollr_PaCMAP,
 ```{r}
 #| label: fig-prediction-comparison
 #| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the layouts. Panel (a) shows predictions obtained using the UMAP `predict()` function. Panels (b)–(f) show predictions obtained using our method applied to (b) UMAP, (c) tSNE, (d) PHATE, (e) TriMAP, and (f) PaCMAP layouts, respectively."
-#| fig-height: 6
-#| fig-width: 4
+#| fig-height: 4
+#| fig-width: 6
 #| out-width: 80%
 
 pcompare1 + pcompare2 +
   pcompare2_tSNE + pcompare2_PHATE +
-  pcompare2_TriMAP + pcompare2_PaCMAP + plot_layout(ncol=2)
+  pcompare2_TriMAP + pcompare2_PaCMAP + plot_layout(ncol=3)
 ```
 
 <!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
