@@ -1093,12 +1093,13 @@ The problem with rSC is that correlation is not a good measure in the presence o
 
 ## Prediction into \gD{} {#sec-prediction}
 
-NLDR methods focus on a visualization solution for exploration without the ability to place new observations in a layout. Partially, this is also due to the methods being designed to operate only on the interpoint distance matrices instead of $\pD{}$ data. Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023] when the full data is available, and this is made available in the `umap` [@leland2018] software. Other approaches not illustrated in this work, such as neural network, autoencoders [@hinton2006] and parametric tSNE [@van2009], provide some mechanisms for embedding new data.  A benefit of our approach is that with the model representation, we can predict layout positions for any method. 
+<!--NLDR methods focus on a visualization solution for exploration without the ability to place new observations in a layout. Partially, this is also due to the methods being designed to operate only on the interpoint distance matrices instead of $\pD{}$ data.--> Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023] when the full data is available, and this is made available in the `umap` [@leland2018] software. Other approaches for embedding new data include neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] but they do not directly relate to the common methods presented here.  
 
-The procedure for the new observation: (i) identify the closest bin centroid in \pD{}, $\mathbfit{c}^{(p)}_{h*}$, and (ii) assign the corresponding centroid in \gD{}, $\mathbfit{c}^{(2)}_{h*}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions:  
-find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding. This can be considered to be an estimate of the mapping $g$ that maps the new observation ($\mathbfit{x}^*$) into the layout ($\mathbfit{y}^*$), $\mathbfit{y}^*  = \widehat{g}(\mathbfit{x}^*), \widehat{g}\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^2$.
+A benefit of our approach is that with the model representation, we can predict layout positions for any method. To illustrate this, we will first compare the approach with the predictions provided by UMAP, by generating a test set of `2NC7`. We will also show predictions of this test set for the layouts used in @fig-toy-rmse.
 
-@fig-prediction-comparison shows the results for UMAP (a) and our predictions(b) made using `quollr`. The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases, it can be seen that the test set matches the training set in the layout quite well. The main differences are that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. 
+Our procedure for the predicting the layout position of a new observation is: (i) identify the closest bin centroid in \pD{}, $\mathbfit{c}^{(p)}_{h*}$, and (ii) assign the corresponding centroid in \gD{}, $\mathbfit{c}^{(2)}_{h*}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions, which is to find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding. This can be considered to be an estimate of the mapping $g$ that maps the new observation ($\mathbfit{x}^*$) into the layout ($\mathbfit{y}^*$), $\mathbfit{y}^*  = \widehat{g}(\mathbfit{x}^*), \widehat{g}\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^2$.
+
+@fig-prediction-comparison shows the results for UMAP (a) and our predictions (b). The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases, it can be seen that the test set matches the training set in the layout quite well. The main differences are that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. 
 
 <!-- **Add tSNE, PHATE, TriMAP, and PACMAP training and quollr predictions to this plot, in a 3x2 layout** -->
 
@@ -1159,9 +1160,12 @@ d_umap <- bind_rows(UMAP_2NC7_tr_scaled, UMAP_2NC7_ts_pred_scaled) |>
                          rep("test", NROW(UMAP_2NC7_ts_pred_scaled)))))
 
 pcompare1 <- ggplot(d_umap,
-       aes(x = UMAP1, y = UMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+       #aes(x = UMAP1, y = UMAP2, colour = type)) +
+       aes(x = UMAP1, y = UMAP2, alpha = type)) +
+  geom_point(#alpha = 0.5, 
+    size = 0.5, colour = clr_choice) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("a", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
@@ -1174,9 +1178,12 @@ d_quollr <- bind_rows(UMAP_2NC7_tr_scaled, d_2NC7_ts_qpred) |>
                          rep("test", NROW(d_2NC7_ts_qpred)))))
 
 pcompare2 <- ggplot(d_quollr,
-       aes(x = UMAP1, y = UMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+       #aes(x = UMAP1, y = UMAP2, colour = type)) +
+       aes(x = UMAP1, y = UMAP2, alpha = type)) +
+  geom_point(#alpha = 0.5, 
+    size = 0.5, colour = clr_choice) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("b", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
@@ -1368,7 +1375,7 @@ pcompare2_PaCMAP <- ggplot(d_quollr_PaCMAP,
 
 ```{r}
 #| label: fig-prediction-comparison
-#| fig-cap: "Comparison of predictions made my UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the layouts. Panel (a) shows predictions obtained using the UMAP `predict()` function. Panels (b)–(f) show predictions obtained using our method applied to (b) UMAP, (c) tSNE, (d) PHATE, (e) TriMAP, and (f) PaCMAP layouts, respectively."
+#| fig-cap: "Comparison of predictions made by UMAP and by our method, relative to the training data. Dark points are the predicted test set, and lighter points are the training sample used to create the layouts. Panel (a) shows predictions obtained using the UMAP `predict()` function. Panels (b)–(f) show predictions obtained using our method applied to (b) UMAP, (c) tSNE, (d) PHATE, (e) TriMAP, and (f) PaCMAP layouts, respectively. XXX This figure needs the new data example, and all 6 of the examples."
 #| fig-height: 4
 #| fig-width: 6
 #| out-width: 80%
