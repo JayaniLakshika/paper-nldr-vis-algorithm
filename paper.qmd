@@ -1123,7 +1123,7 @@ UMAP_d_2NC7_tr <- read_rds("data/two_nonlinear/UMAP-2NC7-tr.rds")
 
 UMAP_d_2NC7_ts_pred <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
 
-num_bins_x_2NC7 <- 40
+num_bins_x_2NC7 <- 50
 
 algo_obj_2NC7 <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
@@ -1163,7 +1163,7 @@ pcompare1 <- ggplot(d_umap,
        #aes(x = UMAP1, y = UMAP2, colour = type)) +
        aes(x = UMAP1, y = UMAP2, alpha = type)) +
   geom_point(#alpha = 0.5, 
-    size = 0.5, colour = clr_choice) +
+    size = 0.5, colour = "#a65628") + #clr_choice) +
   #scale_color_brewer("", palette = "Paired", direction = -1) +
   scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("a", c(0.08, 0.9)) +
@@ -1181,7 +1181,7 @@ pcompare2 <- ggplot(d_quollr,
        #aes(x = UMAP1, y = UMAP2, colour = type)) +
        aes(x = UMAP1, y = UMAP2, alpha = type)) +
   geom_point(#alpha = 0.5, 
-    size = 0.5, colour = clr_choice) +
+    size = 0.5, colour = "#a65628") + #clr_choice) +
   #scale_color_brewer("", palette = "Paired", direction = -1) +
   scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("b", c(0.08, 0.9)) +
@@ -1196,7 +1196,7 @@ tSNE_d_2NC7_tr <- tsne_two_curvy |>
   filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
-num_bins_x_2NC7_tSNE <- 40
+num_bins_x_2NC7_tSNE <- 50
 
 algo_obj_2NC7_tSNE <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
@@ -1226,9 +1226,11 @@ d_quollr_tSNE <- bind_rows(tSNE_2NC7_tr_scaled, d_2NC7_ts_qpred_tSNE) |>
                          rep("test", NROW(d_2NC7_ts_qpred_tSNE)))))
 
 pcompare2_tSNE <- ggplot(d_quollr_tSNE,
-                         aes(x = tSNE1, y = tSNE2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+                         aes(x = tSNE1, y = tSNE2, 
+                             alpha = type)) +
+  geom_point(colour='#984ea3', size = 0.5) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("c", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
@@ -1241,7 +1243,7 @@ PHATE_d_2NC7_tr <- phate_two_curvy |>
   filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
-num_bins_x_2NC7_PHATE <- 40
+num_bins_x_2NC7_PHATE <- 50
 
 algo_obj_2NC7_PHATE <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
@@ -1271,9 +1273,10 @@ d_quollr_PHATE <- bind_rows(PHATE_2NC7_tr_scaled, d_2NC7_ts_qpred_PHATE) |>
                          rep("test", NROW(d_2NC7_ts_qpred_PHATE)))))
 
 pcompare2_PHATE <- ggplot(d_quollr_PHATE,
-                         aes(x = PHATE1, y = PHATE2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+                         aes(x = PHATE1, y = PHATE2, alpha = type)) +
+  geom_point(colour="#ff7f00", size = 0.5) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("d", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
@@ -1286,7 +1289,7 @@ TriMAP_d_2NC7_tr <- trimap_two_curvy |>
   filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
-num_bins_x_2NC7_TriMAP <- 40
+num_bins_x_2NC7_TriMAP <- 50
 
 algo_obj_2NC7_TriMAP <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
@@ -1316,9 +1319,11 @@ d_quollr_TriMAP <- bind_rows(TriMAP_2NC7_tr_scaled, d_2NC7_ts_qpred_TriMAP) |>
                          rep("test", NROW(d_2NC7_ts_qpred_TriMAP)))))
 
 pcompare2_TriMAP <- ggplot(d_quollr_TriMAP,
-                          aes(x = TriMAP1, y = TriMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+                          aes(x = TriMAP1, y = TriMAP2, 
+                              alpha = type)) +
+  geom_point(colour = '#4daf4a', size = 0.5) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("e", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
@@ -1331,7 +1336,7 @@ PaCMAP_d_2NC7_tr <- pacmap_two_curvy |>
   filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
-num_bins_x_2NC7_PaCMAP <- 40
+num_bins_x_2NC7_PaCMAP <- 50
 
 algo_obj_2NC7_PaCMAP <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
@@ -1361,9 +1366,11 @@ d_quollr_PaCMAP <- bind_rows(PaCMAP_2NC7_tr_scaled, d_2NC7_ts_qpred_PaCMAP) |>
                          rep("test", NROW(d_2NC7_ts_qpred_PaCMAP)))))
 
 pcompare2_PaCMAP <- ggplot(d_quollr_PaCMAP,
-                           aes(x = PaCMAP1, y = PaCMAP2, colour = type)) +
-  geom_point(alpha = 0.5, size = 0.5) +
-  scale_color_brewer("", palette = "Paired", direction = -1) +
+                           aes(x = PaCMAP1, y = PaCMAP2, 
+                               alpha = type)) +
+  geom_point(colour = '#e41a1c', size = 0.5) +
+  #scale_color_brewer("", palette = "Paired", direction = -1) +
+  scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("f", c(0.08, 0.9)) +
   theme(aspect.ratio = 1,
         axis.text = element_blank(),
