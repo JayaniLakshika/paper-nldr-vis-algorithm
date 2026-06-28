@@ -35,10 +35,11 @@ library(tidyverse)
 
 We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. The original reviewer comment is in normal font and *our response is in italic text*. 
 
-
-
 This revision and the comments given by the authors do not successfully address most of my previous major and minor concerns. My impression is that they attempted a "quick fix" by adding some new material here and there without substantially reworking the narrative, evaluation, and presentation quality of the manuscript and did not engage with the substance of my previous points in good faith. 
+
 Despite my criticisms, I do think the core idea of HBE + tour overlays is very interesting and innovative and has large potential value as a diagnostic tool for NLDR embeddings. However, in its current form, the manuscript is not suitable for publication in my opinion. 
+
+*Thank you. In response to the reviewer feedback, we have rearranged the paper substantially. We believe that it is more clearly focused and concise, and addresses all of the reviewer concenrs. This also means that although we have responded to review point-by-point response the arrangement makes it less one to one change in the paper. We have included a full diff of the versions, so that the reviewer can skim through the key changes.*
 
 # Prior Major Points
 
@@ -46,7 +47,7 @@ Despite my criticisms, I do think the core idea of HBE + tour overlays is very i
 
 **Partly addressed.** The revision now explicitly discusses several established metrics in Section 3.4, and it includes numerical/visual comparisons of HBE against metrics such as "rARNX", "rRTA", "rGS", and a Shepard-diagram-based correlation (e.g., Figure 8 and the surrounding discussion). However, the new material mostly illustrates that metrics can disagree rather than establishing when/why HBE should be preferred or how an analyst should reconcile HBE with existing (and complementary) local-vs-global criteria. The revised narrative is too dismissive of disagreement between metrics as "confusion" rather than treating it as an unavoidable multi-objective trade-off (see below). 
 
-*We appreciate this point. Changes explained in the review comments for the second review below.*
+*We appreciate this point. Changes are explained in the review comments for the second review below.*
 
 ## 2) Overselling the method as a decision aid for choosing "the best" 2-D embedding vs positioning it primarily as a diagnostic/exploratory tool 
 
@@ -61,54 +62,24 @@ In their response letter, the authors themselves explicitly stated that HBE is i
 
 *Changes explained in the review comments for the second review below.*
 
-<!--
-*We have revised Section 3.5 in several ways:*
-
-- *Repositioning of the contribution: The section has been rewritten to clearly present the proposed approach as a simple, model-consistent approximation based on the fitted wireframe, rather than as an alternative to established out-of-sample embedding methods. We explicitly state that it is intended for exploratory use.*
-
-- *Reduced emphasis: The prominence of this section has been reduced, and the language has been made more cautious to avoid overstating its role within the overall methodology.*
-
-- *Initial empirical check: We have added a basic comparison with the UMAP `predict()` function using a train/test split. This provides a preliminary assessment of how the approach performs in terms of neighborhood preservation and consistency with the fitted model.*
-
-- *Clarification of limitations: We now explicitly acknowledge that this is only an initial investigation, and that a more comprehensive evaluation across methods and datasets remains future work.*
-
-*These changes aim to ensure that the section is aligned with the primary goal of the paper; developing diagnostic tools for understanding NLDR layouts, while avoiding overstating the capabilities of this component.*
--->
-
 ## 4) Section 3.6 (parameter tuning guidance) 
 
 **Not addressed in substance.** The section is longer, but still reads like: “Try many settings, draw many plots, then pick something that looks OK.” I still do not see clear, reproducible guidance that an analyst can follow to choose binwidth etc parameters in a systematic way. If none can be provided, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
 
-*Point taken. This section has been revised to be more explicit.*
-
-<!-- 
-*We agree that the previous version of Section 3.6 did not provide sufficiently clear and reproducible guidance, and may have given the impression of an ad hoc, trial-and-error process.*
-
-*In response, we have substantially revised this section to provide a more structured and reproducible workflow for parameter tuning. Specifically, we now:*
-
-- *Provide a step-by-step procedure for selecting and evaluating parameter values, including choosing a grid of binwidths, examining HBE stability, and assessing bin occupancy measures;*
-
-- *Clarify how summary quantities such as average bin count and proportion of non-empty bins can be used to guide parameter selection in a systematic way;*
-
-- *Emphasize robustness-based selection, where preferred parameter values are those for which the fitted model is stable across a range of settings;*
-
-- *Reframe the goal from identifying a single optimal parameter choice to identifying a range of stable and interpretable configurations.*
-
-*We also clarify that, consistent with the overall goals of the paper, this process is intended to support diagnostic assessment rather than to define a fully automated selection rule.*
--->
+*Point taken. This is more explicit in the revision.*
 
 ## 5) Writing/proofreading and overall presentation quality 
 
 **Not addressed.** Despite the claim in the response letter that the manuscript was carefully proofread, the revision still contains a distracting density of typos, malformed sentences, in consistent notation, and colloquial phrasing (examples below from Section 3.4 alone). The writing quality is still far below what I would expect for a publication-ready manuscript in JCGS. 
 
-*This is not a fair statement, but we take it in stride, and have carefully proof-read the revised paper. TODO*
+*This is not a fair statement, but we take it in stride. We have carefully proofed the revision.*
 
 ## Logistical aspects of the revision 
 
 The revision process is made unnecessarily difficult because none of the changes are highlighted and the response letter does not point to precise locations (page/line) nor quotes key replacements. I find this rather inconsiderate and fairly unprofessional. 
 A tracked-changes PDF (or a detailed change log keyed to reviewer comments) would substantially reduce friction for reviewers and editors if another revision is submitted.
 
-*We have submitted a diff file between versions that will help to read the revision.TODO*
+*We have submitted a diff file between versions that will help to see the key changes made in the revision.*
 
 ## Summary 
 
@@ -128,13 +99,9 @@ IMO, the manuscript still has at least two critical problems:
 
 Section 4 is still titled **"Choosing the best 2-D layout"**, and the text repeatedly suggests that the goal is to select an "accurate" representation over a pretty but wrong representation. This framing remains problematic for the basic reason I raised previously: in 2-D NLDR, there is generally no single optimum – there is a trade-off between local and global structure preservation, and "best" is always implicitly "best for some downstream purpose." 
 
-*Paper has been modified to better reflect the use of HBE relative to other measures, for the simulated example and the applications. TODO*
+*The revised section better explains the use of HBE relative to other measures. The other measures are shown and compared for the simulated example and the applications.*
 
-*We have revised the text to better reflect the use of HBE in choosing layouts. It should be considered a tool to help select a layout from a range of choices, not just as a diagnostic tool. TODO*
-
-<!-- The revision now acknowledges that metrics disagree because they emphasize different aspects of structure, but it still presents disagreement as something that "causes confusion" for the analyst, rather than as an expected feature of a multi-objective problem with objectives that are often in conflict.  -->
-
-<!-- I would suggest to rewrite Section 4 so it explicitly adopts the diagnostic framing stated in the response letter (identify local distortions + misleading global separations; *support comparative diagnosis*). If authors insist on "selection", they need to clearly define a *decision* rule and properly evaluate it (see next issue).  -->
+*The section on choosing layouts better explains how to use HBE. It should be considered a tool to help select a layout from a range of choices, not just as a diagnostic tool.*
 
 ## 2. Validation remains insufficient for a selection claim (even with new metric comparisons) 
 
@@ -144,28 +111,20 @@ Right now, the paper still reads like a sequence of worked examples. The new met
 
 In particular, if the paper’s main claim is **diagnostics/exploration**, then the evidence should demonstrate that HBE + the tour overlay helps analysts localize + interpret distortions that are hard to see otherwise. (This seems to be there, already, but could be sharpened). If the paper’s claim is **selection**, then the evidence given in the paper must demonstrate that a well specified selection procedure based on HBE selects embeddings that are "better" according to well-defined criteria across a range of controlled scenarios. (This is currently missing and, IMO, would almost necessarily require a simulation study with data with various known high dimensional structures as ground truth.) 
 
-*The paper does describe an approach to helping choose the a layout from a selection of layouts. The text has been revised to make this point clearer. TODO*
-
-<!--
-*We thank the reviewer for this careful and insightful comment. We agree that the current manuscript does not provide sufficient evidence to support HBE as a general-purpose selection criterion for choosing an optimal embedding, and we appreciate the reviewer’s clear distinction between diagnostic and selection-oriented claims.*
-
-*Our intention has always been closer to the former—namely, to provide a diagnostic and exploratory framework for understanding how an embedding represents the original high-dimensional data. We acknowledge that the manuscript, as previously written, did not consistently reflect this intention and instead suggested a stronger selection-oriented interpretation than is warranted by the current evidence.*
-
-*We also appreciate the reviewer’s suggestion that a selection claim would require a well-defined decision rule and systematic validation across controlled scenarios with known ground truth. We agree that such an evaluation is beyond the scope of the current work.*
--->
+*The paper does describe how to choose the best layout from a selection of layouts. The text has been revised to make this point clearer.*
 
 ## 3. Section 3.6 still does not give reproducible, non-ad-hoc tuning guidance 
 
 With all due respect, my takeaway from the expanded Section 3.6 is still: "You can try a lot of things and draw some graphs and then maybe pick one of these settings, but who knows…" 
 I might be missing something, but I do not see a clear recipe that an analyst could follow without substantial subjective judgment calls. If no such recipe can be given, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
 
-*We have revised the paper to better explain the tuning. TODO*
+*We have moved the section containing the discussion on tuning. to the appendix. This is primarily for deciding on a binwidth to use to make the representation of the model in high dimensions. It is not relevant for choosing among a set of candidate layouts.*
 
 ## 4. Section 3.5 (out-of-sample embedding) still reads like an unvalidated method 
 
 The response letter says this is "future work," and some citations were added. That is helpful, but it certainly cannot be presented as if it were an alternative to established projection or out-of-sample embedding methods just by claiming that it is. Without at least a basic empirical check (e.g., does it preserve neighborhood structure for held-out points as well as established out-of-sample methods?), this section should not be presented as a usable alternative. 
 
-*We have revised Section 3.5 to better explain the approach, in the context of the one existing approach available in UMAP. This demonstrates clearly why our approach is actually useful and could be used for other NLDR techniques. However, it is a big area of work and well-suited to future endeavours. TODO*
+*We have revised Section 3.5 to better explain the approach. The primary comparison is with one existing approach available in UMAP. Our approach is very simple, but not entirely unlike the UMPA procedure. We show how our approach would provide reasonable predicted positions for each of the layouts shown in the simulated example. This demonstrates clearly why our approach is actually useful and could be used for any NLDR techniques where the full data is available. We have noted, though, that this is a potential direction for future research because the methodology has plenty of room for improvement, and it needs to be accompanied by some validation studies.*
 
 ## 5. Writing, proofreading, and notation quality are still far below publication-ready 
 
@@ -197,7 +156,7 @@ capitalization error.
 
 - **p. 13**: "these fitted values might also be denoted as $\hat{X}$" – notation introduced and then never used again anywhere throughout the text.
 
-*Notation removed, yes, not necessary. TODO?*
+*Notation fixed.*
 
 - **p. 14**: "which occurs due the intentional design that one cluster is slightly 3-D and perfectly captured by a 2-D layout" – not valid English, and also plausibly inverts the intended meaning. I assume this should be something like: "which occurs due to the intentional design that this cluster is slightly 3-D and thus not able to be perfectly
 represented/preserved by a 2-D layout."
@@ -208,7 +167,3 @@ A similar density of errors can be found in most other sections. To me, this sti
 
 *Checked.*
 
-## Aditional changes made
-
-- HBE vs average bin count plots moved into Appendix
-- OTher things moved....
