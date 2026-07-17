@@ -1228,7 +1228,7 @@ d_quollr_tSNE <- bind_rows(tSNE_2NC7_tr_scaled, d_2NC7_ts_qpred_tSNE) |>
 pcompare2_tSNE <- ggplot(d_quollr_tSNE,
                          aes(x = tSNE1, y = tSNE2, 
                              alpha = type)) +
-  geom_point(colour='#984ea3', size = 0.5) +
+  geom_point(colour='#a65628', size = 0.5) +
   #scale_color_brewer("", palette = "Paired", direction = -1) +
   scale_alpha_manual("", values = c("train" = 0.2, "test" = 1)) +
   interior_annotation("c", c(0.08, 0.9)) +
