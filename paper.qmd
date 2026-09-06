@@ -1921,13 +1921,22 @@ tsne_plot_mnist_clust <- ggplot() +
 
 ## Compute error
 error_df <- read_rds("data/mnist/mnist_error_df.rds")
+
+img_error_inside <- c(5173, 6981, 7228, 6673, 3179)
+error_df_high_selected <- error_df |>
+  filter(ID %in% img_error_inside)
   
 highd_error_2d_mnist <- error_df |>
-  ggplot(aes(x = emb1,
-             y = emb2,
-             colour = sqrt_row_wise_tot_error)) +
-  geom_point(alpha=0.2) +
-  scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+    filter(!(ID %in% img_error_inside)) |>
+    ggplot(aes(x = emb1,
+               y = emb2,
+               colour = sqrt_row_wise_tot_error)) +
+    geom_point(alpha=0.2) +
+    scale_colour_continuous_sequential(palette = "YlOrRd", n_interp = 20) +
+    geom_point(data = error_df_high_selected, 
+               aes(x = emb1,
+                   y = emb2),
+               alpha=0.8, colour = "#dd1c77") +
   geom_rect(aes(xmin = 0.82, xmax = 0.92, ymin = 0.38, ymax = 0.58),
                fill = "transparent", colour = "#000000", linewidth = 1) +
   geom_rect(aes(xmin = 0.9, xmax = 1, ymin = 1.25, ymax = 1.45),
@@ -2024,13 +2033,13 @@ imge_error_sample_outside <- plot_digit_img(
 img_error_inside <- read_rds("data/mnist/mnist_img_error_inside.rds")
 
 imge_error_sample_inside <- plot_digit_img(
-  img_error_inside, color_on = "#d95f0e", title_text = "f")
+  img_error_inside, color_on = "#dd1c77", title_text = "f")
 
 ```
 
 ```{r}
 #| label: fig-model-error-mnist
-#| fig-cap: "Summary of the layout structure, and large errors, relative to the MNIST digit 1 shape: (a) layout colored by residual value, and at right (b-e) are images of samples of observations taken at locations around the layout, showing similarity in how the 1's were drawn. Set (f) are images corresponding to large residuals in the big cluster (darker orange in plot a). Along the big cluster, the angle of digit 1 changes (b-d). The small cluster has larger residuals, and the images show that these tend to be European style with a flag at the top and a base at the bottom. The set in (f) shows various poorly written digits."
+#| fig-cap: "Summary of the layout structure, and large errors, relative to the MNIST digit 1 shape: (a) layout colored by residual value, and at right (b-e) are images of samples of observations taken at locations around the layout, showing similarity in how the 1's were drawn. Set (f) are images corresponding to large residuals in the big cluster (darker pink in plot a). Along the big cluster, the angle of digit 1 changes (b-d). The small cluster has larger residuals, and the images show that these tend to be European style with a flag at the top and a base at the bottom. The set in (f) shows various poorly written digits."
 #| fig-width: 10
 #| fig-height: 10
 #| fig-pos: "!ht"
