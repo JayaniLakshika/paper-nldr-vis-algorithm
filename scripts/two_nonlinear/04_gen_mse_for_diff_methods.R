@@ -20,13 +20,13 @@ data_two_curvy <- data_two_curvy |>
   mutate(ID = 1:NROW(data_two_curvy))
 
 ## For umap
-umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds") |>
+umap_two_non_linear_diff_shaped_close_clusters <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_55_min-dist_0.1.rds") |>
   mutate(ID = row_number())
 
 error_two_non_linear_diff_shaped_close_clusters_umap <- gen_diffbin1_errors(highd_data = data_two_curvy,
                                                                             nldr_data = umap_two_non_linear_diff_shaped_close_clusters,
                                                                             hd_thresh = 0,
-                                                                            bin1_vec = 5:72) |>
+                                                                            bin1_vec = 5:18) |>
   dplyr::mutate(side_length = quad(a=3, b = 2 * a2, c = -(a2^2 + a1^2))) |>
   dplyr::mutate(method = "UMAP")
 

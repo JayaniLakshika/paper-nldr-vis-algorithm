@@ -61,7 +61,7 @@ write_rds(tSNE_data, file = paste0("data/two_nonlinear/two_non_linear_diff_shape
 
 ## UMAP
 
-n_neighbors <- 15
+n_neighbors <- 55
 min_dist <- 0.1
 
 # UMAP_model <- umap(data,

@@ -951,7 +951,7 @@ nldr_two_curvy6 <- tsne_two_curvy |>
   interior_annotation("f") +
   theme(aspect.ratio = 1) 
 
-umap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_15_min-dist_0.1.rds")
+umap_two_curvy <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_55_min-dist_0.1.rds")
 
 nldr_two_curvy2 <- umap_two_curvy |>
   ggplot(aes(x = UMAP1,
@@ -1105,23 +1105,27 @@ Our procedure for the predicting the layout position of a new observation is: (i
 
 ```{r}
 # Code to generate the saved data is in scripts/two_nonlinear/compare_pred_approaches.R
-d_2NC7_tr <- read_rds(here::here("data/two_nonlinear/2NC7_tr.rds"))
-d_2NC7_ts <- read_rds(here::here("data/two_nonlinear/2NC7_ts.rds"))
+d_2NC7_tr <- read_rds(here::here("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_data.rds"))
+d_2NC7_ts <- read_rds(here::here("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters.rds"))
 
 d_2NC7_tr <- d_2NC7_tr |>
-  rename(ID_orig = ID) |>
   mutate(ID = row_number()) |>
-  select(x1:x7, ID, ID_orig)
+  select(x1:x7, ID)
 
 d_2NC7_ts <- d_2NC7_ts |>
-  rename(ID_orig = ID) |>
-  mutate(ID = (NROW(d_2NC7_tr) + 1): 2000) |>
-  select(x1:x7, ID, ID_orig)
+  mutate(ID = (NROW(d_2NC7_tr) + 1): 2500) |>
+  select(x1:x7, ID)
 
-UMAP_d_2NC7_tr <- read_rds("data/two_nonlinear/UMAP-2NC7-tr.rds")
+UMAP_d_2NC7_tr <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_n-neigbors_55_min-dist_0.1.rds")
 #load(file="data/two_nonlinear/UMAP_fit.rda")
 
-UMAP_d_2NC7_ts_pred <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_test.rds")
+UMAP_d_2NC7_ts_pred <- read_rds("data/two_nonlinear/two_non_linear_diff_shaped_close_clusters_umap_predict_new_test.rds")
+
+UMAP_d_2NC7_tr <- UMAP_d_2NC7_tr |>
+  mutate(ID = row_number()) 
+
+UMAP_d_2NC7_ts_pred <- UMAP_d_2NC7_ts_pred |>
+  mutate(ID = (NROW(UMAP_d_2NC7_tr) + 1): 2500) 
 
 num_bins_x_2NC7 <- 50
 
@@ -1193,7 +1197,7 @@ pcompare2 <- ggplot(d_quollr,
 
 ```{r}
 tSNE_d_2NC7_tr <- tsne_two_curvy |>
-  filter(row_number() %in% d_2NC7_tr$ID) |>
+  #filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
 num_bins_x_2NC7_tSNE <- 50
@@ -1240,7 +1244,7 @@ pcompare2_tSNE <- ggplot(d_quollr_tSNE,
 
 ```{r}
 PHATE_d_2NC7_tr <- phate_two_curvy |>
-  filter(row_number() %in% d_2NC7_tr$ID) |>
+  #filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
 num_bins_x_2NC7_PHATE <- 50
@@ -1286,7 +1290,7 @@ pcompare2_PHATE <- ggplot(d_quollr_PHATE,
 
 ```{r}
 TriMAP_d_2NC7_tr <- trimap_two_curvy |>
-  filter(row_number() %in% d_2NC7_tr$ID) |>
+  #filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
 num_bins_x_2NC7_TriMAP <- 50
@@ -1333,10 +1337,10 @@ pcompare2_TriMAP <- ggplot(d_quollr_TriMAP,
 
 ```{r}
 PaCMAP_d_2NC7_tr <- pacmap_two_curvy |>
-  filter(row_number() %in% d_2NC7_tr$ID) |>
+  #filter(row_number() %in% d_2NC7_tr$ID) |>
   mutate(ID = row_number())
 
-num_bins_x_2NC7_PaCMAP <- 50
+num_bins_x_2NC7_PaCMAP <- 25
 
 algo_obj_2NC7_PaCMAP <- fit_highd_model(
   highd_data = d_2NC7_tr[, 1:8],
