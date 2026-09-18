@@ -75,17 +75,22 @@ for (pkg in packages_to_check) {
 #| warning: false
 #| echo: false
 library(readr)
+library(dplyr)
 library(kableExtra)
 ```
 
-@tbl-fig-param contains the list of methods and hyper-parameters used for each of the layouts shown in the paper. 
+@tbl-fig-param contains the list of NLDR methods and hyper-parameters used for each of the layouts shown in the various figures. 
 
 ```{r}
 #| label: tbl-fig-param
 #| tbl-pos: H
-#| tbl-cap: "NLDR methods and hyper-parameters used for each Figure in the main paper."
+#| tbl-cap: "Index of NLDR methods and hyper-parameters used for relevant figures."
 
-fig_param_df <- read_csv(here::here("misc/fig_nldr_param.csv"))
+fig_param_df <- read_csv(here::here("misc/fig_nldr_param.csv")) 
+
+fig_param_df <- fig_param_df |>
+  mutate(`Hyper-parameter(s)` = if_else(Note == "default", paste(`Hyper-parameter(s)`, " (default)"), `Hyper-parameter(s)`)) |>
+  select(-Note)
 
 # Create the table
 kable(
@@ -101,7 +106,8 @@ kable(
     font_size = 12,
     latex_options = c("repeat_header")
   ) |>
-  column_spec(1:4, width = c("5cm", "1.7cm", "5cm", "3cm")) |>
+  #column_spec(1:4, width = c("5cm", "1.7cm", "5cm", "3cm")) |>
+  column_spec(1:3, width = c("5cm", "1.7cm", "8cm")) |>
   row_spec(0, bold = TRUE) |>
   row_spec(9, hline_after = TRUE) |>
   row_spec(10, hline_after = TRUE) |>
@@ -109,6 +115,6 @@ kable(
   row_spec(20, hline_after = TRUE)
 ```
 
-The "Note" column describes how hyper-parameters were chosen. "**default**" denotes software defaults in R/Python. "**published**" refers to settings used in published examples. "**high-d informed**" indicates settings selected after examining the high-dimensional structure using tour and/or fitted models. "**structurally dissimilar**" denotes intentionally different parameter choices used to generate alternative layouts for comparison and evaluation purposes.
+<!-- The "Note" column describes how hyper-parameters were chosen. "**default**" denotes software defaults in R/Python. "**published**" refers to settings used in published examples. "**high-d informed**" indicates settings selected after examining the high-dimensional structure using tour and/or fitted models. "**structurally dissimilar**" denotes intentionally different parameter choices used to generate alternative layouts for comparison and evaluation purposes.-->
 
 \clearpage
