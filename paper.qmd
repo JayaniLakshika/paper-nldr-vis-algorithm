@@ -1,5 +1,5 @@
 ---
-title: "Choosing Better NLDR Layouts by Evaluating the Model in the High-dimensional Data Space"
+title: "Evaluating NLDR Layouts using a Model in the High-dimensional Data Space"
 format: 
     jasa-pdf:
         keep-tex: true
@@ -61,7 +61,7 @@ author:
     url: https://thiyanga.netlify.app/
 tbl-cap-location: bottom
 abstract: |
-  Nonlinear dimension reduction (NLDR) techniques such as t-SNE and UMAP provide low-dimensional representations of high-dimensional data, capturing complex structures in a concise visual summary. While NLDR has an important role in data analysis, these methods can badly miss the mark by exaggerating existing structures or suggesting spurious patterns. NLDR applies nonlinear transformations to create layouts, and the choice of method and hyper-parameters can produce wildly different representations. It is difficult to decide which are reasonable and which are misleading, and we show that they can be poor. To help, we have developed a procedure that treats the low-dimensional NLDR layout as a model that can be lifted back into the original high-dimensional space. This enables us to assess goodness of fit by computing the error and visualizing the fitted model overlaid on the data using grand tours. These elements allow us to quantitatively compare multiple layouts, determine which representations are reasonable, and assess whether an embedding captures the data structure throughout the space, only in certain subspaces, or performs poorly overall. This approach has also proven useful for understanding how different methodological choices affect the resulting embeddings. 
+  Nonlinear dimension reduction (NLDR) techniques such as t-SNE and UMAP provide low-dimensional representations of high-dimensional data, capturing complex structures in a concise visual summary. While NLDR has an important role in data analysis, these methods can badly miss the mark by exaggerating structures or suggesting spurious patterns. Different methods hyper-parameters choices can produce wildly different representations, making it difficult to decide which are layouts are reasonable representations and which are misleading. To help, we have developed a procedure that treats the low-dimensional NLDR layout as a model that can be lifted up into the original high-dimensional space. This enables us to assess goodness of fit by computing residuals and visualizing the fitted model overlaid on the data using grand tours. This approach allow us to quantitatively compare multiple layouts, determine which representations are reasonable, and assess whether an embedding captures the data structure throughout the space, only in certain subspaces, or performs poorly overall. 
   
 keywords: [high-dimensional data, dimension reduction, data visualization, statistical graphics, tour, unsupervised learning]
 keywords-formatted: [high-dimensional data, dimension reduction, data visualization, statistical graphics, unsupervised learning]
@@ -1093,14 +1093,6 @@ The problem with rSC is that correlation is not a good measure in the presence o
 
 ## Prediction into \gD{} {#sec-prediction}
 
-<!--NLDR methods focus on a visualization solution for exploration without the ability to place new observations in a layout. Partially, this is also due to the methods being designed to operate only on the interpoint distance matrices instead of $\pD{}$ data.--> Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023] when the full data is available, and this is made available in the `umap` [@leland2018] software. Other approaches for embedding new data include neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] but they do not directly relate to the common methods presented here.  
-
-A benefit of our approach is that with the model representation, we can predict layout positions for any method. To illustrate this, we will first compare the approach with the predictions provided by UMAP, by generating a test set of `2NC7`. We will also show predictions of this test set for the layouts used in @fig-toy-rmse.
-
-Our procedure for the predicting the layout position of a new observation is: (i) identify the closest bin centroid in \pD{}, $\mathbfit{c}^{(p)}_{h*}$, and (ii) assign the corresponding centroid in \gD{}, $\mathbfit{c}^{(2)}_{h*}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions, which is to find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding. This can be considered to be an estimate of the mapping $g$ that maps the new observation ($\mathbfit{x}^*$) into the layout ($\mathbfit{y}^*$), $\mathbfit{y}^*  = \widehat{g}(\mathbfit{x}^*), \widehat{g}\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^2$.
-
-@fig-prediction-comparison shows the results for UMAP (a) and our predictions (b). The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases, it can be seen that the test set matches the training set in the layout quite well. The main differences are that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. 
-
 <!-- **Add tSNE, PHATE, TriMAP, and PACMAP training and quollr predictions to this plot, in a 3x2 layout** -->
 
 ```{r}
@@ -1396,167 +1388,14 @@ pcompare2_tSNE + pcompare1 + pcompare2 +
   pcompare2_TriMAP + pcompare2_PaCMAP + plot_layout(ncol=3)
 ```
 
-<!-- NLDR methods are primarily designed for visualization and exploration rather than reconstruction, and do not explicitly provide out-of-sample prediction. Of the five methods studied here, only UMAP provides a `predict()` function for embedding new data points based on the learned manifold [@tomasz2023]. Several other approaches, not used here, PCA, neural network autoencoders [@hinton2006], and parametric tSNE [@van2009] support prediction.  -->
 
-<!-- A benefit of our approach is that for any NLDR method, it provides a way to predict the layout position of a new observation, $x'$. The steps are (1) determine the closest bin centroid in \pD{}, $C^{(p)}_{h}$, and (2) predict the embedding to be the bin centroid in \gD{}, $C^{(2)}_{h}$.  -->
+<!--NLDR methods focus on a visualization solution for exploration without the ability to place new observations in a layout. Partially, this is also due to the methods being designed to operate only on the interpoint distance matrices instead of $\pD{}$ data.--> Only UMAP provides a way to predict the layout positions of new observations [@tomasz2023] when the full data is available, and this is made available in the `umap` [@leland2018] software. Other approaches for embedding new data include neural network autoencoders [@hinton2006] and parametric tSNE [@van2009] but they do not directly relate to the common methods presented here.  
 
+A benefit of our approach is that with the model representation, we can predict layout positions for any method. To illustrate this, we will first compare the approach with the predictions provided by UMAP, by generating a test set of `2NC7`. We will also show predictions of this test set for the layouts used in @fig-toy-rmse.
 
+Our procedure for the predicting the layout position of a new observation is: (i) identify the closest bin centroid in \pD{}, $\mathbfit{c}^{(p)}_{h*}$, and (ii) assign the corresponding centroid in \gD{}, $\mathbfit{c}^{(2)}_{h*}$, as the predicted embedding. This is not entirely different from how UMAP provides predictions, which is to find the nearest neighbors in \pD{}, and interpolate their positions in \gD{} to provide the predicted embedding. This can be considered to be an estimate of the mapping $g$ that maps the new observation ($\mathbfit{x}^*$) into the layout ($\mathbfit{y}^*$), $\mathbfit{y}^*  = \widehat{g}(\mathbfit{x}^*), \widehat{g}\text{:}~ \mathbb{R}^p \rightarrow \mathbb{R}^2$.
 
-<!-- To provide an initial assessment, we compare this approach with the UMAP `predict()` function using a train/test split. Predictions are evaluated in terms of neighborhood preservation and their consistency with the fitted model representation. The results suggest that the approach provides a reasonable approximation for placing new observations relative to the fitted structure.
-
-This method is intended as a simple extension of the model rather than as a replacement for established out-of-sample embedding techniques. A more comprehensive evaluation across a broader range of datasets and methods remains an important direction for future work.-->
-
-```{r}
-#| label: prediction-two-curvy
-#| eval: false
-# NEED TO REMOVE THIS CODE
-
-predict_highdvis1 <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_13.rds")
-
-predict_highdvis2 <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_30.rds")
-
-predict_highdvis3 <- read_rds("data/two_nonlinear/test_two_non_linear_diff_shaped_close_clusters_highd_vis_predict_bin_54.rds")
-
-umap_test <- read_rds("data/two_nonlinear/test_umap_predict_scaled_two_non_linear_diff_shaped_close_clusters.rds")
-
-test_two_curvy_umap1 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis1, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "a1", cex = 1.5)
-
-test_two_curvy_umap2 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis2, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "b1", cex = 1.5)
-
-test_two_curvy_umap3 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis3, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "c1", cex = 1.5)
-
-```
-
-```{r}
-#| eval: false
-umap_test <- read_rds("data/two_nonlinear/test_umap_scaled_two_non_linear_diff_shaped_close_clusters.rds")
-
-test_two_curvy_umap11 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis1, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "a1", cex = 1.5)
-
-test_two_curvy_umap21 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis2, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "b1", cex = 1.5)
-
-test_two_curvy_umap31 <- ggplot(umap_test, 
-                                  aes(x = UMAP1, y = UMAP2)) +
-  geom_point(alpha = 0.5, colour = "#d0d1e6", size = 0.5) +
-  geom_point(data = predict_highdvis3, aes(
-    x = pred_emb_1, y = pred_emb_2
-  ), alpha = 0.5, colour = "#045a8d", size = 0.5) +
-  interior_annotation(label = "c1", cex = 1.5)
-```
-
-```{r}
-#| eval: false
-dist_comp_quollr_13 <- read_rds("data/two_nonlinear/quollr_predict_13_dist.rds")
-
-dist_comp_umap_predict <- read_rds("data/two_nonlinear/umap_predict_dist.rds")
-
-diff_quollr_13_umap_predict <- dist_comp_quollr_13 |>
-  mutate(diff = quollr_predict1_dist - dist_comp_umap_predict$umap_predict_dist)
-
-dist_cmp_plt11 <- ggplot(diff_quollr_13_umap_predict, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-
-dist_comp_quollr_30 <- read_rds("data/two_nonlinear/quollr_predict_30_dist.rds")
-
-diff_quollr_30_umap_predict <- dist_comp_quollr_30 |>
-  mutate(diff = quollr_predict2_dist - dist_comp_umap_predict$umap_predict_dist)
-
-dist_cmp_plt12 <- ggplot(diff_quollr_30_umap_predict, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-dist_comp_quollr_54 <- read_rds("data/two_nonlinear/quollr_predict_54_dist.rds")
-
-diff_quollr_54_umap_predict <- dist_comp_quollr_54 |>
-  mutate(diff = quollr_predict3_dist - dist_comp_umap_predict$umap_predict_dist)
-
-dist_cmp_plt13 <- ggplot(diff_quollr_54_umap_predict, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-```
-
-```{r}
-#| eval: false
-dist_comp_quollr_13 <- read_rds("data/two_nonlinear/quollr_predict_13_dist.rds")
-
-dist_comp_umap_test <- read_rds("data/two_nonlinear/umap_test_dist.rds")
-
-diff_quollr_13_umap_test <- dist_comp_quollr_13 |>
-  mutate(diff = quollr_predict1_dist - dist_comp_umap_test$umap_test_dist)
-
-dist_cmp_plt21 <- ggplot(diff_quollr_13_umap_test, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-
-dist_comp_quollr_30 <- read_rds("data/two_nonlinear/quollr_predict_30_dist.rds")
-
-diff_quollr_30_umap_test <- dist_comp_quollr_30 |>
-  mutate(diff = quollr_predict2_dist - dist_comp_umap_test$umap_test_dist)
-
-dist_cmp_plt22 <- ggplot(diff_quollr_30_umap_test, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-dist_comp_quollr_54 <- read_rds("data/two_nonlinear/quollr_predict_54_dist.rds")
-
-diff_quollr_54_umap_test <- dist_comp_quollr_54 |>
-  mutate(diff = quollr_predict3_dist - dist_comp_umap_test$umap_test_dist)
-
-dist_cmp_plt23 <- ggplot(diff_quollr_54_umap_test, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-diff_umap_predict_test <- dist_comp_umap_predict |>
-  mutate(diff = umap_predict_dist - dist_comp_umap_test$umap_test_dist)
-
-dist_cmp_plt <- ggplot(diff_umap_predict_test, aes(x = diff, y = after_stat(density))) +
-  geom_density(color = "red", linewidth = 1)
-
-```
-
-```{r}
-#| label: predict
-#| fig-cap: ""
-#| fig-width: 9
-#| fig-height: 15
-#| fig-pos: "!ht"
-#| eval: false
-
-test_two_curvy_umap1 + test_two_curvy_umap2 + test_two_curvy_umap3 +
-  test_two_curvy_umap11 + test_two_curvy_umap21 + test_two_curvy_umap31 +
-  dist_cmp_plt11 + dist_cmp_plt12 + dist_cmp_plt13 +
-  dist_cmp_plt21 + dist_cmp_plt22 + dist_cmp_plt23 +
-  dist_cmp_plt +
-  plot_layout(ncol = 3)
-```
-
+@fig-prediction-comparison shows the results for UMAP (a) and our predictions (b). The `2NC7` data is divided into training and test sets, using a 70% split. The training data is used to make the \gD{} layout. (This is similar but not quite the same as the layout on the full data seen in @fig-toy-rmse plot b.) The test set is held out for prediction. In both cases, it can be seen that the test set matches the training set in the layout quite well. The main differences are that our predictions are to the bin centroid, so it looks gridded. Adding some jitter to the predicted values would make them look more similar to the UMAP predictions. Just because we can, doesn't mean we should - for this data, the method provides demonstrably reasonable results, and better than having no method at all. 
 
 ## Applications {#sec-applications}
 
@@ -1564,13 +1403,6 @@ To illustrate the approach, we use two examples: PBMC3k data (single cell gene e
 
 ### PBMC3k {#sec-pbmc}
 
-This is a benchmark single-cell RNA-Seq data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see, for example, @haque2017). This type of data is used to obtain an understanding of cellular-level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR is often used to summarize the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. 
-
-In this data, there are $2622$ single cells and $1000$ gene expressions (variables). Following the same pre-processing as @chen2024, different NLDR techniques were performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods and different hyper-parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout that was published in @chen2024. This layout suggests that the data has three very well-separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b, c, d, e, f, g, or h. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
-
-@fig-pbmc-rmse shows HBE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were generated using tSNE and UMAP with various hyper-parameter settings, while PHATE, PaCMAP, and TriMAP were applied using their default settings. Lines are color-coded to match the color of the layouts shown on the right. Lower HBE indicates a better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low HBE across all binwidths. It can be seen that layout f is sub-optimal with universally higher HBE. Layout a, the published one, is better, but it is not as good as layouts b, d, or e. With some imagination, the layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better HBE when the $a_1$ is small, but layout e beats it at larger values. Thus, we could argue that layout e is the most accurate representation of the cluster structure of these eight.
-
-To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) corresponds to the published layout, and the bottom row (e1, e2, e3) corresponds to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters are a reasonable interpretation of the structure, but the layout e more accurately reflects the separation between them, which is small.
 
 <!--Fit the best model for author suggestion and compute error-->
 <!--pbmc3k/13_gen_model_with_UMAP.R-->
@@ -1775,6 +1607,15 @@ free(trimesh_removed_pbmc) + free(trimesh_removed_pbmc_best) +
   theme(legend.position='none')
 ```
 
+
+This is a benchmark single-cell RNA-Seq data set collected on Human Peripheral Blood Mononuclear Cells (PBMC3k) as used in @pbmc2019. Single-cell data measures the gene expression of individual cells in a sample of tissue (see, for example, @haque2017). This type of data is used to obtain an understanding of cellular-level behavior and heterogeneity in their activity. Clustering of single-cell data is used to identify groups of cells with similar expression profiles. NLDR is often used to summarize the cluster structure. Usually, NLDR does not use the cluster labels to compute the layout, but uses color to represent the cluster labels when it is plotted. 
+
+In this data, there are $2622$ single cells and $1000$ gene expressions (variables). Following the same pre-processing as @chen2024, different NLDR techniques were performed on the first nine principal components. @fig-NLDR-variety shows this data using a variety of methods and different hyper-parameters. You can see that the result is wildly different depending on the choices. Layout a is a reproduction of the layout that was published in @chen2024. This layout suggests that the data has three very well-separated clusters, each with an odd shape. The question is whether this accurately represents the cluster structure in the data, or whether they should have chosen b, c, d, e, f, g, or h. This is what our new method can help with -- to decide which is the more accurate \gD{} representation of the cluster structure in the \pD{} data. 
+
+@fig-pbmc-rmse shows HBE across a range of binwidths ($a_1$) for each of the layouts in @fig-NLDR-variety. The layouts were generated using tSNE and UMAP with various hyper-parameter settings, while PHATE, PaCMAP, and TriMAP were applied using their default settings. Lines are color-coded to match the color of the layouts shown on the right. Lower HBE indicates a better fit. Using a range of binwidths shows how the model changes, with possibly the best model being one that is universally low HBE across all binwidths. It can be seen that layout f is sub-optimal with universally higher HBE. Layout a, the published one, is better, but it is not as good as layouts b, d, or e. With some imagination, the layout d perhaps shows three barely distinguishable clusters. Layout e shows three, possibly four, clusters that are more separated. The choice reduces from eight to these two. Layout d has slightly better HBE when the $a_1$ is small, but layout e beats it at larger values. Thus, we could argue that layout e is the most accurate representation of the cluster structure of these eight.
+
+To further assess the choices, we need to look at the model in the data space, by using a tour to show the wireframe model overlaid on the data in the $9\text{-}D$ space (@fig-model-pbmc-author-proj). Here we compare the published layout (a) versus what we argue is the best layout (e). The top row (a1, a2, a3) corresponds to the published layout, and the bottom row (e1, e2, e3) corresponds to the optimal choice according to our procedure. The middle and right plots show two projections. The primary difference between the two models is that the model of layout e does not fill out to the extent of the data but concentrates in the center of each point cloud. Both suggest that three clusters are a reasonable interpretation of the structure, but the layout e more accurately reflects the separation between them, which is small.
+
 ### MNIST hand-written digits {#sec-mnist}
 
 The digit "1" of the MNIST dataset [@lecun1998] consists of $7877$ grayscale images of handwritten "1"s. Each image is $28 \times 28$ pixels, which corresponds to $784$ variables. The first $10$ principal components, explaining $83\%$ of the total variation, are used. This data essentially lies on a nonlinear manifold in high dimensions, defined by the shapes that "1"s make when sketched. We expect that the best layout captures this type of structure and does not exhibit distinct clusters. 
@@ -1892,13 +1733,6 @@ error_plot_mnist + wrap_plots(nldr_mnist1, nldr_mnist2, nldr_mnist3,
                                     nldr_mnist4, nldr_mnist5, nldr_mnist6, ncol = 2)
 ```
 
-@fig-mnist-rmse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e), with default hyper-parameter setting and two tSNE runs, one with default hyper-parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different, having a linear shape and a single very large outlier. Both a and f have a small clump of points, perhaps slightly disconnected from the other points, in the lower to middle right. 
-
-The layout plots are colored to match the lines in the HBE vs binwidth ($a_1$) plot. Layouts a, b, and f fit the data better than c, d, e, and layout f appears to be the best fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
-
-An interesting aside is that the rather strange layout e, which has what looks like a single point far from the remaining observations, is actually similar to this one. That point is actually a clump of points corresponding to some of the diffuse points interior to the curve of the bulk of points. This is easy to see using the linked brushing tool.
-
-The next step is to investigate the \gD{} layout to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape, we can see that the "1"s are drawn from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke, but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarize the variation in ways "1"s are drawn.
 
 <!--PaCMAP param: n_components=2, n_neighbors=10, init=random, MN_ratio=0.9, FP_ratio=2.0-->
 
@@ -2057,21 +1891,27 @@ final_layout <- wrap_plots(highd_error_2d_mnist, top_layout)
 final_layout
 ```
 
+@fig-mnist-rmse compares the fit of six layouts computed using UMAP (b), PHATE (c), TriMAP (d), PaCMAP (e), with default hyper-parameter setting and two tSNE runs, one with default hyper-parameter setting (a) and the other changing perplexity to $89$ (f). The layouts are reasonably similar in that they all have the observations in a single blob. Some (b, c) have a more curved shape than others. Layout e is the most different, having a linear shape and a single very large outlier. Both a and f have a small clump of points, perhaps slightly disconnected from the other points, in the lower to middle right. 
+
+The layout plots are colored to match the lines in the HBE vs binwidth ($a_1$) plot. Layouts a, b, and f fit the data better than c, d, e, and layout f appears to be the best fit. @fig-clust-mnist shows this model in the data space in two projections from a tour. The data is curved in the $10\text{-}D$ space, and the fitted model captures this curve. The small clump of points in the \gD{} layout is highlighted in both displays. These are almost all inside the curve of the bulk of points and are sparsely located. The fact that they are packed together in the \gD{} layout is likely due to the handling of density differences by the NLDR. 
+
+An interesting aside is that the rather strange layout e, which has what looks like a single point far from the remaining observations, is actually similar to this one. That point is actually a clump of points corresponding to some of the diffuse points interior to the curve of the bulk of points. This is easy to see using the linked brushing tool.
+
+The next step is to investigate the \gD{} layout to understand what information is learned from this representation. @fig-model-error-mnist summarizes this investigation. Plot a shows the layout with points colored by their residual value - darker color indicates larger residual and poor fit. The plots b, c, d, e show samples of hand-written digits taken from inside the colored boxes. Going from top to bottom around the curve shape, we can see that the "1"s are drawn from right slant to a left slant. The "1"s in d (black box) tend to have the extra up stroke, but are quite varied in appearance. The "1"s shown in the plots labelled e correspond to points with big residuals. They can be seen to be more strangely drawn than the others. Overall, this \gD{} layout shows a useful way to summarize the variation in ways "1"s are drawn.
+
 ## Discussion {#sec-discussion}
 
-We have developed an approach to help assess and compare NLDR layouts, generated by different methods and hyper-parameter choice(s). It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The fit is assessed by viewing the model in the data space, computing residuals, and HBE. Different layouts can be compared using the HBE, providing a quantitative metric to decide on the most suitable NLDR layout to represent the \pD{} data. Global and local preservation of structure is assessed by examining the HBE across a range of binwidths. It also provides a way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks, such as using training and testing samples.
+We have developed an approach to help assess and compare NLDR layouts. It depends on conceptualizing the \gD{} layout as a model, allowing for the creation of a wireframe representation of the model that can be lifted into \pD{}. The goodness of fit of the layout is measured by a new statistic, HBE, which can be used to compare multiple layouts. Global and local preservation of structure is assessed by examining the HBE across a range of binwidths. Viewing the fitted model in the high-dimensional data space can help to determine how well it captures structures in the data. This approach also provides a simple way to predict the values of new \pD{} observations in the \gD{}, which could be useful for implementing uncertainty checks, such as using training and testing samples.
 
-The new methodology is accompanied by an R package called `quollr`, so that it is readily usable and broadly accessible. The package has methods to fit the model, compute diagnostics, and also visualize the results, with interactivity. We have primarily used the `langevitour` software [@harisson2024] to view the model in the data space, but other tour software such as `tourr` [@wickham2011] and `detourr` [@hart2022] could also be used.
+This methodology is made available in the R package `quollr`. The package has methods to fit the model, compute diagnostics, and also visualize the results, with interactivity. We have primarily used the `langevitour` software [@harisson2024] to view the model in the data space, but other tour software such as `tourr` [@wickham2011] and `detourr` [@hart2022] could also be used.
 
-Two examples illustrating usage are provided: the PBMC3k data, where the NLDR is summarizing clustering in \pD{}, and hand-written digits illustrating how NLDR represents an intrinsically low-dimensional nonlinear manifold. We examined a typical published usage of UMAP with the PBMC3k dataset [@chen2024]. As is typical of UMAP layout with default settings, the separation between clusters is grossly exaggerated. The layout even suggests separation where there is none.  Our approach provides a way to choose a reasonable layout and avoids the use of misleading layouts in the future. In the hand-written digits [@lecun1998], we illustrate how our model fit statistics show that a flat disc layout is superior to the curved-shaped layouts, and how to identify oddly written "1"s using the residuals of the fitted model.
+Two examples illustrating usage are provided: the PBMC3k data, where the NLDR is summarizing clustering in \pD{}, and MNIST data illustrating how NLDR represents an intrinsically low-dimensional nonlinear manifold. We illustrated that a published UMAP layout of the PBMC3k dataset [@chen2024], is sub-optimal. The chosen layout inaccurately exaggerated separation between clusters, even suggesting separation where there was none. In the hand-written digits [@lecun1998], illustrating how an NLDR can condense some sparse structure, making it appear as a cluster. This also illustrated the use of model residuals to identify oddly written digits.
 
-This work can be applied with existing metrics for evaluating NLDR layout, such as ARNX, RTA, SC, and RGS. It provides an additional evaluation metric, and importantly allows any layout to be viewed in the \pD{} data space. This latter aspect can help to disentangle conflicting suggestions by the different metrics. 
+The supplementary material contains examples of strange behavior of NLDR methods, including twisting, flattened "pancake" clusters in \pD{}, and severe effects of density differences. 
 
-Additional exploration of distance measures to summarize the fit could be a valuable direction for future work. We have used Euclidean distance, but other measures, such as geodesic distances [@joshua2000], may better capture curved or nonlinear relationships in the data and are worth exploring.
+The HBE metric complements existing metrics for evaluating NLDR layout, ARNX, RTA, SC, and RGS. It suggests that more work on distance measures to summarize the fit could be valuable. HBE uses Euclidean distance, but other measures, such as geodesic distances [@joshua2000], may help capture departures from curved or nonlinear surfaces in the data.
 
-This work has also revealed some interesting behaviors of NLDR methods, including twisting, flattened "pancake" clusters in \pD{}, and severe effects of density differences. These are described in more detail in the supplementary materials.
-
-Researchers usually use \gD{} layouts, but if a \kD{} ($k>2$) layout is provided, the approach developed here could be extended. Potential approaches include $3\text{-}D$ binning, $k$-means clustering, or even special implementations of convex hulls. 
+The approach presented here could also be extended for \kD{} ($k>2$) layouts. Using $3\text{-}D$ binning, $k$-means clustering with nearest neighbors edge connection, or even special implementations of convex hulls, could provide model representations. 
 
 ## Supplementary Materials {#sec-supplementary}
 

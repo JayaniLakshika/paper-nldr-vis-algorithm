@@ -33,13 +33,13 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 ```
 
-We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. The original reviewer comment is in normal font and *our response is in italic text*. 
+We thank the anonymous associate editor and reviewers for their careful reviews. What follows is our point-by-point response to reviewer comments. *Our responses are in italic text*. 
 
 This revision and the comments given by the authors do not successfully address most of my previous major and minor concerns. My impression is that they attempted a "quick fix" by adding some new material here and there without substantially reworking the narrative, evaluation, and presentation quality of the manuscript and did not engage with the substance of my previous points in good faith. 
 
 Despite my criticisms, I do think the core idea of HBE + tour overlays is very interesting and innovative and has large potential value as a diagnostic tool for NLDR embeddings. However, in its current form, the manuscript is not suitable for publication in my opinion. 
 
-*Thank you. In response to the reviewer feedback, we have rearranged the paper substantially. We believe that it is more clearly focused and concise, and addresses all of the reviewer concenrs. This also means that although we have responded to review point-by-point response the arrangement makes it less one to one change in the paper. We have included a full diff of the versions, so that the reviewer can skim through the key changes.*
+*Thank you. In response to the reviewer feedback, we have rearranged the paper substantially. We believe that it is more clearly focused and concise, and addresses all of the reviewer concenrs. This also means that although we have responded to review point-by-point response, the rearrangement may make the changes relative to the original harder to see. So we have included a full diff of the versions, so the key changes might be clearer.*
 
 # Prior Major Points
 
@@ -118,19 +118,17 @@ In particular, if the paper’s main claim is **diagnostics/exploration**, then 
 With all due respect, my takeaway from the expanded Section 3.6 is still: "You can try a lot of things and draw some graphs and then maybe pick one of these settings, but who knows…" 
 I might be missing something, but I do not see a clear recipe that an analyst could follow without substantial subjective judgment calls. If no such recipe can be given, this should be clearly stated and the method reframed as inherently exploratory/diagnostic rather than selection-oriented. 
 
-*We have moved the section containing the discussion on tuning. to the appendix. This is primarily for deciding on a binwidth to use to make the representation of the model in high dimensions. It is not relevant for choosing among a set of candidate layouts.*
+*We have moved the section containing the discussion on tuning to the appendix. This is primarily for deciding on a binwidth to use to make the representation of the model in high dimensions. It is not relevant for choosing among a set of candidate layouts.*
 
 ## 4. Section 3.5 (out-of-sample embedding) still reads like an unvalidated method 
 
 The response letter says this is "future work," and some citations were added. That is helpful, but it certainly cannot be presented as if it were an alternative to established projection or out-of-sample embedding methods just by claiming that it is. Without at least a basic empirical check (e.g., does it preserve neighborhood structure for held-out points as well as established out-of-sample methods?), this section should not be presented as a usable alternative. 
 
-*We have revised Section 3.5 to better explain the approach. The primary comparison is with one existing approach available in UMAP. Our approach is very simple, but not entirely unlike the UMPA procedure. We show how our approach would provide reasonable predicted positions for each of the layouts shown in the simulated example. This demonstrates clearly why our approach is actually useful and could be used for any NLDR techniques where the full data is available. We have noted, though, that this is a potential direction for future research because the methodology has plenty of room for improvement, and it needs to be accompanied by some validation studies.*
+*We have revised Section 3.5 (now 7) to better explain the approach. The primary comparison is with one existing approach available in UMAP. Our approach is very simple, but not entirely unlike the UMAP procedure. We show how our approach would provide reasonable predicted positions for each of the layouts shown in the simulated example. This demonstrates clearly why our approach is actually useful and could be used for any NLDR techniques where the full data is available. We do acknowledge your point that this has plenty of room for improvement, but argue that it should be part of potential future work.*
 
 ## 5. Writing, proofreading, and notation quality are still far below publication-ready 
 
 The revised paper seems fairly sloppy and badly written overall. It was obviously not proofread or edited with any amount of proper diligence. There are too many typos, inappropriate colloquialisms, weird/bad phrasings, and non-sequiturs to list. 
-
-*See note above.*
 
 Just taking Section 3.4 as an example: 
 
